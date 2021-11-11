@@ -1,5 +1,6 @@
-# alegruz.github.io
-github blog
+# Alegruz's Homepage
+
+Game Development Studies with Books
 
 ## English Contents
 * 2021
