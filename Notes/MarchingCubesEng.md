@@ -5,13 +5,11 @@ books read:
 * [Computer Graphics Principles Practice](https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice)
 * [Real-Time Rendering](https://www.realtimerendering.com/)
 
-## What is Marching Cube?
-
-### Explicit Surface and Implicit Surface<sup>[1](#footnote_1)</sup>
+## Explicit Surface and Implicit Surface<sup>[1](#footnote_1)</sup>
 
 There are two types of surfaces to understand beforehand. The **Explicit Surface** and the **[Implicit Surface](https://en.wikipedia.org/wiki/Implicit_surface)**. Explicit surface is a surface that has every vertices, indices described. Thus all the vertices and indices information that we feed to OpenGL or DirectX is an explicit surface. In the other hand, implicit surface is where functions in form of F(x, y, z) = 0 is used. x + 2y - 3z + 1 = 0 is an equation of a plane in 3d space. In order to render this plane, however, we ultimately need an explicit representation of the function.
 
-### Conversion to Polyhedral Meshes<sup>[2](#footnote_2)</sup>
+## Conversion to Polyhedral Meshes<sup>[2](#footnote_2)</sup>
 
 In order to convert implicit surface into explicit surface, we must understand the process by images rather than words. First of all, imagine that a space is separated by an invisible uniform grids. For all the vertices of a grid, we can use their coordinate vector and use that as an argument to the implicit surface. If the result is equal to zero, that means that the vertex is *exactly on* the surface, if it is greater than zero, then the vertex is *farther away* from the surface, if it is less than zero, then the vertex is *inside* the surface. For example, if there is at least one vertex that is inside the surface, then at least some kind of mesh is intersecting with the grid. This is the fundamental concept of Marching Cubes.
 
@@ -36,13 +34,27 @@ There are some properties we can gain from the isosurface:
     * Find the isocurve vertices.
     * If the vertex is a newly found one, then map it to the vertex table with the vertex name. If the table already contains the vertex, then do nothing.
     * For each new vertex, based on the implicit values of each grid vertices, determine the exact location of the vertex.
-    * 
+    * Add edges by examining the pattern of plusses and minuses, and add them to the edge table
+* Resulting set of isocurves will have every vertex to be shared by exactly two edges, thus the isocurves are all simple closed curves or polylines
+
+If a grid vertex has a value of 0, then we trick the algorithm by giving it a small value that is not 0 (for example, a value which is 0.001 times the next smallest vertex value adjacent to it). Then, at the last part of the algorithm, we shrink them to one vertex.
+
+If more than one grid vertices have value 0, then we similarly adjust their value, and adjust the vertices at the end.
+
+### Marching Cubes
+
+1. assume that all grid vertices are non-zero
+    * if there's a zero, perturb it by a small random amount
+3. compute the isosurface, move the isosurface vertices back to the proper locations
+
+We can represent eight grid vertices pattern as an 8-bit binary number. The pattern then can be made into a lookup table. The actual location would be interpolated afterwards.
+
+A grid edge can contain either no isocurve vertex, or one. If is does have an isocurve vertex, then two adjacent grid shall have a face that shares the isocurve vertices, but the way that isosurface vertices are connected by edges within each copy of the face might not be consistent. If this happens, the resulting model of the isosurface will have edges in the interior of the grid, which is inapproriate. Thus the use 256 models used for the 256 possible cases in the marching cubes algorithm must be pairwise consistent.
 
 ---
 
-</div>
 <div id="footnote_1">
 <p>1. This paragraph is based on the book <a href="https://fluidenginedevelopment.org/">&lt;The Fluid Engine Development></a> by Doyub Kim</p>
 </div>
 <div id="footnote_2">
-<p>2. This paragraph is based on the book <a href="https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice">&lt;Computer Graphics Principles Practice></a> by James D. Foley, Andries van Dam, Steven K. Feiner, John Hughes, Morgan McGuire, David F. Sklar, and Kurt Akeley</p>
+<p>2. This paragraph is based on the book <a href="https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice">&lt;Computer Graphics Principles Practice></a> by James D. Foley, Andries van Dam, Steven K. Feiner, John Hughes, Morgan McGuire, David F. Sklar, and Kurt Akeley</p></div>
