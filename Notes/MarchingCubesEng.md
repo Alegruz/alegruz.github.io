@@ -89,6 +89,52 @@ In a grid cell which contains the zero isosurface, i.e. which has differing sign
 
 The triangular meshes generated from marching typically aren't of great quality. If the isosurface just barely includes a grid point, then the triangles generated nearby will often be "slivers", with one or more very short edges. In most scenarios some further mesh smoothing is required: move each vertex towards the average of its neighbor vertices, then project it back to the zero isosurface using the underlying level set. This tends to produce much better shaped triangles of more uniform size, while staying faithful to the level set.
 
+
+## Marching Cubes Isosurfaces<sup>[14](#footnote_14)</sup>
+
+### Algorithm:
+
+1. `main(argc, argv)`
+2. `runGraphicsTest(argc, argv)`
+    1. `initGL(argc, argv)`
+    2. `findCudaDevice(argc, argv)`
+    3. register callbacks to glut
+    4. `initMC(argc, argv)`
+        1. set grid sizes to (2<sup>5</sup>, 2<sup>5</sup>, 2<sup>5</sup>), `0001 0000`
+        2. set grid size mask to (2<sup>5</sup> - 1, 2<sup>5</sup> - 1, 2<sup>5</sup> - 1), `0000 1111`
+        3. set grid size shift to (0, 5, 10)
+        4. set number of voxels = 2<sup>5</sup> * 2<sup>5</sup> * 2<sup>5</sup> = 32,768
+        5. set voxel size = (2.0f / gridSize)
+        6. set maximum vertices = gridSize.x * gridSize.y * 100
+        7. load sample volume data and copy them to the GPU memory
+        8. create volume texture in cuda
+        9. create vbo's for positions and normals
+        10. `allocateTextures(deviceEdgeTable, deviceTriTable, deviceNumVertsTable)`
+        11. allocate gpu memory
+            1. voxel vertices
+            2. voxel vertices scan
+            3. voxel occupied
+            4. voxel occupied scan
+            5. compacted voxel array
+3. `display()`
+    1. `computeIsosurface()`
+        1. calculate number of vertices need per voxel by `launch_classifyVoxel(grid, threads, voxelVertices, voxelOccupied, volume, gridSize, gridSizeShift, gridSizeMask, numVoxels, voxelSize, isoValue)`
+            1. calculate number of vertices need per voxel by `classifyVoxel(voxelVertices, voxelOccupied, volume, gridSize, gridSizeShift, gridSizeMask, numVoxels, voxelSize, isoValue, numVerticesTextureObject, volumeTextureObject)`
+            2. scan voxel occupied array by `ThrustScanWrapper(output, input, numElements)`
+            3. read back values to calculate total number of non-empty voxels since we are using an exclusive scan, the total is the last value of the scan result plus the last value in the input array
+            4. if there are no active/full voxels, then return.
+            5. compact voxel index array by `launch_compactVoxels(grid, threads, compactedVoxelArray, voxelOccupied, voxelOccupiedScan, numVoxels)`
+            6. scan voxel vertex count array by `ThrustScanWrapper(output, input, numElements)`
+            7. readback total number of vertices
+            8. generate triangles, writing to vertex buffers
+            9. skip empty voxels
+            10. `launch_generateTriangles2(grid, threads, pos, norm, compactedVoxelArray, numVertsScanned, volume, gridSize, gridSizeShift, gridSizeMask, voxelSize, isoValue, activeVoxels, maxVerts)`
+    2. display with gl
+        1. set view matrix
+        2. lighting
+        3. `renderIsosurface()`
+
+
 ---
 
 <div id="footnote_1">
@@ -118,3 +164,5 @@ The triangular meshes generated from marching typically aren't of great quality.
 <p>12. Martin J. Dürst. 1988. <a href="https://dl.acm.org/doi/10.1145/378267.378271">Re: additional reference to "marching cubes".</a> SIGGRAPH Comput. Graph. 22, 5 (Oct. 1988), 243.</p></div>
 <div id="footnote_13">
 <p>13. Heinrich Müller and Michael Wehle. <a href="https://www.computer.org/csdl/proceedings-article/dagstuhl/1997/05030243/12OmNAnMuwa">Visualization of implicit surfaces using adaptive tetrahedrizations.</a> In Dagstuhl ’97, Scientific Visualization, pages 243–250, 1999.</p></div>
+<div id="footnote_14">
+<p>14. NVIDA CUDA Samples for Marching Cubes: <a href="https://docs.nvidia.com/cuda/cuda-samples/index.html#marching-cubes-isosurfaces">Link</a></p></div>

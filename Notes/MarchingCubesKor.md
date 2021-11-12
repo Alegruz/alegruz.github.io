@@ -89,6 +89,52 @@
 
 마칭으로 형성한 삼각형 메시들은 보통 품질이 그리 좋은 편은 아니다. 만약 등곡면이 겨우 그리드 점 하나를 포함하고 있다면, 근처에 생성되는 삼각형이 사실상 하나 이상의 짧은 모서리로 이루어진 조각처럼 되곤 한다. 대부분의 경우 메시 스무딩이 필요하기도 하다: 각 정점을 이웃 정점의 평균으로 옮겨주고 레벨 셋을 통해 0차 등곡면으로 사영해준다. 이러면 더 보기 좋은 균일한 크기의 삼각형을 만들어주면서도 레벨 셋에 잘 따르게 된다.
 
+## 마칭 큐브 등곡면<sup>[14](#footnote_14)</sup>
+
+### 알고리듬:
+
+1. `main(argc, argv)`
+2. `runGraphicsTest(argc, argv)`
+    1. `initGL(argc, argv)`
+    2. `findCudaDevice(argc, argv)`
+    3. GLUT에 콜백 함수 등록
+    4. `initMC(argc, argv)`
+        1. 그리드 크기 설정 (2<sup>5</sup>, 2<sup>5</sup>, 2<sup>5</sup>), `0001 0000`
+        2. 그리드 크기 마스크 설정 (2<sup>5</sup> - 1, 2<sup>5</sup> - 1, 2<sup>5</sup> - 1), `0000 1111`
+        3. 그리드 크기 시프트 설정 (0, 5, 10)
+        4. 복셀 개수 설정 = 2<sup>5</sup> * 2<sup>5</sup> * 2<sup>5</sup> = 32,768
+        5. 복셀 크기 설정 = (2.0f / gridSize)
+        6. 최대 정점 개수 설정 = gridSize.x * gridSize.y * 100
+        7. 샘플 볼륨 데이터 불러온 뒤 GPU 메모리에 복사
+        8. CUDA에서 볼륨 텍스처 생성
+        9. 위치와 법선용 VBO 생성
+        10. `allocateTextures(deviceEdgeTable, deviceTriTable, deviceNumVertsTable)`
+        11. GPU 메모리 할당
+            1. 복셀 정점
+            2. 복셀 정점 스캔
+            3. 복셀 차지 중인 정점
+            4. 복셀 차지 중인 정점 스캔
+            5. 압축 복셀 배열
+3. `display()`
+    1. `computeIsosurface()`
+        1. 복셀 당 필요한 정점 개수 연산 `launch_classifyVoxel(grid, threads, voxelVertices, voxelOccupied, volume, gridSize, gridSizeShift, gridSizeMask, numVoxels, voxelSize, isoValue)`
+            1. 복셀 당 필요한 정점 개수 연산 `classifyVoxel(voxelVertices, voxelOccupied, volume, gridSize, gridSizeShift, gridSizeMask, numVoxels, voxelSize, isoValue, numVerticesTextureObject, volumeTextureObject)`
+            2. 복셀 차지 중 정점 배열 스캔 `ThrustScanWrapper(output, input, numElements)`
+            3. 값 읽어서 비어있지 않은 정점 총 개수 계산. 배타적 스캔을 사용하므로 총 값은 스캔 결과의 마지막 값에 입력 배열의 마지막 값을 더한 값.
+            4. 활성화/가득 찬 복셀이 없으면 반환
+            5. 복셀 색인 배열 압축 `launch_compactVoxels(grid, threads, compactedVoxelArray, voxelOccupied, voxelOccupiedScan, numVoxels)`
+            6. 복셀 정점 개수 배열 스캔 `ThrustScanWrapper(output, input, numElements)`
+            7. 정점 총 개수 읽어오기
+            8. 삼각형 생성 후 정점 버퍼에 쓰기
+            9. 빈 복셀 생략
+            10. `launch_generateTriangles2(grid, threads, pos, norm, compactedVoxelArray, numVertsScanned, volume, gridSize, gridSizeShift, gridSizeMask, voxelSize, isoValue, activeVoxels, maxVerts)`
+    2. GL로 시각화
+        1. 뷰 행렬 설정
+        2. 라이팅
+        3. `renderIsosurface()`
+
+
+
 ---
 
 <div id="footnote_1">
@@ -119,3 +165,5 @@ Presented at the OpenSG Symposium 02, 2002</p></div>
 <p>12. Martin J. Dürst. 1988. <a href="https://dl.acm.org/doi/10.1145/378267.378271">Re: additional reference to "marching cubes".</a> SIGGRAPH Comput. Graph. 22, 5 (Oct. 1988), 243.</p></div>
 <div id="footnote_13">
 <p>13. Heinrich Müller and Michael Wehle. <a href="https://www.computer.org/csdl/proceedings-article/dagstuhl/1997/05030243/12OmNAnMuwa">Visualization of implicit surfaces using adaptive tetrahedrizations.</a> In Dagstuhl ’97, Scientific Visualization, pages 243–250, 1999.</p></div>
+<div id="footnote_14">
+<p>14. 마칭 큐브 NVIDA CUDA 샘플: <a href="https://docs.nvidia.com/cuda/cuda-samples/index.html#marching-cubes-isosurfaces">링크</a></p></div>
