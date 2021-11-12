@@ -1,10 +1,6 @@
 [Home](../README.md)
 # Marching Cube Study Note (12 NOV 2021)
 
-books read:
-* [Computer Graphics Principles Practice](https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice)
-* [Real-Time Rendering](https://www.realtimerendering.com/)
-
 ## Explicit Surface and Implicit Surface<sup>[1](#footnote_1)</sup>
 
 There are two types of surfaces to understand beforehand. The **Explicit Surface** and the **[Implicit Surface](https://en.wikipedia.org/wiki/Implicit_surface)**. Explicit surface is a surface that has every vertices, indices described. Thus all the vertices and indices information that we feed to OpenGL or DirectX is an explicit surface. In the other hand, implicit surface is where functions in form of F(x, y, z) = 0 is used. x + 2y - 3z + 1 = 0 is an equation of a plane in 3d space. In order to render this plane, however, we ultimately need an explicit representation of the function.
@@ -51,6 +47,32 @@ We can represent eight grid vertices pattern as an 8-bit binary number. The patt
 
 A grid edge can contain either no isocurve vertex, or one. If is does have an isocurve vertex, then two adjacent grid shall have a face that shares the isocurve vertices, but the way that isosurface vertices are connected by edges within each copy of the face might not be consistent. If this happens, the resulting model of the isosurface will have edges in the interior of the grid, which is inapproriate. Thus the use 256 models used for the 256 possible cases in the marching cubes algorithm must be pairwise consistent.
 
+## Rendering<sup>[3](#foonote_3)</sup>
+
+The process of creating a smoother mesh surface by using an algorithm such as marching cubes is called *surface extraction* or *polygonalization* (a.k.a. *polygonization*). We will treat each voxel as a point sample rather than a box, then using eight of these points as the corners to a 2 × 2 × 2 grid.
+
+## Implicit to Parametric<sup>[4](#foonote_4)</sup>
+
+*Isosurface Extraction* is the conversion from a implicit or volumetric representation to a triangle mesh. The de-facto standard algorithm for isosurface extraction is *marching cubes*.
+
+For each cell that is intersected by the isosurface S, a surface patch is generated based on local criteria. The collection of all these small pieces eventually yields a triangle mesh approximation of the complete isosurface S.
+
+For each grid edge intersecting the surface S, the marching cubes algorithm computes a sample point that approximates this intersection. In terms of the scalar field F, this means that the sign of F differs at the grid edge's endpoints **p**<sub>1</sub> and **p**<sub>2</sub>. Since the trilinear approximation F is actually linear along the grid edges, the intersection point **s** can be found by linear interpolation of the distance values d<sub>1</sub> := F(**p**<sub>1</sub>) and d<sub>2</sub> := F(**p**<sub>2</sub>) at the edge's endpoints:
+
+**s** = (|d<sub>2</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) **p**<sub>1</sub> + (|d<sub>1</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) **p**<sub>2</sub>
+
+The resulting sample points of each cell are then connected to a triangulated surface patch based on a triangulation look-up table holding all possible configurations of edge intersections. Since the possible combinatorial configurations are determined by the signs at a cell's corners, their number, and hence the size of the table, is 2<sup>8</sup> = 256.
+
+There are some ambiguity that leads to cracks in the extracted surface. A properly modified look-up table would yield a simple and efficient solution, however, at the price of sacrificing the symmetry with regard to sign inversion of F [Montani et al. 94]<sup>[5](#footnote_5)</sup>. The resulting isosurfaces then are watertight 2-manifolds, which is exploited by many mesh repair techniques.
+
+Marching cubes computes intersection points on the edges of a regular grid only. A faithful reconstruction of sharp features requires additional sample points within the cells containing them. The Extended Marching Cubes algorithm [Kobbelt et al. 01]<sup>[6](#footnote_6)</sup> therefore examines the distance function's gradient ∇F to detect those cells that contain a sharp feature and to find additional sample points by intersecting the estimated tangent planes at the edge intersection points of the voxel.
+
+![ExtendedMarchingCubes2d](../Images/ExtendedMarchingCubes2d.png)
+
+![ExtendedMarchingCubes3d](../Images/ExtendedMarchingCubes3d.png)
+
+An example implementation of extended marching cubes based on the OpenMesh data structure [Botsch et al. 02]<sup>[7](#footnote_7)</sup> can be downloaded from [Kobbelt et al. 05]<sup>[8](#footnote_8)</sup>.
+
 ---
 
 <div id="footnote_1">
@@ -58,3 +80,16 @@ A grid edge can contain either no isocurve vertex, or one. If is does have an is
 </div>
 <div id="footnote_2">
 <p>2. This paragraph is based on the book <a href="https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice">&lt;Computer Graphics Principles Practice></a> by James D. Foley, Andries van Dam, Steven K. Feiner, John Hughes, Morgan McGuire, David F. Sklar, and Kurt Akeley</p></div>
+<div id="footnote_3">
+<p>3. This paragraph is based on the book <a href="https://www.realtimerendering.com/">&lt;Real-Time Rendering></a> by Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, and Sébastien Hillaire</p></div>
+<div id="footnote_4">
+<p>4. This paragraph is based on the book <a href="http://www.pmp-book.org/">&lt;Polygon Mesh Processing></a> by Leif Kobbelt, Mario Botsch, and Mark Pauly</p></div>
+<div id="footnote_5">
+<p>5. C. Montani, R. Scateni, and R. Scopigno. <a href="https://link.springer.com/article/10.1007%2FBF01900830">“A Modified Look-up Table for Implicit Disambiguation of Marching Cubes.”</a> The Visual Computer 10:6 (1994), 353–55.</p></div>
+<div id="footnote_6">
+<p>6. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/media/papers/feature1.pdf">“Feature Sensitive Surface Extraction from Volume Data.”</a> In Proc. of ACM SIGGRAPH, pp. 57–66. New York: ACM, 2001.</p></div>
+<div id="footnote_7">
+<p>7. M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. <a href="https://www.graphics.rwth-aachen.de/media/papers/openmesh1.pdf">“OpenMesh – a generic and efficient polygon mesh data structure.”</a> 
+Presented at the OpenSG Symposium 02, 2002</p></div>
+<div id="footnote_8">
+<p>8. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/software/feature-sensitive-surface-extraction/">“Extended Marching Cubes Implementation.”</a> , 2002–2005.</p></div>

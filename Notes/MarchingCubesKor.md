@@ -1,10 +1,6 @@
 [Home](../README.md)
 # 마칭 큐브 공부 노트 (2021.11.12)
 
-참고한 책들:
-* [Computer Graphics Principles Practice](https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice)
-* [Real-Time Rendering](https://www.realtimerendering.com/)
-
 ## 마칭 큐브란?
 
 ### 명시적 곡면과 암시적 곡면<sup>[1](#footnote_1)</sup>
@@ -53,6 +49,32 @@
 
 그리드 모서리는 isocurve 정점이 있을 수도, 하나 있을 수도 있다. 만약 후자의 경우라면, 해당 모서리에 인접한 다른 그리드와 정점을 공유하는 것이다. 하지만, 정점을 공유한다고 해서 서로 마주보는 면이 동일하게 모서리를 갖고 있다는 건 아닐 수도 있다. 서로 일관되지 않으면 그리드 안에 모서리가 존재한다는 모순적인 상황이 발생하므로, 일관성을 맞춰주기 위해 모든 256 가지의 경우에 대응하는 256 가지 모델을 사용해야한다.
 
+## 렌더링<sup>[3](#foonote_3)</sup>
+
+마칭 큐브와 같은 알고리듬으로 좀 더 부드러운 메시 곡면을 구하는 방법을 *곡면 추출* 혹은 *다각형화*라 부른다. 각 복셀을 박스가 아니라 점이라고 간주하고, 이러한 점 여덟 개를 2 × 2 × 2 그리드의 꼭짓점이라고 간주하는 것이다.
+
+## 암시적에서 매개변수적으로<sup>[4](#foonote_4)</sup>
+
+*등곡면 추출*이란 암시적 혹은 부피적 표현을 삼각형 메시로 변환하는 과정을 의미한다. 사실상 이 방법의 대표 주자는 *마칭 큐브* 알고리듬이다.
+
+등곡면 S가 지나가는 각 셀마다 지역적인 요소에 따라 곡면의 일부분이 생성이 됨. 이걸 전부 모으면 완전한 등곡면 S의 대략적인 근사가 나올 것이다.
+
+곡면 S와 교차하는 모든 그리드 모서리마다 마칭 큐브 알고리듬에 의해 이 교차를 근사하는 점을 구한다. 스칼라장 F로 말하자면, F의 부호는 그리드 모서리의 끝점 **p**<sub>1</sub>과 **p**<sub>2</sub>에 의해 결정된다. F의 삼중선형 근사가 사실상 그리드 모서리에 대해서는 선형이기에 교차점 **s**는 모서리의 끝점의 거리값 d<sub>1</sub> := F(**p**<sub>1</sub>)과 d<sub>2</sub> := F(**p**<sub>2</sub>) 간의 선형 보간으로 구할 수 있다:
+
+**s** = (|d<sub>2</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) **p**<sub>1</sub> + (|d<sub>1</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) **p**<sub>2</sub>
+
+각 셀에서 결과적으로 구한 점을 이어 삼각형으로 된 전체 곡면의 부분을 구할 수 있으며, 이는 모서리 교차하는 모든 경우의 수에 대응하는 룩업 테이블에 따라 적용된다. 모든 가능한 경우의 수는 셀의 모서리의 부호와 숫자에 의해 결정되므로, 테이블의 크기는 2<sup>8</sup> = 256이다.
+
+가끔 추출된 곡면에 애매모호한 부분 때문에 크레바스 마냥 쪼개진 부분이 있곤 하다. 이런 건 물론 제대로 룩업 테이블을 수정하면 간단하면서 효율적으로 구할 수 있으나, F의 부호 역전에 대한 대칭성을 포기하게 된다 [Montani et al. 94]<sup>[5](#footnote_5)</sup>. 결과적으로 얻는 등곡면은 빈틈 없는 2차 다양체를 얻을 수 있으며, 이는 메시 복구 기법에 이용할 수 있다.
+
+마칭 큐브는 오로지 정규화된 그리드의 모서리에 대한 교차점만 구하므로, 뾰족한 부분들을 제대로 표현하려면 셀 내에 추가적인 점들을 찍어줘야 한다. 이에 나온 확장 마칭 큐브 알고리듬 [Kobbelt et al. 01]<sup>[6](#footnote_6)</sup>은 거리 함수의 도함수 ∇F를 바탕으로 셀 내에 뾰족한 특징이 존재하는지 확인하고, 복셀의 모서리와의 교차점에 대한 추정 접면을 교차시켜 추가적인 점들을 찍어 준다.
+
+![ExtendedMarchingCubes2d](../Images/ExtendedMarchingCubes2d.png)
+
+![ExtendedMarchingCubes3d](../Images/ExtendedMarchingCubes3d.png)
+
+확장 마칭 큐브를 OpenMesh 자료 구조 [Botsch et al. 02]<sup>[7](#footnote_7)</sup>를 기반으로 구현해놓은 예제는 [Kobbelt et al. 05]<sup>[8](#footnote_8)</sup>에서 다운 받을 수 있다.
+
 ---
 
 <div id="footnote_1">
@@ -60,3 +82,16 @@
 </div>
 <div id="footnote_2">
 <p>2. 이 문단은 James D. Foley, Andries van Dam, Steven K. Feiner, John Hughes, Morgan McGuire, David F. Sklar, Kurt Akeley 저자의 <a href="https://en.wikipedia.org/wiki/Computer_Graphics:_Principles_and_Practice">&lt;Computer Graphics Principles Practice></a>을 참고하여 작성함</p></div>
+<div id="footnote_3">
+<p>3. 이 문단은 Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire 저자의 <a href="https://www.realtimerendering.com/">&lt;Real-Time Rendering></a>을 참고하여 작성함</p></div>
+<div id="footnote_4">
+<p>4. 이 문단은 Leif Kobbelt, Mario Botsch, Mark Pauly 저자의 <a href="http://www.pmp-book.org/">&lt;Polygon Mesh Processing></a>을 참고하여 작성함</p></div>
+<div id="footnote_5">
+<p>5. C. Montani, R. Scateni, and R. Scopigno. <a href="https://link.springer.com/article/10.1007%2FBF01900830">“A Modified Look-up Table for Implicit Disambiguation of Marching Cubes.”</a> The Visual Computer 10:6 (1994), 353–55.</p></div>
+<div id="footnote_6">
+<p>6. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/media/papers/feature1.pdf">“Feature Sensitive Surface Extraction from Volume Data.”</a> In Proc. of ACM SIGGRAPH, pp. 57–66. New York: ACM, 2001.</p></div>
+<div id="footnote_7">
+<p>7. M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. <a href="https://www.graphics.rwth-aachen.de/media/papers/openmesh1.pdf">“OpenMesh – a generic and efficient polygon mesh data structure.”</a> 
+Presented at the OpenSG Symposium 02, 2002</p></div>
+<div id="footnote_8">
+<p>8. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/software/feature-sensitive-surface-extraction/">“Extended Marching Cubes Implementation.”</a> , 2002–2005.</p></div>
