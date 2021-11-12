@@ -1,3 +1,4 @@
+[Home](../README.md)
 # Marching Cube Study Note (12 NOV 2021)
 
 books read:
