@@ -73,6 +73,22 @@ Marching cubes computes intersection points on the edges of a regular grid only.
 
 An example implementation of extended marching cubes based on the OpenMesh data structure [Botsch et al. 02]<sup>[7](#footnote_7)</sup> can be downloaded from [Kobbelt et al. 05]<sup>[8](#footnote_8)</sup>.
 
+## Contouring<sup>[9](#footnote_9)</sup>
+
+Reconstructing a mesh of the zero isocontour is a common operation for level sets. The standard approach is the Marching Cubes algorithm, invented first by Wyvill et al.<sup>[10](#footnote_10)</sup>, and then independently by Lorensen and Cline<sup>[11](#footnote_11)</sup>. The essential idea is to put a mesh vertex wherever the zero isosurfaces crosses an edge of the 3D grid, and then connect up the vertices with faces inside each grid cell which will naturally approximate the zero isosurface.
+
+Finding if and where the zero isosurface crosses an edge of the grid is easy enough, assuming linear interpolation of the level set function between values stored at grid cell corners. For example, there is a zero crossing on the edge between (i, j, k) and (i + 1, j, k) if and only if the sign of &Phi;<sub>i, j, k</sub> is opposite the sign of &Phi;<sub>i + 1, j, k</sub>, and the zero of the linear interpolant between those two points happens at fraction
+
+&theta; = &Phi;<sub>i, j, k</sub> / (&Phi;<sub>i, j, k</sub> - &Phi;<sub>i - 1, j, k</sub>)
+
+i.e. at location ((i + &theta;)&Delta;x, j&Delta;x, k&Delta;x).
+
+If one or more of the level set values on the grid is exactly zero, &Phi;<sub>i, j, k</sub> = 0, it can be really hard to make a robust algorithm which will produce a watertight mesh. The simplest solution is to replace any exact zeros with an extremely small nonzero instead, like 10<sup>-36</sup> for single-precision floating point numbers. A number this small will not in general have any effect on the location of mesh vertices, due to rounding errors, but it will avoid the need for any special cases in the mesh generation code which is a huge advantage.
+
+In a grid cell which contains the zero isosurface, i.e. which has differing signs for &Phi; at its corners, figuring out how to connect up the mesh vertices generated on the appropriate edges is not trivial. There are 254 different cases to consider, and even with look-up tables to help control the complexity, Lorensen and Cline's original method still on occasion produces holes in the final mesh due to topological ambiguities<sup>[12](#footnote_12)</sup>. Preferable solution to this is Marching Tetrahedra<sup>[13](#footnote_13)</sup> where we first decompose each grid cell into a set of smaller tetrahedra (which themselves line up at shared grid faces to form a valid tetrahedral mesh of all space), construct zero crossing vertices on the edges of the tetrahedra, and connect up the vertices to form mesh faces within each tetrahedron independently.
+
+The triangular meshes generated from marching typically aren't of great quality. If the isosurface just barely includes a grid point, then the triangles generated nearby will often be "slivers", with one or more very short edges. In most scenarios some further mesh smoothing is required: move each vertex towards the average of its neighbor vertices, then project it back to the zero isosurface using the underlying level set. This tends to produce much better shaped triangles of more uniform size, while staying faithful to the level set.
+
 ---
 
 <div id="footnote_1">
@@ -89,7 +105,16 @@ An example implementation of extended marching cubes based on the OpenMesh data 
 <div id="footnote_6">
 <p>6. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/media/papers/feature1.pdf">“Feature Sensitive Surface Extraction from Volume Data.”</a> In Proc. of ACM SIGGRAPH, pp. 57–66. New York: ACM, 2001.</p></div>
 <div id="footnote_7">
-<p>7. M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. <a href="https://www.graphics.rwth-aachen.de/media/papers/openmesh1.pdf">“OpenMesh – a generic and efficient polygon mesh data structure.”</a> 
-Presented at the OpenSG Symposium 02, 2002</p></div>
+<p>7. M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. <a href="https://www.graphics.rwth-aachen.de/media/papers/openmesh1.pdf">“OpenMesh – a generic and efficient polygon mesh data structure.”</a> Presented at the OpenSG Symposium 02, 2002</p></div>
 <div id="footnote_8">
 <p>8. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/software/feature-sensitive-surface-extraction/">“Extended Marching Cubes Implementation.”</a> , 2002–2005.</p></div>
+<div id="footnote_9">
+<p>9. This paragraph is based on the book <a href="https://www.cs.ubc.ca/~rbridson/fluidsimulation/">&lt;Fluid Simulation></a> by Robert Bridson</p></div>
+<div id="footnote_10">
+<p>10. Geoff Wyvill, Craig McPheeters, and Brian Wyvill. <a href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.881.7066&rep=rep1&type=pdf">Data Structure for Soft Objects.</a> The Visual Computer, 2(4):227–234, February 1986.</p></div>
+<div id="footnote_11">
+<p>11. William E. Lorensen and Harvey E. Cline. <a href="https://dl.acm.org/doi/abs/10.1145/37402.37422">Marching cubes: A high resolution 3d surface construction algorithm.</a> In Proc. ACM SIGGRAPH, pages 163–169, 1987.</p></div>
+<div id="footnote_12">
+<p>12. Martin J. Dürst. 1988. <a href="https://dl.acm.org/doi/10.1145/378267.378271">Re: additional reference to "marching cubes".</a> SIGGRAPH Comput. Graph. 22, 5 (Oct. 1988), 243.</p></div>
+<div id="footnote_13">
+<p>13. Heinrich Müller and Michael Wehle. <a href="https://www.computer.org/csdl/proceedings-article/dagstuhl/1997/05030243/12OmNAnMuwa">Visualization of implicit surfaces using adaptive tetrahedrizations.</a> In Dagstuhl ’97, Scientific Visualization, pages 243–250, 1999.</p></div>

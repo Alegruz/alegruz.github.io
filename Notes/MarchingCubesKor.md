@@ -73,6 +73,22 @@
 
 확장 마칭 큐브를 OpenMesh 자료 구조 [Botsch et al. 02]<sup>[7](#footnote_7)</sup>를 기반으로 구현해놓은 예제는 [Kobbelt et al. 05]<sup>[8](#footnote_8)</sup>에서 다운 받을 수 있다.
 
+## 윤곽 대비<sup>[9](#footnote_9)</sup>
+
+0차 등고선에 대한 메시를 재구축하는 것은 레벨 셋의 흔한 연산 중 하나다. 이에 대한 일반적인 방법으로는 마칭 큐브 알고리듬이 있다. Wyvill et al.<sup>[10](#footnote_10)</sup>이 발명했으며, 이후 Lorensen과 Cline<sup>[11](#footnote_11)</sup>에 의해 독립적으로 발명되었다. 핵심 아이디어는 0차 등곡면이 3차원 그리드의 모서리를 지나는 곳에 메시 정점을 생성하고, 이 정점들을 그리드 셀 내에서 연결해주어 0차 등곡면을 근사해주는 것이다.
+
+그리드 셀의 꼭짓점에 저장된 값 간의 레벨 셋 함수의 선형 보간이라는 가정 하에 0차 등곡면이 그리드 모서리의 어디를 지나는지는 쉽다. 예를 들어 (i, j, k)와 (i + 1, j, k) 사이의 모서리에 0차 교차가 있는 것은 &Phi;<sub>i, j, k</sub>의 부호가 &Phi;<sub>i + 1, j, k</sub>의 부호의 정반대임과 필요충분 조건이며, 이 두 점 간의 선형 보간의 0은 다음 분수에서 발생한다:
+
+&theta; = &Phi;<sub>i, j, k</sub> / (&Phi;<sub>i, j, k</sub> - &Phi;<sub>i - 1, j, k</sub>)
+
+즉, 좌표 ((i + &theta;)&Delta;x, j&Delta;x, k&Delta;x)에서 발생한다.
+
+만약 그리드의 하나 이상의 레벨 셋 값이 정확히 0, 즉 &Phi;<sub>i, j, k</sub> = 0이라면, 모든 면이 닫혀있는 메시를 생성해주는 강력한 알고리듬을 만들기가 어려워진다. 가장 간단한 해법은 이 0들을 단일 정밀도 소수 기준 10<sup>-36</sup>과 같은 매우 작은 값을 주는 것이다. 이 정도로 작은 값을 가질 경우 반올림 오류에 의해, 메시 정점의 위치에는 영향을 주지 않을 것이지만 메시 생성 코드에 예외 처리를 해줄 필요가 없다는 매우 큰 장점을 갖는다.
+
+0차 등곡면을 갖는 그리드 셀, 즉 꼭짓점의 &Phi; 간 부호가 다른 경우, 메시 정점 간에 적절한 모서리를 찾아 연결해주는 것은 간단한 일은 아니다. 고려해야할 경우가 총 254 가지이며, 룩업 테이블로 복잡도를 해결하더라도 Lorensen과 Cline의 초기 방법은 위상적 모호함<sup>[12](#footnote_12)</sup>에 의해 구멍이 송송 뚫려있는 경우가 있곤 했다. 이에 대한 해결 방법 중 하나가 마칭 사면체<sup>[13](#footnote_13)</sup>이다. 이 방법에선 우선 각 그리드 셀을 더 작은 사면체 (공유 그리드 면에 정렬하여 모든공간에서 유효한 사면체 메시를 형성함)로 분해한 후, 사면체의 모서리에 대한 0차 교차 정점을 생성하고 이들을 연결하여 사면체 간 독립적으로 메시 면을 형성해준다.
+
+마칭으로 형성한 삼각형 메시들은 보통 품질이 그리 좋은 편은 아니다. 만약 등곡면이 겨우 그리드 점 하나를 포함하고 있다면, 근처에 생성되는 삼각형이 사실상 하나 이상의 짧은 모서리로 이루어진 조각처럼 되곤 한다. 대부분의 경우 메시 스무딩이 필요하기도 하다: 각 정점을 이웃 정점의 평균으로 옮겨주고 레벨 셋을 통해 0차 등곡면으로 사영해준다. 이러면 더 보기 좋은 균일한 크기의 삼각형을 만들어주면서도 레벨 셋에 잘 따르게 된다.
+
 ---
 
 <div id="footnote_1">
@@ -93,3 +109,13 @@
 Presented at the OpenSG Symposium 02, 2002</p></div>
 <div id="footnote_8">
 <p>8. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/software/feature-sensitive-surface-extraction/">“Extended Marching Cubes Implementation.”</a> , 2002–2005.</p></div>
+<div id="footnote_9">
+<p>9. 이 문단은 Robert Bridson 저자의 <a href="https://www.cs.ubc.ca/~rbridson/fluidsimulation/">&lt;Fluid Simulation></a>을 참고하여 작성함</p></div>
+<div id="footnote_10">
+<p>10. Geoff Wyvill, Craig McPheeters, and Brian Wyvill. <a href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.881.7066&rep=rep1&type=pdf">Data Structure for Soft Objects.</a> The Visual Computer, 2(4):227–234, February 1986.</p></div>
+<div id="footnote_11">
+<p>11. William E. Lorensen and Harvey E. Cline. <a href="https://dl.acm.org/doi/abs/10.1145/37402.37422">Marching cubes: A high resolution 3d surface construction algorithm.</a> In Proc. ACM SIGGRAPH, pages 163–169, 1987.</p></div>
+<div id="footnote_12">
+<p>12. Martin J. Dürst. 1988. <a href="https://dl.acm.org/doi/10.1145/378267.378271">Re: additional reference to "marching cubes".</a> SIGGRAPH Comput. Graph. 22, 5 (Oct. 1988), 243.</p></div>
+<div id="footnote_13">
+<p>13. Heinrich Müller and Michael Wehle. <a href="https://www.computer.org/csdl/proceedings-article/dagstuhl/1997/05030243/12OmNAnMuwa">Visualization of implicit surfaces using adaptive tetrahedrizations.</a> In Dagstuhl ’97, Scientific Visualization, pages 243–250, 1999.</p></div>
