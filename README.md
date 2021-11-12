@@ -1,4 +1,4 @@
-# Alegruz's Homepage
+## Alegruz's Homepage
 
 Game Development Studies with Books
 
