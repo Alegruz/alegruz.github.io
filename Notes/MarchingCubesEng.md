@@ -59,7 +59,7 @@ For each cell that is intersected by the isosurface S, a surface patch is genera
 
 For each grid edge intersecting the surface S, the marching cubes algorithm computes a sample point that approximates this intersection. In terms of the scalar field F, this means that the sign of F differs at the grid edge's endpoints **p**<sub>1</sub> and **p**<sub>2</sub>. Since the trilinear approximation F is actually linear along the grid edges, the intersection point **s** can be found by linear interpolation of the distance values d<sub>1</sub> := F(**p**<sub>1</sub>) and d<sub>2</sub> := F(**p**<sub>2</sub>) at the edge's endpoints:
 
-**s** = (|d<sub>2</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) **p**<sub>1</sub> + (|d<sub>1</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) **p**<sub>2</sub>
+<p><strong>s</strong> = (|d<sub>2</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) <strong>p</strong><sub>1</sub> + (|d<sub>1</sub>| / (|d<sub>1</sub>| + |d<sub>2</sub>|)) <strong>p</strong><sub>2</sub></p>
 
 The resulting sample points of each cell are then connected to a triangulated surface patch based on a triangulation look-up table holding all possible configurations of edge intersections. Since the possible combinatorial configurations are determined by the signs at a cell's corners, their number, and hence the size of the table, is 2<sup>8</sup> = 256.
 
