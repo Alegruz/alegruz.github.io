@@ -109,7 +109,7 @@ The higher-order term, namely the shear stress divergence ∇ ⋅ *τ*, has simp
 
 Let's now rearrange the equation into a SPH terminology:
 
-![NavierStokesEquation](Images\Sph\NavierStokesEquation.png)<sup>[15](#footnote_15)</sup>
+![NavierStokesEquation](..\Images\Sph\NavierStokesEquation.png)<sup>[15](#footnote_15)</sup>
 
 In order to calculate the left-side term, then we need to understand each terms in the right-side.
 
@@ -142,51 +142,51 @@ We can deep dive into all the discussions and theories about dirac functions and
 
 If there exists a function A(**x**<sub>i</sub>), the function can be discretized into:
 
-![SphDiscretization](Images\Sph\SphDiscretization.png)
+![SphDiscretization](..\Images\Sph\SphDiscretization.png)
 
 The discretization of differential operator would be:
 
-![SphDifferentialOperatorDiscretization](Images\Sph\SphDifferentialOperatorDiscretization.png)
+![SphDifferentialOperatorDiscretization](..\Images\Sph\SphDifferentialOperatorDiscretization.png)
 
 In order to ensure symmetry, the equation is then rearranged into:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](Images\Sph\SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+![SphDifferentialOperatorDiscretizationSymmetricFormula](..\Images\Sph\SphDifferentialOperatorDiscretizationSymmetricFormula.png)
 
 The discretization of laplace operator would be:
 
-![SphLaplaceOperatorDiscretization](Images\Sph\SphLaplaceOperatorDiscretization.png)
+![SphLaplaceOperatorDiscretization](..\Images\Sph\SphLaplaceOperatorDiscretization.png)
 
 In order to cope with very poor estimate of the 2<sup>nd</sup>-order differential, Brookshaw proposed an improved discrete operator for the Laplacian:
 
-![SphLaplaceOperatorDiscretizationBrookshaw](Images\Sph\SphLaplaceOperatorDiscretizationBrookshaw.png)
+![SphLaplaceOperatorDiscretizationBrookshaw](..\Images\Sph\SphLaplaceOperatorDiscretizationBrookshaw.png)
 
 However, the resulting 2<sup>nd</sup>-order derivatives has problems that in the context of physics simulations, the forces derived using this operator are not conserving momentum. By a little bit of mathematical magic, the formula can be rearranged into:
 
-![SphLaplaceOperatorDiscretizationImproved](Images\Sph\SphLaplaceOperatorDiscretizationImproved.png)
+![SphLaplaceOperatorDiscretizationImproved](..\Images\Sph\SphLaplaceOperatorDiscretizationImproved.png)
 
 ##### Kernel Functions
 
 * 6th degree polynomial kernel (default kernel)
-    * ![Poly6](Images\Sph\Poly6.png)
-    * ![Poly6Gradient](Images\Sph\Poly6Gradient.png)
-    * ![Poly6Laplacian](Images\Sph\Poly6Laplacian.png)
-    * ![Poly6Graph](Images\Sph\Poly6Graph.png)
+    * ![Poly6](..\Images\Sph\Poly6.png)
+    * ![Poly6Gradient](..\Images\Sph\Poly6Gradient.png)
+    * ![Poly6Laplacian](..\Images\Sph\Poly6Laplacian.png)
+    * ![Poly6Graph](..\Images\Sph\Poly6Graph.png)
 * Spiky kernel (pressure kernel)
-    * ![Spiky](Images\Sph\Spiky.png)
-    * ![SpikyGradient](Images\Sph\SpikyGradient.png)
-    * ![SpikyLaplacian](Images\Sph\SpikyLaplacian.png)
-    * ![SpikyGraph](Images\Sph\SpikyGraph.png)
+    * ![Spiky](..\Images\Sph\Spiky.png)
+    * ![SpikyGradient](..\Images\Sph\SpikyGradient.png)
+    * ![SpikyLaplacian](..\Images\Sph\SpikyLaplacian.png)
+    * ![SpikyGraph](..\Images\Sph\SpikyGraph.png)
 * Viscosity kernel
-    * ![Viscosity](Images\Sph\Viscosity.png)
-    * ![ViscosityGradient](Images\Sph\ViscosityGradient.png)
-    * ![ViscosityLaplacian](Images\Sph\ViscosityLaplacian.png)
-    * ![ViscosityGraph](Images\Sph\ViscosityGraph.png)
+    * ![Viscosity](..\Images\Sph\Viscosity.png)
+    * ![ViscosityGradient](..\Images\Sph\ViscosityGradient.png)
+    * ![ViscosityLaplacian](..\Images\Sph\ViscosityLaplacian.png)
+    * ![ViscosityGraph](..\Images\Sph\ViscosityGraph.png)
 
 #### Mass Density Estimation
 
-Using ![SphDifferentialOperatorDiscretization](Images\Sph\SphDifferentialOperatorDiscretization.png), the density field at position **x**<sub>i</sub> results in:
+Using ![SphDifferentialOperatorDiscretization](..\Images\Sph\SphDifferentialOperatorDiscretization.png), the density field at position **x**<sub>i</sub> results in:
 
-![MassDensityFunction](Images\Sph\MassDensityFunction.png)
+![MassDensityFunction](..\Images\Sph\MassDensityFunction.png)
 
 ### Simple Fluid Simulator<sup>[15](#footnote_15)</sup>
 
@@ -213,8 +213,14 @@ The proposed algorithm above has one major flaw: the time complexity is O(*n*<su
 Based on the *particles* sample in CUDA SDK Samples, the grid hashing works as following:
 
 ```c
+// calculate address in grid from position (clamping to edges)
+__device__ uint CalculateGridHash(int3 GridPosition);
+
+// Calculate position in uniform grid
+__device__ int3 CalculateGridPosition(float3 Position);
+
 // Calculate grid hash
-void CalculateGridHash(uint* OutGridParticleHashes, uint* OutGridParticleIndices, float* Positions, uint NumParticles);
+void CalculateGridHashes(uint* OutGridParticleHashes, uint* OutGridParticleIndices, float* Positions, uint NumParticles);
 
 // Sort particles based on hash
 void SortParticles(uint* OutGridParticleHashes, uint* GridParticleIndices, uint NumParticles);
@@ -224,7 +230,14 @@ void SortParticles(uint* OutGridParticleHashes, uint* GridParticleIndices, uint 
 void ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedPositions, float* OutSortedVelocities, uint* GridParticleHashes, uint* GridParticleIndices, float* Positions, float* Velocities, uint NumParticles, uint NumCells);
 ```
 
-* `CalculateGridHash(OutGridParticleHashes, OutGridParticleIndices, Positions, NumParticles)`
+* `CalculateGridHash(GridPosition)`
+    * Simple hashing
+    * `GridPosition.x = GridPosition.x & (gParameters.GridSize.x - 1);  // wrap grid, assumes size is power of 2`
+    * `return ((GridPosition.z * gParameters.GridSize.y) * gParameters.GridSize.x) + (GridPosition.y * gParameters.GridSize.x) + GridPosition.x;`
+* `CalculateGridPosition(Position)`
+    * based on the `gParameters.WorldOrigin` coordinate and `gParameters.CellSize` size, we can calculate the grid coordinate.
+    * `GridPosition.x = floor((Particle.x - gParameters.WorldOrigin.x) / gParameters.CellSize.x);`
+* `CalculateGridHashes(OutGridParticleHashes, OutGridParticleIndices, Positions, NumParticles)`
     * for each `index`,
         * calculate grid position of `Positions[index]`
         * calculate grid hash of the grid position
@@ -288,11 +301,18 @@ cudaError_t cudaMemcpy(void* dst, const void* src, size_t count, enum cudaMemcpy
 // Custom Functions
 #define checkCudaErrors(val) check((val), #val, __FILE__, __LINE__)
 
+// compute grid and thread block size for a given number of elements
+void ComputeGridSize(uint NumElements, uint BlockSize, uint& OutNumBlocks, uint& OutNumThreads);
 void InitializeCuda(GPU_SELECT_MODE Mode, int32 SpecifiedDeviceId);
-void RegisterGlBufferObject(uint Vbo, struct cudaGraphicsResource** CudaVboResource);
 void ReportGPUMemeoryUsage();
-void UnregisterGlBufferObject(struct cudaGraphicsResource* CudaVboResource);
 void VerifyCudaError(cudaError err);
+
+// kernel functions
+__device__ float Poly6KernelBySquaredDistance(float SquaredDistance);
+__device__ float3 Poly6KernelGradient(float3 R);
+__device__ float Poly6KernelLaplacianBySquaredDistance(float SquaredDistance);
+__device__ float3 SpikyKernelGradient(float3 R);
+__device__ float ViscosityKernelLaplacianByDistance(float Distance);
 ```
 
 #### Particle System
@@ -315,7 +335,6 @@ public:
     ...
 private:
     bool mbInitialized = false;
-    bool mbUseOpenGl;
     uint32_t mNumParticles;
 
     // CPU data
@@ -331,7 +350,7 @@ private:
     uint32_t* mHostCellEnds = nullptr;
 
     // GPU data
-    float* mDevicePositions = nullptr;
+    float* mDevicePositions = nullptr;  // CUDA device memory positions
     float* mDeviceVelocities = nullptr;
     float* mDeviceNonPressureForces = nullptr;
     float* mDevicePressureForces = nullptr;
@@ -346,12 +365,6 @@ private:
     uint32_t* mDeviceGridParticleIndices = nullptr;    // Particle index for each particle
     uint32_t* mDeviceCellStarts = nullptr;             // Indices of start of each cell in sorted list
     uint32_t* mDeviceCellEnds = nullptr;               // Indices of end of cell
-
-    uint32_t mPositionsVbo = nullptr;  // Vertex buffer objects for particle positions
-
-    float* mCudaPositionsVbo = nullptr; // CUDA device memory positions
-
-    struct cudaGraphicsResource* mCudaPositionsVboResource = nullptr;  // Handles OpenGL-CUDA exchange
 
     // parameters
     SimParams mParameters;
@@ -423,9 +436,8 @@ public:
 
 // ParticleSystem.cpp
 
-ParticleSystem::ParticleSystem(uint32_t NumParticles, uint3 GridSize, bool bUseOpenGl)
-    : mbUseOpenGl(bUseOpenGl)
-    , mNumParticles(NumParticles)
+ParticleSystem::ParticleSystem(uint32_t NumParticles, uint3 GridSize)
+    : mNumParticles(NumParticles)
     , mGridSize(GridSize)
     , mNumGridCells(mGridSize.x * mGridSize.y * mGridSize.z)
 {
@@ -494,30 +506,21 @@ void ParticleSystem::Initialize()
     memset(reinterpret_cast<void*>(mHostCellEnds), 0, sizeof(uint32_t) * mNumGridCells);
 
     // allocate GPU data
-    if (mbUseOpenGL)
-    {
-        mPositionsVbo = CreateVbo(MemorySize);
-        RegisterGlBufferObject(mPositionsVbo, &mCudaPositionsVboResource);
-    }
-    else
-    {
-        checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mCudaPositionsVbo), MemorySize)) ;
-    }
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicePositions), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceVelocities), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceNonPressureForces), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicePressureForces), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceDensities), sizeof(float) * NumParticles));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicePressures), sizeof(float) * NumParticles));
 
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceVelocities), MemorySize);
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceNonPressureForces), MemorySize);
-    cudaMalloc(reinterpret_cast<void**>(&mDevicePressureForces), MemorySize);
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceDensities), sizeof(float) * NumParticles);
-    cudaMalloc(reinterpret_cast<void**>(&mDevicePressures), sizeof(float) * NumParticles);
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedPositions), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedVelocities), MemorySize));
 
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedPositions), MemorySize);
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedVelocities), MemorySize);
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleHashes), sizeof(uint) * mNumParticles));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleIndice), sizeof(uint) * mNumParticles));
 
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleHashes), sizeof(uint) * mNumParticles);
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleIndice), sizeof(uint) * mNumParticles);
-
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceCellStarts), sizeof(uint) * mNumGridCells);
-    cudaMalloc(reinterpret_cast<void**>(&mDeviceCellEnds), sizeof(uint) * mNumGridCells);
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceCellStarts), sizeof(uint) * mNumGridCells));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceCellEnds), sizeof(uint) * mNumGridCells));
 
     mbInitialized = true;
 }
@@ -570,9 +573,9 @@ void ParticleSystem::Destroy()
 	{
 		cudaFree(mDeviceNonPressureForces);
 	}
-	if (DevicePressureForces != nullptr)
+	if (mDevicePressureForces != nullptr)
 	{
-		cudaFree(DevicePressureForces);
+		cudaFree(mDevicePressureForces);
 	}
 	if (mDevicePressures != nullptr)
 	{
@@ -602,9 +605,9 @@ void ParticleSystem::Destroy()
 	{
 		cudaFree(mDeviceCellEnds);
 	}
-	if (mCudaPositionVbo != nullptr)
+	if (mDevicePositions != nullptr)
 	{
-		cudaFree(mCudaPositionVbo);
+		cudaFree(mDevicePositions);
 	}
 
     mbInitialized = false;
@@ -646,7 +649,7 @@ void ParticleSystem::Reset()
 
     InitializeGrid(Size, mParameters.KernelRadius, Jitter, mNumParticles);
 
-    cudaMemcpy(mCudaPositionVbo, HostPositions, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+    cudaMemcpy(mDevicePositions, HostPositions, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
 	cudaMemcpy(mDeviceVelocities, HostVelocities, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
 	cudaMemcpy(mDeviceNonPressureForces, HostForces, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
     cudaMemcpy(mDevicePressureForces, HostForces, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
@@ -672,6 +675,151 @@ It is now time to implement the algorithm.
 <span class="hljs-symbol">9 </span>      v<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = v<sub><i>i</i></sub>* + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub><strong>F</strong><sub><i>i</i></sub><sup>pressure</sup>
 <span class="hljs-symbol">10 </span>     x<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = x<sub><i>i</i></sub> + Δ<i>t</i><strong>v</strong><sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>)
 </code></pre>
+
+Before we calculate these values, we must first sort the particles first:
+
+```cpp
+// ParticleSystem.h
+class ParticleSystem
+{
+public:
+    ...
+    void Update(float DeltaTime);
+    ...
+};
+
+// ParticleSystem.cpp
+void ParticleSystem::Update(float DeltaTime)
+{
+    assert(mbInitialized);
+
+    // update constants
+    SetParameters(&mParameters);
+
+    // calculate grid hash
+    CalculateGridHashes(mDeviceGridParticlehashes, mDeviceGridParticleIndice, mDevicePositions, mNumParticles);
+
+    // sort particles based on hash
+    SortParticles(mDeviceGridParticleHashes, mDeviceGridParticleIndice, mNumParticles);
+
+    // reorder particle arrays into sorted order and
+    // find start and end of each cell
+    ReorderDataAndFindCellStart(mDeviceCellStarts,
+                                mDeviceCellEnds,
+                                mDeviceSortedPositions,
+                                mDeviceSortedVelocities,
+                                mDeviceGridParticleHashes,
+                                mDeviceGridParticleIndice,
+                                mDevicePositions,
+                                mDeviceVelocities,
+                                mNumParticles,
+                                mNumGridCells);
+}
+```
+
+##### Density
+
+```cpp
+void ComputeDensity(float* OutDensities, float* SortedPositions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
+{
+    // thread per particle
+    uint NumThreads;
+    uint NumBlocks;
+    ComputeGridSize(NumParticles, 64u, NumBlocks, numThreads);
+
+    // execute the kernel
+    ComputeDensityDevice<<<NumBlocks, NumThreads>>>(OutDensities,
+                                                    (float4*) SortedPositions,
+                                                    GridParticleIndice,
+                                                    CellStarts,
+                                                    CellEnds,
+                                                    NumParticles);
+
+    // check if kernel invocation generated an error
+    getLastCudaError("Kernel execution failed");
+}
+
+__global__
+void ComputeDensityDevice(float* OutDensities,      // output: new density
+                          float4* SortedPositions,  // input: sorted positions
+                          uint* GridParticleIndice, // input: sorted particle indices
+                          uint* CellStarts,
+                          uint* CellEnds,
+                          uint NumParticles)
+{
+    uint Index = (blockIdx.x * blockDim.x) + threadIdx.x;
+
+    if (Index >= NumParticles)
+    {
+        return;
+    }
+
+    // read particle data from sorted arrays
+    float3 Position = make_float3(SortedPositions[Index].x, SortedPositions[Index].y, SortedPositions[Index].z);
+
+    // get address in grid
+    int3 GridPosition = CalculateGridHash(Position);
+
+    // examine neighbouring cells
+    float Density = 0.0f;
+    for (int z = -1; z <= 1; ++z)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            for (int x = -1; x <= 1; ++x)
+            {
+                int3 neighbourPos = gridPos + make_int3(x, y, z);
+                Density += computeDensityByCell(neighbourPos, index, pos, oldPositions, cellStart, cellEnd);
+            }
+        }
+    }
+
+    // write new velocity back to original unsorted location
+    uint OriginalIndex = GridParticleIndice[Index];
+    OutDensities[OriginalIndex] = Density;
+}
+
+__device__
+float ComputeDensityByCell(int3 GridPosition,
+                           uint Index,
+                           float3 Position,
+                           float4* SortedPositions,
+                           uint* CellStarts,
+                           uint* CellEnds)
+{
+    uint GridHash = CalculateGridHash(GridPosition);
+
+    // get start of bucket for this cell
+    uint StartIndex = CellStarts[GridHash];
+
+    float Density = 0.0f;
+
+    if (StartIndex != 0xffffffff)          // cell is not empty
+    {
+        // iterate over particles in this cell
+        uint EndIndex = CellEnds[GridHash];
+
+        for (uint j = StartIndex; j < EndIndex; ++j)
+        {
+            // r <- r_i = r_j
+            float3 NeighborPosition = make_float3(SortedPositions[j]);
+            float3 rij = (Position - NeighborPosition);
+            float r2 = LengthSquared(rij);
+
+            if (r2 < gParameters.KernelRadiusSquared)
+            {
+                Density += gParameters.Mass * Poly6KernelBySquaredDistance(r2);
+            }
+        }
+    }
+
+    return Density;
+}
+```
+
+##### Viscosity Force
+
+
 
 ---
 
