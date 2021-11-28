@@ -1,7 +1,7 @@
-# CUDA로 완화입자근사법(Smoothed Particle Hydrodynamics. SPH) 구현해보기 (2021.11.27)
+# Smoothed Particles Hydrodynamics by CUDA (27 NOV 2021)
 [Home](../README.md)
 
-## 원화입자근사법
+## Smoothed Particle Hydrodynamics
 
 In order to understand the SPH method, we must understand how can we simulate liquid. The idea is that liquid is essentially a group of small molecules, also known as H2O's. All the microinteractions between these molecules, the "particles" creates the entire physical simulation of the liquid. Thus by approximating a liquid body into a group of particles could simulate the liquid efficiently. This is a particle-based simulation of a liquid.
 
@@ -11,29 +11,37 @@ To understand how a particle-based simulation works, the best way is to see this
 
 Each particle is merely an approximation of the light rays coming to our human eyes. The particle-based methods are often classified as a Lagrangian framework—a framework that solves the fluid motion by following the fluid parcel, such as particles.<sup>[1](#footnote_1)</sup>
 
-### 역사
+### History
 
 The SPH method was originally introduced in astrophysics community by Monaghan<sup>[2](#footnote_2)</sup> and actively studied in computational fluid dynamics field as well<sup>[3](#footnote_3)</sup>. Soon after, computer animation started to adopt the idea of SPH<sup>[4](#footnote_4), [5](#footnote_5)</sup> and also became one of the core frameworks for commercial products like RealFlow<sup>[6](#footnote_6)</sup>.<sup>[1](#footnote_1)</sup>
 
-### 기초
+### Fundamentals
 
 **SPH is an interpolation method for particle systems**. This is probably the single most important sentence regarding SPH. This means that SPH is **not** a specific algorithm on determining the behavior of a liquid body. To understand how we use this interpolation method to simulate liquid particles, we must start from the *real basics*: physics and mathematics.
 
-#### 고전역학: 운동학<sup>[7](#footnote_7)</sup>
+#### Classical Mechanics: Kinematics<sup>[7](#footnote_7)</sup>
 
-Kinematics is a subfield of physics, developed in classical mechanics, that describes the motion of points, bodies (objects), and systems of bodies (groups of objects) without considering the forces that cause them to move.
+**Kinematics** is a subfield of physics, developed in classical mechanics, that describes the motion of points, bodies (objects), and systems of bodies (groups of objects) without considering the forces that cause them to move.
 
 Before proceeding to the next chapter, I should mandate all the readers to read the [Velocity and speed](https://en.wikipedia.org/wiki/Kinematics#Velocity_and_speed) chapter of the wikipedia page on kinematics. The core concepts to understand are: *position*, *velocity*, *acceleration*, *relative position*, *relative velocity*, *relative acceleration*.
 
-The reason we went back to the physics class is to introduce these simple concepts that will soon run the entire SPH simulation. The SPH algorithm is basically finding out the acceleration of each particles, which we can multiply by delta time to get the velocity, which would finally lead us to the position of the particles.
+#### Classical Mechanics: Continuum Mechanics<sup>[8](#footnote_8)</sup>
 
-The basic structure of the algorithm:
+**Continuum mechanics** is a branch of mechanics that deals with the mechanical behavior of materials modeled as a continuous mass rather than as discrete particles.
 
-1. Find the relative acceleration of the particle *i*, **a**<sub>i, current</sub>
-2. Calculate the new velocity of the particle **v**<sub>i, current</sub> = **v**<sub>i, previous</sub> + **a**<sub>i, current</sub> * &Delta;t<sub>current</sub>
-3. Calculate the new position of the particle **r**<sub>i, current</sub> = **r**<sub>i, previous</sub> + **v**<sub>i, current</sub> * &Delta;t<sub>current</sub>
+Modeling an object as a continuum assumes that the substance of the object completely fills the space it occupies. Modeling objects in this way ignores the fact that matter is made of atoms, and so is not continuous; however, on length scales much greater than that of inter-atomic distances, such models are highly accurate. Fundamental physical laws such as the conservation of mass, the conservation of momentum, and the conservation of energy may be applied to such models to derive differential equations describing the behavior of such objects, and some information about the material under investigation is added through constitutive relations.
 
-#### 고전장이론: 유동장의 라그랑지언 표기법<sup>[8](#footnote_8)</sup>
+Continuum mechanics deals with physical properties of solids and fluids which are independent of any particular coordinate system in which they are observed. These physical properties are then represented by tensors, which are mathematical objects that have the required property of being independent of coordinate system. These tensors can be expressed in coordinate systems for computational convenience.
+
+##### Momentum<sup>[9](#footnote_9)</sup>
+
+In Newtonian mechanics, **linear momentum**, **translational momentum**, or simply **momentum** is the product of the mass and velocity of an object. It is a vector quantity, possessing a magnitude and a direction. If *m* is an object's mass and **v** is its velocity (also a vector quantity), then the object's momentum **p** is
+
+![momentum](https://wikimedia.org/api/rest_v1/media/math/render/svg/21233e5c3bb1a4db8ed4a3ceb873f166a495c7f9).
+
+In the International System of Units (SI), the unit of measurement of momentum is the kilogram metre per second (kg⋅m/s), which is equivalent to the newton-second.
+
+#### Classical Field Theories: Lagrangian Specificattion of the Flow Field<sup>[10](#footnote_10)</sup>
 
 From now on, when we talk about velocities and accelerations, we are talking about the velocities and accelerations of each particles in a space through time. In the Lagrangian description, the flow is described by a function:
 
@@ -49,6 +57,304 @@ Further references to help you understand the concept of Lagrangian coordinate s
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/plkDAEx80bQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+#### Fluid Mechanics: Navier-Stokes Equations<sup>[11](#footnote_11)</sup>
+
+In physics, the **Navier-Stokes equations** are certain partial differential equations which describe the motion of viscous fluid substances.
+
+The Navier-Stokes equations mathematically express conservation of momentum and conservation of mass for Newtonian fluids. They are sometimes accompanied by an equation of state relating pressure, temperature and density.<sup>[12](#footnote_12)</sup> They arise from applying Isaac Newton's second law to fluid motion, together with the assumption that the stress in the fluid is the sum of a diffusing viscous term (proportional to the gradient of velocity) and a pressure term—hence describing *viscous flow*.
+
+The Navier–Stokes momentum equation can be derived as a particular form of the Cauchy momentum equation, whose general convective form is:
+
+![cauchy_momentum_equation_general_convective_form](https://wikimedia.org/api/rest_v1/media/math/render/svg/920420dd0340a511906fa8f25f756d5a0f5c92fc)
+
+by setting the Cauchy stress tensor σ to be the sum of a viscosity term τ (the deviatoric stress) and a pressure term −pI (volumetric stress) we arrive at
+
+![cauchy_momentum_equation_convective_form](https://wikimedia.org/api/rest_v1/media/math/render/svg/7039e1c193cc1b3eb774344dfd19eaa2453c5819)
+
+where
+
+* *D*/*Dt* is the material derivative, defined as *∂*/*∂t* + **u** ⋅ ∇,
+* *ρ* is the density,
+* **u** is the flow velocity,
+* ∇ ⋅ is the divergence,
+* *p* is the pressure,
+* *t* is time,
+* **τ** is the deviatoric stress tensor, which has order 2,
+* **g** represents body accelerations acting on the continuum, for example gravity, inertial accelerations, electrostatic accelerations, and so on,
+
+The incompressible momentum Navier–Stokes equation results from the following assumptions on the Cauchy stress tensor:<sup>[13](#footnote_13)</sup>
+
+* the stress is **Galilean invariant**: it does not depend directly on the flow velocity, but only on spatial derivatives of the flow velocity. So the stress variable is the tensor gradient ∇**u**.
+* the fluid is assumed to be isotropic, as with gases and simple liquids, and consequently τ is an isotropic tensor; furthermore, since the deviatoric stress tensor can be expressed in terms of the dynamic viscosity *μ*:<br>![stoke_s_stress_constitutive_equation_0](https://wikimedia.org/api/rest_v1/media/math/render/svg/dcbbb1a444424ace5c8fa3bb3d27708331cacb79)<br>where<br>![eta](https://wikimedia.org/api/rest_v1/media/math/render/svg/2fa287cd2ad37af1181c4830934c53fc6734ba55)<br>is the rate-of-strain tensor. So this decomposition can be made explicit as:<sup>[13](#footnote_13)</sup><br>![stoke_s_stress_constitutive_equation_1](https://wikimedia.org/api/rest_v1/media/math/render/svg/bf0ec9f40027124e9efd4c787ab18e00d838a9ed)
+
+Dynamic viscosity *μ* need not be constant – in incompressible flows it can depend on density and on pressure. Any equation that makes explicit one of these transport coefficient in the conservative variables is called an equation of state.<sup>[14](#footnote_14)</sup>
+
+The divergence of the deviatoric stress is given by:
+
+![divergence_of_the_deviatoric_stree](https://wikimedia.org/api/rest_v1/media/math/render/svg/1bb95ad8374fb63f5bf3faded81d6a4dcdafa30c)
+
+because ∇ ⋅ **u** = 0 for an incompressible fluid.
+
+Incompressibility rules out density and pressure waves like sound or shock waves. The incompressible flow assumption typically holds well with all fluids at low Mach numbers (say up to about Mach 0.3). The incompressible Navier–Stokes equations are best visualised by dividing for the density:
+
+![incompressible_navier_stokes_equation_convective_form](https://wikimedia.org/api/rest_v1/media/math/render/svg/2a7d21639bffebaa0e3a00eb3549d635f6e32aac)
+
+* *ν* is the kinematic viscosity
+
+It is well worth observing the meaning of each term (compare to the Cauchy momentum equation):
+
+![meaning_of_each_term](https://wikimedia.org/api/rest_v1/media/math/render/svg/56a44a20f5a59be202a3a7df5d542da4890680af)
+
+The higher-order term, namely the shear stress divergence ∇ ⋅ *τ*, has simply reduced to the vector Laplacian term *μ*∇<sup>2</sup>**u**.[13] This Laplacian term can be interpreted as the difference between the velocity at a point and the mean velocity in a small surrounding volume. This implies that – for a Newtonian fluid – viscosity operates as a *diffusion of momentum*, in much the same way as the heat conduction. In fact neglecting the convection term, incompressible Navier–Stokes equations lead to a vector diffusion equation (namely Stokes equations), but in general the convection term is present, so incompressible Navier–Stokes equations belong to the class of convection–diffusion equations.
+
+Let's now rearrange the equation into a SPH terminology:
+
+![NavierStokesEquation](Images\Sph\NavierStokesEquation.png)<sup>[15](#footnote_15)</sup>
+
+In order to calculate the left-side term, then we need to understand each terms in the right-side.
+
+The first term -&Delta;*p* is the pressure term.
+
+The second term *&mu;*∇<sup>2</sup>**v** is the viscosity term.
+
+The last term is the external forces.
+
+#### Conclusion
+
+The basic structure of the algorithm:
+
+1. update **v** by solving *D***v**/*Dt* = *v*∇<sup>2</sup>**v** + 1/&rho; **f**<sub>ext</sub>
+2. determine ∇*p* by enforcing the continuity equation, ![continuity_equation](https://wikimedia.org/api/rest_v1/media/math/render/svg/e12812c8a9d3ffb93c86f1042bef079d7d61cebe)
+3. update **v** by solving *D***v**/*Dt* = -1/&rho; ∇*p*
+4. update **x** by solving *D***x**/*Dt* = **v**
+
+where ν = *µ*/*ρ* denotes the kinematic viscosity. In this way, the "weaker" forces could be handled using explicit time integration while we can solve for the pressure gradients using a more sophisticated implicit solver in order to keep the simulation robust for large time steps.<sup>[15](#footnote_15)</sup>
+
+#### Why SPH?
+
+Now we have a glimpse of theoretical background to simulate fluid. But the problem is that these **v**'s and p's are all fundamentally vector and scalar fields. But the only data we currently have is the position of each particles in 3d space. Reconstructing a field from discrete points is where we need some form of **interpolation**. Using discrete points in the neighborhood, we can *approximate* the vector / scalar field using some form of interpolant. This is where **SPH** comes in.
+
+##### SPH Discretization
+
+The concept of SPH can be generally understood as a method for the discretization of *spatial field quantities* and *space differential operators*, *e*.*g*., gradient, divergence, curl, *etc*.<sup>[15](#footnote_15)</sup>
+
+We can deep dive into all the discussions and theories about dirac functions and stuff, but I will go straight to the equations we would use.
+
+If there exists a function A(**x**<sub>i</sub>), the function can be discretized into:
+
+![SphDiscretization](Images\Sph\SphDiscretization.png)
+
+The discretization of differential operator would be:
+
+![SphDifferentialOperatorDiscretization](Images\Sph\SphDifferentialOperatorDiscretization.png)
+
+In order to ensure symmetry, the equation is then rearranged into:
+
+![SphDifferentialOperatorDiscretizationSymmetricFormula](Images\Sph\SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+
+The discretization of laplace operator would be:
+
+![SphLaplaceOperatorDiscretization](Images\Sph\SphLaplaceOperatorDiscretization.png)
+
+In order to cope with very poor estimate of the 2<sup>nd</sup>-order differential, Brookshaw proposed an improved discrete operator for the Laplacian:
+
+![SphLaplaceOperatorDiscretizationBrookshaw](Images\Sph\SphLaplaceOperatorDiscretizationBrookshaw.png)
+
+However, the resulting 2<sup>nd</sup>-order derivatives has problems that in the context of physics simulations, the forces derived using this operator are not conserving momentum. By a little bit of mathematical magic, the formula can be rearranged into:
+
+![SphLaplaceOperatorDiscretizationImproved](Images\Sph\SphLaplaceOperatorDiscretizationImproved.png)
+
+##### Kernel Functions
+
+* 6th degree polynomial kernel (default kernel)
+    * ![Poly6](Images\Sph\Poly6.png)
+    * ![Poly6Gradient](Images\Sph\Poly6Gradient.png)
+    * ![Poly6Laplacian](Images\Sph\Poly6Laplacian.png)
+    * ![Poly6Graph](Images\Sph\Poly6Graph.png)
+* Spiky kernel (pressure kernel)
+    * ![Spiky](Images\Sph\Spiky.png)
+    * ![SpikyGradient](Images\Sph\SpikyGradient.png)
+    * ![SpikyLaplacian](Images\Sph\SpikyLaplacian.png)
+    * ![SpikyGraph](Images\Sph\SpikyGraph.png)
+* Viscosity kernel
+    * ![Viscosity](Images\Sph\Viscosity.png)
+    * ![ViscosityGradient](Images\Sph\ViscosityGradient.png)
+    * ![ViscosityLaplacian](Images\Sph\ViscosityLaplacian.png)
+    * ![ViscosityGraph](Images\Sph\ViscosityGraph.png)
+
+#### Mass Density Estimation
+
+Using ![SphDifferentialOperatorDiscretization](Images\Sph\SphDifferentialOperatorDiscretization.png), the density field at position **x**<sub>i</sub> results in:
+
+![MassDensityFunction](Images\Sph\MassDensityFunction.png)
+
+### Simple Fluid Simulator<sup>[15](#footnote_15)</sup>
+
+Based on the knowledge that we have acquired up to this point, we are now able to implement a simple state-equation based simulator for weakly compressible fluids with operator splitting using SPH and symplectic Euler integration.
+
+Following is a simulation loop for SPH simulation of weakly compressible fluids:
+
+<pre><code><span class="hljs-symbol">1 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">2 </span>      Reconstruct density ρ<sub><i>i</i></sub> at x<sub><i>i</i></sub> with mass density equation
+<span class="hljs-symbol">3 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">4 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>viscosity</sup> = <i>m</i><sub><i>i</i></sub>v∇<sup>2</sup><strong>v</strong><sub><i>i</i></sub>, <i>e</i>.<i>g</i>., using discretization of laplace operator
+<span class="hljs-symbol">5 </span>      v<sub><i>i</i></sub>* = v<sub><i>i</i></sub> + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub>(<strong>F</strong><sub><i>i</i></sub><sup>viscosity</sup> + <strong>F</strong><sub><i>i</i></sub><sup>ext</sup>)
+<span class="hljs-symbol">6 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">7 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -<span class="hljs-number">1</span>/ρ ∇<i>p</i> <span class="hljs-keyword">using</span> state equation <span class="hljs-keyword">and</span> symmetric formula <span class="hljs-keyword">for</span> discretization of differential operator
+<span class="hljs-symbol">8 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">9 </span>      v<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = v<sub><i>i</i></sub>* + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub><strong>F</strong><sub><i>i</i></sub><sup>pressure</sup>
+<span class="hljs-symbol">10 </span>     x<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = x<sub><i>i</i></sub> + Δ<i>t</i><strong>v</strong><sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>)
+</code></pre>
+
+### Neighborhood Search
+
+The proposed algorithm above has one major flaw: the time complexity is O(*n*<sup>2</sup>). However, if we can limit the number of particles to be looped to *m*, then the time complexity is reduced to O(*mn*). If the number of *m* is small enough, then we can expect a linear complexity of O(*n*).
+
+Based on the *particles* sample in CUDA SDK Samples, the grid hashing works as following:
+
+```c
+// Calculate grid hash
+void CalculateGridHash(uint* OutGridParticleHashes, uint* OutGridParticleIndices, float* Positions, uint NumParticles);
+
+// Sort particles based on hash
+void SortParticles(uint* OutGridParticleHashes, uint* GridParticleIndices, uint NumParticles);
+
+// Reorder particle arrays into sorted order and
+// find start and end of each cell
+void ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedPositions, float* OutSortedVelocities, uint* GridParticleHashes, uint* GridParticleIndices, float* Positions, float* Velocities, uint NumParticles, uint NumCells);
+```
+
+* `CalculateGridHash(OutGridParticleHashes, OutGridParticleIndices, Positions, NumParticles)`
+    * for each `index`,
+        * calculate grid position of `Positions[index]`
+        * calculate grid hash of the grid position
+        * save the hash value into `OutGridParticleHashes[index]`
+        * save the index value into `OutGridParticleIndices[index]`
+* `SortParticles(OutGridParticleHashes, GridParticleIndices, NumParticles)`
+    * using the `thrust` library, sort `OutGridParticleHashes` by `GridParticleIndices`
+* `ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedPositions, float* OutSortedVelocities, uint* GridParticleHashes, uint* GridParticleIndices, float* Positions, float* Velocities, uint NumParticles, uint NumCells)`
+    * for each `index`
+        * save the hash value `GridParticleHashes[index]` into the `sharedHash` array in shared memory region
+        * based on the `sharedHash` value, find the index to `OutCellStarts[hash]` and `OutCellEnds[hash]`
+        * based on the sorted index from `GridParticleIndices`, sort the `Positions` and `Velocities` into `OutSortedPositions` and `OutSortedVelocities`
+
+These functions are all implemented as CUDA functions, and are given from the CUDA SDK Sample.
+
+### CUDA Implementation
+
+We must understand some terminologies beforehand. When we refer to as `Host`, it means that the data resides in the host memory, which is the CPU-side memory: RAM. On the other hand, when we refer to as `Device`, it means that the data resides in the device memory, which is the GPU-side memory: VRAM. CPU nor GPU can access directly into each other's memory, and should be access via system bus which requires system calls such as `cudaMemcpy`.
+
+The algorithm used is following:
+
+```c
+// ParticleSystem.h
+// CUDA runtime
+#include <cuda_runtime.h>
+
+// CUDA utilities and system includes
+#include <helper_functions.h>
+#include <helper_cuda.h>    // includes cuda.h and cuda_runtime_api.h
+
+class ParticleSystem
+{
+public:
+    // methods
+    ...
+private:
+    uint NumParticles;
+
+    // CPU data
+    float* HostPositions;           // Particle Positions
+    float* HostVelocities;          // Particle Velocities
+    float* HostNonPressureForces;   // Particle Non Pressure Forces
+    float* HostPressureForces;      // Particle Pressure Forces
+    float* HostDensities;           // Particle Densities
+    float* HostPressures;           // Particle Pressures
+    
+    uint* HostParticleHashes;
+    uint* HostCellStarts;
+    uint* HostCellEnds;
+
+    // GPU data
+    float* DevicePositions;
+    float* DeviceVelocities;
+    float* DeviceNonPressureForces;
+    float* DevicePressureForces;
+    float* DeviceDensities;
+    float* DevicePressures;
+
+    float* DeviceSortedPositions;
+    float* DeviceSortedVelocities;
+
+    // grid data for sorting method
+    uint* DeviceGridParticleHashes;     // Grid hash value for each particle
+    uint* DeviceGridParticleIndices;    // Particle index for each particle
+    uint* DeviceCellStarts;             // Indices of start of each cell in sorted list
+    uint* DeviceCellEnds;               // Indices of end of cell
+
+    uint PositionsVbo;  // Vertex buffer objects for particle positions
+    uint ColorsVbo;     // Vertex buffer objects for colors
+
+    float* CudaPositionsVbo; // CUDA device memory positions
+    float* CudaColorsVbo;    // CUDA device memory colors
+
+    struct cudaGraphicsResource* CudaPositionsVboResource;  // Handles OpenGL-CUDA exchange
+    struct cudaGraphicsResource* CudaColorsVboResource;     // Handles OpenGL-CUDA exchange
+
+    // parameters
+    SimParams Parameters;
+    uint3 GridSize;
+    uint NumGridCells;
+
+    StopWatchInterface* Timer;
+
+    ...
+};
+```
+
+#### Global Parameters
+
+```c
+// ParticlesKernel.cuh
+
+// simulation parameters
+struct SimParams
+{
+    // values for grid hashing
+    float3 ColliderPosition;
+    float  ColliderRadius;
+    uint3 GridSize;
+    uint NumCells;
+    float3 WorldOrigin;
+    float3 CellSize;
+
+    float ParticleRadius;
+
+    float BoundaryDamping;
+
+    // global parameters for sph values
+    float Mass;
+    float KernelRadius;
+    float KernelRadiusSquared;
+    float GasConst;
+    float RestDensity;
+    float Viscosity;
+    float Threshold;
+    float ThresholdSquared;
+    float SurfaceTension;
+    float3 Gravity;
+
+    // constants for kernel functions
+    float Poly6;
+    float Poly6Gradient;
+    float Poly6Laplacian;
+    float SpikyGradient;
+    float ViscosityLap;
+};
+```
+
+#### Initialization
+
 ---
 
 <ol>
@@ -58,11 +364,13 @@ Further references to help you understand the concept of Lagrangian coordinate s
 <li id="footnote_4"> M. Desbrun, and M-P. Gascuel. <a href="https://hal.inria.fr/inria-00537534/document">Smoothed particles: A new paradigm for animating highly deformable bodies</a>. In Computer Animation and Simulation’96, pages 61–76. Springer Vienna, 1996.</li>
 <li id="footnote_5">M. Müller, D. Charypar, and M. Gross. <a href="https://matthias-research.github.io/pages/publications/sca03.pdf">Particle-based fluid simulation for interactive applications</a>. In Proceedings of the 2003 ACM SIGGRAPH/Eurographics Symposium on Computer Animation, pages 154–159, 2003.</li>
 <li id="footnote_6">RealFlow 10 documentation. Available at <a href="https://nextlimitsupport.atlassian.net/wiki/spaces/rf2016docs/overview">https://nextlimitsupport.atlassian.net/wiki/spaces/rf2016docs/overview</a>. Accessed on 27 NOV 2021.</li>
-<li id="footnote_7"><a href="https://en.wikipedia.org/wiki/Kinematics">Kinematics</a> - Wikipedia<li>
-<li id="footnote_8"><a href="https://en.wikipedia.org/wiki/Lagrangian_and_Eulerian_specification_of_the_flow_field">Lagrangian and Eulerian specification of the flow field</a> - Wikipedia<li>
-<li id="footnote_9"><li>
-<li id="footnote_10"><li>
-<li id="footnote_11"><li>
-<li id="footnote_12"><li>
-<li id="footnote_13"><li>
+<li id="footnote_7"><a href="https://en.wikipedia.org/wiki/Kinematics">Kinematics</a> - Wikipedia</li>
+<li id="footnote_8"><a href="https://en.wikipedia.org/wiki/Continuum_mechanics">Continuum mechanics</a> - Wikipedia</li>
+<li id="footnote_9"><a href="https://en.wikipedia.org/wiki/Momentum">Momentum</a> - Wikipedia</li>
+<li id="footnote_10"><a href="https://en.wikipedia.org/wiki/Lagrangian_and_Eulerian_specification_of_the_flow_field">Lagrangian and Eulerian specification of the flow field</a> - Wikipedia</li>
+<li id="footnote_11"><a href="https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations">Navier-Stokes equations</a> - Wikipedia</li>
+<li id="footnote_12">McLean, Doug (2012). "<a href="https://www.google.com/books/edition/Understanding_Aerodynamics/UE3sxu28R0wC?hl=en&gbpv=1&pg=PA13">Continuum Fluid Mechanics and the Navier-Stokes Equations</a>". Understanding Aerodynamics: Arguing from the Real Physics. John Wiley & Sons. pp. 13–78. <a href="https://en.wikipedia.org/wiki/ISBN_(identifier)">ISBN</a> <a href="https://en.wikipedia.org/wiki/Special:BookSources/9781119967514">9781119967514</a>. The main relationships comprising the NS equations are the basic conservation laws for mass, momentum, and energy. To have a complete equation set we also need an equation of state relating temperature, pressure, and density...</li>
+<li id="footnote_13">Batchelor (1967) pp. 142–148.</li>
+<li id="footnote_14">Batchelor (1967) p. 165.</li>
+<li id="footnote_15">Koschier, Dan, Jan Bender, Barbara Solenthaler, and Matthias Teschner. "Smoothed particle hydrodynamics techniques for the physics based simulation of fluids and solids." arXiv preprint arXiv:2009.06944 (2020).</li>
 </ol>
