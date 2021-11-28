@@ -166,6 +166,8 @@ However, the resulting 2<sup>nd</sup>-order derivatives has problems that in the
 
 ##### Kernel Functions
 
+Images and equations from [Staubach. 2010.]<sup>[16](#footnote_16)</sup>.
+
 * 6th degree polynomial kernel (default kernel)
     * ![Poly6](/Images/Sph/Poly6.png)
     * ![Poly6Gradient](/Images/Sph/Poly6Gradient.png)
@@ -768,8 +770,8 @@ void ComputeDensityDevice(float* OutDensities,      // output: new density
         {
             for (int x = -1; x <= 1; ++x)
             {
-                int3 neighbourPos = gridPos + make_int3(x, y, z);
-                Density += computeDensityByCell(neighbourPos, index, pos, oldPositions, cellStart, cellEnd);
+                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
+                Density += ComputeDensityByCell(NeighbourPosition, Index, Position, SortedPositions, CellStarts, CellEnds);
             }
         }
     }
@@ -808,6 +810,7 @@ float ComputeDensityByCell(int3 GridPosition,
 
             if (r2 < gParameters.KernelRadiusSquared)
             {
+                // m_j * W_ij
                 Density += gParameters.Mass * Poly6KernelBySquaredDistance(r2);
             }
         }
@@ -819,7 +822,138 @@ float ComputeDensityByCell(int3 GridPosition,
 
 ##### Viscosity Force
 
+**F**<sub><i>i</i><sub><sup>viscosity</sup> = <i>m<sub>i</sub></i>v∇<sup>2</sup>**v**<sub><i>i</i></sub>
 
+![SphLaplaceOperatorDiscretizationImproved](/Images/Sph/SphLaplaceOperatorDiscretizationImproved.png)
+
+```cpp
+void ComputeViscosityForces(float* OutNonPressureForces,
+                            float* OutVelocities,
+                            float* SortedPositions,
+                            float* SortedVelocities,
+                            float* Densities,
+                            float* Pressures,
+                            uint* GridParticleIndice,
+                            uint* CellStarts,
+                            uint* CellEnds,
+                            uint NumParticles,
+                            uint NumCells)
+{
+
+    // thread per particle
+    uint NumThreads;
+    uint NumBlocks;
+    ComputeGridSize(NumParticles, 64u, NumBlocks, NumThreads);
+
+    // execute the kernel
+    ComputeNonPressureForcesDevice<<<NumBlocks, NumThreads>>>((float4*) OutNonPressureForces
+                                                              (float4*) OutVelocities,
+                                                              (float4*) SortedPositions,
+                                                              (float4*) SortedVelocities,
+                                                              Densities,
+                                                              Pressures,
+                                                              DeltaTime,
+                                                              GridParticleIndice,
+                                                              CellStarts,
+                                                              CellEnds,
+                                                              NumParticles);
+
+    // check if kernel invocation generated an error
+    getLastCudaError("Kernel execution failed");
+}
+
+__global__
+void ComputeNonPressureForcesDevice(float4* OutVelocities,      // output: updated velocities
+                                    float4* SortedPositions,    // input: sorted positions
+                                    float4* SortedVelocities,
+                                    float* Densities,
+                                    float* Pressures,
+                                    float DeltaTime,
+                                    uint* GridParticleIndice,    // input: sorted particle indices
+                                    uint* CellStarts,
+                                    uint* CellEnds,
+                                    uint NumParticles)
+{
+    uint Index = (blockIdx.x * blockDim.x) + threadIdx.x;
+
+    if (Index >= NumParticles)
+    {
+        return;
+    }
+
+    // read particle data from sorted arrays
+    uint OriginalIndex = GridParticleIndice[Index];
+    float3 Position = make_float3(SortedPositions[Index]);
+    float3 Velocity = make_float3(SortedVelocities[Index]);
+    float Density = Densities[OriginalIndex];
+
+    // get address in grid
+    int3 GridPosition = calcGridPos(Position);
+
+    // examine neighbouring cells
+    float3 ViscosityForce = make_float3(0.0f);
+    float3 SurfaceNormal = make_float3(0.0f);
+    float3 SurfaceTensionForce = make_float3(0.0f);
+
+    for (int z = -1; z <= 1; z++)
+    {
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
+                ComputeSurfaceNormalByCell(NeighbourPosition,
+                                           Index,
+                                           SurfaceNormal,
+                                           Position,
+                                           SortedPositions,
+                                           Densities,
+                                           GridParticleIndice,
+                                           CellStarts,
+                                           CellEnds);
+            }
+        }
+    }
+
+    float SurfaceNormalSquared = LengthSquared(SurfaceNormal);
+    bool bShouldCalculateSurfaceTension = SurfaceNormalSquared >= gParameters.ThresholdSquared;
+
+    for (int z = -1; z <= 1; z++)
+    {
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
+                ComputeNonPressureForcesByCell(NeighbourPosition,
+                                               Index,
+                                               ViscosityForce,
+                                               SurfaceTensionForce,
+                                               bShouldCalculateSurfaceTension,
+                                               Position,
+                                               Velocity,
+                                               Density,
+                                               SortedPositions,
+                                               SortedVelocities,
+                                               Densities,
+                                               GridParticleIndice,
+                                               CellStarts,
+                                               CellEnds);
+            }
+        }
+    }
+
+    if (SurfaceNormalSquared > 0.0f)
+    {
+        SurfaceTensionForce *= (gParameters.Mass * normalize(SurfaceNormal));
+    }
+
+    ViscosityForce *= gParameters.Viscosity * 10.0f;
+    float3 ExternalForce = (gParameters.Gravity) * Density + SurfaceTensionForce;
+    float3 NonPressureForce = ViscosityForce + ExternalForce;
+    OutVelocities[OriginalIndex] += make_float4((NonPressureForce / Density) * DeltaTime, 0.0f);
+}
+```
 
 ---
 
@@ -839,4 +973,6 @@ float ComputeDensityByCell(int3 GridPosition,
 <li id="footnote_13">Batchelor (1967) pp. 142–148.</li>
 <li id="footnote_14">Batchelor (1967) p. 165.</li>
 <li id="footnote_15">Koschier, Dan, Jan Bender, Barbara Solenthaler, and Matthias Teschner. "Smoothed particle hydrodynamics techniques for the physics based simulation of fluids and solids." arXiv preprint arXiv:2009.06944 (2020).</li>
+<li id="footnote_16">David Staubach
+, "Smoothed Particle Hydrodynamics Real-Time Fluid Simulation Approach." Friedrich-Alexander-Universitaet Erlangen-Nuernberg (2010).</li>
 </ol>
