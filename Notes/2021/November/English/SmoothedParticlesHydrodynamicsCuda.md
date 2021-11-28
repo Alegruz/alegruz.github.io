@@ -244,9 +244,62 @@ These functions are all implemented as CUDA functions, and are given from the CU
 
 We must understand some terminologies beforehand. When we refer to as `Host`, it means that the data resides in the host memory, which is the CPU-side memory: RAM. On the other hand, when we refer to as `Device`, it means that the data resides in the device memory, which is the GPU-side memory: VRAM. CPU nor GPU can access directly into each other's memory, and should be access via system bus which requires system calls such as `cudaMemcpy`.
 
+#### Common CUDA Types / Global Variables / Functions
+
+```cpp
+// Types
+struct <type-name>3 // int3, uint3, float3, double3
+{
+    <type-name> x;
+    <type-name> y;
+    <type-name> z;
+};
+
+struct <type-name>4 // int4, uint4, float4, double4
+{
+    <type-name> x;
+    <type-name> y;
+    <type-name> z;
+    <type-name> w;
+};
+
+// make_int3, make_uint3, make_float3, make_double3
+<type-name>3 make_<type-name>3(<type-name> x, <type-name> y, <type-name> z);
+// make_int4, make_uint4, make_float4, make_double4
+<type-name>4 make_<type-name>4(<type-name> x, <type-name> y, <type-name> z, <type-name> w);
+<type-name>4 make_<type-name>4(<type-name>3 vector, <type-name> w);
+
+// CUDA graphics interop resource
+struct cudaGraphicsResource;
+
+// Functions
+// CUDA Built-in Functions
+// Frees memory on the device
+cudaError_t cudaFree(void* devPtr)
+// Frees page-locked memory
+cudaError_t cudaFreeHost(void* ptr);
+// Allocate memory on the device
+cudaError_t cudaMalloc(void** p, size_t s);
+// Allocates page-locked memory on the host
+cudaError_t cudaMallocHost(void** ptr, size_t size);
+// Copies data between host and device
+cudaError_t cudaMemcpy(void* dst, const void* src, size_t count, enum cudaMemcpyKind kind)
+
+// Custom Functions
+#define checkCudaErrors(val) check((val), #val, __FILE__, __LINE__)
+
+void InitializeCuda(GPU_SELECT_MODE Mode, int32 SpecifiedDeviceId);
+void RegisterGlBufferObject(uint Vbo, struct cudaGraphicsResource** CudaVboResource);
+void ReportGPUMemeoryUsage();
+void UnregisterGlBufferObject(struct cudaGraphicsResource* CudaVboResource);
+void VerifyCudaError(cudaError err);
+```
+
+#### Particle System
+
 The algorithm used is following:
 
-```c
+```cpp
 // ParticleSystem.h
 // CUDA runtime
 #include <cuda_runtime.h>
@@ -261,52 +314,51 @@ public:
     // methods
     ...
 private:
-    uint NumParticles;
+    bool mbInitialized = false;
+    bool mbUseOpenGl;
+    uint32_t mNumParticles;
 
     // CPU data
-    float* HostPositions;           // Particle Positions
-    float* HostVelocities;          // Particle Velocities
-    float* HostNonPressureForces;   // Particle Non Pressure Forces
-    float* HostPressureForces;      // Particle Pressure Forces
-    float* HostDensities;           // Particle Densities
-    float* HostPressures;           // Particle Pressures
+    float* mHostPositions = nullptr;           // Particle Positions
+    float* mHostVelocities = nullptr;          // Particle Velocities
+    float* mHostNonPressureForces = nullptr;   // Particle Non Pressure Forces
+    float* mHostPressureForces = nullptr;      // Particle Pressure Forces
+    float* mHostDensities = nullptr;           // Particle Densities
+    float* mHostPressures = nullptr;           // Particle Pressures
     
-    uint* HostParticleHashes;
-    uint* HostCellStarts;
-    uint* HostCellEnds;
+    uint32_t* mHostParticleHashes = nullptr;
+    uint32_t* mHostCellStarts = nullptr;
+    uint32_t* mHostCellEnds = nullptr;
 
     // GPU data
-    float* DevicePositions;
-    float* DeviceVelocities;
-    float* DeviceNonPressureForces;
-    float* DevicePressureForces;
-    float* DeviceDensities;
-    float* DevicePressures;
+    float* mDevicePositions = nullptr;
+    float* mDeviceVelocities = nullptr;
+    float* mDeviceNonPressureForces = nullptr;
+    float* mDevicePressureForces = nullptr;
+    float* mDeviceDensities = nullptr;
+    float* mDevicePressures = nullptr;
 
-    float* DeviceSortedPositions;
-    float* DeviceSortedVelocities;
+    float* mDeviceSortedPositions = nullptr;
+    float* mDeviceSortedVelocities = nullptr;
 
     // grid data for sorting method
-    uint* DeviceGridParticleHashes;     // Grid hash value for each particle
-    uint* DeviceGridParticleIndices;    // Particle index for each particle
-    uint* DeviceCellStarts;             // Indices of start of each cell in sorted list
-    uint* DeviceCellEnds;               // Indices of end of cell
+    uint32_t* mDeviceGridParticleHashes = nullptr;     // Grid hash value for each particle
+    uint32_t* mDeviceGridParticleIndices = nullptr;    // Particle index for each particle
+    uint32_t* mDeviceCellStarts = nullptr;             // Indices of start of each cell in sorted list
+    uint32_t* mDeviceCellEnds = nullptr;               // Indices of end of cell
 
-    uint PositionsVbo;  // Vertex buffer objects for particle positions
-    uint ColorsVbo;     // Vertex buffer objects for colors
+    uint32_t mPositionsVbo = nullptr;  // Vertex buffer objects for particle positions
 
-    float* CudaPositionsVbo; // CUDA device memory positions
-    float* CudaColorsVbo;    // CUDA device memory colors
+    float* mCudaPositionsVbo = nullptr; // CUDA device memory positions
 
-    struct cudaGraphicsResource* CudaPositionsVboResource;  // Handles OpenGL-CUDA exchange
-    struct cudaGraphicsResource* CudaColorsVboResource;     // Handles OpenGL-CUDA exchange
+    struct cudaGraphicsResource* mCudaPositionsVboResource = nullptr;  // Handles OpenGL-CUDA exchange
 
     // parameters
-    SimParams Parameters;
-    uint3 GridSize;
-    uint NumGridCells;
+    SimParams mParameters;
+    uint3 mGridSize;
+    uint32_t mNumGridCells;
 
-    StopWatchInterface* Timer;
+    StopWatchInterface* mTimer = nullptr;
 
     ...
 };
@@ -314,15 +366,13 @@ private:
 
 #### Global Parameters
 
-```c
+```cpp
 // ParticlesKernel.cuh
 
 // simulation parameters
 struct SimParams
 {
     // values for grid hashing
-    float3 ColliderPosition;
-    float  ColliderRadius;
     uint3 GridSize;
     uint NumCells;
     float3 WorldOrigin;
@@ -349,11 +399,279 @@ struct SimParams
     float Poly6Gradient;
     float Poly6Laplacian;
     float SpikyGradient;
-    float ViscosityLap;
+    float ViscosityLaplacian;
 };
 ```
 
-#### Initialization
+#### Initialization / Destruction
+
+```cpp
+// ParticleSystem.h
+class ParticleSystem
+{
+public:
+    ParticleSystem(uint32_t NumParticles, uint3 GridSize, bool bUseOpenGl);
+    ~ParticleSystem();
+
+    Initialize();
+    Destroy();
+
+    InitializeGrid();
+    Reset();
+...
+};
+
+// ParticleSystem.cpp
+
+ParticleSystem::ParticleSystem(uint32_t NumParticles, uint3 GridSize, bool bUseOpenGl)
+    : mbUseOpenGl(bUseOpenGl)
+    , mNumParticles(NumParticles)
+    , mGridSize(GridSize)
+    , mNumGridCells(mGridSize.x * mGridSize.y * mGridSize.z)
+{
+    memset(mParameters, 0, sizeof(SimParams));
+    mParameters.GridSize = mGridSize;
+    mParameters.NumCells = mNumGridCells;
+    mParameters.WorldOrigin = make_float3(-1.0f, -1.0f, -1.0f);
+
+    mParameters.ParticleRadius = 1.0f / 64.0f;
+
+    mParameters.BoundaryDamping = -0.5f;
+
+    // global parameters for sph values
+    mParameters.Mass = 0.02f;
+    mParameters.KernelRadius = 2.0f * mParameters.ParticleRadius;
+    mParameters.KernelRadiusSquared = mParameters.KernelRadius * mParameters.KernelRadius;
+    mParameters.CellSize = mParameters.KernelRadius;
+    mParameters.GasConst = 3.0f;
+    mParameters.RestDensity = 998.29f;
+    mParameters.Viscosity = 3.5f;
+    mParameters.Threshold = 7.065f;
+    mParameters.ThresholdSquared = mParameters.Threshold * mParameters.Threshold;
+    mParameters.SurfaceTension = 0.0728f;
+    mParameters.Gravity = make_float3(0.0fm -9.80665f, 0.0f);
+
+    // constants for kernel functions
+    mParameters.Poly6 = 315.0f / (64.0f * CUDART_PI_F * pow(m_params.kernelRadius, 9.f));
+    mParameters.Poly6Gradient = -(945.0f / (32.f * CUDART_PI_F * pow(m_params.kernelRadius, 9.f)));
+    mParameters.Poly6Laplacian = -(945.0f / (32.f * CUDART_PI_F * pow(m_params.kernelRadius, 9.f)));
+    mParameters.SpikyGradient = -(45.0f / (CUDART_PI_F * pow(m_params.kernelRadius, 6.f)));
+    mParameters.ViscosityLaplacian = 45.0f / (CUDART_PI_F * pow(m_params.kernelRadius, 6.f));
+
+    InitializeCuda(SPECIFIED_DEVICE_ID, 0);
+}
+
+ParticleSystem::~ParticleSystem()
+{
+    Destroy();
+    mNumParticles = 0u;
+
+    cudaError_t CudaStatus = cudaDeviceReset();
+}
+
+void ParticleSystem::Initialize()
+{
+    assert(!mbInitialized);
+
+    // allocate host storage
+    uint32_t MemorySize = sizeof(float) * mNumParticles * 4u;
+    mHostPositions = reinterpret_cast<float*>(malloc(MemorySize));
+    mHostVelocities = reinterpret_cast<float*>(malloc(MemorySize));
+    mHostNonPressureForces = reinterpret_cast<float*>(MemorySize));
+    mHostPressureForces = reinterpret_cast<float*>(malloc(MemorySize));
+    mHostDensities = reinterpret_cast<float*>(malloc(sizeof(float) * mNumParticles));
+    mHostPressures = reinterpret_cast<float*>(malloc(sizeof(float) * mNumParticles));
+    memset(reinterpret_cast<void*>(mHostPositions), 0, MemorySize);
+    memset(reinterpret_cast<void*>(mHostVelocities), 0, MemorySize);
+    memset(reinterpret_cast<void*>(mHostNonPressureForces), 0, MemorySize);
+    memset(reinterpret_cast<void*>(mHostPressureForces), 0, MemorySize);
+    memset(reinterpret_cast<void*>(mHostDensities), 0, sizeof(float) * mNumParticles);
+    memset(reinterpret_cast<void*>(mHostPressures), 0, sizeof(float) * mNumParticles);
+
+    mHostCellStarts = malloc(sizeof(uint32_t) * mNumGridCells);
+    mHostCellEnds = malloc(sizeof(uint32_t) * mNumGridCells);
+    memset(reinterpret_cast<void*>(mHostCellStarts), 0, sizeof(uint32_t) * mNumGridCells);
+    memset(reinterpret_cast<void*>(mHostCellEnds), 0, sizeof(uint32_t) * mNumGridCells);
+
+    // allocate GPU data
+    if (mbUseOpenGL)
+    {
+        mPositionsVbo = CreateVbo(MemorySize);
+        RegisterGlBufferObject(mPositionsVbo, &mCudaPositionsVboResource);
+    }
+    else
+    {
+        checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mCudaPositionsVbo), MemorySize)) ;
+    }
+
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceVelocities), MemorySize);
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceNonPressureForces), MemorySize);
+    cudaMalloc(reinterpret_cast<void**>(&mDevicePressureForces), MemorySize);
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceDensities), sizeof(float) * NumParticles);
+    cudaMalloc(reinterpret_cast<void**>(&mDevicePressures), sizeof(float) * NumParticles);
+
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedPositions), MemorySize);
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedVelocities), MemorySize);
+
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleHashes), sizeof(uint) * mNumParticles);
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleIndice), sizeof(uint) * mNumParticles);
+
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceCellStarts), sizeof(uint) * mNumGridCells);
+    cudaMalloc(reinterpret_cast<void**>(&mDeviceCellEnds), sizeof(uint) * mNumGridCells);
+
+    mbInitialized = true;
+}
+
+void ParticleSystem::Destroy()
+{
+    assert(mbInitialized);
+
+    if (mHostPositions != nullptr)
+	{
+		free(mHostPositions);
+	}
+	if (mHostVelocities != nullptr)
+	{
+		free(mHostVelocities);
+	}
+	if (mHostNonPressureForces != nullptr)
+	{
+		free(mHostNonPressureForces);
+	}
+	if (mHostPressureForces != nullptr)
+	{
+		free(mHostPressureForces);
+	}
+	if (mHostDensities != nullptr)
+	{
+		free(mHostDensities);
+	}
+	if (mHostPressures != nullptr)
+	{
+		free(mHostPressures);
+	}
+	if (mHostCellStarts != nullptr)
+	{
+		free(mHostCellStarts);
+	}
+	if (mHostCellEnds != nullptr)
+	{
+		free(mHostCellEnds);
+	}
+	if (mDeviceVelocities != nullptr)
+	{
+		cudaFree(mDeviceVelocities);
+	}
+	if (mDeviceDensities != nullptr)
+	{
+		cudaFree(mDeviceDensities);
+	}
+	if (mDeviceNonPressureForces != nullptr)
+	{
+		cudaFree(mDeviceNonPressureForces);
+	}
+	if (DevicePressureForces != nullptr)
+	{
+		cudaFree(DevicePressureForces);
+	}
+	if (mDevicePressures != nullptr)
+	{
+		cudaFree(mDevicePressures);
+	}
+	if (mDeviceSortedPositions != nullptr)
+	{
+		cudaFree(mDeviceSortedPositions);
+	}
+	if (mDeviceSortedVelocities != nullptr)
+	{
+		cudaFree(mDeviceSortedVelocities);
+	}
+	if (mDeviceGridParticleHashes != nullptr)
+	{
+		cudaFree(mDeviceGridParticleHashes);
+	}
+	if (mDeviceGridParticleIndice != nullptr)
+	{
+		cudaFree(mDeviceGridParticleIndice);
+	}
+	if (mDeviceCellStarts != nullptr)
+	{
+		cudaFree(mDeviceCellStarts);
+	}
+	if (mDeviceCellEnds != nullptr)
+	{
+		cudaFree(mDeviceCellEnds);
+	}
+	if (mCudaPositionVbo != nullptr)
+	{
+		cudaFree(mCudaPositionVbo);
+	}
+
+    mbInitialized = false;
+}
+
+void AParticleActor::InitializeGrid(uint32_t Size, float Spacing, float Jitter, uint32_t mNumParticles)
+{
+    srand(1973);
+
+    for (uint32_t z = 0u; z < Size[2]; ++z)
+    {
+        for (uint32_t y = 0u; y < Size[1]; ++y)
+        {
+            for (uint32_t x = 0u; x < Size[0]; ++x)
+            {
+                uint32_t i = (z * Size[1] * Size[0]) + (y * Size[0]) + x;
+
+                if (i < mNumParticles)
+                {
+                    mHostPositions[i * 4u + 0u] = (Spacing * x) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
+                    mHostPositions[i * 4u + 1u] = (Spacing * y) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
+                    mHostPositions[i * 4u + 2u] = (Spacing * z) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
+                    mHostPositions[i * 4u + 3u] = 1.0f;
+
+                    mHostVelocities[i * 4u + 0u] = 0.0f;
+                    mHostVelocities[i * 4u + 1u] = 0.0f;
+                    mHostVelocities[i * 4u + 2u] = 0.0f;
+                    mHostVelocities[i * 4u + 3u] = 0.0f;
+                }
+            }
+        }
+    }
+}
+
+void ParticleSystem::Reset()
+{
+    float Jitter = mParameters.ParticleRadius * 0.01f;
+	uint32_t Size = static_cast<int32_t>(ceilf(powf(static_cast<float>(mNumParticles), 1.0f / 3.0f)));
+
+    InitializeGrid(Size, mParameters.KernelRadius, Jitter, mNumParticles);
+
+    cudaMemcpy(mCudaPositionVbo, HostPositions, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+	cudaMemcpy(mDeviceVelocities, HostVelocities, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+	cudaMemcpy(mDeviceNonPressureForces, HostForces, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+    cudaMemcpy(mDevicePressureForces, HostForces, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+	cudaMemcpy(mDeviceDensities, HostDensities, sizeof(float) * mNumParticles, cudaMemcpyHostToDevice);
+	cudaMemcpy(mDevicePressures, HostPressures, sizeof(float) * mNumParticles, cudaMemcpyHostToDevice);
+}
+```
+
+#### Update
+
+Remember the simple algorithm we saw?
+
+It is now time to implement the algorithm.
+
+<pre><code><span class="hljs-symbol">1 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">2 </span>      Reconstruct density ρ<sub><i>i</i></sub> at x<sub><i>i</i></sub> with mass density equation
+<span class="hljs-symbol">3 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">4 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>viscosity</sup> = <i>m</i><sub><i>i</i></sub>v∇<sup>2</sup><strong>v</strong><sub><i>i</i></sub>, <i>e</i>.<i>g</i>., using discretization of laplace operator
+<span class="hljs-symbol">5 </span>      v<sub><i>i</i></sub>* = v<sub><i>i</i></sub> + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub>(<strong>F</strong><sub><i>i</i></sub><sup>viscosity</sup> + <strong>F</strong><sub><i>i</i></sub><sup>ext</sup>)
+<span class="hljs-symbol">6 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">7 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -<span class="hljs-number">1</span>/ρ ∇<i>p</i> <span class="hljs-keyword">using</span> state equation <span class="hljs-keyword">and</span> symmetric formula <span class="hljs-keyword">for</span> discretization of differential operator
+<span class="hljs-symbol">8 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
+<span class="hljs-symbol">9 </span>      v<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = v<sub><i>i</i></sub>* + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub><strong>F</strong><sub><i>i</i></sub><sup>pressure</sup>
+<span class="hljs-symbol">10 </span>     x<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = x<sub><i>i</i></sub> + Δ<i>t</i><strong>v</strong><sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>)
+</code></pre>
 
 ---
 
