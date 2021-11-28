@@ -972,7 +972,7 @@ void ComputeNonPressureForcesDevice(float4* OutVelocities,      // output: updat
 <li id="footnote_12">McLean, Doug (2012). "<a href="https://www.google.com/books/edition/Understanding_Aerodynamics/UE3sxu28R0wC?hl=en&gbpv=1&pg=PA13">Continuum Fluid Mechanics and the Navier-Stokes Equations</a>". Understanding Aerodynamics: Arguing from the Real Physics. John Wiley & Sons. pp. 13–78. <a href="https://en.wikipedia.org/wiki/ISBN_(identifier)">ISBN</a> <a href="https://en.wikipedia.org/wiki/Special:BookSources/9781119967514">9781119967514</a>. The main relationships comprising the NS equations are the basic conservation laws for mass, momentum, and energy. To have a complete equation set we also need an equation of state relating temperature, pressure, and density...</li>
 <li id="footnote_13">Batchelor (1967) pp. 142–148.</li>
 <li id="footnote_14">Batchelor (1967) p. 165.</li>
-<li id="footnote_15">Koschier, Dan, Jan Bender, Barbara Solenthaler, and Matthias Teschner. "Smoothed particle hydrodynamics techniques for the physics based simulation of fluids and solids." arXiv preprint arXiv:2009.06944 (2020).</li>
+<li id="footnote_15">Koschier, Dan, Jan Bender, Barbara Solenthaler, and Matthias Teschner. "<a href="https://interactivecomputergraphics.github.io/SPH-Tutorial/">Smoothed particle hydrodynamics techniques for the physics based simulation of fluids and solids.</a>" arXiv preprint arXiv:2009.06944 (2020).</li>
 <li id="footnote_16">David Staubach
-, "Smoothed Particle Hydrodynamics Real-Time Fluid Simulation Approach." Friedrich-Alexander-Universitaet Erlangen-Nuernberg (2010).</li>
+, "<a href="https://www10.cs.fau.de/publications/theses/2010/Staubach_BT_2010.pdf">Smoothed Particle Hydrodynamics Real-Time Fluid Simulation Approach.</a>" Friedrich-Alexander-Universitaet Erlangen-Nuernberg (2010).</li>
 </ol>
