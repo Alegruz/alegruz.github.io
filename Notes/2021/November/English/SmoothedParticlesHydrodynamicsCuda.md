@@ -113,11 +113,11 @@ Let's now rearrange the equation into a SPH terminology:
 
 In order to calculate the left-side term, then we need to understand each terms in the right-side.
 
-The first term -&Delta;*p* is the pressure term.
+The first term -&Delta;*p* is the pressure acceleration term.
 
-The second term *&mu;*∇<sup>2</sup>**v** is the viscosity term.
+The second term *&mu;*∇<sup>2</sup>**v** is the viscosity acceleration term.
 
-The last term is the external forces.
+The last term is the external body forces.
 
 #### Conclusion
 
@@ -147,6 +147,10 @@ If there exists a function A(**x**<sub>i</sub>), the function can be discretized
 The discretization of differential operator would be:
 
 ![SphDifferentialOperatorDiscretization](/Images/Sph/SphDifferentialOperatorDiscretization.png)
+
+For improved readability, we will drop the second argument of the kernel function and use the abbreviation: 
+
+![KernelFunctionAbbreviation](/Images/Sph/SKernelFunctionAbbreviation.gif)
 
 In order to ensure symmetry, the equation is then rearranged into:
 
@@ -222,7 +226,7 @@ Following is a simulation loop for SPH simulation of weakly compressible fluids:
 <span class="hljs-symbol">4 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>viscosity</sup> = <i>m</i><sub><i>i</i></sub>v∇<sup>2</sup><strong>v</strong><sub><i>i</i></sub>, <i>e</i>.<i>g</i>., using discretization of laplace operator
 <span class="hljs-symbol">5 </span>      v<sub><i>i</i></sub>* = v<sub><i>i</i></sub> + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub>(<strong>F</strong><sub><i>i</i></sub><sup>viscosity</sup> + <strong>F</strong><sub><i>i</i></sub><sup>ext</sup>)
 <span class="hljs-symbol">6 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
-<span class="hljs-symbol">7 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -<span class="hljs-number">1</span>/ρ ∇<i>p</i> <span class="hljs-keyword">using</span> state equation <span class="hljs-keyword">and</span> symmetric formula <span class="hljs-keyword">for</span> discretization of differential operator
+<span class="hljs-symbol">7 </span>      Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -<i>m</i><sub><i>i</i></sub>/ρ ∇<i>p</i> <span class="hljs-keyword">using</span> state equation <span class="hljs-keyword">and</span> symmetric formula <span class="hljs-keyword">for</span> discretization of differential operator
 <span class="hljs-symbol">8 </span>  <span class="hljs-keyword">for all</span> particle <i>i</i> <span class="hljs-keyword">do</span>
 <span class="hljs-symbol">9 </span>      v<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = v<sub><i>i</i></sub>* + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub><strong>F</strong><sub><i>i</i></sub><sup>pressure</sup>
 <span class="hljs-symbol">10 </span>     x<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = x<sub><i>i</i></sub> + Δ<i>t</i><strong>v</strong><sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>)
@@ -957,10 +961,12 @@ void ComputeNonPressureForcesDevice(float4* OutNonPressureForces,      // output
         }
     }
 
-    ViscosityForce *= gParameters.Viscosity * 10.0f;
-    float3 ExternalForce = (gParameters.Gravity);
+    // viscosityForce = - mass * viscosity_coefficient * sigmas
+    ViscosityForce *= -gParameters.Mass * gParameters.Viscosity;
+    // externalForce = mass * gravitational acceleration
+    float3 ExternalForce = gParameters.Mass * gParameters.Gravity;
     OutNonPressureForces[OriginalIndex] = ViscosityForce + ExternalForce;
-    OutVelocities[OriginalIndex] += make_float4((OutNonPressureForce[OriginalIndex] / Density) * DeltaTime, 0.0f);
+    OutVelocities[OriginalIndex] += make_float4((OutNonPressureForce[OriginalIndex] / gParameters.Mass) * DeltaTime, 0.0f);
 }
 
 __device__
@@ -1001,7 +1007,8 @@ void ComputeNonPressureForcesByCell(int3 GridPosition,
                     float3 NeighborVelocity = make_float3(SortedVelocities[j]);
                     float3 Vij = Velocity - NeighborVelocity;
                     
-                    OutViscosityForce += (gParameters.Mass / Densities[OriginalIndex]) * (Dot(Vij, Rij) / (R2 + 0.01f * gParameters.KernelRadiusSquared)) * Poly6KernelGradient(Rij);
+                    // sigma (mass / density) * v_ij * (2 * ||gradient of kernel|| / ||r_ij||)
+                    OutViscosityForce += (gParameters.Mass / Densities[OriginalIndex]) * Vij * (2.0f * Length(Poly6KernelGradient(Rij)) / Length(Rij));
                 }
             }
         }
@@ -1012,7 +1019,6 @@ void ComputeNonPressureForcesByCell(int3 GridPosition,
 ##### Pressure Forces
 
 Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -1/ρ ∇<i>p</i> using state equation and symmetric formula for discretization of differential operator.
-
 
 **State equations** are used to compute pressure from density deviations. The density deviation can be computed explicitly or from a differential form. The deviation can be represented as a quotient or a difference of actual and rest density. One or more stiffness constants are involved. Some examples are: *p<sub>i*</sub> = *k*(ρ<sub>*i*</sub>/ρ<sup>0</sup> − 1), *p<sub>i*</sub> = k*k*(ρ<sub>*i*</sub> − ρ<sup>0</sup>) or *p<sub>i*</sub> = *k*<sub>1</sub>((ρ<sub>*i*</sub>/ρ<sup>0</sup>)<sup>k<sub>2</sub></sup>) - 1). As *p<sub>i*</sub> < ρ<sup>0</sup> is not considered to solve the particle deficiency problem at the free surface, the computed pressure is always non-negative.<sup>[15](#footnote_15)</sup>
 
@@ -1066,6 +1072,13 @@ void ComputeDensitiesAndPressuresDevice(float* OutDensities,    // output: new d
     // write new velocity back to original unsorted location
     uint OriginalIndex = GridParticleIndice[Index];
     OutDensities[OriginalIndex] = Density;
+    // state equation
+        // 0
+            // p = k(rho_i - rho_0)
+        // 1
+            // p = k((rho_i / rho_0) - 1)
+        // 2
+            // p = k((rho_i / rho_0)^7 - 1)
     OutPressures[OriginalIndex] = gParameters.GasConst * (Density - gParameters.RestDensity);
 }
 ```
@@ -1166,14 +1179,13 @@ void ComputeForcesDevice(float4* OutNonPressureForces,  // output: updated non p
     }
 
     ...
-
-    PressureForce *= Density;
-    ViscosityForce *= gParameters.Viscosity * 10.0f;
-    float3 ExternalForce = (gParameters.Gravity) * Density + SurfaceTensionForce;
+    PressureForce *= -gParameters.Mass
+    ViscosityForce *= -gParameters.Mass * gParameters.Viscosity;
+    float3 ExternalForce = gParameters.Mass gParameters.Gravity;
 
     OutPressureForces[OriginalIndex] = PressureForce;
     OutNonPressureForce[OriginalIndex] = ViscosityForce + ExternalForce;
-    OutVelocities[OriginalIndex] += make_float4(((OutPressureForce[OriginalIndex] + OutNonPressureForce[OriginalIndex]) / Density) * DeltaTime, 0.0f);
+    OutVelocities[OriginalIndex] += make_float4(((OutPressureForce[OriginalIndex] + OutNonPressureForce[OriginalIndex]) / gParameters.Mass) * DeltaTime, 0.0f);
 }
 
 __device__
@@ -1212,7 +1224,8 @@ void ComputeForcesByCell(int3 GridPosition,
                     float3 NeighborVelocity = make_float3(SortedVelocities[j]);
                     float3 Vij = Velocity - NeighborVelocity;
                     
-                    OutPressureForce -= gParameters.Mass * ((Pressure / (Density * Density)) + (Pressures[OriginalIndex] / (Densities[OriginalIndex] * Densities[OriginalIndex]))) * SpikyKernelGradient(Rij);
+                    // sigma mass_j * (pressure_i / (density_i)^2 + pressure_j / (density_j)^2) * gradient of W_ij
+                    OutPressureForce += gParameters.Mass * ((Pressure / (Density * Density)) + (Pressures[OriginalIndex] / (Densities[OriginalIndex] * Densities[OriginalIndex]))) * SpikyKernelGradient(Rij);
                     ...
                 }
             }
