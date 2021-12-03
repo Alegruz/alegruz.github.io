@@ -192,6 +192,26 @@ Using ![SphDifferentialOperatorDiscretization](/Images/Sph/SphDifferentialOperat
 
 ### Simple Fluid Simulator<sup>[15](#footnote_15)</sup>
 
+Let us go back to the basic structure of the algorithm:
+
+1. update **v** by solving *D***v**/*Dt* = *v*∇<sup>2</sup>**v** + 1/&rho; **f**<sub>ext</sub>
+2. determine ∇*p* by enforcing the continuity equation, ![continuity_equation](https://wikimedia.org/api/rest_v1/media/math/render/svg/e12812c8a9d3ffb93c86f1042bef079d7d61cebe)
+3. update **v** by solving *D***v**/*Dt* = -1/&rho; ∇*p*
+4. update **x** by solving *D***x**/*Dt* = **v**
+
+Now we can calculate each elements using SPH techniques.
+
+1. Viscosity
+    * ![ViscosityBodyForce](\Images\Sph\ViscosityBodyForce.gif)
+2. External Body Force
+    * ![ExternalBodyForce](\Images\Sph\ExternalBodyForce.gif)
+3. Pressure
+    * ![Pressure](\Images\Sph\Pressure.gif)
+4. State Equation
+    * ![StateEquation0](\Images\Sph\StateEquation0.gif)
+    * ![StateEquation1](\Images\Sph\StateEquation1.gif)
+    * ![StateEquation2](\Images\Sph\StateEquation2.gif)
+
 Based on the knowledge that we have acquired up to this point, we are now able to implement a simple state-equation based simulator for weakly compressible fluids with operator splitting using SPH and symplectic Euler integration.
 
 Following is a simulation loop for SPH simulation of weakly compressible fluids:
@@ -207,6 +227,17 @@ Following is a simulation loop for SPH simulation of weakly compressible fluids:
 <span class="hljs-symbol">9 </span>      v<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = v<sub><i>i</i></sub>* + Δ<i>t</i>/<i>m</i><sub><i>i</i></sub><strong>F</strong><sub><i>i</i></sub><sup>pressure</sup>
 <span class="hljs-symbol">10 </span>     x<sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>) = x<sub><i>i</i></sub> + Δ<i>t</i><strong>v</strong><sub><i>i</i></sub>(<i>t</i> + Δ<i>t</i>)
 </code></pre>
+
+Let us break down each components into equations:
+
+1. Density &rho;<sub>i</sub>
+    * ![MassDensity](\Images\Sph\MassDensity.gif)
+2. Viscosity Force
+    * ![ViscosityForce](\Images\Sph\ViscosityForce.gif)
+3. External Force
+    * ![ExternalForce](\Images\Sph\ExternalForce.gif)
+4. Pressure Force
+    * ![PressureForce](\Images\Sph\PressureForce.gif)
 
 ### Neighborhood Search
 
@@ -719,10 +750,12 @@ void ParticleSystem::Update(float DeltaTime)
 }
 ```
 
-##### Density
+##### Densities
+
+![MassDensity](\Images\Sph\MassDensity.gif)
 
 ```cpp
-void ComputeDensity(float* OutDensities, float* SortedPositions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
+void ComputeDensities(float* OutDensities, float* SortedPositions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
 {
     // thread per particle
     uint NumThreads;
@@ -730,24 +763,24 @@ void ComputeDensity(float* OutDensities, float* SortedPositions, uint* GridParti
     ComputeGridSize(NumParticles, 64u, NumBlocks, numThreads);
 
     // execute the kernel
-    ComputeDensityDevice<<<NumBlocks, NumThreads>>>(OutDensities,
-                                                    (float4*) SortedPositions,
-                                                    GridParticleIndice,
-                                                    CellStarts,
-                                                    CellEnds,
-                                                    NumParticles);
+    ComputeDensitiesDevice<<<NumBlocks, NumThreads>>>(OutDensities,
+                                                      (float4*) SortedPositions,
+                                                      GridParticleIndice,
+                                                      CellStarts,
+                                                      CellEnds,
+                                                      NumParticles);
 
     // check if kernel invocation generated an error
     getLastCudaError("Kernel execution failed");
 }
 
 __global__
-void ComputeDensityDevice(float* OutDensities,      // output: new density
-                          float4* SortedPositions,  // input: sorted positions
-                          uint* GridParticleIndice, // input: sorted particle indices
-                          uint* CellStarts,
-                          uint* CellEnds,
-                          uint NumParticles)
+void ComputeDensitiesDevice(float* OutDensities,      // output: new density
+                            float4* SortedPositions,  // input: sorted positions
+                            uint* GridParticleIndice, // input: sorted particle indices
+                            uint* CellStarts,
+                            uint* CellEnds,
+                            uint NumParticles)
 {
     uint Index = (blockIdx.x * blockDim.x) + threadIdx.x;
 
@@ -771,7 +804,7 @@ void ComputeDensityDevice(float* OutDensities,      // output: new density
             for (int x = -1; x <= 1; ++x)
             {
                 int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
-                Density += ComputeDensityByCell(NeighbourPosition, Index, Position, SortedPositions, CellStarts, CellEnds);
+                Density += ComputeDensitiesByCell(NeighbourPosition, Index, Position, SortedPositions, CellStarts, CellEnds);
             }
         }
     }
@@ -782,12 +815,12 @@ void ComputeDensityDevice(float* OutDensities,      // output: new density
 }
 
 __device__
-float ComputeDensityByCell(int3 GridPosition,
-                           uint Index,
-                           float3 Position,
-                           float4* SortedPositions,
-                           uint* CellStarts,
-                           uint* CellEnds)
+float ComputeDensitiesByCell(int3 GridPosition,
+                             uint Index,
+                             float3 Position,
+                             float4* SortedPositions,
+                             uint* CellStarts,
+                             uint* CellEnds)
 {
     uint GridHash = CalculateGridHash(GridPosition);
 
@@ -803,7 +836,6 @@ float ComputeDensityByCell(int3 GridPosition,
 
         for (uint j = StartIndex; j < EndIndex; ++j)
         {
-            // r <- r_i = r_j
             float3 NeighborPosition = make_float3(SortedPositions[j]);
             float3 rij = (Position - NeighborPosition);
             float r2 = LengthSquared(rij);
@@ -820,24 +852,33 @@ float ComputeDensityByCell(int3 GridPosition,
 }
 ```
 
-##### Viscosity Force
+##### Non Pressure Forces
 
-**F**<sub><i>i</i><sub><sup>viscosity</sup> = <i>m<sub>i</sub></i>v∇<sup>2</sup>**v**<sub><i>i</i></sub>
+* Viscosity Force
+    * ![ViscosityForce](\Images\Sph\ViscosityForce.gif)
+* External Force
+    * ![ExternalForce](\Images\Sph\ExternalForce.gif)
 
-![SphLaplaceOperatorDiscretizationImproved](/Images/Sph/SphLaplaceOperatorDiscretizationImproved.png)
+In order to approximate the Laplacian of the velocity field we
+combine an SPH derivative with a finite difference derivative which
+yields the following equation<sup>[17](#footnote_17)</sup>:
+
+![MonaghanSphDerivative](/Images/Sph/MonaghanSphDerivative.png)
+
+where **x**<sub>ij</sub> = **x**<sub>i</sub> − **x**<sub>j</sub>, **v**<sub>ij</sub> = **v**<sub>i</sub> − **v**<sub>j</sub> and *d* is the number of spatial dimensions.
 
 ```cpp
-void ComputeViscosityForces(float* OutNonPressureForces,
-                            float* OutVelocities,
-                            float* SortedPositions,
-                            float* SortedVelocities,
-                            float* Densities,
-                            float* Pressures,
-                            uint* GridParticleIndice,
-                            uint* CellStarts,
-                            uint* CellEnds,
-                            uint NumParticles,
-                            uint NumCells)
+void ComputeNonPressureForces(float* OutNonPressureForces,
+                              float* OutVelocities,
+                              float* SortedPositions,
+                              float* SortedVelocities,
+                              float* Densities,
+                              float* Pressures,
+                              uint* GridParticleIndice,
+                              uint* CellStarts,
+                              uint* CellEnds,
+                              uint NumParticles,
+                              uint NumCells)
 {
 
     // thread per particle
@@ -863,11 +904,11 @@ void ComputeViscosityForces(float* OutNonPressureForces,
 }
 
 __global__
-void ComputeNonPressureForcesDevice(float4* OutVelocities,      // output: updated velocities
+void ComputeNonPressureForcesDevice(float4* OutNonPressureForces,      // output: updated non pressure forces
+                                    float4* OutVelocities,      // output: updated velocities
                                     float4* SortedPositions,    // input: sorted positions
                                     float4* SortedVelocities,
                                     float* Densities,
-                                    float* Pressures,
                                     float DeltaTime,
                                     uint* GridParticleIndice,    // input: sorted particle indices
                                     uint* CellStarts,
@@ -888,35 +929,10 @@ void ComputeNonPressureForcesDevice(float4* OutVelocities,      // output: updat
     float Density = Densities[OriginalIndex];
 
     // get address in grid
-    int3 GridPosition = calcGridPos(Position);
+    int3 GridPosition = CalculateGridPosisition(Position);
 
     // examine neighbouring cells
     float3 ViscosityForce = make_float3(0.0f);
-    float3 SurfaceNormal = make_float3(0.0f);
-    float3 SurfaceTensionForce = make_float3(0.0f);
-
-    for (int z = -1; z <= 1; z++)
-    {
-        for (int y = -1; y <= 1; y++)
-        {
-            for (int x = -1; x <= 1; x++)
-            {
-                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
-                ComputeSurfaceNormalByCell(NeighbourPosition,
-                                           Index,
-                                           SurfaceNormal,
-                                           Position,
-                                           SortedPositions,
-                                           Densities,
-                                           GridParticleIndice,
-                                           CellStarts,
-                                           CellEnds);
-            }
-        }
-    }
-
-    float SurfaceNormalSquared = LengthSquared(SurfaceNormal);
-    bool bShouldCalculateSurfaceTension = SurfaceNormalSquared >= gParameters.ThresholdSquared;
 
     for (int z = -1; z <= 1; z++)
     {
@@ -928,8 +944,6 @@ void ComputeNonPressureForcesDevice(float4* OutVelocities,      // output: updat
                 ComputeNonPressureForcesByCell(NeighbourPosition,
                                                Index,
                                                ViscosityForce,
-                                               SurfaceTensionForce,
-                                               bShouldCalculateSurfaceTension,
                                                Position,
                                                Velocity,
                                                Density,
@@ -943,17 +957,269 @@ void ComputeNonPressureForcesDevice(float4* OutVelocities,      // output: updat
         }
     }
 
-    if (SurfaceNormalSquared > 0.0f)
-    {
-        SurfaceTensionForce *= (gParameters.Mass * normalize(SurfaceNormal));
-    }
-
     ViscosityForce *= gParameters.Viscosity * 10.0f;
-    float3 ExternalForce = (gParameters.Gravity) * Density + SurfaceTensionForce;
-    float3 NonPressureForce = ViscosityForce + ExternalForce;
-    OutVelocities[OriginalIndex] += make_float4((NonPressureForce / Density) * DeltaTime, 0.0f);
+    float3 ExternalForce = (gParameters.Gravity);
+    OutNonPressureForces[OriginalIndex] = ViscosityForce + ExternalForce;
+    OutVelocities[OriginalIndex] += make_float4((OutNonPressureForce[OriginalIndex] / Density) * DeltaTime, 0.0f);
+}
+
+__device__
+void ComputeNonPressureForcesByCell(int3 GridPosition,
+                                    uint Index,
+                                    float3& OutViscosityForce,
+                                    float3 Position,
+                                    float3 Velocity,
+                                    float Density,
+                                    float4* SortedPositions,
+                                    float4* SortedVelocities,
+                                    float* Densities,
+                                    uint* GridParticleIndice,
+                                    uint* CellStarts,
+                                    uint* CellEnds)
+{
+    uint GridHash = CalculateGridHash(GridPosition);
+
+    // get start of bucket for this cell
+    uint StartIndex = CellStarts[GridHash];
+
+    if (StartIndex != 0xffffffff)          // cell is not empty
+    {
+        // iterate over particles in this cell
+        uint EndIndex = CellEnds[GridHash];
+
+        for (uint j = StartIndex; j < EndIndex; j++)
+        {
+            if (j != Index)                // check not colliding with self
+            {
+                float3 NeighborPosition = make_float3(SortedPositions[j]);
+                float3 Rij = (Position - NeighborPosition);
+                float R2 = LengthSquared(Rij);
+
+                if (R2 < gParameters.KernelRadiusSquared)
+                {
+                    uint OriginalIndex = GridParticleIndice[j];
+                    float3 NeighborVelocity = make_float3(SortedVelocities[j]);
+                    float3 Vij = Velocity - NeighborVelocity;
+                    
+                    OutViscosityForce += (gParameters.Mass / Densities[OriginalIndex]) * (Dot(Vij, Rij) / (R2 + 0.01f * gParameters.KernelRadiusSquared)) * Poly6KernelGradient(Rij);
+                }
+            }
+        }
+    }
 }
 ```
+
+##### Pressure Forces
+
+Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -1/ρ ∇<i>p</i> using state equation and symmetric formula for discretization of differential operator.
+
+
+**State equations** are used to compute pressure from density deviations. The density deviation can be computed explicitly or from a differential form. The deviation can be represented as a quotient or a difference of actual and rest density. One or more stiffness constants are involved. Some examples are: *p<sub>i*</sub> = *k*(ρ<sub>*i*</sub>/ρ<sup>0</sup> − 1), *p<sub>i*</sub> = k*k*(ρ<sub>*i*</sub> − ρ<sup>0</sup>) or *p<sub>i*</sub> = *k*<sub>1</sub>((ρ<sub>*i*</sub>/ρ<sup>0</sup>)<sup>k<sub>2</sub></sup>) - 1). As *p<sub>i*</sub> < ρ<sup>0</sup> is not considered to solve the particle deficiency problem at the free surface, the computed pressure is always non-negative.<sup>[15](#footnote_15)</sup>
+
+Discretization of differential operator:
+
+![SphDifferentialOperatorDiscretizationSymmetricFormula](/Images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+
+As for state equations, it requires density values, thus it would be efficient to compute them with densities altogether:
+
+```cpp
+void ComputeDensitiesAndPressures(float* OutDensities, 
+                                  float* OutPressures, 
+                                  float* SortedPositions, 
+                                  uint* GridParticleIndice, 
+                                  uint* CellStarts, 
+                                  uint* CellEnds, 
+                                  uint NumParticles, 
+                                  uint NumCells)
+{
+    // thread per particle
+    uint NumThreads;
+    uint NumBlocks;
+    ComputeGridSize(NumParticles, 64u, NumBlocks, numThreads);
+
+    // execute the kernel
+    ComputeDensitiesAndPressuresDevice<<<NumBlocks, NumThreads>>>(OutDensities,
+                                                                  OutPressures
+                                                                  (float4*) SortedPositions,
+                                                                  GridParticleIndice,
+                                                                  CellStarts,
+                                                                  CellEnds,
+                                                                  NumParticles);
+
+    // check if kernel invocation generated an error
+    getLastCudaError("Kernel execution failed");
+}
+
+__global__
+void ComputeDensitiesAndPressuresDevice(float* OutDensities,    // output: new density
+                                        float* OutPressures,    // output: new pressure  
+                                        float4* SortedPositions,  // input: sorted positions
+                                        uint* GridParticleIndice, // input: sorted particle indices
+                                        uint* CellStarts,
+                                        uint* CellEnds,
+                                        uint NumParticles)
+{
+    uint Index = (blockIdx.x * blockDim.x) + threadIdx.x;
+
+    ...
+
+    // write new velocity back to original unsorted location
+    uint OriginalIndex = GridParticleIndice[Index];
+    OutDensities[OriginalIndex] = Density;
+    OutPressures[OriginalIndex] = gParameters.GasConst * (Density - gParameters.RestDensity);
+}
+```
+
+Now we know the pressure field, we can compute the pressure force field. It would be more efficient if we compute all the forces in a single function.
+
+```cpp
+void ComputeForces(float* OutPressureForces,
+                   float* OutNonPressureForces,
+                   float* OutVelocities,
+                   float* SortedPositions,
+                   float* SortedVelocities,
+                   float* Densities,
+                   float* Pressures,
+                   uint* GridParticleIndice,
+                   uint* CellStarts,
+                   uint* CellEnds,
+                   uint NumParticles,
+                   uint NumCells)
+    {
+
+    // thread per particle
+    uint NumThreads;
+    uint NumBlocks;
+    ComputeGridSize(NumParticles, 64u, NumBlocks, NumThreads);
+
+    // execute the kernel
+    ComputeForcesDevice<<<NumBlocks, NumThreads>>>((float4*) OutPressureForces
+                                                   (float4*) OutNonPressureForces
+                                                   (float4*) OutVelocities,
+                                                   (float4*) SortedPositions,
+                                                   (float4*) SortedVelocities,
+                                                   Densities,
+                                                   Pressures,
+                                                   DeltaTime,
+                                                   GridParticleIndice,
+                                                   CellStarts,
+                                                   CellEnds,
+                                                   NumParticles);
+
+    // check if kernel invocation generated an error
+    getLastCudaError("Kernel execution failed");
+}
+
+__global__
+void ComputeForcesDevice(float4* OutNonPressureForces,  // output: updated non pressure forces
+                         float4* OutPressureForces,     // output: updated pressure forces
+                         float4* OutVelocities,         // output: updated velocities
+                         float4* SortedPositions,       // input: sorted positions
+                         float4* SortedVelocities,
+                         float* Densities,
+                         float* Pressures,
+                         float DeltaTime,
+                         uint* GridParticleIndice,      // input: sorted particle indices
+                         uint* CellStarts,
+                         uint* CellEnds,
+                         uint NumParticles)
+{
+    uint Index = (blockIdx.x * blockDim.x) + threadIdx.x;
+
+    ...
+
+    float Pressure = Pressures[OriginalIndex];
+
+    ...
+
+    // examine neighbouring cells
+    float3 PressureForce = make_float3(0.0f);
+
+    ...
+
+    for (int z = -1; z <= 1; z++)
+    {
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
+                ComputeForcesByCell(NeighbourPosition,
+                                    Index,
+                                    PressureForce,
+                                    ViscosityForce,
+                                    SurfaceTensionForce,
+                                    bShouldCalculateSurfaceTension,
+                                    Position,
+                                    Velocity,
+                                    Density,
+                                    Pressure,
+                                    SortedPositions,
+                                    SortedVelocities,
+                                    Densities,
+                                    Pressures,
+                                    GridParticleIndice,
+                                    CellStarts,
+                                    CellEnds);
+            }
+        }
+    }
+
+    ...
+
+    PressureForce *= Density;
+    ViscosityForce *= gParameters.Viscosity * 10.0f;
+    float3 ExternalForce = (gParameters.Gravity) * Density + SurfaceTensionForce;
+
+    OutPressureForces[OriginalIndex] = PressureForce;
+    OutNonPressureForce[OriginalIndex] = ViscosityForce + ExternalForce;
+    OutVelocities[OriginalIndex] += make_float4(((OutPressureForce[OriginalIndex] + OutNonPressureForce[OriginalIndex]) / Density) * DeltaTime, 0.0f);
+}
+
+__device__
+void ComputeForcesByCell(int3 GridPosition,
+                         uint Index,
+                         float3& OutPressureForce,
+                         float3& OutViscosityForce,
+                         float3& OutSurfaceTensionForce,
+                         bool bShouldCalculateSurfaceTension,
+                         float3 Position,
+                         float3 Velocity,
+                         float Density,
+                         float Pressure,
+                         float4* SortedPositions,
+                         float4* SortedVelocities,
+                         float* Densities,
+                         float* Pressures,
+                         uint* GridParticleIndice,
+                         uint* CellStarts,
+                         uint* CellEnds)
+{
+    ...
+
+        for (uint j = StartIndex; j < EndIndex; j++)
+        {
+            if (j != Index)                // check not colliding with self
+            {
+                float3 NeighborPosition = make_float3(SortedPositions[j]);
+                float3 Rij = (Position - NeighborPosition);
+                //float r = length(rij);
+                float R2 = LengthSquared(Rij);
+
+                if (R2 < gParameters.KernelRadiusSquared)
+                {
+                    uint OriginalIndex = GridParticleIndice[j];
+                    float3 NeighborVelocity = make_float3(SortedVelocities[j]);
+                    float3 Vij = Velocity - NeighborVelocity;
+                    
+                    OutPressureForce -= gParameters.Mass * ((Pressure / (Density * Density)) + (Pressures[OriginalIndex] / (Densities[OriginalIndex] * Densities[OriginalIndex]))) * SpikyKernelGradient(Rij);
+                    ...
+                }
+            }
+    ...
+}
+```
+
 
 ---
 
