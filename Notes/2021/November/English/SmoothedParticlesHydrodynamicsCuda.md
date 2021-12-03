@@ -13,7 +13,7 @@ Each particle is merely an approximation of the light rays coming to our human e
 
 ### History
 
-The SPH method was originally introduced in astrophysics community by Monaghan<sup>[2](#footnote_2)</sup> and actively studied in computational fluid dynamics field as well<sup>[3](#footnote_3)</sup>. Soon after, computer animation started to adopt the idea of SPH<sup>[4](#footnote_4), [5](#footnote_5)</sup> and also became one of the core frameworks for commercial products like RealFlow<sup>[6](#footnote_6)</sup>.<sup>[1](#footnote_1)</sup>
+The SPH method was originally introduced in astrophysics community by Monaghan<sup>[2](#footnote_2)</sup> and activelocityy studied in computational fluid dynamics field as well<sup>[3](#footnote_3)</sup>. Soon after, computer animation started to adopt the idea of SPH<sup>[4](#footnote_4), [5](#footnote_5)</sup> and also became one of the core frameworks for commercial products like RealFlow<sup>[6](#footnote_6)</sup>.<sup>[1](#footnote_1)</sup>
 
 ### Fundamentals
 
@@ -21,9 +21,9 @@ The SPH method was originally introduced in astrophysics community by Monaghan<s
 
 #### Classical Mechanics: Kinematics<sup>[7](#footnote_7)</sup>
 
-**Kinematics** is a subfield of physics, developed in classical mechanics, that describes the motion of points, bodies (objects), and systems of bodies (groups of objects) without considering the forces that cause them to move.
+**Kinematics** is a subfield of physics, develocityoped in classical mechanics, that describes the motion of points, bodies (objects), and systems of bodies (groups of objects) without considering the forces that cause them to move.
 
-Before proceeding to the next chapter, I should mandate all the readers to read the [Velocity and speed](https://en.wikipedia.org/wiki/Kinematics#Velocity_and_speed) chapter of the wikipedia page on kinematics. The core concepts to understand are: *position*, *velocity*, *acceleration*, *relative position*, *relative velocity*, *relative acceleration*.
+Before proceeding to the next chapter, I should mandate all the readers to read the [velocityocity and speed](https://en.wikipedia.org/wiki/Kinematics#velocityocity_and_speed) chapter of the wikipedia page on kinematics. The core concepts to understand are: *positionition*, *velocityocity*, *acceleration*, *relative positionition*, *relative velocityocity*, *relative acceleration*.
 
 #### Classical Mechanics: Continuum Mechanics<sup>[8](#footnote_8)</sup>
 
@@ -35,7 +35,7 @@ Continuum mechanics deals with physical properties of solids and fluids which ar
 
 ##### Momentum<sup>[9](#footnote_9)</sup>
 
-In Newtonian mechanics, **linear momentum**, **translational momentum**, or simply **momentum** is the product of the mass and velocity of an object. It is a vector quantity, possessing a magnitude and a direction. If *m* is an object's mass and **v** is its velocity (also a vector quantity), then the object's momentum **p** is
+In Newtonian mechanics, **linear momentum**, **translational momentum**, or simply **momentum** is the product of the mass and velocityocity of an object. It is a vector quantity, positionsessing a magnitude and a direction. If *m* is an object's mass and **v** is its velocityocity (also a vector quantity), then the object's momentum **p** is
 
 ![momentum](https://wikimedia.org/api/rest_v1/media/math/render/svg/21233e5c3bb1a4db8ed4a3ceb873f166a495c7f9).
 
@@ -43,11 +43,11 @@ In the International System of Units (SI), the unit of measurement of momentum i
 
 #### Classical Field Theories: Lagrangian Specificattion of the Flow Field<sup>[10](#footnote_10)</sup>
 
-From now on, when we talk about velocities and accelerations, we are talking about the velocities and accelerations of each particles in a space through time. In the Lagrangian description, the flow is described by a function:
+From now on, when we talk about velocityocities and accelerations, we are talking about the velocityocities and accelerations of each particles in a space through time. In the Lagrangian description, the flow is described by a function:
 
 ![lagrangian_description_of_the_flow](https://wikimedia.org/api/rest_v1/media/math/render/svg/325c42def30a6edd2cebea1ea5cc1616acd6f8af)
 
-giving the position of the particle labeled **x**<sub>0</sub> at time *t*.
+giving the positionition of the particle labeled **x**<sub>0</sub> at time *t*.
 
 Within a chosen coordinate system, **x**<sub>0</sub> is referred to as the Lagrangian coordinates of the flow.
 
@@ -61,7 +61,7 @@ Further references to help you understand the concept of Lagrangian coordinate s
 
 In physics, the **Navier-Stokes equations** are certain partial differential equations which describe the motion of viscous fluid substances.
 
-The Navier-Stokes equations mathematically express conservation of momentum and conservation of mass for Newtonian fluids. They are sometimes accompanied by an equation of state relating pressure, temperature and density.<sup>[12](#footnote_12)</sup> They arise from applying Isaac Newton's second law to fluid motion, together with the assumption that the stress in the fluid is the sum of a diffusing viscous term (proportional to the gradient of velocity) and a pressure term—hence describing *viscous flow*.
+The Navier-Stokes equations mathematically express conservation of momentum and conservation of mass for Newtonian fluids. They are sometimes accompanied by an equation of state relating pressure, temperature and density.<sup>[12](#footnote_12)</sup> They arise from applying Isaac Newton's second law to fluid motion, together with the assumption that the stress in the fluid is the sum of a diffusing viscous term (proportional to the gradient of velocityocity) and a pressure term—hence describing *viscous flow*.
 
 The Navier–Stokes momentum equation can be derived as a particular form of the Cauchy momentum equation, whose general convective form is:
 
@@ -75,7 +75,7 @@ where
 
 * *D*/*Dt* is the material derivative, defined as *∂*/*∂t* + **u** ⋅ ∇,
 * *ρ* is the density,
-* **u** is the flow velocity,
+* **u** is the flow velocityocity,
 * ∇ ⋅ is the divergence,
 * *p* is the pressure,
 * *t* is time,
@@ -84,8 +84,8 @@ where
 
 The incompressible momentum Navier–Stokes equation results from the following assumptions on the Cauchy stress tensor:<sup>[13](#footnote_13)</sup>
 
-* the stress is **Galilean invariant**: it does not depend directly on the flow velocity, but only on spatial derivatives of the flow velocity. So the stress variable is the tensor gradient ∇**u**.
-* the fluid is assumed to be isotropic, as with gases and simple liquids, and consequently τ is an isotropic tensor; furthermore, since the deviatoric stress tensor can be expressed in terms of the dynamic viscosity *μ*:<br>![stoke_s_stress_constitutive_equation_0](https://wikimedia.org/api/rest_v1/media/math/render/svg/dcbbb1a444424ace5c8fa3bb3d27708331cacb79)<br>where<br>![eta](https://wikimedia.org/api/rest_v1/media/math/render/svg/2fa287cd2ad37af1181c4830934c53fc6734ba55)<br>is the rate-of-strain tensor. So this decomposition can be made explicit as:<sup>[13](#footnote_13)</sup><br>![stoke_s_stress_constitutive_equation_1](https://wikimedia.org/api/rest_v1/media/math/render/svg/bf0ec9f40027124e9efd4c787ab18e00d838a9ed)
+* the stress is **Galilean invariant**: it does not depend directly on the flow velocityocity, but only on spatial derivatives of the flow velocityocity. So the stress variable is the tensor gradient ∇**u**.
+* the fluid is assumed to be isotropic, as with gases and simple liquids, and consequently τ is an isotropic tensor; furthermore, since the deviatoric stress tensor can be expressed in terms of the dynamic viscosity *μ*:<br>![stoke_s_stress_constitutive_equation_0](https://wikimedia.org/api/rest_v1/media/math/render/svg/dcbbb1a444424ace5c8fa3bb3d27708331cacb79)<br>where<br>![eta](https://wikimedia.org/api/rest_v1/media/math/render/svg/2fa287cd2ad37af1181c4830934c53fc6734ba55)<br>is the rate-of-strain tensor. So this decompositionition can be made explicit as:<sup>[13](#footnote_13)</sup><br>![stoke_s_stress_constitutive_equation_1](https://wikimedia.org/api/rest_v1/media/math/render/svg/bf0ec9f40027124e9efd4c787ab18e00d838a9ed)
 
 Dynamic viscosity *μ* need not be constant – in incompressible flows it can depend on density and on pressure. Any equation that makes explicit one of these transport coefficient in the conservative variables is called an equation of state.<sup>[14](#footnote_14)</sup>
 
@@ -105,7 +105,7 @@ It is well worth observing the meaning of each term (compare to the Cauchy momen
 
 ![meaning_of_each_term](https://wikimedia.org/api/rest_v1/media/math/render/svg/56a44a20f5a59be202a3a7df5d542da4890680af)
 
-The higher-order term, namely the shear stress divergence ∇ ⋅ *τ*, has simply reduced to the vector Laplacian term *μ*∇<sup>2</sup>**u**.[13] This Laplacian term can be interpreted as the difference between the velocity at a point and the mean velocity in a small surrounding volume. This implies that – for a Newtonian fluid – viscosity operates as a *diffusion of momentum*, in much the same way as the heat conduction. In fact neglecting the convection term, incompressible Navier–Stokes equations lead to a vector diffusion equation (namely Stokes equations), but in general the convection term is present, so incompressible Navier–Stokes equations belong to the class of convection–diffusion equations.
+The higher-order term, namely the shear stress divergence ∇ ⋅ *τ*, has simply reduced to the vector Laplacian term *μ*∇<sup>2</sup>**u**.[13] This Laplacian term can be interpreted as the difference between the velocityocity at a point and the mean velocityocity in a small surrounding volume. This implies that – for a Newtonian fluid – viscosity operates as a *diffusion of momentum*, in much the same way as the heat conduction. In fact neglecting the convection term, incompressible Navier–Stokes equations lead to a vector diffusion equation (namely Stokes equations), but in general the convection term is present, so incompressible Navier–Stokes equations belong to the class of convection–diffusion equations.
 
 Let's now rearrange the equation into a SPH terminology:
 
@@ -132,7 +132,7 @@ where ν = *µ*/*ρ* denotes the kinematic viscosity. In this way, the "weaker" 
 
 #### Why SPH?
 
-Now we have a glimpse of theoretical background to simulate fluid. But the problem is that these **v**'s and p's are all fundamentally vector and scalar fields. But the only data we currently have is the position of each particles in 3d space. Reconstructing a field from discrete points is where we need some form of **interpolation**. Using discrete points in the neighborhood, we can *approximate* the vector / scalar field using some form of interpolant. This is where **SPH** comes in.
+Now we have a glimpse of theoretical background to simulate fluid. But the problem is that these **v**'s and p's are all fundamentally vector and scalar fields. But the only data we currently have is the positionition of each particles in 3d space. Reconstructing a field from discrete points is where we need some form of **interpolation**. Using discrete points in the neighborhood, we can *approximate* the vector / scalar field using some form of interpolant. This is where **SPH** comes in.
 
 ##### SPH Discretization
 
@@ -160,7 +160,7 @@ The discretization of laplace operator would be:
 
 ![SphLaplaceOperatorDiscretization](/Images/Sph/SphLaplaceOperatorDiscretization.png)
 
-In order to cope with very poor estimate of the 2<sup>nd</sup>-order differential, Brookshaw proposed an improved discrete operator for the Laplacian:
+In order to cope with very poor estimate of the 2<sup>nd</sup>-order differential, Brookshaw propositioned an improved discrete operator for the Laplacian:
 
 ![SphLaplaceOperatorDiscretizationBrookshaw](/Images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png)
 
@@ -190,7 +190,7 @@ Images and equations from [Staubach. 2010.]<sup>[16](#footnote_16)</sup>.
 
 #### Mass Density Estimation
 
-Using ![SphDifferentialOperatorDiscretization](/Images/Sph/SphDifferentialOperatorDiscretization.png), the density field at position **x**<sub>i</sub> results in:
+Using ![SphDifferentialOperatorDiscretization](/Images/Sph/SphDifferentialOperatorDiscretization.png), the density field at positionition **x**<sub>i</sub> results in:
 
 ![MassDensityFunction](/Images/Sph/MassDensityFunction.png)
 
@@ -245,48 +245,48 @@ Let us break down each components into equations:
 
 ### Neighborhood Search
 
-The proposed algorithm above has one major flaw: the time complexity is O(*n*<sup>2</sup>). However, if we can limit the number of particles to be looped to *m*, then the time complexity is reduced to O(*mn*). If the number of *m* is small enough, then we can expect a linear complexity of O(*n*).
+The propositioned algorithm above has one major flaw: the time complexity is O(*n*<sup>2</sup>). However, if we can limit the number of particles to be looped to *m*, then the time complexity is reduced to O(*mn*). If the number of *m* is small enough, then we can expect a linear complexity of O(*n*).
 
 Based on the *particles* sample in CUDA SDK Samples, the grid hashing works as following:
 
 ```c
-// calculate address in grid from position (clamping to edges)
-__device__ uint CalculateGridHash(int3 GridPosition);
+// calculate address in grid from positionition (clamping to edges)
+__device__ uint CalculateGridHash(int3 Gridpositionition);
 
-// Calculate position in uniform grid
-__device__ int3 CalculateGridPosition(float3 Position);
+// Calculate positionition in uniform grid
+__device__ int3 CalculateGridpositionition(float3 positionition);
 
 // Calculate grid hash
-void CalculateGridHashes(uint* OutGridParticleHashes, uint* OutGridParticleIndices, float* Positions, uint NumParticles);
+void CalculateGridHashes(uint* OutGridParticleHashes, uint* OutGridParticleIndices, float* positionitions, uint NumParticles);
 
 // Sort particles based on hash
 void SortParticles(uint* OutGridParticleHashes, uint* GridParticleIndices, uint NumParticles);
 
 // Reorder particle arrays into sorted order and
 // find start and end of each cell
-void ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedPositions, float* OutSortedVelocities, uint* GridParticleHashes, uint* GridParticleIndices, float* Positions, float* Velocities, uint NumParticles, uint NumCells);
+void ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedpositionitions, float* OutSortedvelocityocities, uint* GridParticleHashes, uint* GridParticleIndices, float* positionitions, float* velocityocities, uint NumParticles, uint NumCells);
 ```
 
-* `CalculateGridHash(GridPosition)`
+* `CalculateGridHash(Gridpositionition)`
     * Simple hashing
-    * `GridPosition.x = GridPosition.x & (gParameters.GridSize.x - 1);  // wrap grid, assumes size is power of 2`
-    * `return ((GridPosition.z * gParameters.GridSize.y) * gParameters.GridSize.x) + (GridPosition.y * gParameters.GridSize.x) + GridPosition.x;`
-* `CalculateGridPosition(Position)`
+    * `Gridpositionition.x = Gridpositionition.x & (gParameters.GridSize.x - 1);  // wrap grid, assumes size is power of 2`
+    * `return ((Gridpositionition.z * gParameters.GridSize.y) * gParameters.GridSize.x) + (Gridpositionition.y * gParameters.GridSize.x) + Gridpositionition.x;`
+* `CalculateGridpositionition(positionition)`
     * based on the `gParameters.WorldOrigin` coordinate and `gParameters.CellSize` size, we can calculate the grid coordinate.
-    * `GridPosition.x = floor((Particle.x - gParameters.WorldOrigin.x) / gParameters.CellSize.x);`
-* `CalculateGridHashes(OutGridParticleHashes, OutGridParticleIndices, Positions, NumParticles)`
+    * `Gridpositionition.x = floor((Particle.x - gParameters.WorldOrigin.x) / gParameters.CellSize.x);`
+* `CalculateGridHashes(OutGridParticleHashes, OutGridParticleIndices, positionitions, NumParticles)`
     * for each `index`,
-        * calculate grid position of `Positions[index]`
-        * calculate grid hash of the grid position
+        * calculate grid positionition of `positionitions[index]`
+        * calculate grid hash of the grid positionition
         * save the hash value into `OutGridParticleHashes[index]`
         * save the index value into `OutGridParticleIndices[index]`
 * `SortParticles(OutGridParticleHashes, GridParticleIndices, NumParticles)`
     * using the `thrust` library, sort `OutGridParticleHashes` by `GridParticleIndices`
-* `ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedPositions, float* OutSortedVelocities, uint* GridParticleHashes, uint* GridParticleIndices, float* Positions, float* Velocities, uint NumParticles, uint NumCells)`
+* `ReorderDataAndFindCellStart(uint* OutCellStarts, uint* OutCellEnds, float* OutSortedpositionitions, float* OutSortedvelocityocities, uint* GridParticleHashes, uint* GridParticleIndices, float* positionitions, float* velocityocities, uint NumParticles, uint NumCells)`
     * for each `index`
         * save the hash value `GridParticleHashes[index]` into the `sharedHash` array in shared memory region
         * based on the `sharedHash` value, find the index to `OutCellStarts[hash]` and `OutCellEnds[hash]`
-        * based on the sorted index from `GridParticleIndices`, sort the `Positions` and `Velocities` into `OutSortedPositions` and `OutSortedVelocities`
+        * based on the sorted index from `GridParticleIndices`, sort the `positionitions` and `velocityocities` into `OutSortedpositionitions` and `OutSortedvelocityocities`
 
 These functions are all implemented as CUDA functions, and are given from the CUDA SDK Sample.
 
@@ -375,8 +375,8 @@ private:
     uint32_t mNumParticles;
 
     // CPU data
-    float* mHostPositions = nullptr;           // Particle Positions
-    float* mHostVelocities = nullptr;          // Particle Velocities
+    float* mHostpositionitions = nullptr;           // Particle positionitions
+    float* mHostvelocityocities = nullptr;          // Particle velocityocities
     float* mHostNonPressureForces = nullptr;   // Particle Non Pressure Forces
     float* mHostPressureForces = nullptr;      // Particle Pressure Forces
     float* mHostDensities = nullptr;           // Particle Densities
@@ -387,15 +387,15 @@ private:
     uint32_t* mHostCellEnds = nullptr;
 
     // GPU data
-    float* mDevicePositions = nullptr;  // CUDA device memory positions
-    float* mDeviceVelocities = nullptr;
+    float* mDevicepositionitions = nullptr;  // CUDA device memory positionitions
+    float* mDevicevelocityocities = nullptr;
     float* mDeviceNonPressureForces = nullptr;
     float* mDevicePressureForces = nullptr;
     float* mDeviceDensities = nullptr;
     float* mDevicePressures = nullptr;
 
-    float* mDeviceSortedPositions = nullptr;
-    float* mDeviceSortedVelocities = nullptr;
+    float* mDeviceSortedpositionitions = nullptr;
+    float* mDeviceSortedvelocityocities = nullptr;
 
     // grid data for sorting method
     uint32_t* mDeviceGridParticleHashes = nullptr;     // Grid hash value for each particle
@@ -524,14 +524,14 @@ void ParticleSystem::Initialize()
 
     // allocate host storage
     uint32_t MemorySize = sizeof(float) * mNumParticles * 4u;
-    mHostPositions = reinterpret_cast<float*>(malloc(MemorySize));
-    mHostVelocities = reinterpret_cast<float*>(malloc(MemorySize));
+    mHostpositionitions = reinterpret_cast<float*>(malloc(MemorySize));
+    mHostvelocityocities = reinterpret_cast<float*>(malloc(MemorySize));
     mHostNonPressureForces = reinterpret_cast<float*>(MemorySize));
     mHostPressureForces = reinterpret_cast<float*>(malloc(MemorySize));
     mHostDensities = reinterpret_cast<float*>(malloc(sizeof(float) * mNumParticles));
     mHostPressures = reinterpret_cast<float*>(malloc(sizeof(float) * mNumParticles));
-    memset(reinterpret_cast<void*>(mHostPositions), 0, MemorySize);
-    memset(reinterpret_cast<void*>(mHostVelocities), 0, MemorySize);
+    memset(reinterpret_cast<void*>(mHostpositionitions), 0, MemorySize);
+    memset(reinterpret_cast<void*>(mHostvelocityocities), 0, MemorySize);
     memset(reinterpret_cast<void*>(mHostNonPressureForces), 0, MemorySize);
     memset(reinterpret_cast<void*>(mHostPressureForces), 0, MemorySize);
     memset(reinterpret_cast<void*>(mHostDensities), 0, sizeof(float) * mNumParticles);
@@ -543,15 +543,15 @@ void ParticleSystem::Initialize()
     memset(reinterpret_cast<void*>(mHostCellEnds), 0, sizeof(uint32_t) * mNumGridCells);
 
     // allocate GPU data
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicePositions), MemorySize));
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceVelocities), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicepositionitions), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicevelocityocities), MemorySize));
     checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceNonPressureForces), MemorySize));
     checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicePressureForces), MemorySize));
     checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceDensities), sizeof(float) * NumParticles));
     checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDevicePressures), sizeof(float) * NumParticles));
 
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedPositions), MemorySize));
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedVelocities), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedpositionitions), MemorySize));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceSortedvelocityocities), MemorySize));
 
     checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleHashes), sizeof(uint) * mNumParticles));
     checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&mDeviceGridParticleIndice), sizeof(uint) * mNumParticles));
@@ -566,13 +566,13 @@ void ParticleSystem::Destroy()
 {
     assert(mbInitialized);
 
-    if (mHostPositions != nullptr)
+    if (mHostpositionitions != nullptr)
 	{
-		free(mHostPositions);
+		free(mHostpositionitions);
 	}
-	if (mHostVelocities != nullptr)
+	if (mHostvelocityocities != nullptr)
 	{
-		free(mHostVelocities);
+		free(mHostvelocityocities);
 	}
 	if (mHostNonPressureForces != nullptr)
 	{
@@ -598,9 +598,9 @@ void ParticleSystem::Destroy()
 	{
 		free(mHostCellEnds);
 	}
-	if (mDeviceVelocities != nullptr)
+	if (mDevicevelocityocities != nullptr)
 	{
-		cudaFree(mDeviceVelocities);
+		cudaFree(mDevicevelocityocities);
 	}
 	if (mDeviceDensities != nullptr)
 	{
@@ -618,13 +618,13 @@ void ParticleSystem::Destroy()
 	{
 		cudaFree(mDevicePressures);
 	}
-	if (mDeviceSortedPositions != nullptr)
+	if (mDeviceSortedpositionitions != nullptr)
 	{
-		cudaFree(mDeviceSortedPositions);
+		cudaFree(mDeviceSortedpositionitions);
 	}
-	if (mDeviceSortedVelocities != nullptr)
+	if (mDeviceSortedvelocityocities != nullptr)
 	{
-		cudaFree(mDeviceSortedVelocities);
+		cudaFree(mDeviceSortedvelocityocities);
 	}
 	if (mDeviceGridParticleHashes != nullptr)
 	{
@@ -642,9 +642,9 @@ void ParticleSystem::Destroy()
 	{
 		cudaFree(mDeviceCellEnds);
 	}
-	if (mDevicePositions != nullptr)
+	if (mDevicepositionitions != nullptr)
 	{
-		cudaFree(mDevicePositions);
+		cudaFree(mDevicepositionitions);
 	}
 
     mbInitialized = false;
@@ -664,15 +664,15 @@ void AParticleActor::InitializeGrid(uint32_t Size, float Spacing, float Jitter, 
 
                 if (i < mNumParticles)
                 {
-                    mHostPositions[i * 4u + 0u] = (Spacing * x) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
-                    mHostPositions[i * 4u + 1u] = (Spacing * y) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
-                    mHostPositions[i * 4u + 2u] = (Spacing * z) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
-                    mHostPositions[i * 4u + 3u] = 1.0f;
+                    mHostpositionitions[i * 4u + 0u] = (Spacing * x) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
+                    mHostpositionitions[i * 4u + 1u] = (Spacing * y) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
+                    mHostpositionitions[i * 4u + 2u] = (Spacing * z) + mParameters.ParticleRadius - 1.0f + (frand() * 2.0f - 1.0f) * Jitter;
+                    mHostpositionitions[i * 4u + 3u] = 1.0f;
 
-                    mHostVelocities[i * 4u + 0u] = 0.0f;
-                    mHostVelocities[i * 4u + 1u] = 0.0f;
-                    mHostVelocities[i * 4u + 2u] = 0.0f;
-                    mHostVelocities[i * 4u + 3u] = 0.0f;
+                    mHostvelocityocities[i * 4u + 0u] = 0.0f;
+                    mHostvelocityocities[i * 4u + 1u] = 0.0f;
+                    mHostvelocityocities[i * 4u + 2u] = 0.0f;
+                    mHostvelocityocities[i * 4u + 3u] = 0.0f;
                 }
             }
         }
@@ -686,8 +686,8 @@ void ParticleSystem::Reset()
 
     InitializeGrid(Size, mParameters.KernelRadius, Jitter, mNumParticles);
 
-    cudaMemcpy(mDevicePositions, HostPositions, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
-	cudaMemcpy(mDeviceVelocities, HostVelocities, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+    cudaMemcpy(mDevicepositionitions, Hostpositionitions, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
+	cudaMemcpy(mDevicevelocityocities, Hostvelocityocities, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
 	cudaMemcpy(mDeviceNonPressureForces, HostForces, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
     cudaMemcpy(mDevicePressureForces, HostForces, sizeof(float) * mNumParticles * 4, cudaMemcpyHostToDevice);
 	cudaMemcpy(mDeviceDensities, HostDensities, sizeof(float) * mNumParticles, cudaMemcpyHostToDevice);
@@ -734,7 +734,7 @@ void ParticleSystem::Update(float DeltaTime)
     SetParameters(&mParameters);
 
     // calculate grid hash
-    CalculateGridHashes(mDeviceGridParticlehashes, mDeviceGridParticleIndice, mDevicePositions, mNumParticles);
+    CalculateGridHashes(mDeviceGridParticlehashes, mDeviceGridParticleIndice, mDevicepositionitions, mNumParticles);
 
     // sort particles based on hash
     SortParticles(mDeviceGridParticleHashes, mDeviceGridParticleIndice, mNumParticles);
@@ -743,12 +743,12 @@ void ParticleSystem::Update(float DeltaTime)
     // find start and end of each cell
     ReorderDataAndFindCellStart(mDeviceCellStarts,
                                 mDeviceCellEnds,
-                                mDeviceSortedPositions,
-                                mDeviceSortedVelocities,
+                                mDeviceSortedpositionitions,
+                                mDeviceSortedvelocityocities,
                                 mDeviceGridParticleHashes,
                                 mDeviceGridParticleIndice,
-                                mDevicePositions,
-                                mDeviceVelocities,
+                                mDevicepositionitions,
+                                mDevicevelocityocities,
                                 mNumParticles,
                                 mNumGridCells);
 }
@@ -759,7 +759,7 @@ void ParticleSystem::Update(float DeltaTime)
 ![MassDensity](\Images\Sph\MassDensity.gif)
 
 ```cpp
-void ComputeDensities(float* OutDensities, float* SortedPositions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
+void ComputeDensities(float* OutDensities, float* Sortedpositionitions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
 {
     // thread per particle
     uint NumThreads;
@@ -768,7 +768,7 @@ void ComputeDensities(float* OutDensities, float* SortedPositions, uint* GridPar
 
     // execute the kernel
     ComputeDensitiesDevice<<<NumBlocks, NumThreads>>>(OutDensities,
-                                                      (float4*) SortedPositions,
+                                                      (float4*) Sortedpositionitions,
                                                       GridParticleIndice,
                                                       CellStarts,
                                                       CellEnds,
@@ -780,7 +780,7 @@ void ComputeDensities(float* OutDensities, float* SortedPositions, uint* GridPar
 
 __global__
 void ComputeDensitiesDevice(float* OutDensities,      // output: new density
-                            float4* SortedPositions,  // input: sorted positions
+                            float4* Sortedpositionitions,  // input: sorted positionitions
                             uint* GridParticleIndice, // input: sorted particle indices
                             uint* CellStarts,
                             uint* CellEnds,
@@ -794,10 +794,10 @@ void ComputeDensitiesDevice(float* OutDensities,      // output: new density
     }
 
     // read particle data from sorted arrays
-    float3 Position = make_float3(SortedPositions[Index].x, SortedPositions[Index].y, SortedPositions[Index].z);
+    float3 positionition = make_float3(Sortedpositionitions[Index].x, Sortedpositionitions[Index].y, Sortedpositionitions[Index].z);
 
     // get address in grid
-    int3 GridPosition = CalculateGridHash(Position);
+    int3 Gridpositionition = CalculateGridHash(positionition);
 
     // examine neighbouring cells
     float Density = 0.0f;
@@ -807,26 +807,26 @@ void ComputeDensitiesDevice(float* OutDensities,      // output: new density
         {
             for (int x = -1; x <= 1; ++x)
             {
-                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
-                Density += ComputeDensitiesByCell(NeighbourPosition, Index, Position, SortedPositions, CellStarts, CellEnds);
+                int3 Neighbourpositionition = Gridpositionition + make_int3(x, y, z);
+                Density += ComputeDensitiesByCell(Neighbourpositionition, Index, positionition, Sortedpositionitions, CellStarts, CellEnds);
             }
         }
     }
 
-    // write new velocity back to original unsorted location
+    // write new velocityocity back to original unsorted location
     uint OriginalIndex = GridParticleIndice[Index];
     OutDensities[OriginalIndex] = Density;
 }
 
 __device__
-float ComputeDensitiesByCell(int3 GridPosition,
+float ComputeDensitiesByCell(int3 Gridpositionition,
                              uint Index,
-                             float3 Position,
-                             float4* SortedPositions,
+                             float3 positionition,
+                             float4* Sortedpositionitions,
                              uint* CellStarts,
                              uint* CellEnds)
 {
-    uint GridHash = CalculateGridHash(GridPosition);
+    uint GridHash = CalculateGridHash(Gridpositionition);
 
     // get start of bucket for this cell
     uint StartIndex = CellStarts[GridHash];
@@ -840,8 +840,8 @@ float ComputeDensitiesByCell(int3 GridPosition,
 
         for (uint j = StartIndex; j < EndIndex; ++j)
         {
-            float3 NeighborPosition = make_float3(SortedPositions[j]);
-            float3 rij = (Position - NeighborPosition);
+            float3 Neighborpositionition = make_float3(Sortedpositionitions[j]);
+            float3 rij = (positionition - Neighborpositionition);
             float r2 = LengthSquared(rij);
 
             if (r2 < gParameters.KernelRadiusSquared)
@@ -863,7 +863,7 @@ float ComputeDensitiesByCell(int3 GridPosition,
 * External Force
     * ![ExternalForce](\Images\Sph\ExternalForce.gif)
 
-In order to approximate the Laplacian of the velocity field we
+In order to approximate the Laplacian of the velocityocity field we
 combine an SPH derivative with a finite difference derivative which
 yields the following equation<sup>[17](#footnote_17)</sup>:
 
@@ -873,9 +873,9 @@ where **x**<sub>ij</sub> = **x**<sub>i</sub> − **x**<sub>j</sub>, **v**<sub>ij
 
 ```cpp
 void ComputeNonPressureForces(float* OutNonPressureForces,
-                              float* OutVelocities,
-                              float* SortedPositions,
-                              float* SortedVelocities,
+                              float* Outvelocityocities,
+                              float* Sortedpositionitions,
+                              float* Sortedvelocityocities,
                               float* Densities,
                               float* Pressures,
                               uint* GridParticleIndice,
@@ -892,9 +892,9 @@ void ComputeNonPressureForces(float* OutNonPressureForces,
 
     // execute the kernel
     ComputeNonPressureForcesDevice<<<NumBlocks, NumThreads>>>((float4*) OutNonPressureForces
-                                                              (float4*) OutVelocities,
-                                                              (float4*) SortedPositions,
-                                                              (float4*) SortedVelocities,
+                                                              (float4*) Outvelocityocities,
+                                                              (float4*) Sortedpositionitions,
+                                                              (float4*) Sortedvelocityocities,
                                                               Densities,
                                                               Pressures,
                                                               DeltaTime,
@@ -909,9 +909,9 @@ void ComputeNonPressureForces(float* OutNonPressureForces,
 
 __global__
 void ComputeNonPressureForcesDevice(float4* OutNonPressureForces,      // output: updated non pressure forces
-                                    float4* OutVelocities,      // output: updated velocities
-                                    float4* SortedPositions,    // input: sorted positions
-                                    float4* SortedVelocities,
+                                    float4* Outvelocityocities,      // output: updated velocityocities
+                                    float4* Sortedpositionitions,    // input: sorted positionitions
+                                    float4* Sortedvelocityocities,
                                     float* Densities,
                                     float DeltaTime,
                                     uint* GridParticleIndice,    // input: sorted particle indices
@@ -928,12 +928,12 @@ void ComputeNonPressureForcesDevice(float4* OutNonPressureForces,      // output
 
     // read particle data from sorted arrays
     uint OriginalIndex = GridParticleIndice[Index];
-    float3 Position = make_float3(SortedPositions[Index]);
-    float3 Velocity = make_float3(SortedVelocities[Index]);
+    float3 positionition = make_float3(Sortedpositionitions[Index]);
+    float3 velocityocity = make_float3(Sortedvelocityocities[Index]);
     float Density = Densities[OriginalIndex];
 
     // get address in grid
-    int3 GridPosition = CalculateGridPosisition(Position);
+    int3 Gridpositionition = CalculateGridpositionisition(positionition);
 
     // examine neighbouring cells
     float3 ViscosityForce = make_float3(0.0f);
@@ -944,15 +944,15 @@ void ComputeNonPressureForcesDevice(float4* OutNonPressureForces,      // output
         {
             for (int x = -1; x <= 1; x++)
             {
-                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
-                ComputeNonPressureForcesByCell(NeighbourPosition,
+                int3 Neighbourpositionition = Gridpositionition + make_int3(x, y, z);
+                ComputeNonPressureForcesByCell(Neighbourpositionition,
                                                Index,
                                                ViscosityForce,
-                                               Position,
-                                               Velocity,
+                                               positionition,
+                                               velocityocity,
                                                Density,
-                                               SortedPositions,
-                                               SortedVelocities,
+                                               Sortedpositionitions,
+                                               Sortedvelocityocities,
                                                Densities,
                                                GridParticleIndice,
                                                CellStarts,
@@ -962,28 +962,29 @@ void ComputeNonPressureForcesDevice(float4* OutNonPressureForces,      // output
     }
 
     // viscosityForce = - mass * viscosity_coefficient * sigmas
-    ViscosityForce *= -gParameters.Mass * gParameters.Viscosity;
+    // viscosityForce = mass * viscosity_coefficient * 2 * (d + 2)
+    ViscosityForce *= -gParameters.Mass * gParameters.Viscosity * 10.0f;
     // externalForce = mass * gravitational acceleration
     float3 ExternalForce = gParameters.Mass * gParameters.Gravity;
     OutNonPressureForces[OriginalIndex] = ViscosityForce + ExternalForce;
-    OutVelocities[OriginalIndex] += make_float4((OutNonPressureForce[OriginalIndex] / gParameters.Mass) * DeltaTime, 0.0f);
+    Outvelocityocities[OriginalIndex] += make_float4((OutNonPressureForce[OriginalIndex] / gParameters.Mass) * DeltaTime, 0.0f);
 }
 
 __device__
-void ComputeNonPressureForcesByCell(int3 GridPosition,
+void ComputeNonPressureForcesByCell(int3 Gridpositionition,
                                     uint Index,
                                     float3& OutViscosityForce,
-                                    float3 Position,
-                                    float3 Velocity,
+                                    float3 positionition,
+                                    float3 velocityocity,
                                     float Density,
-                                    float4* SortedPositions,
-                                    float4* SortedVelocities,
+                                    float4* Sortedpositionitions,
+                                    float4* Sortedvelocityocities,
                                     float* Densities,
                                     uint* GridParticleIndice,
                                     uint* CellStarts,
                                     uint* CellEnds)
 {
-    uint GridHash = CalculateGridHash(GridPosition);
+    uint GridHash = CalculateGridHash(Gridpositionition);
 
     // get start of bucket for this cell
     uint StartIndex = CellStarts[GridHash];
@@ -997,18 +998,19 @@ void ComputeNonPressureForcesByCell(int3 GridPosition,
         {
             if (j != Index)                // check not colliding with self
             {
-                float3 NeighborPosition = make_float3(SortedPositions[j]);
-                float3 Rij = (Position - NeighborPosition);
+                float3 Neighborpositionition = make_float3(Sortedpositionitions[j]);
+                float3 Rij = (positionition - Neighborpositionition);
                 float R2 = LengthSquared(Rij);
 
                 if (R2 < gParameters.KernelRadiusSquared)
                 {
                     uint OriginalIndex = GridParticleIndice[j];
-                    float3 NeighborVelocity = make_float3(SortedVelocities[j]);
-                    float3 Vij = Velocity - NeighborVelocity;
+                    float3 Neighborvelocityocity = make_float3(Sortedvelocityocities[j]);
+                    float3 Vij = velocityocity - Neighborvelocityocity;
                     
-                    // sigma (mass / density) * v_ij * (2 * ||gradient of kernel|| / ||r_ij||)
-                    OutViscosityForce += (gParameters.Mass / Densities[OriginalIndex]) * Vij * (2.0f * Length(Poly6KernelGradient(Rij)) / Length(Rij));
+                    // sigma (mass_j / density_j) * v_ij * (2 * ||gradient of kernel|| / ||r_ij||)
+                    // sigma (mass_j / density_j) * (v_ij * x_ij) / (||x_ij||^2 + 0.01 * h^2) ∇W_ij
+                    OutViscosityForce += (gParameters.Mass / Densities[OriginalIndex]) * dot(Vij, Rij) / (dot(Rij, Rij) + 0.01f * gParameters.KernelRadiusSquared) * Poly6KernelGradient(Rij);
                 }
             }
         }
@@ -1031,7 +1033,7 @@ As for state equations, it requires density values, thus it would be efficient t
 ```cpp
 void ComputeDensitiesAndPressures(float* OutDensities, 
                                   float* OutPressures, 
-                                  float* SortedPositions, 
+                                  float* Sortedpositionitions, 
                                   uint* GridParticleIndice, 
                                   uint* CellStarts, 
                                   uint* CellEnds, 
@@ -1046,7 +1048,7 @@ void ComputeDensitiesAndPressures(float* OutDensities,
     // execute the kernel
     ComputeDensitiesAndPressuresDevice<<<NumBlocks, NumThreads>>>(OutDensities,
                                                                   OutPressures
-                                                                  (float4*) SortedPositions,
+                                                                  (float4*) Sortedpositionitions,
                                                                   GridParticleIndice,
                                                                   CellStarts,
                                                                   CellEnds,
@@ -1059,7 +1061,7 @@ void ComputeDensitiesAndPressures(float* OutDensities,
 __global__
 void ComputeDensitiesAndPressuresDevice(float* OutDensities,    // output: new density
                                         float* OutPressures,    // output: new pressure  
-                                        float4* SortedPositions,  // input: sorted positions
+                                        float4* Sortedpositionitions,  // input: sorted positionitions
                                         uint* GridParticleIndice, // input: sorted particle indices
                                         uint* CellStarts,
                                         uint* CellEnds,
@@ -1069,7 +1071,7 @@ void ComputeDensitiesAndPressuresDevice(float* OutDensities,    // output: new d
 
     ...
 
-    // write new velocity back to original unsorted location
+    // write new velocityocity back to original unsorted location
     uint OriginalIndex = GridParticleIndice[Index];
     OutDensities[OriginalIndex] = Density;
     // state equation
@@ -1088,9 +1090,9 @@ Now we know the pressure field, we can compute the pressure force field. It woul
 ```cpp
 void ComputeForces(float* OutPressureForces,
                    float* OutNonPressureForces,
-                   float* OutVelocities,
-                   float* SortedPositions,
-                   float* SortedVelocities,
+                   float* Outvelocityocities,
+                   float* Sortedpositionitions,
+                   float* Sortedvelocityocities,
                    float* Densities,
                    float* Pressures,
                    uint* GridParticleIndice,
@@ -1108,9 +1110,9 @@ void ComputeForces(float* OutPressureForces,
     // execute the kernel
     ComputeForcesDevice<<<NumBlocks, NumThreads>>>((float4*) OutPressureForces
                                                    (float4*) OutNonPressureForces
-                                                   (float4*) OutVelocities,
-                                                   (float4*) SortedPositions,
-                                                   (float4*) SortedVelocities,
+                                                   (float4*) Outvelocityocities,
+                                                   (float4*) Sortedpositionitions,
+                                                   (float4*) Sortedvelocityocities,
                                                    Densities,
                                                    Pressures,
                                                    DeltaTime,
@@ -1126,9 +1128,9 @@ void ComputeForces(float* OutPressureForces,
 __global__
 void ComputeForcesDevice(float4* OutNonPressureForces,  // output: updated non pressure forces
                          float4* OutPressureForces,     // output: updated pressure forces
-                         float4* OutVelocities,         // output: updated velocities
-                         float4* SortedPositions,       // input: sorted positions
-                         float4* SortedVelocities,
+                         float4* Outvelocityocities,         // output: updated velocityocities
+                         float4* Sortedpositionitions,       // input: sorted positionitions
+                         float4* Sortedvelocityocities,
                          float* Densities,
                          float* Pressures,
                          float DeltaTime,
@@ -1156,19 +1158,19 @@ void ComputeForcesDevice(float4* OutNonPressureForces,  // output: updated non p
         {
             for (int x = -1; x <= 1; x++)
             {
-                int3 NeighbourPosition = GridPosition + make_int3(x, y, z);
-                ComputeForcesByCell(NeighbourPosition,
+                int3 Neighbourpositionition = Gridpositionition + make_int3(x, y, z);
+                ComputeForcesByCell(Neighbourpositionition,
                                     Index,
                                     PressureForce,
                                     ViscosityForce,
                                     SurfaceTensionForce,
                                     bShouldCalculateSurfaceTension,
-                                    Position,
-                                    Velocity,
+                                    positionition,
+                                    velocityocity,
                                     Density,
                                     Pressure,
-                                    SortedPositions,
-                                    SortedVelocities,
+                                    Sortedpositionitions,
+                                    Sortedvelocityocities,
                                     Densities,
                                     Pressures,
                                     GridParticleIndice,
@@ -1185,22 +1187,22 @@ void ComputeForcesDevice(float4* OutNonPressureForces,  // output: updated non p
 
     OutPressureForces[OriginalIndex] = PressureForce;
     OutNonPressureForce[OriginalIndex] = ViscosityForce + ExternalForce;
-    OutVelocities[OriginalIndex] += make_float4(((OutPressureForce[OriginalIndex] + OutNonPressureForce[OriginalIndex]) / gParameters.Mass) * DeltaTime, 0.0f);
+    Outvelocityocities[OriginalIndex] += make_float4(((OutPressureForce[OriginalIndex] + OutNonPressureForce[OriginalIndex]) / gParameters.Mass) * DeltaTime, 0.0f);
 }
 
 __device__
-void ComputeForcesByCell(int3 GridPosition,
+void ComputeForcesByCell(int3 Gridpositionition,
                          uint Index,
                          float3& OutPressureForce,
                          float3& OutViscosityForce,
                          float3& OutSurfaceTensionForce,
                          bool bShouldCalculateSurfaceTension,
-                         float3 Position,
-                         float3 Velocity,
+                         float3 positionition,
+                         float3 velocityocity,
                          float Density,
                          float Pressure,
-                         float4* SortedPositions,
-                         float4* SortedVelocities,
+                         float4* Sortedpositionitions,
+                         float4* Sortedvelocityocities,
                          float* Densities,
                          float* Pressures,
                          uint* GridParticleIndice,
@@ -1213,16 +1215,16 @@ void ComputeForcesByCell(int3 GridPosition,
         {
             if (j != Index)                // check not colliding with self
             {
-                float3 NeighborPosition = make_float3(SortedPositions[j]);
-                float3 Rij = (Position - NeighborPosition);
+                float3 Neighborpositionition = make_float3(Sortedpositionitions[j]);
+                float3 Rij = (positionition - Neighborpositionition);
                 //float r = length(rij);
                 float R2 = LengthSquared(Rij);
 
                 if (R2 < gParameters.KernelRadiusSquared)
                 {
                     uint OriginalIndex = GridParticleIndice[j];
-                    float3 NeighborVelocity = make_float3(SortedVelocities[j]);
-                    float3 Vij = Velocity - NeighborVelocity;
+                    float3 Neighborvelocityocity = make_float3(Sortedvelocityocities[j]);
+                    float3 Vij = velocityocity - Neighborvelocityocity;
                     
                     // sigma mass_j * (pressure_i / (density_i)^2 + pressure_j / (density_j)^2) * gradient of W_ij
                     OutPressureForce += gParameters.Mass * ((Pressure / (Density * Density)) + (Pressures[OriginalIndex] / (Densities[OriginalIndex] * Densities[OriginalIndex]))) * SpikyKernelGradient(Rij);
@@ -1233,15 +1235,98 @@ void ComputeForcesByCell(int3 GridPosition,
 }
 ```
 
+##### Update positionitions
+
+Now we have acquired the velocityocities which we can now calculate the positionitions of each particles. However, we need to do one more additional step: **boundary handling**.
+
+To keep it simple, we will imagine that there is an invisible box that surrounds the particles. The box is 2.0f in width, height, and depth.
+
+After updating the position, we will check whether the position exceeds the limit. If so, then we will simply reverse the direction of the particle.
+
+```cpp
+struct IntegrateFunctor
+{
+    float DeltaTime;
+
+    __host__ __device__
+    IntegrateFunctor(float InDeltaTime)
+        : DeltaTime(InDeltatime)
+    {
+    }
+
+    template <typename Tuple>
+    __device__
+    void operator()(Tuple InTuple)
+    {
+        volatile float4 PositionData = thrust::get<0>(InTuple);
+        volatile float4 VelocityData = thrust::get<1>(InTuple);
+        float3 Position = make_float3(PositionData.x, PositionData.y, PositionData.z);
+        float3 Velocity = make_float3(VelocityData.x, VelocityData.y, VelocityData.z);
+        
+        Position += Velocity * deltaTime;
+
+        if (Position.x > 1.0f * gParameters.XScaleFactor - gParameters.ParticleRadius)
+        {
+            Position.x = 1.0f * gParameters.XScaleFactor - gParameters.ParticleRadius;
+            Velocity.x *= gParameters.BoundaryDamping;
+        }
+
+        if (Position.x < -1.0f * gParameters.XScaleFactor + gParameters.ParticleRadius)
+        {
+            Position.x = -1.0f * gParameters.XScaleFactor + gParameters.ParticleRadius;
+            Velocity.x *= gParameters.BoundaryDamping;
+        }
+
+        if (Position.y > 1.0f * gParameters.YScaleFactor - gParameters.ParticleRadius)
+        {
+            Position.y = 1.0f * gParameters.YScaleFactor - gParameters.ParticleRadius;
+            Velocity.y *= gParameters.BoundaryDamping;
+        }
+
+        if (Position.z > 1.0f *gParameters. ZScaleFactor - gParameters.ParticleRadius)
+        {
+            Position.z = 1.0f * gParameters.ZScaleFactor - gParameters.ParticleRadius;
+            Velocity.z *= gParameters.BoundaryDamping;
+        }
+
+        if (Position.z < -1.0f * gParameters.ZScaleFactor + gParameters.ParticleRadius)
+        {
+            Position.z = -1.0f * gParameters.ZScaleFactor + gParameters.ParticleRadius;
+            Velocity.z *= gParameters.BoundaryDamping;
+        }
+
+        if (Position.y < -1.0f * gParameters.YScaleFactor + gParameters.ParticleRadius)
+        {
+            Position.y = -1.0f * gParameters.YScaleFactor + gParameters.ParticleRadius;
+            Velocity.y *= gParameters.BoundaryDamping;
+        }
+
+        // store new positionition and velocityocity
+        //printf("after positionition=(%f, %f, %f)\n", positionition.x, positionition.y, positionition.z);
+        thrust::get<0>(InTuple) = make_float4(Position, PositionData.w);
+        thrust::get<1>(InTuple) = make_float4(Velocity, VelocityData.w);
+    }
+};
+
+void IntegrateSystem(float* Outpositionitions, float* Outvelocityocities, float DeltaTime, uint NumParticles)
+{
+    thrust::device_ptr<float4> devicepositionitions((float4*) Outpositionitions);
+    thrust::device_ptr<float4> devicevelocityocities((float4*) Outvelocityocities);
+    
+    thrust::for_each(thrust::make_zip_iterator(thrust::make_tuple(devicepositionitions, devicevelocityocities)),
+                     thrust::make_zip_iterator(thrust::make_tuple(devicepositionitions + NumParticles, devicevelocityocities + NumParticles)),
+                     IntegrateFunctor(deltaTime));
+}
+```
 
 ---
 
 <ol>
-<li id="footnote_1">Doyup Kim. 2016. <a href="https://fluidenginedevelopment.org/">Fluid Engine Development (1st. ed.)</a>. A K Peters/CRC Press, Natikc, MA.</li>
+<li id="footnote_1">Doyup Kim. 2016. <a href="https://fluidenginedevelocityopment.org/">Fluid Engine Develocityopment (1st. ed.)</a>. A K Peters/CRC Press, Natikc, MA.</li>
 <li id="footnote_2">J. J. Monaghan. <a href="https://www.annualreviews.org/doi/abs/10.1146/annurev.aa.30.090192.002551">Smoothed particle hydrodynamics</a>. Annual Review of Astronomy and Astrophysics 30:543-574, 1992.</li>
 <li id="footnote_3">J. J. Monaghan. <a href="https://www.sciencedirect.com/science/article/pii/S0021999184710345">Simulating free surface flows with SPH</a>. Journal of Computational Physics, 110(2):399–406, 1994.</li>
 <li id="footnote_4"> M. Desbrun, and M-P. Gascuel. <a href="https://hal.inria.fr/inria-00537534/document">Smoothed particles: A new paradigm for animating highly deformable bodies</a>. In Computer Animation and Simulation’96, pages 61–76. Springer Vienna, 1996.</li>
-<li id="footnote_5">M. Müller, D. Charypar, and M. Gross. <a href="https://matthias-research.github.io/pages/publications/sca03.pdf">Particle-based fluid simulation for interactive applications</a>. In Proceedings of the 2003 ACM SIGGRAPH/Eurographics Symposium on Computer Animation, pages 154–159, 2003.</li>
+<li id="footnote_5">M. Müller, D. Charypar, and M. Gross. <a href="https://matthias-research.github.io/pages/publications/sca03.pdf">Particle-based fluid simulation for interactive applications</a>. In Proceedings of the 2003 ACM SIGGRAPH/Eurographics Sympositionium on Computer Animation, pages 154–159, 2003.</li>
 <li id="footnote_6">RealFlow 10 documentation. Available at <a href="https://nextlimitsupport.atlassian.net/wiki/spaces/rf2016docs/overview">https://nextlimitsupport.atlassian.net/wiki/spaces/rf2016docs/overview</a>. Accessed on 27 NOV 2021.</li>
 <li id="footnote_7"><a href="https://en.wikipedia.org/wiki/Kinematics">Kinematics</a> - Wikipedia</li>
 <li id="footnote_8"><a href="https://en.wikipedia.org/wiki/Continuum_mechanics">Continuum mechanics</a> - Wikipedia</li>
