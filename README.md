@@ -8,7 +8,7 @@ Game Development Studies with Books
         * [Marching Cubes](Notes/2021/November/English/MarchingCubes.md)
         * [Smoothed Particles Hydrodynamics(SPH) by CUDA](Notes/2021/November/English/SmoothedParticlesHydrodynamicsCuda.md)
     * December
-        * [SPH Visualization through Marching Cubes](Notes/2021/November/English/SphVisualizationThroughMarchingCubes.md)
+        * [SPH Visualization through Marching Cubes](Notes/2021/December/English/SphVisualizationThroughMarchingCubes.md)
 * 2022
     * January
         * [Divergence-Free Smoothed Particles Hydrodynamics (DFPSH)](Notes/2022/January/English/DivergenceFreeSmoothedParticlesHydrodynamics.md)
