@@ -10,8 +10,8 @@ Game Development Studies with Books
     * December
         * [SPH Visualization through Marching Cubes](Notes/2021/December/English/SphVisualizationThroughMarchingCubes.md)
 * 2022
-    * January
-        * [Divergence-Free Smoothed Particles Hydrodynamics (DFPSH)](Notes/2022/January/English/DivergenceFreeSmoothedParticlesHydrodynamics.md)
+    * February
+        * [Microsoft MiniEngine Analysis](Notes/2022/February/English/MiniEngineAnalysis.md)
 
 
 ## Korean Contents
