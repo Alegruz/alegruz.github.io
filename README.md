@@ -14,6 +14,7 @@ Game Development Studies with Books
         * [Microsoft MiniEngine Analysis](Notes/2022/02/English/MiniEngineAnalysis.md)
     * March
         * [Graphics Conference Trend Analysis](Notes/2022/03/English/GraphicsConferenceTrendAnalysis.md)
+        * [Global Illumination Study Resources](Notes/2022/03/English/GlobalIlluminationStudyResources.md)
 
 
 ## Korean Contents

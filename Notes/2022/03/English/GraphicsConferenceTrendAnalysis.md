@@ -112,6 +112,7 @@ The conferences analyzed are those that focuses on "Real-Time Rendering". Follow
 |Name|Author|Year|Conference|
 |----|------|----|----------|
 |GPU-based Grass Simulation with Accurate Blade Reconstruction|Sheng Wang, Saba Ghazanfar Ali, Bin Sheng, Ping Lu, Lijuan Mao, Po Yang|2020|CGI|
+
 # Terrain Modeling
 
 |Name|Author|Year|Conference|
@@ -123,10 +124,11 @@ The conferences analyzed are those that focuses on "Real-Time Rendering". Follow
 |Real-Time Hyper-Amplification of Planets|Yann Cortial, Adrien Peytavie, Eric Galin, Eric Guérin|2020|CGI|
 
 # Visual Simulation & Aesthetics
+
 |Name|Author|Year|Conference|
 |----|------|----|----------|
 |Visual Simulation of Weathering Coated Metallic Objects|Akinori Ishitobi, Masanori Nakayama, Issei Fujishiro|2020|CGI|
-Evolving L-systems in a competitive environment|Job Talle, Jiri Kosinka|2020|CGI|
+|Evolving L-systems in a competitive environment|Job Talle, Jiri Kosinka|2020|CGI|
 
 # Spatial Data Structures
 
