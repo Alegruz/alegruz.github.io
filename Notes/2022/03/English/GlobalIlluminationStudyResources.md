@@ -7,11 +7,20 @@
 
 |Name|Author|Year|Conference/Journal|
 |----|------|----|------------------|
+|[Interactive Display of Global Illumination Solutions for Non-diffuse Environments - A Survey](https://onlinelibrary.wiley.com/doi/abs/10.1111/1467-8659.00551)|Wolfgang Heidrich|2001|CGF|
+|[State of the Art in Global Illumination for Interactive Applications and High-quality Animations](https://onlinelibrary.wiley.com/doi/full/10.1111/1467-8659.t01-1-00646)|Cyrille Damez, Kirill Dmitriev, Karol Myszkowski|2003|CGF|
+|[Real-Time Global Illumination on GPUs](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2005.10129194)|Nijasure, Mangesh, Sumanta N. Pattanaik, Vineet Goel|2005|JGT|
+|[The State of the Art in Interactive Global Illumination](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-8659.2012.02093.x)|Tobias Ritschel, Carsten Dachsbacher, Thorsten Grosch, Jan Kautz|2012|CGF|
 |[A Local Frequency Analysis of Light Scattering and Absorption](https://hal.inria.fr/hal-00957242/document)|Laurent Belcour, Kavita Bala, Cyril Soler|2014|ACM SIGGRAPH/ACM ToG|
 |[Ink-and-Ray: Bas-Relief Meshes for Adding Global Illumination Effects to Hand-Drawn Characters](https://dcgi.fel.cvut.cz/home/sykorad/ink-and-ray.html)|Daniel Sykora, Ladislav Kavan, Martin Cadik, Ondrej Jamriska, Alec Jacobson, Brian Whited, Maryann Simmons, Olga Sorkine-Hornung|2014|ACM SIGGRAPH/ACM ToG|
+|[Real-time Radiance Caching using Chrominance Compression](https://jcgt.org/published/0003/04/06/paper.pdf)|K. Vardis, G. Papaioannou, A. Gkaravelis|2014|JCGT|
+|[Efficient GPU Screen-Space Ray Tracing](https://jcgt.org/published/0003/04/04/paper-lowres.pdf)|Morgan McGuire, Michael Mara|2014|JCGT|
 |[Complex Luminaires: Illumination and Appearance Rendering](https://dl.acm.org/doi/10.1145/2714571)|Edgar Velázquez-Armendáriz, Zhao Dong, Bruce Walter, Donald P. Greenberg|2015|ACM SIGGRAPH/ACM ToG|
+|[Efficient Ray Tracing Kernels for Modern CPU Architectures](https://jcgt.org/published/0004/04/05/)|Valentin Fuetterling, Carsten Lojewski, Franz-Josef Pfreundt, Achim Ebert|2015|JCGT|
 |[Fast 4D Sheared Filtering for Interactive Rendering of Distribution Effects](https://cseweb.ucsd.edu/~ravir/fast_sheared_filtering_paper.pdf)|2016|ACM SIGGRAPH/ACM ToG|
 |[Multi-Scale Rendering of Scratched Materials using a Structured SV-BRDF Model]()|Boris Raymond, Gael Guennebaud, Pascal Barla|2016|ACM SIGGRAPH/ACM ToG|
+|[Real-Time Global Illumination Using Precomputed Illuminance Composition with Chrominance Compression](https://jcgt.org/published/0005/04/02/)|Johannes Jendersie, David Kuri, Thorsten Grosch|2016|JCGT|
+|[Stochastic Light Culling](https://jcgt.org/published/0005/01/02/paper-lowres.pdf)|Yusuke Tokuyoshi, Takahiro Harada|2016|JCGT|
 |[Antialiasing Complex Global Illumination Effects in Path-space](https://dl.acm.org/doi/10.1145/2990495)|Laurent Belcour, Ling-Qi Yan, Ravi Ramamoorthi, Derek Nowrouzezahrai|2017|ACM SIGGRAPH/ACM ToG|
 |[Interactive Reconstruction of Monte Carlo Image Sequences using a Recurrent Denoising Autoencoder](https://research.nvidia.com/publication/interactive-reconstruction-monte-carlo-image-sequences-using-recurrent-denoising)|Chakravarty R. Alla Chaitanya, Anton Kaplanyan, Christoph Schied, Marco Salvi, Aaron Lefohn, Derek Nowrouzezahrai, Timo Aila|2017|ACM SIGGRAPH/ACM ToG|
 |[Reversible Jump Metropolis Light Transport using Inverse Mappings](https://dl.acm.org/doi/10.1145/3132704)|Benedikt Bitterli, Wenzel Jakob, Jan Novak, Wojciech Jarosz|2018|ACM SIGGRAPH/ACM ToG|
@@ -55,6 +64,7 @@
 |[Firefly removal in Monte Carlo rendering with adaptive Median of meaNs](https://hal.archives-ouvertes.fr/hal-03201630/)|Jerome Buisine, Samuel Delepoulle, Christophe Renaud|2021|EGSR|
 |[Moving Basis Decomposition for Precomputed Light Transport](https://onlinelibrary.wiley.com/doi/full/10.1111/cgf.14346)|Ari Silvennoinen, Peter-Pike Sloan|2021|EGSR|
 |[ReSTIR GI: Effective Path Resampling for Real-Time Path Tracing](https://research.nvidia.com/publication/2021-06_ReSTIR-GI%3A-Path)|Yaobin Ouyang, Shiqiu Liu, Markus Kettunen, Matt Pharr, Jacopo Pantaleoni|2021|HPG/CGF|
+|[Fast Radius Search Exploiting Ray Tracing Frameworks](https://jcgt.org/published/0010/01/02/)|I. Evangelou, G. Papaioannou, K. Vardis, A. A. Vasilakis|2021|JCGT|
 
 ## Courses
 
@@ -89,7 +99,7 @@
 |[Out-of-core GPU Ray Tracing of Complex Scenes](https://dl.acm.org/doi/10.1145/2037826.2037854)|Kirill Garanzha, Alexander Bely, Simon Premoze, Vladimir Galaktionov|2011|ACM SIGGRAPH|
 |[Multiresolution Radiosity Caching for Efficient Preview and Final Quality Global Illumination in Movies](https://graphics.pixar.com/library/RadiosityCaching/)|2012|ACM SIGGRAPH|
 |[Point-Based Global Illumination Directional Importance Mapping](http://www.tabellion.org/et/talk12/PBGICutPicking.pdf)|Eric Tabellion|2012|ACM SIGGRAPH|
-|[ Optimizing and Deploying Ray-Traced Dynamic Global Illumination](https://developer.nvidia.com/siggraph/2019/video/sig922-vid)|Morgan McGuire|2019|ACM SIGGRAPH|
+|[Optimizing and Deploying Ray-Traced Dynamic Global Illumination](https://developer.nvidia.com/siggraph/2019/video/sig922-vid)|Morgan McGuire|2019|ACM SIGGRAPH|
 |[Ray-Traced Global Illumination for Games: Massively Parallel Path Space Filtering](https://developer.nvidia.com/blog/massively-parallel-path-space-filtering-in-game-development/)|Alex Keller|2019|ACM SIGGRAPH|
 |[Practical Dynamic Lighting for Large-Scale Game Environments](https://www.pearlabyss.com/ko-KR/Company/About/Lab)|Kyungjoon Cho, Kwanghyeon Go, Daeil Kim|2019|ACM SIGGRAPH|
 |[Dynamic Diffuse Global Illumination Resampling](https://arxiv.org/abs/2108.05263)|Zander Majercik, Thomas Müller, Alexander Keller, Derek Nowrouzezahrai, Morgan McGuire|2021|ACM SIGGRAPH|
@@ -151,7 +161,6 @@
 |[LARGE SCALE AMBIENT OCCLUSION: ELIMINATING LIGHT LEAKS](https://www.dsdambuster.com/blog/lsao-part-2)|Charlie Cole|2018|
 |[Part 3: DDGI Overview](https://morgan3d.github.io/articles/2019-04-01-ddgi/overview.html)|Morgan McGuire|2019|
 |[Approximating Global Illumination with Real-Time Ambient Occlusion](https://www.dropbox.com/s/wnlb91fw93kggxu/Approxmiting_Global_Illumination_with_Real_Time_Ambient_Occlusion.pdf?dl=0)|Daniel Fedai Larsen|2019|
-|[Dynamic Diffuse Global Illumination with Ray-Traced Irradiance Fields](https://jcgt.org/published/0008/02/01/)|Zander Majercik, Jean-Philippe Guertin, Derek Nowrouzezahrai, Morgan McGuire|2019|
 |[RTX Global Illumination Part I](https://developer.nvidia.com/blog/rtx-global-illumination-part-i/)|Morgan McGuire, Adam Marrs, Alexander Majercik|2019|
 |[Anatomy of a frame in AnKi](http://anki3d.org/anatomy-of-a-frame-in-anki/)|Panagiotis Christopoulos Charitos|2019|
 |[RTX Global Illumination SDK Now Available](https://developer.nvidia.com/blog/announcing-nvidia-rtxgi-sdk/)|Nefi Alarcon|2020|
@@ -169,3 +178,44 @@
 |[SCALABLE GLOBAL ILLUMINATION FOR O3DE](https://www.tobias-franke.eu/publications/franke21sgifo/index.html)|Tobias Alexander Franke|2021|
 |[Adventures in Hybrid Rendering](https://diharaw.github.io/post/adventures_in_hybrid_rendering/)|Dihara Wijetunga|2021|
 |[World-space spatiotemporal reservoir reuse for ray-traced global illumination](https://gpuopen.com/download/publications/SA2021_WorldSpace_ReSTIR.pdf)|Guillaume Boissé|2021|
+
+## NVIDIA
+
+|Name|Author|Year|Conference/Journal|
+|----|------|----|------------------|
+|[Chapter 38. High-Quality Global Illumination Rendering Using Rasterization](https://developer.nvidia.com/gpugems/gpugems2/part-v-image-oriented-computing/chapter-38-high-quality-global-illumination)|Toshiya Hachisuka|2005|GPU Gems 2|
+|[Chapter 39. Global Illumination Using Progressive Refinement Radiosity](https://developer.nvidia.com/gpugems/gpugems2/part-v-image-oriented-computing/chapter-39-global-illumination-using-progressive)|Greg Coombe, Mark Harris|2005|GPU Gems 2|
+|[Chapter 9. Interactive Cinematic Relighting with Global Illumination](https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-9-interactive-cinematic-relighting-global)|Fabio Pellacini, Miloš Hašan, Kavita Bala|2007|GPU Gems 3|
+|[Hardware-Accelerated Global Illumination by Image Space Photon Mapping](https://research.nvidia.com/publication/hardware-accelerated-global-illumination-image-space-photon-mapping)|Morgan McGuire, David Luebke|2009|ACM SIGGRAPH/EG HPG|
+|[Architecture Considerations for Tracing Incoherent Rays](https://research.nvidia.com/publication/architecture-considerations-tracing-incoherent-rays)|Timo Aila, Tero Karras|2010|HPG|
+|[Reconstructing the Indirect Light Field for Global Illumination](https://research.nvidia.com/publication/reconstructing-indirect-light-field-global-illumination)|Jaakko Lehtinen, Timo Aila, Samuli Laine, Frédo Durand|2012|ACM SIGGRAPH/ACM ToG|
+|[CloudLight: A system for amortizing indirect lighting in real-time rendering](https://research.nvidia.com/publication/cloudlight-system-amortizing-indirect-lighting-real-time-rendering)|Cyril Crassin, David Luebke, Michael Mara, Morgan McGuire, Brent Oster, Peter Shirley, Peter-Pike Sloan, Chris Wyman|2013|NVIDIA Technical Report|
+|[Toward Practical Real-Time Photon Mapping: Efficient GPU Density Estimation](https://research.nvidia.com/publication/toward-practical-real-time-photon-mapping-efficient-gpu-density-estimation)|Michael Mara, Morgan McGuire, David Luebke|2013|ACM I3D|
+|[Fast Global Illumination Approximations on Deep G-Buffers](https://research.nvidia.com/publication/fast-global-illumination-approximations-deep-g-buffers)|Michael Mara, Morgan McGuire, Derek Nowrouzezahrai|2014|NVIDIA Technical Report|
+|[Deep G-Buffers for Stable Global Illumination Approximation](https://research.nvidia.com/publication/deep-g-buffers-stable-global-illumination-approximation)|Michael Mara, Morgan McGuire, Derek Nowrouzezahrai|2016|ACM SIGGRAPH/EG HPG|
+|[GI next: global illumination for production rendering on GPUs](https://research.nvidia.com/publication/2016-07_GI-next%3A-global)|Enzo Catalano, Rajko Yasui-Schöffel, Ken Dahm, Nikolaus Binder, Alex Keller|2016|ACM SIGGRAPH|
+|[Real-Time Global Illumination using Precomputed Light Field Probes](https://research.nvidia.com/publication/real-time-global-illumination-using-precomputed-light-field-probes)|Morgan McGuire, Mike Mara, Derek Nowrouzezahrai|2017|ACM I3D|
+|[Spatiotemporal Variance-Guided Filtering: Real-Time Reconstruction for Path-Traced Global Illumination](https://research.nvidia.com/publication/2017-07_Spatiotemporal-Variance-Guided-Filtering%3A)|Christoph Schied (Karlsruhe Institute of Technology)|Anton Kaplanyan, Chris Wyman, Anjul Patney, Chakravarty R. Alla Chaitanya, John Burgess, Shiqiu Liu, Carsten Dachsbacher, Aaron Lefohn, Marco Salvi|2017|HPG|
+|[Simulating Lighting Conditions in Production Ergonomics with NVIDIA OptiX](https://www.nvidia.com/en-us/on-demand/session/gtceurope2018-e8371/)|Andreas Dietrich|2018|GTC|
+|[Challenges in Real-Time Rendering and Software Design for Interactive Immersive Visualization](https://www.nvidia.com/en-us/on-demand/session/gtcsiliconvalley2018-s8433/)|Andreas Dietrich, Galen Faidley|2018|GTC|
+|[Real-Time Global Illumination](https://www.nvidia.com/en-us/on-demand/session/siggraph2018-sig1813d/)|Jacopo Pantalenoni|2018|ACM SIGGRAPH|
+|[Low Sample Count Ray Tracing with NVIDIA's Ray Tracing Denoisers](https://www.nvidia.com/en-us/on-demand/session/siggraph2018-sig1813e/)|Edward Liu|2018|ACM SIGGRAPH|
+|[Ray Tracing with Low Sample Counts with NVIDIA's Ray Tracing Denoisers](https://www.nvidia.com/en-us/on-demand/session/siggraph2018-sig1847/)|Edward Liu|2018|ACM SIGGRAPH|
+|[A Ray-Tracing Pioneer Explains How He Stumbled into Global Illumination](https://blogs.nvidia.com/blog/2018/08/01/ray-tracing-global-illumination-turner-whitted/)|J. Turner Whitted|2018|NVIDIA|
+|[Accelerating Product Visualization in KeyShot using RTX](https://www.nvidia.com/en-us/on-demand/session/gtcsiliconvalley2019-s9923/)|Henrik Jensen|2019|GTC|
+|[Real-Time Ray Tracing - Special Topics and Latest Resarch- Ray-Traced Global Illumination for Games: Massively Parallel Path Space Filtering](https://www.nvidia.com/en-us/on-demand/session/siggraph2019-sig926/)|Alex Keller|2019|ACM SIGGRAPH|
+|[Fundamentals of Ray Tracing in Unreal Engine](https://www.nvidia.com/en-us/on-demand/session/siggraph2019-sig958/)|Sean Spitzer|2019|ACM SIGGRAPH|
+|[Irradiance Fields: RTX Diffuse Global Illumination for Local and Cloud Graphics](https://www.nvidia.com/en-us/on-demand/session/gtcsiliconvalley2019-s9900/)|Matt Pharr, Morgan McGuire|2019|GTC|
+|[Exploring Ray-Traced Future in Metro Exodus](https://www.nvidia.com/en-us/on-demand/session/gtcsiliconvalley2019-s9985/)|Ben Archard, Dmitry Zhdan, Oles Shyshkovtsov, Sergei Karmalsky|2019|GTC|
+|[Global Illumination in Metro Exodus: An Artist’s Point of View](https://developer.nvidia.com/blog/global-illumination-in-metro-exodus/)|Nefi Alarcon|2019|GDC|
+|[KeyShot GPU Rendering Using OptiX 7](https://www.nvidia.com/en-us/on-demand/session/gtcsj20-s22327/)|Henrik Jensen|2020|GTC|
+|[Rendering Games With Millions of Ray-Traced Lights](https://www.nvidia.com/en-us/on-demand/session/gtcfall20-a21210/)|Alexey Panteleev, Chris Wyman|2020|GTC|
+|[Leveraging OptiX 7 for High-Performance Multi-GPU Raytracing on Head-Mounted Displays](https://www.nvidia.com/en-us/on-demand/session/gtcsj20-s21425/)|Andreas Dietrich, Eric Kam|2020|GTC|
+|[RTX-accelerated Stellar GPU GI – Behind the Scenes of the SIGGRAPH 2019 Demo of the 3DS Global Illumination Renderer](https://www.nvidia.com/en-us/on-demand/session/gtcsj20-s21315/)|Jan Meseth|2020|GTC|
+|[Ray Tracing in Unreal Engine 4](https://www.nvidia.com/en-us/on-demand/session/siggraph2020-sg2004/)|Hyun Soo Park, Richard Cowgill|2020|ACM SIGGRAPH|
+|[RTX Real Time Ray Tracing Best Practices](https://www.nvidia.com/en-us/on-demand/session/gtcsj20-s22695/)|Juha Sjoholm, Paula Jukarainen|2020|GTC|
+|[Real-Time Ray-Traced Ambient Occlusion of Complex Scenes using Spatial Hashing](https://www.nvidia.com/en-us/on-demand/session/gtcsj20-s22170/)|Pascal Gautron|2020|GTC|
+|[ReSTIR GI: Path Resampling for Real-Time Path Tracing](https://research.nvidia.com/publication/2021-06_ReSTIR-GI%3A-Path)|Yaobin Ouyang, Shiqiu Liu, Markus Kettunen, Matt Pharr, Jacopo Pantaleoni|2021|HPG/CGF|
+|[Spatiotemporal Resampling with Irradiance Volumes for Global Illumination](https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s32109/)|Zander Majercik|2021|GTC|
+|[RTXDI: Details on Achieving Real-Time Performance](https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s32639/)|Chris Wyman|2021|GTC|
+|[RTX DIRECT ILLUMINATION (RTXDI)](https://developer.nvidia.com/rtxdi)|NVIDIA|2022|NVIDIA|
