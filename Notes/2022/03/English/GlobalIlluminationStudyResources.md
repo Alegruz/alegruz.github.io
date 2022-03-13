@@ -94,6 +94,12 @@
 |[Practical Dynamic Lighting for Large-Scale Game Environments](https://www.pearlabyss.com/ko-KR/Company/About/Lab)|Kyungjoon Cho, Kwanghyeon Go, Daeil Kim|2019|ACM SIGGRAPH|
 |[Dynamic Diffuse Global Illumination Resampling](https://arxiv.org/abs/2108.05263)|Zander Majercik, Thomas Müller, Alexander Keller, Derek Nowrouzezahrai, Morgan McGuire|2021|ACM SIGGRAPH|
 
+## Posters
+
+|Name|Author|Year|Conference/Journal|
+|----|------|----|------------------|
+|[Learning Based Compression for Real-Time Rendering of Surface Light Fields](https://weber.itn.liu.se/~jonun/web/papers/2013/2013-EOB-Poster/Description.php)|Ehsan Miandji, Joel Kronander, Jonas Unger|2013|ACM SIGGRAPH|
+
 ## Books
 
 |Name|Author|Year|
@@ -104,3 +110,62 @@
 |GPU Pro 360 Guide to Mobile Devices|Wolfgang Engel|2019|
 |GPU Pro 360 Guide to Lighting|Wolfgang Engel|2019|
 |Game Engine Architecture|Jason Gregory|2019|
+
+## GDC
+
+|Name|Author|Year|
+|----|------|----|
+|[Real-Time Global Illumination](https://www.gdcvault.com/play/1022892/Real-Time-Global)|[Fred Mundt](https://www.gdcvault.com/play/1015175/Real-Time-Global)|2004|
+|[Real-Time Subsurface Scattering](https://www.gdcvault.com/play/1016692/Real-Time-Subsurface)|	Christopher Oat|2004|
+|[Reusing Shading for Interactive Global Illumination](https://www.gdcvault.com/play/1013621/Reusing-Shading-for-Interactive-Global)|[Kavita Bala, Bruce Walter](https://www.gdcvault.com/play/1022895/Reusing-Shading-for-Interactive-Global)|2004|
+|[Deferred Radiance Transfer Volumes: Global Illumination in Far Cry 3](https://www.gdcvault.com/play/1015326/Deferred-Radiance-Transfer-Volumes-Global)|[Nikolay Stefanov](https://www.gdcvault.com/play/1015539/Deferred-Radiance-Transfer-Volumes-Global)|2012|
+|[Frames, Sparsity and Global Illumination: New Math for Games](https://www.gdcvault.com/play/1015310/Frames-Sparsity-and-Global-Illumination)|[Robin Green](https://www.gdcvault.com/play/1015518/Frames-Sparsity-and-Global-Illumination)|2012|
+|[Making Dreams Come True - Global Illumination with Enlighten](https://www.gdcvault.com/play/1022395/Making-Dreams-Come-True-Global)|Graham Hazel|2015|
+|[NVIDIA VXGI: Dynamic Global Illumination for Games](https://www.gdcvault.com/play/1022392/NVIDIA-VXGI-Dynamic-Global-Illumination)|Alexey Panteleev|2015|
+|[Advanced Visual Effects With DirectX 11 & 12: Precomputed Realtime Global Illumination and Physically Based Rendering in Unity](https://www.gdcvault.com/play/1021765/Advanced-Visual-Effects-With-DirectX)|Kuba Cupisz|2015|
+|[Rendering the World of Far Cry 4](https://www.gdcvault.com/play/1022234/Rendering-the-World-of-Far)|[Stephen McAuley](https://www.gdcvault.com/play/1022235/Rendering-the-World-of-Far)|2015|
+|[The Technology of The Tomorrow Children](https://www.gdcvault.com/play/1022428/The-Technology-of-The-Tomorrow)|James McLaren|2015|
+|[Global Illumination in 'Tom Clancy's The Division'](https://www.gdcvault.com/play/1023273/Global-Illumination-in-Tom-Clancy)|Nikolay Stefanov|2016|
+|[Real-Time Rendering Advances from NVIDIA Research](https://www.gdcvault.com/play/1024353/Real-Time-Rendering-Advances-from)|Tim Foley, Morgan McGuire, Chris Wyman|2017|
+|[Real-time Raytracing for Interactive Global Illumination Workflows in Frostbite](https://www.gdcvault.com/play/1024801/-Real-time-Raytracing-for)|Sébastien Hillaire|2018|
+|[Precomputed Global Illumination in Frostbite](https://www.gdcvault.com/play/1025214/Precomputed-Global-Illumination-in)|[Yuriy O'Donnell](https://www.gdcvault.com/play/1025434/Precomputed-Global-Illumination-in)|2018|
+|[A Fast Forward Through Ray Tracing Gems](https://www.gdcvault.com/play/1026165/A-Fast-Forward-Through-Ray)|Eric Haines|2019|
+|[Exploring the Ray Traced Future in 'Metro Exodus'](https://www.gdcvault.com/play/1026159/Exploring-the-Ray-Traced-Future)|Ben Archard, Sergei Karmalsky, Oles Shyshkovtsov, Dmitry Zhdan|2019|
+|[Ray-Traced Irradiance Fields](https://www.gdcvault.com/play/1026182/Ray-Traced-Irradiance-Fields-(Presented)|Morgan McGuire|2019|
+|[Scalable Real-Time Global Illumination for Large Scenes](https://www.gdcvault.com/play/1026469/Scalable-Real-Time-Global-Illumination)|Anton Yudintsev|2019|
+|[Adaptive Placement of Dynamic Lighting Probes: Taking Full Advantage of Your CPU Using a Procedural Dependency Graph](https://www.gdcvault.com/play/1026866/Adaptive-Placement-of-Dynamic-Lighting)|Diego Garzon|2020|
+|[RTX Ray Tracing Best Practices](https://www.gdcvault.com/play/1026721/RTX-Ray-Tracing-Best-Practices)|Paula Jukarainen, Juha Sjholm|2020|
+|[RTXGI: Scalable Ray Traced Global Illumination in Real Time](https://www.gdcvault.com/play/1026722/RTXGI-Scalable-Ray-Traced-Global)|Adam Marrs|2020|
+|[Advanced Graphics Summit: Lifting the Fog: Geometry & Lighting in 'Demon's Souls'](https://www.gdcvault.com/play/1027011/Advanced-Graphics-Summit-Lifting-the)|[Bruce Woodard](https://www.gdcvault.com/play/1027469/Advanced-Graphics-Summit-Lifting-the)|2021|
+|[Technical Artist Summit: Better Computer Graphics through Understanding of Human Visual System](https://www.gdcvault.com/play/1027009/Technical-Artist-Summit-Better-Computer)|Sergei Savchenko|2021|
+
+## Etc.
+
+|Name|Author|Year|
+|----|------|----|
+|[Stochastic All The Things: Raytracing in Hybrid Real-Time Rendering](https://www.ea.com/seed/news/seed-dd18-presentation-slides-raytracing)|[Tomasz Stachowiak](https://youtu.be/MyTOGHqyquU)|2018|
+|[Spotlight Team Best Practices: Setting up the Lighting Pipeline](https://blog.unity.com/technology/spotlight-team-best-practices-setting-up-the-lighting-pipeline)|Pierre Yves Donzallaz|2018|
+|[Video Series: Real-Time Ray Tracing for Interactive Global Illumination Workflows in Frostbite](https://developer.nvidia.com/blog/video-real-time-ray-tracing-workflows-frostbite/)|Sebastien Hillaire, Charles de Rousiers, Diede Apers, Petter Edblom|2018|
+|[Global Illumination in Godot Engine @ Gamelab BCN 2018](https://youtu.be/5gMaushKj6k)|Pedro J. Estébanez|2018|
+|[Adding multiple bounces](https://sergeyreznik.github.io/metal-ray-tracer/part-3-1/index.html)|Serhii Rieznik|2018|
+|[LARGE SCALE AMBIENT OCCLUSION: ELIMINATING LIGHT LEAKS](https://www.dsdambuster.com/blog/lsao-part-2)|Charlie Cole|2018|
+|[Part 3: DDGI Overview](https://morgan3d.github.io/articles/2019-04-01-ddgi/overview.html)|Morgan McGuire|2019|
+|[Approximating Global Illumination with Real-Time Ambient Occlusion](https://www.dropbox.com/s/wnlb91fw93kggxu/Approxmiting_Global_Illumination_with_Real_Time_Ambient_Occlusion.pdf?dl=0)|Daniel Fedai Larsen|2019|
+|[Dynamic Diffuse Global Illumination with Ray-Traced Irradiance Fields](https://jcgt.org/published/0008/02/01/)|Zander Majercik, Jean-Philippe Guertin, Derek Nowrouzezahrai, Morgan McGuire|2019|
+|[RTX Global Illumination Part I](https://developer.nvidia.com/blog/rtx-global-illumination-part-i/)|Morgan McGuire, Adam Marrs, Alexander Majercik|2019|
+|[Anatomy of a frame in AnKi](http://anki3d.org/anatomy-of-a-frame-in-anki/)|Panagiotis Christopoulos Charitos|2019|
+|[RTX Global Illumination SDK Now Available](https://developer.nvidia.com/blog/announcing-nvidia-rtxgi-sdk/)|Nefi Alarcon|2020|
+|[GTC 2020: RTXGI: Scalable Ray Traced Global Illumination in Real Time](https://developer.nvidia.com/gtc/2020/video/s22692)|Adam Marrs|2020|
+|[ExileCon Dev Talk - Evolving Path of Exile's Renderer](https://youtu.be/whyJzrVEgVc)|Alexander Sannikov|2020|
+|[Engine Work: DDGI Light Probe Depth Data Compression](https://handmade.network/p/75/monter/blog/p/7421-engine_work__ddgi_light_probe_depth_data_compression#23186)|Chen|2020|
+|[Scaling Probe-Based Real-Time Dynamic Global Illumination for Production](https://arxiv.org/abs/2009.10796)|Zander Majercik, Adam Marrs, Josef Spjut, Morgan McGuire|2020|
+|[The Bright Side of Ray-Traced Global Illumination in Unity](https://thegamedev.guru/unity-ray-tracing/global-illumination/)|Rubén Torres Bonet|2020|
+|[Compositional Neural Scene Representations for Shading Inference](https://youtu.be/DW4DypNUcTY)|Jonathan Granskog, Fabrice Rousselle, Marios Papas, Jan Novák|2021|
+|[Scaling Probe-Based Real-Time Dynamic Global Illumination for Production](https://jcgt.org/published/0010/02/01/)|Zander Majercik, Adam Marrs, Josef Spjut, Morgan McGuire|2021|
+|[Moving Basis Decomposition for Precomputed Light Transport](https://arisilvennoinen.github.io/)|Ari Silvennoinen, Peter-Pike Sloan|2021|
+|[Interplay of Light](https://interplayoflight.wordpress.com/2021/07/10/raytracing-tidbits/)|Kostas Anagnostou|2021|
+|[Tech Focus: Global Illumination - What It Is, How Does It Work And Why Do We Need It?](https://youtu.be/yEkryaaAsBU)|Digital Foundry|2021|
+|[Advances in Real-Time Rendering in 3D Graphics and Games - Siggraph 2021 - course page for the content of Siggraph 2021](http://advances.realtimerendering.com/s2021/index.html)|Natalya Tatarchuk|2021|
+|[SCALABLE GLOBAL ILLUMINATION FOR O3DE](https://www.tobias-franke.eu/publications/franke21sgifo/index.html)|Tobias Alexander Franke|2021|
+|[Adventures in Hybrid Rendering](https://diharaw.github.io/post/adventures_in_hybrid_rendering/)|Dihara Wijetunga|2021|
+|[World-space spatiotemporal reservoir reuse for ray-traced global illumination](https://gpuopen.com/download/publications/SA2021_WorldSpace_ReSTIR.pdf)|Guillaume Boissé|2021|
