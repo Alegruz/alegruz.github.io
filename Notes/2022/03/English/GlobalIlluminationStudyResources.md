@@ -114,12 +114,31 @@
 
 |Name|Author|Year|
 |----|------|----|
-|Physically Based Rendering: from Theory to Implementation|Matt Pharr, Wenzel Jakob, and Greg Humphreys, Morgan Kaufmann|2016|
-|Real-Time Rendering|Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire|
+|[Advanced Global Illumination](https://graphics.cs.kuleuven.be/publications/AGI2E/index.html)|Kavita Bala, Philip Dutre, Philippe Bekaert|2003|
+|[GPU Gems](https://developer.nvidia.com/gpugems/gpugems/contributors)|Randima Fernando|2004|
+|[GPU Gems 2](https://developer.nvidia.com/gpugems/gpugems2/inside-front-cover)|Matt Pharr, Randima Fernando|2005|
+|[ShaderX5](http://www.shaderx5.com/)|Wolfgang Engel|2006|
+|[Real-Time Volume Graphics](http://www.real-time-volume-graphics.org/)|Christof Rezk-Salama, Joe Kniss, Klaus Engel, Markus Hadwiger, Daniel Weiskopf|2006|
+|[GPU Gems 3](https://developer.nvidia.com/gpugems/gpugems3/foreword)|Hubert Nguyen|2007|
+|[ShaderX6](http://www.shaderx6.com/)|Wolfgang Engel|2007|
+|[ShaderX7: Advanced Rendering Techniques](http://www.shaderx7.com/)|Wolfgang Engel|2009|
+|Game Programming Gems 8|Adam Lake|2010|
+|[GPU Pro](http://gpupro.blogspot.com/)|Wolfgang Engel|2010|
+|[GPU Pro 2](http://gpupro.blogspot.com/)|Wolfgang Engel|2010|
+|[Game Engine Gems 2](https://gameenginegems.com/geg2.php)|Eric Lengyel|2010|
+|[GPU Pro 3](http://gpupro.blogspot.com/)|Wolfgang Engel|2012|
+|Computer Graphics: Principles and Practice| John Hughes, Andries van Dam, Morgan McGuire, David Sklar, James Foley, Steven Feiner, Kurt Akeley|2013|
+|[GPU Pro 4](http://gpupro.blogspot.com/)|Wolfgang Engel|2013|
+|Real-Time 3D Rendering with DirectX and HLSL: A Practical Guide to Graphics Programming|Paul Varcholik|2014|
+|[Physically Based Rendering: From Theory to Implementation](https://www.pbr-book.org/)|Matt Pharr, Wenzel Jakob, Greg Humphreys|2018|
+|[Real-Time Rendering](https://www.realtimerendering.com/)|Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire|2018|
+|[Game Engine Architecture](https://www.gameenginebook.com/)|Jason Gregory|2018|
+|[Ray Tracing Gems: High-Quality and Real-Time Rendering with DXR and Other APIs](https://www.realtimerendering.com/raytracinggems/rtg/index.html)|Eric Haines, Tomas Möller|2019|
 |GPU Pro 360 Guide to Shadows|Wolfgang Engel|2019|
 |GPU Pro 360 Guide to Mobile Devices|Wolfgang Engel|2019|
 |GPU Pro 360 Guide to Lighting|Wolfgang Engel|2019|
-|Game Engine Architecture|Jason Gregory|2019|
+|[Ray Tracing Gems II
+Next Generation Real-Time Rendering with DXR, Vulkan, and OptiX](https://www.realtimerendering.com/raytracinggems/rtg2/index.html)|Adam Marrs, Peter Shirley, Ingo Wald|2021|
 
 ## GDC
 
@@ -219,30 +238,3 @@
 |[Spatiotemporal Resampling with Irradiance Volumes for Global Illumination](https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s32109/)|Zander Majercik|2021|GTC|
 |[RTXDI: Details on Achieving Real-Time Performance](https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s32639/)|Chris Wyman|2021|GTC|
 |[RTX DIRECT ILLUMINATION (RTXDI)](https://developer.nvidia.com/rtxdi)|NVIDIA|2022|NVIDIA|
-
-## Books
-
-|Name|Author|Year|
-|----|------|----|
-|[Advanced Global Illumination](https://graphics.cs.kuleuven.be/publications/AGI2E/index.html)|Kavita Bala, Philip Dutre, Philippe Bekaert|2003|
-|[GPU Gems](https://developer.nvidia.com/gpugems/gpugems/contributors)|Randima Fernando|2004|
-|[GPU Gems 2](https://developer.nvidia.com/gpugems/gpugems2/inside-front-cover)|Matt Pharr, Randima Fernando|2005|
-|[ShaderX5](http://www.shaderx5.com/)|Wolfgang Engel|2006|
-|[Real-Time Volume Graphics](http://www.real-time-volume-graphics.org/)|Christof Rezk-Salama, Joe Kniss, Klaus Engel, Markus Hadwiger, Daniel Weiskopf|2006|
-|[GPU Gems 3](https://developer.nvidia.com/gpugems/gpugems3/foreword)|Hubert Nguyen|2007|
-|[ShaderX6](http://www.shaderx6.com/)|Wolfgang Engel|2007|
-|[ShaderX7: Advanced Rendering Techniques](http://www.shaderx7.com/)|Wolfgang Engel|2009|
-|Game Programming Gems 8|Adam Lake|2010|
-|[GPU Pro](http://gpupro.blogspot.com/)|Wolfgang Engel|2010|
-|[GPU Pro 2](http://gpupro.blogspot.com/)|Wolfgang Engel|2010|
-|[Game Engine Gems 2](https://gameenginegems.com/geg2.php)|Eric Lengyel|2010|
-|[GPU Pro 3](http://gpupro.blogspot.com/)|Wolfgang Engel|2012|
-|Computer Graphics: Principles and Practice| John Hughes, Andries van Dam, Morgan McGuire, David Sklar, James Foley, Steven Feiner, Kurt Akeley|2013|
-|[GPU Pro 4](http://gpupro.blogspot.com/)|Wolfgang Engel|2013|
-|Real-Time 3D Rendering with DirectX and HLSL: A Practical Guide to Graphics Programming|Paul Varcholik|2014|
-|[Physically Based Rendering: From Theory to Implementation](https://www.pbr-book.org/)|Matt Pharr, Wenzel Jakob, Greg Humphreys|2018|
-|[Real-Time Rendering](https://www.realtimerendering.com/)|Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire|2018|
-|[Game Engine Architecture](https://www.gameenginebook.com/)|Jason Gregory|2018|
-|[Ray Tracing Gems: High-Quality and Real-Time Rendering with DXR and Other APIs](https://www.realtimerendering.com/raytracinggems/rtg/index.html)|Eric Haines, Tomas Möller|2019|
-|[Ray Tracing Gems II
-Next Generation Real-Time Rendering with DXR, Vulkan, and OptiX](https://www.realtimerendering.com/raytracinggems/rtg2/index.html)|Adam Marrs, Peter Shirley, Ingo Wald|2021|
