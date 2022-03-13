@@ -137,8 +137,7 @@
 |GPU Pro 360 Guide to Shadows|Wolfgang Engel|2019|
 |GPU Pro 360 Guide to Mobile Devices|Wolfgang Engel|2019|
 |GPU Pro 360 Guide to Lighting|Wolfgang Engel|2019|
-|[Ray Tracing Gems II
-Next Generation Real-Time Rendering with DXR, Vulkan, and OptiX](https://www.realtimerendering.com/raytracinggems/rtg2/index.html)|Adam Marrs, Peter Shirley, Ingo Wald|2021|
+|[Ray Tracing Gems II Next Generation Real-Time Rendering with DXR, Vulkan, and OptiX](https://www.realtimerendering.com/raytracinggems/rtg2/index.html)|Adam Marrs, Peter Shirley, Ingo Wald|2021|
 
 ## GDC
 
