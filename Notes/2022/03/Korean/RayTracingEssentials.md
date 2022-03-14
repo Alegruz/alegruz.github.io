@@ -301,7 +301,7 @@ DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰
 
 ![GlobalIllumination](/Images/RayTracingEssentials/GlobalIllumination.jpeg)
 
-이러한 빛은 다만 조명에 의해 직접적으로 닿는 부분을 의미하는 것이다. 현실에서는 빛이 여기 저기에 반사되어 간접적으로 조명 효과를 줄 수도 있다. 이러한 간접광을 보통 *상호반사interreflection*, *간접광indirect lighting*, *색번짐color bleeding*, *전역 조명global illumination*이라 부른다.
+이러한 빛은 다만 조명에 의해 직접적으로 닿는 부분을 의미하는 것이다. 현실에서는 빛이 여기 저기에 반사되어 간접적으로 조명 효과를 줄 수도 있다. 이러한 간접광을 보통 *상호반사interreflection*, *간접광indirect lighting*, *색출혈color bleeding*, *전역 조명global illumination*이라 부른다.
 
 위의 예시의 경우, 모든 표면이 산란된 표면이다. 즉 반짝 반짝 광택이 있는 표면이 아니라는 것이다.
 
@@ -366,3 +366,89 @@ DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰
 위의 사진처럼 바닥 위에 가성이 형성된 모습이다.
 
 ![CausticsPBR](/Images/RayTracingEssentials/CausticsPBR.jpeg)
+
+# 6부: 렌더링 방정식
+
+렌더링 방정식이라는게 렌더링하는 여러 방정식이라는 뜻이 아니다. 이름 자체가 렌더링 방정식이라는 어떤 한 방정식이 존재한다는 뜻이다.
+
+![TheRenderingEquation](/Images/RayTracingEssentials/TheRenderingEquation.gif)
+
+공식만 보고 겁 먹고 공부를 그만두지는 말도록 하자. 그래픽스 전공을 할 사람들이 살면서 이 방정식 하나만 갖고 결국 다 다루기 때문에 겁 먹지 말고 하나 하나 보도록 하자.
+
+## 렌더링 방정식
+
+![TheRenderingEquationExplained](/Images/RayTracingEssentials/TheRenderingEquationExplained.jpeg)
+
+* ![TheRenderingEquationX](/Images/RayTracingEssentials/TheRenderingEquationX.gif)
+    * 장면의 한 점을 의미한다.
+* ![TheRenderingEquationOmegaHatSubO](/Images/RayTracingEssentials/TheRenderingEquationOmegaHatSubO.gif)
+    * 나가는 방향이다. 여기서 O는 Out을 의미한다.
+    * 즉, 눈으로 가는 방향이다.
+* ![TheRenderingEquationOmegaHatSubI](/Images/RayTracingEssentials/TheRenderingEquationOmegaHatSubI.gif)
+    * 들어오는 방향이다. 여기서 I는 In을 의미한다.
+    * 다른 방향으로 들어오는 빛을 의미한다.
+* ![TheRenderingEquationNHat](/Images/RayTracingEssentials/TheRenderingEquationNHat.gif)
+    * 면 법선을 의미한다.
+* ![TheRenderingEquationSSquared](/Images/RayTracingEssentials/TheRenderingEquationSSquared.gif)
+    * 모든 방향에 대해서 빛을 평가하겠다는 의미이다.
+
+![TheRenderingEquationByElement](/Images/RayTracingEssentials/TheRenderingEquationByElement.jpeg)
+
+
+* ![TheRenderingEquationOutgoingLight](/Images/RayTracingEssentials/TheRenderingEquationOutgoingLight.gif)
+    * 어떤 점이 있고, 나가는 방향이 있다고 할 때, 관찰자의 눈에는 어떤 빛이 보이냐는 의미.
+    * 즉, 어떤 점을 내가 바라보고 있을 때, 거기에 어떤 빛이 오느냐는 의미이다.
+* ![TheRenderingEquationEmittedLight](/Images/RayTracingEssentials/TheRenderingEquationEmittedLight.gif)
+    * 어떤 점과 나가는 방향이 있을 때, 그 점에서 어떤 빛이 발원하고 있는지?
+    * 만약 해당 지점이 광원에 속해있다면, 우항은 고려하지 않아도 된다.
+* ![TheRenderingEquationIncomingLight](/Images/RayTracingEssentials/TheRenderingEquationIncomingLight.gif)
+    * 어떤 점이 있고, 어떤 임의의 방향이 있을 때, 그 방향으로 어떤 빛이 오는지를 의미한다.
+* ![TheRenderingEquationMaterial](/Images/RayTracingEssentials/TheRenderingEquationMaterial.gif)
+    * 들어오고 나가는 방향이 있을 때, 어떤 빛이 나가는 방향으로 가는지를 의미한다.
+    * 거울의 경우 들어오는 방향과 나가는 방향에 명백한 관계가 존재한다. 기타 다른 물질에도 이에 해당하는 성능을 주면 된다.
+* ![TheRenderingEquationLambertian](/Images/RayTracingEssentials/TheRenderingEquationLambertian.gif)
+    * 이 항은 기하학적인 의미이다.
+    * ![LambertsCosineLaw](/Images/RayTracingEssentials/LambertsCosineLaw.jpeg)
+        * 빛이 표면 바로 위에 있으면, 즉 표면과의 각도가 90도일 때 제일 밝을 것이고, 빛이 갈수록 이동하여 각도가 0도까지 줄어들면 갈수록 빛이 어두워질 것이라는 의미이다.
+
+## 순수 경로 추적
+
+![PurePathTracing](/Images/RayTracingEssentials/PurePathTracing.jpeg)
+
+즉, 순수한 경로 추적을 하게 되면, 모든 방향으로의 빛을 전부 더해주어 눈에 쏴주는 것이다.
+
+![PurePathTracingExample](/Images/RayTracingEssentials/PurePathTracingExample.jpeg)
+
+위와 같이 되는 것이다. 허나 위의 그림에서 보면 알겠지만, 빛이 어딘가에 부딪히고, 또다시 다른 곳으로 부딪히는 식으로 확장이 된다. 그렇기에 렌더링 방정식은 "재귀적"이다. 즉, 박스에 부딪혔다가 이번엔 원통에 부딪혔다면, 원통에서도 렌더링 방정식을 적용시켜주어야 박스에서 렌더링 방정식을 적용시킬 수 있다.
+
+순수 경로 추적의 단점은 만약 하늘과 같이 매우 넓은 범위의 광원이 없이 점광 하나만 있는 환경이라면, 광선이 해당 빛에 다다르기까지 매우 오래 걸린다는 점이다.
+
+## 중요도 샘플링
+
+중요도 샘플링이란, 어떤 특정 방향 위주로 쏘는게 좀 더 의미있는 값을 얻을 수 있지 않을까?에 대한 질문에 의해 나온 개념이다.
+
+중요도 샘플링을 적용하는 방법 중 하나는 그저 물리적인 요소만 고려하는 것이다. 즉, 재질항 ![TheRenderingEquationMaterial](/Images/RayTracingEssentials/TheRenderingEquationMaterial.gif)과 램버트항 ![TheRenderingEquationLambertian](/Images/RayTracingEssentials/TheRenderingEquationLambertian.gif)만을 고려하는 것이다. 이때 *양방향 산란 분포함수bidirectional scattering distribution function* 혹은 BSDF를 사용하여, 어떤 방향으로 빛이 들어올 때, 이것이 재질에 어떤 영향을 끼치는지를 고려해줄 수 있다. 예를 들어, 만약 재질이 검다면 나가는 빛이 없을 것이다.
+
+![MirrorGlossyDiffuse](/Images/RayTracingEssentials/MirrorGlossyDiffuse.jpeg)
+
+위의 그림처럼 재질의 특성에 따라 반사가 어떤 방향으로 되는지는 달라진다. 하지만 이런 식으로 여러 방향으로 광선을 쏘기 시작하면 연산 부담이 커지게 되므로, 이를 해결해야한다.
+
+## 다중 중요도 샘플링 (MIS)
+
+단순히 재질의 성질, 빛과 면이 이루는 각도 뿐만 아니라, 빛의 방향 또한 고려해서 샘플링을 하겠다는 것이다. 방 안에 중요한 빛이 존재할 것이다. 태양광 등. 즉 무작위로 광선을 쏘는 것이 아닌, 누가 봐도 중요한 지점에도 광선을 쏘겠다는 것이다.
+
+![MultipleImportanceSampling](/Images/RayTracingEssentials/MultipleImportanceSampling.jpeg)
+
+위의 사진처럼 광원 쪽으로도 광선을 쏘게 된다.
+
+![MISComparison](/Images/RayTracingEssentials/MISComparison.jpeg)
+
+위의 사진에서처럼 MIS의 성능을 보여주고 있다. 중간에 나오는 BRDF는 *양방향 반사 분포함수bidirectional reflectance distribution function*라는 것인데, BSDF와 유사하나, 유리가 아닌 불투명한 면에만 적용하는 함수이다.
+
+---
+
+렌더링 방정식 Latex:
+
+```
+L_{o}\left ( X, \hat{\omega}_{o} \right ) = L_{e}\left ( X, \hat{\omega}_{o} \right ) + \int_{\mathrm{S}^{2}}{L_{i}\left ( X, \hat{\omega}_{i} \right )f_{X}\left ( \hat{\omega}_{i}, \hat{\omega}_{o} \right )\left | \hat{\omega}_{i} \cdot \hat{n} \right |}d\hat{\omega}_{i}
+```
