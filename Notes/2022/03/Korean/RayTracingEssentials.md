@@ -282,3 +282,87 @@ DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰
     * 충돌 탐지
     * 부피 렌더링 등
     * 여러 새로운 연구 분야가 탄생하는 쪽임
+
+# 5부: 광선 추적법 효과
+
+## 그림자
+
+![CornellBox](/Images/RayTracingEssentials/CornellBox.jpeg)
+
+왼쪽이 실제 사진, 오른쪽이 광선 추적법으로 렌더링한 사진.
+
+![HardShadows](/Images/RayTracingEssentials/HardShadows.jpeg)
+
+우선 영역광 말고, 단순한 점광부터 적용해본다. 이러면 매우 날카로운 그림자가 질 것이다.
+
+![SoftShadows](/Images/RayTracingEssentials/SoftShadows.jpeg)
+
+영역광의 경우 조명의 여러 점에 대해서 샘플링을 진행하게 된다. 약간 광선 추적법과 유사한 것이, 한 지점으로 영역광의 여러 영역에서 광선이 쏘아질텐데, 이때 몇 퍼센트 정도가 해당 지점에 영향을 주는지를 통해 그림자의 정도를 구한다. 모든 영역에서 해당 지점에 빛이 가지 못한다면 완전히 어두운 그림자(본영umbra)일 것이고, 위의 그림처럼 일부는 가려져있는데, 또 일부는 빛이 들어온다면 부드러운 그림자(반음영penumbra)일 것이다.
+
+![GlobalIllumination](/Images/RayTracingEssentials/GlobalIllumination.jpeg)
+
+이러한 빛은 다만 조명에 의해 직접적으로 닿는 부분을 의미하는 것이다. 현실에서는 빛이 여기 저기에 반사되어 간접적으로 조명 효과를 줄 수도 있다. 이러한 간접광을 보통 *상호반사interreflection*, *간접광indirect lighting*, *색번짐color bleeding*, *전역 조명global illumination*이라 부른다.
+
+위의 예시의 경우, 모든 표면이 산란된 표면이다. 즉 반짝 반짝 광택이 있는 표면이 아니라는 것이다.
+
+![GlossyReflection](/Images/RayTracingEssentials/GlossyReflection.jpeg)
+
+광택이 있는 표면의 경우 여러 개의 반사광이 생길 수 있다.
+
+![GlossinessComparison](/Images/RayTracingEssentials/GlossinessComparison.jpeg)
+
+광택의 정도는 조절이 가능하다.
+
+![ExampleScene](/Images/RayTracingEssentials/ExampleScene.jpeg)
+
+위의 장면에서처럼, 만약 단순히 상호반사광이 없었다면, 이 건물 내부에는 햇빛이 들지 않으니 완전히 어둡게 그려져야 정상이다. 그러나 빛이 여기저기 반사가 되니 좀 더 현실적으로 장면이 보이는 것이다.
+
+## 앰비언트 어클루전
+
+광선 추적법을 통해 물리적인 사실에 기반한 것은 아니지만, 물리적으로 충분히 믿을만한, 납득할만한 효과를 하나 더 줄 수 있다. 바로 앰비언트 어클루전ambient occlusion이다.
+
+![AmbientOcclusionNoLight](/Images/RayTracingEssentials/AmbientOcclusionNoLight.jpeg)
+
+위 그림에서는 딱히 광원이 아무것도 없는 상태이다. 이때 모든 지점에서 광선을 쏘아 이 지점이 틈 사이에 있는지, 가려져있는지 등을 확인해줄 수 있다.
+
+![AmbientOcclusion](/Images/RayTracingEssentials/AmbientOcclusion.jpeg)
+
+어떤 한 지점에서 어느 거리까지 광선을 쏘았을 때, 이 광선이 중간에 충돌이 일어나고, 이러한 광선이 적당히 있다면, 이 지점은 적당히 어두울 것이라고 가정을 할 수 있을 것이다.
+
+이 방법은 보통 래스터화 기반 게임에서 자주 사용한 기법이지만, 이제는 광선 추적법을 통해서 더 나은 해법을 찾을 수 있게 되었다.
+
+## 심도
+
+![DoFBackgroundBlur](/Images/RayTracingEssentials/DoFBackgroundBlur.jpeg)
+
+이뿐만 아니라 광선 추적법을 통해 심도 표현과 블러 효과를 줄 수 있다.
+
+![DoFForgroundBlur](/Images/RayTracingEssentials/DoFForgroundBlur.jpeg)
+
+블러는 배경이나 전경에 둘 다 적용해줄 수 있다.
+
+이 기법을 통해 좀 더 시네마틱한 효과를 줄 수 있다.
+
+## 모션 블러
+
+![MotionBlur](/Images/RayTracingEssentials/MotionBlur.jpeg)
+
+샘플링을 할 때, 아예 한 픽셀 당 여러 시간에 대응하는 모델의 모습을 주고, 이를 통해 광선 추적법을 적용하면 *모션 블러Motion Blur* 효과를 얻을 수 있다.
+
+## 대기 효과
+
+![AtmosphericEffects](/Images/RayTracingEssentials/AtmosphericEffects.jpeg)
+
+대표적인 *대기 효과atmospheric effect*로는 *광선 행진ray marching*이 있다. 광선 행진이란, 어떤 광선이 한 줄기의 빛과 만나면 그 내부를 계속 행진해서 들어가 빛이 안으로 산란되는지, 밖으로 산란되는지 등을 확인해면서 지속적으로 샘플링을 한다. 이를 통해 위의 사진처럼 한 줄기 빛이 들어오는 효과를 찾아볼 수 있다.
+
+## 가성
+
+![Caustics](/Images/RayTracingEssentials/Caustics.jpeg)
+
+*가성caustic*이란 물과 관련된 빛의 성질로, 위의 그림처럼 물과 같이 투명한 물질에 빛이 닿아 반사될 때의 모습이다.
+
+![CausticsOnTheGround](/Images/RayTracingEssentials/CausticsOnTheGround.jpeg)
+
+위의 사진처럼 바닥 위에 가성이 형성된 모습이다.
+
+![CausticsPBR](/Images/RayTracingEssentials/CausticsPBR.jpeg)
