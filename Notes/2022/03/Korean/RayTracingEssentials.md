@@ -152,3 +152,59 @@
 ![RasterizationAndRayTracing](/Images/RayTracingEssentials/RasterizationAndRayTracing.jpeg)
 
 # 3부: 광선 추적법 하드웨어
+
+광선 추적법은 당연하게도 매우 병렬적인 연산을 요구한다. 각 픽셀마다 색을 연산할 것이고, 이 픽셀은 서로 독립적이므로 병렬적으로 연산할 것이다.
+
+## 1987: AT&T 픽셀 기계
+
+![At&tPixelMachine](/Images/RayTracingEssentials/At&tPixelMachine.jpeg)
+
+첫 광선 추적법 전용 기계로, SIGGRAPH에 소개되었다. 위의 512×512 픽셀 크기의 사진에 7,381 개의 구와 평면을 30초만에 렌더링할 수 있었으며, 그 다음 해인 1988년에는 16초만에 렌더링할 수 있었다. 물론 매우 비쌌으며, 사실상 역사의 각주를 차지할 뿐이긴 하다.
+
+단순히 첫 광선 추적법을 렌더링할 뿐만 아니라, 실제 실시간 광선 추적법을 제공해주기도 했다. 마우스로 공을 움직이는 방식 등이다.
+
+## 무어의 법칙의 종말
+
+![MooresLaw](https://dl.acm.org/cms/attachment/f9a4ecff-6e06-4ce8-8d62-eac45b52e602/f1.jpg)
+
+NVIDIA, 구글 등지에서는 이미 무어의 법칙이 끝남음을 주장하고 있다. 이제는 좀 더 특화된 하드웨어를 설계하는 추세이다.
+
+![PascalAndTuring](/Images/RayTracingEssentials/PascalAndTuring.jpeg)
+
+전통적인 GPU(파스칼 포함)에서는 래스터화를 위한 특화된 작업을 했다면, 튜링부터는 인공지능과 광선 추적법을 위한 특화된 작업을 해주는 코어가 추가되었다. 이 코어가 각각 텐서 코어와 RT 코어이다.
+
+## RT 코어
+
+![BVH](/Images/RayTracingEssentials/BVH.jpeg)
+
+RT 코어는 다음 두 가지 근본적인 작업을 한다:
+* 광선-경계 부피 계층(BVH) 종단
+    * 여러 박스에 광선을 쏘기
+    * 박스 내의 삼각형에 광선을 쏘기 
+* 광선-삼각형 교차
+    * 어떤 박스/삼각형과 교차하는지 확인하기
+
+이때 한 삼각형이 여러 박스에 속해있을 수도 있기 때문에 인스턴싱을 지원한다.
+
+여기에 다른 스트리이밍 다중프로세서, 즉 쉐이더 코어가 여러 작업 해준다:
+* 다단계 인스턴싱
+* 커스텀 교차
+* 쉐이딩
+
+## 메모리
+
+![GpuMemory](/Images/RayTracingEssentials/GpuMemory.jpeg)
+
+과거에는 몇 MB 수준이었으나, 이제는 512 GB 수준이나 발전했다. 영화의 경우 복잡한 장면에서는 약 50 GB 혹은 그보다 조금 더 정도 사용한다. 이처럼 광선 추적법을 사용하려면 모든, 혹은 거의 대부분의 데이터가 있어야 한다. 필요할 땐 데이터 교환도 해야할테고. 결국 광선 추적법에 필요한 정보를 저장하는 것이 중요하다.
+
+![MetroExodusOneFrame](/Images/RayTracingEssentials/MetroExodusOneFrame.jpeg)
+
+기존 아키텍처에서 광선 추적법을 했을 때 걸린 시간, 현재 아키텍처에서 RT 코어를 사용하지 않고 광선 추적법을 했을 때의 걸린 시간, RT 코어를 사용했을 때 걸린 시간 등을 보여주는 사진이다.
+
+![BattlefieldV](/Images/RayTracingEssentials/BattlefieldV.jpeg)
+
+광선 추적법에 특화된 하드웨어가 중요할 뿐만 아니라, 해당 하드웨어, 소프트웨어를 앞으로 튜닝해가면 더욱 더 빨라지기 시작할 것이다.
+
+![NVIDIARealTimeRayTracing](/Images/RayTracingEssentials/NVIDIARealTimeRayTracing.jpeg)
+
+NVIDIA는 마이크로소프트의 DXR 발표에 맞추어 4 개의 수냉식 볼타 GPU(파스칼 구조)를 사용해서 위의 스타워즈 장면을 언리얼 엔진을 통해 실시간으로 렌더링했으나, 이는 몇 개월 뒤 튜링 구조가 나오자 오직 한 GPU만으로도 가능하게 되었다. 과거 AT&T 픽셀 기계에서 했던 512×512 화면에서 약 8,000 개의 구를 30 fps에 출력했던 시절에서, 이제는 튜링 GPU로는 8,000,000 개의 구를 60 fps에 문제 없이 출력할 수 있다.
