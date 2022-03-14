@@ -186,7 +186,7 @@ RT 코어는 다음 두 가지 근본적인 작업을 한다:
 
 이때 한 삼각형이 여러 박스에 속해있을 수도 있기 때문에 인스턴싱을 지원한다.
 
-여기에 다른 스트리이밍 다중프로세서, 즉 쉐이더 코어가 여러 작업 해준다:
+여기에 다른 스트리이밍 다중프로세서, 즉 셰이더 코어가 여러 작업 해준다:
 * 다단계 인스턴싱
 * 커스텀 교차
 * 쉐이딩
@@ -208,3 +208,77 @@ RT 코어는 다음 두 가지 근본적인 작업을 한다:
 ![NVIDIARealTimeRayTracing](/Images/RayTracingEssentials/NVIDIARealTimeRayTracing.jpeg)
 
 NVIDIA는 마이크로소프트의 DXR 발표에 맞추어 4 개의 수냉식 볼타 GPU(파스칼 구조)를 사용해서 위의 스타워즈 장면을 언리얼 엔진을 통해 실시간으로 렌더링했으나, 이는 몇 개월 뒤 튜링 구조가 나오자 오직 한 GPU만으로도 가능하게 되었다. 과거 AT&T 픽셀 기계에서 했던 512×512 화면에서 약 8,000 개의 구를 30 fps에 출력했던 시절에서, 이제는 튜링 GPU로는 8,000,000 개의 구를 60 fps에 문제 없이 출력할 수 있다.
+
+# 4부: 광선 추적법 파이프라인
+
+## 래스터화와 광선추적법
+
+래스터화와 광선 추적법은 둘 다 병렬성을 띤다.
+
+![RasterizationAndRayTracingPipeline](/Images/RayTracingEssentials/RasterizationAndRayTracingPipeline.jpeg)
+
+래스터화의 경우 매우 단순하다. 화면에 삼각형을 그려주려면 그냥 정점 쉐이딩, 픽셀 쉐이딩해주기만 하면 된다.
+
+광선 추적법도 유사하다. 우선 광선을 쏘고, 환경을 종단하고, 최종적으로 쉐이딩을 해준다. 여기서 다른 점이라면 중간에 그림자 광선, 반사 광선처럼 추가적인 광선을 더 쏴줘서 재귀를 해줄 수 있다는 것이다.
+
+![RTXRayTracingPipeline](/Images/RayTracingEssentials/RTXRayTracingPipeline.jpeg)
+
+이때 중간 과정을 NVIDIA RTX에서 처리해준다.
+
+## 광선 추적법 셰이더
+
+DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰이더를 추가했다.
+
+1. 광선 생성 셰이더 ray generation shader
+    * 광선을 어떻게 추적하기 시작할 것인가?
+    * 일종의 관리자로, 광선을 쏘고, 이 광선을 쭉 따라가서 최종 값이 얼마가 나오는지까지 확인한다.
+    * 다른 셰이더를 제어한다!
+2. 교차 셰이더 intersection shader
+    * 광선이 기하학적인 대상과 어떻게 교차하는가? (무엇이 교차인가?)
+    * 기하학적인 대상이 무엇인가에 따라 달라질 것이다.
+    * 물체의 모양을 정의한다! (한 유형 당 한 셰이더)
+    * 이하 세 가지 셰이더는 한 세트으로 보면 된다.
+        * 광선 당 어떤 식으로 행동하는지를 제어한다! (여러 유형에 대해서 한 행동을 적용해줄 수도)
+3. 빗나감 셰이더 miss shader
+    * 광선이 기하학적인 대상에 맞지 않으면, 즉 빗나갔을 때 어떻게 셰이딩할 것인지?
+4. 최근접 충돌 셰이더 closest-hit shader
+    * 교차점을 어떻게 셰이딩할 것인지?
+    * 물론 단순히 셰이딩이 아니라 추적인 광선을 생성해줄 수도 있을 것이다.
+5. 임의 충돌 셰이더 any-hit shader
+    * 교차 충돌한 지점마다 한 번 실행한다(투명성 등을 위한 작업)
+
+![ShadersComplicated](/Images/RayTracingEssentials/ShadersComplicated.jpeg)
+
+위의 셰이더를 총합하면 위와 같이 복잡하게 되어있는데, 이걸 단순화해줄 수 있다.
+
+![ShadersSimplified](/Images/RayTracingEssentials/ShadersSimplified.jpeg)
+
+우선 `TraceRay()`로 광선을 생성한다. 
+
+생성한 광선은 가속화 단계를 거치는데, 이 단계에서는 BVH를 따라 충돌했을 수도 있는 부분을 찾아낸다. 여기에 교차 셰이더를 적용해서 충돌을 했는지를 판별한다. 만약 최근접 충돌이라면 해당 정보를 저장한다. 만약 추가적으로 임의 충돌 셰이더를 파이프라인에 제공했다면, 충돌한 지점이 투명한 곳이어서 광선이 충돌하지 않고 계속 직진해야하는지 등의 여부를 판단해준다.
+
+결국 가속화 단계는 끝이 날텐데, 그러면 충돌을 했든, 충돌을 하지 못했든 두 가지로 결과가 나올 것이다.
+
+![AnyHitShader](/Images/RayTracingEssentials/AnyHitShader.jpeg)
+
+임의 충돌 셰이더의 경우 필수가 아닌 선택이며, 주로 투명성을 처리할 때 사용한다. 만약 삼각형 자체에 충돌을 한 것은 맞지만, 해당 부분의 텍스처가 투명했다면 충돌하지 않은 것으로 간주해야한다. 이때 임의 충돌 셰이더를 사용하는 것이다.
+
+## 광선 추적법 기술
+
+* 반사 Reflectino
+    * ![Battlefield V](https://cdn.vox-cdn.com/thumbor/PaQUFOzhRiozP_SBAmlZOTClACI=/1400x1050/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/12542925/PdFmShm.jpg)
+* 전역 조명 Global Illumination
+    * ![Metro Exodus](https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/news/metro-exodus-nvidia-rtx-ray-tracing/metro-exodus-nvidia-rtx-ray-tracing-screenshot-001-on-850px.png)
+* 그림자 Shadow
+    * ![Shadow of the Tomb Rader](https://gh.cdn.sewest.net/assets/ident/news/shadow-tomb-raider-adds-raytraced-shadows-dlss/en_US/45_RTX_On.jpg?quality=65&width=100%25&height=100%25)
+
+실시간 / 인터랙티브 / 가속 광선 추적법은 이외에도 여러 분야에 사용할 수 있다:
+
+1. 실제 현실과 같은 렌더링
+2. 더 빠른 베이킹
+    * 오프라인 프로세스임
+    * 라이트맵을 좀 더 빠르게 만들기
+3. 기타 다른 방법으로 사용(남용)
+    * 충돌 탐지
+    * 부피 렌더링 등
+    * 여러 새로운 연구 분야가 탄생하는 쪽임
