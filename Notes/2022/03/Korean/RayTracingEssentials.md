@@ -445,6 +445,100 @@ DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰
 
 위의 사진에서처럼 MIS의 성능을 보여주고 있다. 중간에 나오는 BRDF는 *양방향 반사 분포함수bidirectional reflectance distribution function*라는 것인데, BSDF와 유사하나, 유리가 아닌 불투명한 면에만 적용하는 함수이다.
 
+# 7부: 광선 추적법에서의 디노이징
+
+![NoiseInRayTracing](/Images/RayTracingEssentials/NoiseInRayTracing.jpeg)
+
+광선 추적법을 사용하면 위와 같이 매우 노이즈가 심한 사진을 얻게 된다. 이는 픽셀 당 샘플링의 수를 늘리는 것으로 해결할 수 있긴 하다.
+
+![Denoising](/Images/RayTracingEssentials/Denoising.jpeg)
+
+위와 같이 디노이징 기법을 사용하면 충분히 노이즈를 지울 수 있는 장점이 있다. 분산이 샘플 수의 제곱근에 비례해서 줄어들으므로, 샘플을 하나 쓰는 것보다 네 개를 쓰는 것이 두 배나 더 좋을 것이다.
+
+![RayTracingDenoising](/Images/RayTracingEssentials/RayTracingDenoising.jpeg)
+
+결과적으로 노이즈가 있는 사진을 우선 얻은 뒤, 이걸 더 나은 사진으로 만들어 주어야 한다.
+
+![Reconstruct](/Images/RayTracingEssentials/Reconstruct.jpeg)
+
+이러한 과정을 바로 디노이징이라 부른다.
+
+![DenoisingIdenticalTime](/Images/RayTracingEssentials/DenoisingIdenticalTime.jpeg)
+
+이때 디노이징 기법에는 여러가지가 있는데, 보통은 상당히 빠른 속도로 처리가 된다. 디노이징은 간단히 표현하자면, 어떤 특정 영역 근방에 대해서 색 정보와 기타 정보(면 법선, 텍스처의 색 등)를 바탕으로 어떤 필터링 절차를 거쳐 빈 공간에 대한 정보를 채우는 것이다.
+
+![DenoisingShadow](/Images/RayTracingEssentials/DenoisingShadow.jpeg)
+
+디노이징을 단순히 최종 화면에 해주면 그림자와 같은 특성이 바닥의 색과 섞여서 결과를 망칠 수 때문에 그림자는 따로 디노이징을 해준다.
+
+디노이징의 문제는, 이게 얘 따로 디노이즈해주고, 저거 따로해주고, 쌓이고 쌓이다보면 상당히 비싼 연산이 된다는 것이다. 즉, 결국 최종 화면에서만 디노이징을 해주어야 한다.
+
+![DenoisingHumanVsNeuralNetwork](/Images/RayTracingEssentials/DenoisingHumanVsNeuralNetwork.jpeg)
+
+위의 그림에서 보듯이, 사람이 직접 전통적인 디노이징 기법을 해주고 약간의 수정을 가한 버전과 신경망이 따로 디노이징을 해준 버전을 비교해서 보면, 오히려 신경망을 적용한 사진이 좀 더 나음을 볼 수 있다. 특히 뒤에 진녹색 커튼? 같은 것을 보면 사람이 한 버전은 그냥 직사각형처럼 보이는데, 신경망으로 처리한 사진에서는 그 수직적인 결이 제대로 살아있다.
+
+![DenoisingTraining](/Images/RayTracingEssentials/DenoisingTraining.jpeg)
+
+심화학습을 사용하여 디노이징을 해줄 수도 있다. 렌더링된 이미지 여러 개를 바탕으로 훈련시켜 디노이징을 구현하는 것이다.
+
+![NoisyImage](/Images/RayTracingEssentials/NoisyImage.jpeg)
+
+위와 같이 픽셀 당 샘플링(spp)이 1인 사진이 주어졌을 때, 디노이징을 적용하면 다음과 같아진다:
+
+![DenoisedImage](/Images/RayTracingEssentials/DenoisedImage.jpeg)
+
+상당히 현실적인 이미지가 나왔다.
+
+![GroundTruthImage](/Images/RayTracingEssentials/GroundTruthImage.jpeg)
+
+광선 추적법으로 제대로 렌더링한 이미지와 비교해도 상당히 유사함을 알 수 있다.
+
+![LightMappingImage](/Images/RayTracingEssentials/LightMappingImage.jpeg)
+
+래스터화에서의 경우 전통적으로 그림자 매핑을 사용하여 광원을 기준으로 렌더링을 해주었다. 그림자가 상당히 날카롭기에 광선 추적법을 사용해 얻은 부드러운 그림자보다는 좀 덜 이쁘다. 자세히 보면 그림자와 물체 사이에 공간이 있어 떠있는듯한 효과를 준다. 이것을 피터팬 효과Peter Panning이라 부른다.
+
+또다른 예시를 보자:
+
+![NoisyGlossyImage](/Images/RayTracingEssentials/NoisyGlossyImage.jpeg)
+
+이번엔 광택이 있는 이미지들이다.
+
+![DenoisedGlossyImage](/Images/RayTracingEssentials/DenoisedGlossyImage.jpeg)
+
+디노이징 기법만 적용을 해줘도 상당히 훌륭한 사진이 나온다.
+
+![GroundTruthGlossyImage](/Images/RayTracingEssentials/GroundTruthGlossyImage.jpeg)
+
+이번엔 디노이징을 준 이미지와 실제 이미지와 약간 차이는 있으나, 그래도 대부분의 사람들에게는 충분히 납득할만한 결과가 나왔다고 볼 수 있다.
+
+![StochasticScreenSpaceReflection](/Images/RayTracingEssentials/StochasticScreenSpaceReflection.jpeg)
+
+위의 사진의 경우 보통 래스터화 기법에서 사용하는 방법인데, 여러 문제가 있다. 물론 잘 되는 경우도 있지만, 잘 안되는 경우도 있다.
+
+![NoisyGlobalIllumination](/Images/RayTracingEssentials/NoisyGlobalIllumination.jpeg)
+
+이번 예시의 경우 전역 조명을 적용했을 때이다.
+
+![DenoisedGlobalIllumination](/Images/RayTracingEssentials/DenoisedGlobalIllumination.jpeg)
+
+마찬가지로 디노이징을 해주자 결과가 상당히 훌륭하게 나온다.
+
+![GroundTruthGlobalIllumination](/Images/RayTracingEssentials/GroundTruthGlobalIllumination.jpeg)
+
+물론 실제 사진을 보면 틈 사이가 조금 더 어두운 등 약간의 차이는 있기는 하다. 하지만 디노이징된 영상도 상당히 좋은 것을 볼 수 있다.
+
+![DenoisingGif](/Images/RayTracingEssentials/Denoising.gif)
+
+위의 영상의 경우 실시간은 아니고 7 fps 정도의 속도로 렌더링 되었으나, 결과를 보면 상당히 훌륭한 것을 알 수 있다.
+
+![DenoisingAndReference](/Images/RayTracingEssentials/DenoisingAndReference.gif)
+
+실제 결과와 비교해봐도 상당히 훌륭한 결과가 나옴을 알 수 있다.
+
+![AreaLightSpecularShadingWithOcclusion](/Images/RayTracingEssentials/AreaLightSpecularShadingWithOcclusion.jpeg)
+
+디노이징은 사실상 마법과도 같다. 과소 샘플링 문제와 같은 여러 문제를 해결해주기 때문이다. 사실상 디노이징 기법 덕분에 광선 추적법이 많은 사람들이 생각했던 것보다 훨씬 더 빠르게 대중에게 다가갈 수 있었다고 볼 수 있다.
+
 ---
 
 렌더링 방정식 Latex:
