@@ -25,3 +25,5 @@ Game Development Studies with Books
 * 2022
     * 3월
         * [광선 추적법 기초](Notes/2022/03/Korean/RayTracingEssentials.md)
+        * [전역 조명 공부 노트](Notes/2022/03/Korean/GlobalIlluminationStudies.md)
+        * [지형 생성 트렌드](Notes/2022/03/Korean/TerrainGenerationTrends.md)

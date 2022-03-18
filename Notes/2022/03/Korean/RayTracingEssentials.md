@@ -541,7 +541,20 @@ DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰
 
 ---
 
-렌더링 방정식 Latex:
+추가 자료:
+
+* [광선 추적법 입문](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing)
+* [디즈니의 경로 추적 영상](https://youtu.be/frLwRLS_ZR0)
+* [Cem Yuksel 교수의 컴퓨터 그래픽스 입문 강의 영상](https://www.youtube.com/watch?v=gGKup9tUSrU&list=PLplnkTzzqsZTfYh4UbhLGpI5kGd5oW_Hh&index=20)
+* [1주일 만에 광선 추적법 배우기](https://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf)
+* [그 다음 주에 광선 추적법 배우기](https://www.realtimerendering.com/raytracing/Ray%20Tracing_%20The%20Next%20Week.pdf)
+* [남은 생에 동안 광선 추적법 배우기](https://www.realtimerendering.com/raytracing/Ray%20Tracing_%20the%20Rest%20of%20Your%20Life.pdf)
+* [Graphics Codex의 광선 추적법](https://graphicscodex.courses.nvidia.com/app.html)
+* [SIGGRAPH 2021 광선 추적법 입문 강의 영상](https://youtube.com/playlist?list=PL1PdIP1lGMJKx7-r8kckk41E8eFBYJH_F)
+
+Latex:
+
+렌더링 방정식:
 
 ```
 L_{o}\left ( X, \hat{\omega}_{o} \right ) = L_{e}\left ( X, \hat{\omega}_{o} \right ) + \int_{\mathrm{S}^{2}}{L_{i}\left ( X, \hat{\omega}_{i} \right )f_{X}\left ( \hat{\omega}_{i}, \hat{\omega}_{o} \right )\left | \hat{\omega}_{i} \cdot \hat{n} \right |}d\hat{\omega}_{i}
