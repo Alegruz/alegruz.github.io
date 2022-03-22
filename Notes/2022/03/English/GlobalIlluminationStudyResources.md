@@ -5,24 +5,14 @@
 
 ## Technical Paper
 
+### Offline / Static
+
 |Name|Author|Year|Conference/Journal|
 |----|------|----|------------------|
-|[Interactive Display of Global Illumination Solutions for Non-diffuse Environments - A Survey](https://onlinelibrary.wiley.com/doi/abs/10.1111/1467-8659.00551)|Wolfgang Heidrich|2001|CGF|
-|[State of the Art in Global Illumination for Interactive Applications and High-quality Animations](https://onlinelibrary.wiley.com/doi/full/10.1111/1467-8659.t01-1-00646)|Cyrille Damez, Kirill Dmitriev, Karol Myszkowski|2003|CGF|
-|[Real-Time Global Illumination on GPUs](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2005.10129194)|Nijasure, Mangesh, Sumanta N. Pattanaik, Vineet Goel|2005|JGT|
-|[The State of the Art in Interactive Global Illumination](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-8659.2012.02093.x)|Tobias Ritschel, Carsten Dachsbacher, Thorsten Grosch, Jan Kautz|2012|CGF|
 |[A Local Frequency Analysis of Light Scattering and Absorption](https://hal.inria.fr/hal-00957242/document)|Laurent Belcour, Kavita Bala, Cyril Soler|2014|ACM SIGGRAPH/ACM ToG|
 |[Ink-and-Ray: Bas-Relief Meshes for Adding Global Illumination Effects to Hand-Drawn Characters](https://dcgi.fel.cvut.cz/home/sykorad/ink-and-ray.html)|Daniel Sykora, Ladislav Kavan, Martin Cadik, Ondrej Jamriska, Alec Jacobson, Brian Whited, Maryann Simmons, Olga Sorkine-Hornung|2014|ACM SIGGRAPH/ACM ToG|
-|[Real-time Radiance Caching using Chrominance Compression](https://jcgt.org/published/0003/04/06/paper.pdf)|K. Vardis, G. Papaioannou, A. Gkaravelis|2014|JCGT|
-|[Efficient GPU Screen-Space Ray Tracing](https://jcgt.org/published/0003/04/04/paper-lowres.pdf)|Morgan McGuire, Michael Mara|2014|JCGT|
-|[Complex Luminaires: Illumination and Appearance Rendering](https://dl.acm.org/doi/10.1145/2714571)|Edgar Velázquez-Armendáriz, Zhao Dong, Bruce Walter, Donald P. Greenberg|2015|ACM SIGGRAPH/ACM ToG|
-|[Efficient Ray Tracing Kernels for Modern CPU Architectures](https://jcgt.org/published/0004/04/05/)|Valentin Fuetterling, Carsten Lojewski, Franz-Josef Pfreundt, Achim Ebert|2015|JCGT|
-|[Fast 4D Sheared Filtering for Interactive Rendering of Distribution Effects](https://cseweb.ucsd.edu/~ravir/fast_sheared_filtering_paper.pdf)|2016|ACM SIGGRAPH/ACM ToG|
-|[Multi-Scale Rendering of Scratched Materials using a Structured SV-BRDF Model]()|Boris Raymond, Gael Guennebaud, Pascal Barla|2016|ACM SIGGRAPH/ACM ToG|
-|[Real-Time Global Illumination Using Precomputed Illuminance Composition with Chrominance Compression](https://jcgt.org/published/0005/04/02/)|Johannes Jendersie, David Kuri, Thorsten Grosch|2016|JCGT|
-|[Stochastic Light Culling](https://jcgt.org/published/0005/01/02/paper-lowres.pdf)|Yusuke Tokuyoshi, Takahiro Harada|2016|JCGT|
+|[Multi-Scale Rendering of Scratched Materials using a Structured SV-BRDF Model](https://dl.acm.org/doi/10.1145/2897824.2925945)|Boris Raymond, Gael Guennebaud, Pascal Barla|2016|ACM SIGGRAPH/ACM ToG|
 |[Antialiasing Complex Global Illumination Effects in Path-space](https://dl.acm.org/doi/10.1145/2990495)|Laurent Belcour, Ling-Qi Yan, Ravi Ramamoorthi, Derek Nowrouzezahrai|2017|ACM SIGGRAPH/ACM ToG|
-|[Interactive Reconstruction of Monte Carlo Image Sequences using a Recurrent Denoising Autoencoder](https://research.nvidia.com/publication/interactive-reconstruction-monte-carlo-image-sequences-using-recurrent-denoising)|Chakravarty R. Alla Chaitanya, Anton Kaplanyan, Christoph Schied, Marco Salvi, Aaron Lefohn, Derek Nowrouzezahrai, Timo Aila|2017|ACM SIGGRAPH/ACM ToG|
 |[Reversible Jump Metropolis Light Transport using Inverse Mappings](https://dl.acm.org/doi/10.1145/3132704)|Benedikt Bitterli, Wenzel Jakob, Jan Novak, Wojciech Jarosz|2018|ACM SIGGRAPH/ACM ToG|
 |[Second-order occlusion-aware volumetric radiance caching](https://cs.dartmouth.edu/wjarosz/publications/marco18second.html)|Julio Marco, Adrian Jarabo, Wojciech Jarosz, Diego Gutierrez|2018|ACM SIGGRAPH/ACM ToG|
 |[Gradient-domain Volumetric Photon Density Estimation](https://dl.acm.org/doi/10.1145/3197517.3201363)|Adrien Gruson, Binh-Son Hua, Nicolas Vibert, Derek Nowrouzezahrai, Toshiya Hachisuka|2018|ACM SIGGRAPH/ACM ToG|
@@ -30,11 +20,41 @@
 |[Scalable Appearance Filtering for Complex Lighting Effects](https://lc.fie.umich.mx/~legg/gxd.php)|Luis E. Gamboa, Jean-Philippe Guertin, Derek Nowrouzezahrai|2018|ACM SIGGRAPH Asia/ACM ToG|
 |[Differentiable Monte Carlo Ray Tracing through Edge Sampling](https://people.csail.mit.edu/tzumao/diffrt/)|Tzu-Mao Li, Miika Aittala, Frédo Durand, Jaakko Lehtinen|2018|ACM SIGGRAPH Asia/ACM ToG|
 |[Multiple Scattering in Inhomogeneous Participating Media Using Rao-Blackwellization and Control Variates](http://cg.iit.bme.hu/~szirmay/woodcockscatter_link.html)|Laszlo Szirmay-Kalos, Milan Magdics, Mateu Sbert|2018|EG/CGF|
-|[Blockwise Multi-Order Feature Regression for Real-Time Path Tracing Reconstruction](https://dl.acm.org/doi/10.1145/3269978)|Matias Koskela, Kalle Immonen, Markku Mäkitalo, Alessandro Foi, Timo Viitanen, Pekka Jääskeläinen, Heikki Kultala, Jarmo Takala|2019|ACM SIGGRAPH/ACM ToG|
 |[MIS Compensation: Optimizing Sampling Techniques in Multiple Importance Sampling](https://cgg.mff.cuni.cz/~jaroslav/papers/2019-mis-compensation/index.html)|Ondrej Karlik, Martin Sik, Petr Vevoda, Tomas Skrivan, Jaroslav Krivanek|2019|ACM SIGGRAPH Asia/ACM ToG|
 |[Adversarial Monte Carlo Denoising with Conditioned Auxiliary Feature Modulation](http://adversarial.mcdenoising.org/)|Bing Xu, Junfei Zhang, Rui Wang, Kun Xu, Yong-Liang Yang, Chuan Li, Rui Tang|2019|ACM SIGGRAPH Asia/ACM ToG|
 |[Learning generative models for rendering specular microgeometry](https://dl.acm.org/doi/10.1145/3355089.3356525)|Alexandr Kuznetsov, Miloš Hašan, Zexiang Xu, Ling-Qi Yan, Bruce Walter, Nima Khademi Kalantari, Steve Marschner, Ravi Ramamoorthi|2019|ACM SIGGRAPH Asia/ACM ToG|
 |[Learning to reconstruct shape and spatially-varying reflectance from a single image](https://dl.acm.org/doi/10.1145/3272127.3275055)|Zhengqin Li, Zexiang Xu, Ravi Ramamoorthi, Kalyan Sunkavalli, Manmohan Chandraker|2019|ACM SIGGRAPH Asia/ACM ToG|
+|[Quantifying the Error of Light Transport Algorithms](https://www.cg.tuwien.ac.at/research/publications/2019/celarek_adam-2019-qelta/)|Adam Celarek, Wenzel Jakob, Michael Wimmer, Jaakko Lehtinen|2019|EGSR|
+|[Adaptive Incident Radiance Field Sampling and Reconstruction Using Deep Reinforcement Learning](http://www.cad.zju.edu.cn/home/rwang/projects/path-tracing/path-tracing.html#adaptive)|Yuchi Huo, Rui Wang, Ruzhang Zheng, Hualin Xu, Hujun Bao Sung-Eui Yong|2020|ACM SIGGRAPH/ACM ToG|
+|[Microfacet BSDFs Generated From NDFs, Using Explicit Microgeometry](https://mribar03.bitbucket.io/projects/tog_2019/)|Mickaël Ribardière, Benjamin Bringier, Lionel Simonot, Daniel Meneveaux|2020|ACM SIGGRAPH/ACM ToG|
+|[Robust Fitting of Parallax-Aware Mixtures for Path Guiding](https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/computergrafik/lehrstuhl/veroeffentlichungen/publications-since-2012/robust-fitting-of-parallax-aware-mixtures-for-path-guiding/)|Lukas Ruppert, Sebastian Herholz, Hendrik P. A. Lensch|2020|ACM SIGGRAPH/ACM ToG|
+|[Stratified Markov Chain Monte Carlo Light Transport](https://profs.etsmtl.ca/agruson/publication/2020_SMCMC/)|Adrien Gruson, Rex West, Toshiya Hachisuka|2020|EG/CGF|
+|[An Efficient Transport Estimator for Complex Layered Materials](https://lc.fie.umich.mx/~legg/complexlayered.php)|Luis E. Gamboa, Adrien Gruson, Derek Nowrouzezahrai|2020|EG/CGF|
+|[Spectral Mollification for Bidirectional Fluorescence](https://cg.ivd.kit.edu/spectral_mollification.php)|Alisa Jung, Johannes Hanika, Carsten Dachsbacher|2020|EG/CGF|
+|[Deep Kernel Density Estimation for Photon Mapping](https://cseweb.ucsd.edu/~ravir/#publications)|Shilin Zhu, Zexiang Xu, Henrik Wann Jensen, Hao Su, Ravi Ramamoorthi|2020|EGSR|
+|[Adaptive Matrix Completion for Fast Visibility Computations with Many Lights Rendering](https://hal.inria.fr/hal-02873134/)|Sunrise Wang, Nicolas Holzschuch|2020|EGSR|
+|[Neural Complex Luminaires: Representation and Rendering](https://dl.acm.org/doi/abs/10.1145/3450626.3459798)|Junqiu Zhu, Yaoyi Bai, Zilin Xu, Steve Bako, Edgar Velázquez-Armendáriz, Lu Wang, Pradeep Sen, Miloš Hašan, Ling-Qi Yan|2021|ACM SIGGRAPH/ACM ToG|
+|[Gaussian Product Sampling for Rendering Layered Materials](https://onlinelibrary.wiley.com/doi/full/10.1111/cgf.13883)|Mengqi (Mandy) Xia, Bruce Walter, Christophe Hery, Steve Marschner|2021|EG/CGF|
+|[Firefly removal in Monte Carlo rendering with adaptive Median of meaNs](https://hal.archives-ouvertes.fr/hal-03201630/)|Jerome Buisine, Samuel Delepoulle, Christophe Renaud|2021|EGSR|
+|[Fast Radius Search Exploiting Ray Tracing Frameworks](https://jcgt.org/published/0010/01/02/)|I. Evangelou, G. Papaioannou, K. Vardis, A. A. Vasilakis|2021|JCGT|
+
+### Real-Time / Interactive / Dynamic
+
+|Name|Author|Year|Conference/Journal|
+|----|------|----|------------------|
+|[Interactive Display of Global Illumination Solutions for Non-diffuse Environments - A Survey](https://onlinelibrary.wiley.com/doi/abs/10.1111/1467-8659.00551)|Wolfgang Heidrich|2001|CGF|
+|[State of the Art in Global Illumination for Interactive Applications and High-quality Animations](https://onlinelibrary.wiley.com/doi/full/10.1111/1467-8659.t01-1-00646)|Cyrille Damez, Kirill Dmitriev, Karol Myszkowski|2003|CGF|
+|[Real-Time Global Illumination on GPUs](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2005.10129194)|Nijasure, Mangesh, Sumanta N. Pattanaik, Vineet Goel|2005|JGT|
+|[The State of the Art in Interactive Global Illumination](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1467-8659.2012.02093.x)|Tobias Ritschel, Carsten Dachsbacher, Thorsten Grosch, Jan Kautz|2012|CGF|
+|[Real-time Radiance Caching using Chrominance Compression](https://jcgt.org/published/0003/04/06/paper.pdf)|K. Vardis, G. Papaioannou, A. Gkaravelis|2014|JCGT|
+|[Efficient GPU Screen-Space Ray Tracing](https://jcgt.org/published/0003/04/04/paper-lowres.pdf)|Morgan McGuire, Michael Mara|2014|JCGT|
+|[Complex Luminaires: Illumination and Appearance Rendering](https://dl.acm.org/doi/10.1145/2714571)|Edgar Velázquez-Armendáriz, Zhao Dong, Bruce Walter, Donald P. Greenberg|2015|ACM SIGGRAPH/ACM ToG|
+|[Efficient Ray Tracing Kernels for Modern CPU Architectures](https://jcgt.org/published/0004/04/05/)|Valentin Fuetterling, Carsten Lojewski, Franz-Josef Pfreundt, Achim Ebert|2015|JCGT|
+|[Fast 4D Sheared Filtering for Interactive Rendering of Distribution Effects](https://cseweb.ucsd.edu/~ravir/fast_sheared_filtering_paper.pdf)|2016|ACM SIGGRAPH/ACM ToG|
+|[Real-Time Global Illumination Using Precomputed Illuminance Composition with Chrominance Compression](https://jcgt.org/published/0005/04/02/)|Johannes Jendersie, David Kuri, Thorsten Grosch|2016|JCGT|
+|[Stochastic Light Culling](https://jcgt.org/published/0005/01/02/paper-lowres.pdf)|Yusuke Tokuyoshi, Takahiro Harada|2016|JCGT|
+|[Interactive Reconstruction of Monte Carlo Image Sequences using a Recurrent Denoising Autoencoder](https://research.nvidia.com/publication/interactive-reconstruction-monte-carlo-image-sequences-using-recurrent-denoising)|Chakravarty R. Alla Chaitanya, Anton Kaplanyan, Christoph Schied, Marco Salvi, Aaron Lefohn, Derek Nowrouzezahrai, Timo Aila|2017|ACM SIGGRAPH/ACM ToG|
+|[Blockwise Multi-Order Feature Regression for Real-Time Path Tracing Reconstruction](https://dl.acm.org/doi/10.1145/3269978)|Matias Koskela, Kalle Immonen, Markku Mäkitalo, Alessandro Foi, Timo Viitanen, Pekka Jääskeläinen, Heikki Kultala, Jarmo Takala|2019|ACM SIGGRAPH/ACM ToG|
 |[MegaViews: Scalable Many-View Rendering with Concurrent Scene-View Hierarchy Traversal](https://graphics.tudelft.nl/Publications-new/2019/KBLE19/)|Timothy R. Kol, Pablo Bauszat, Sungkil Lee, Elmar Eisemann|2019|EG/CGF|
 |[Real-Time Rendering with Lighting Grid Hierarchy](https://dqlin.xyz/pubs/2019-i3d-LGH/)|Daqi Lin, Cem Yuksel|2019|ACM I3D/ACM CGIT|
 |[Incrementally Baked Global Illumination](https://www.cg.tuwien.ac.at/research/publications/2019/LUKSCH-2019-IGI/)|Christian Luksch, Michael Wimmer, Michael Schwarzler|2019|ACM I3D|
@@ -42,29 +62,16 @@
 |[Fast Non-uniform Radiance Probe Placement and Tracing](https://www.cs.mcgill.ca/~ywang411/ProjectPage/radiancei3d2019.md.html)|Yue Wang, Soufiane Khiat, Derek Nowrouzezahrai, Paul G. Kry|2019|ACM I3D|
 |[High-Quality Object-Space Dynamic Ambient Occlusion for Characters using Bi-level Regression](https://www.ea.com/seed/news/i3d2019-dynamic-ao)|Binh Le, Henrik Halen, Carlos Gonzalez-Ochoa, JP Lewis|2019|ACM I3D|
 |[Dynamic Diffuse Global Illumination with Ray-Traced Irradiance Fields](https://www.jcgt.org/published/0008/02/01/)|Alexander Majercik, Jean-Philippe Guertin, Derek Nowrouzezahrai, Morgan McGuire|2019|ACM I3D/JCGT|
-|[Quantifying the Error of Light Transport Algorithms](https://www.cg.tuwien.ac.at/research/publications/2019/celarek_adam-2019-qelta/)|Adam Celarek, Wenzel Jakob, Michael Wimmer, Jaakko Lehtinen|2019|EGSR|
 |[The Design and Evolution of the UberBake Light Baking System](https://cs.dartmouth.edu/wjarosz/publications/seyb20uberbake.html)|Dario Seyb, Peter-Pike Sloan, Ari Silvennoinen, Michał Iwanicki, Wojciech Jarosz|2020|ACM SIGGRAPH/ACM ToG|
-|[Adaptive Incident Radiance Field Sampling and Reconstruction Using Deep Reinforcement Learning](http://www.cad.zju.edu.cn/home/rwang/projects/path-tracing/path-tracing.html#adaptive)|Yuchi Huo, Rui Wang, Ruzhang Zheng, Hualin Xu, Hujun Bao Sung-Eui Yong|2020|ACM SIGGRAPH/ACM ToG|
-|[Microfacet BSDFs Generated From NDFs, Using Explicit Microgeometry](https://mribar03.bitbucket.io/projects/tog_2019/)|Mickaël Ribardière, Benjamin Bringier, Lionel Simonot, Daniel Meneveaux|2020|ACM SIGGRAPH/ACM ToG|
-|[Robust Fitting of Parallax-Aware Mixtures for Path Guiding](https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/computergrafik/lehrstuhl/veroeffentlichungen/publications-since-2012/robust-fitting-of-parallax-aware-mixtures-for-path-guiding/)|Lukas Ruppert, Sebastian Herholz, Hendrik P. A. Lensch|2020|ACM SIGGRAPH/ACM ToG|
 |[Glossy Probe Reprojection for Interactive Global Illumination](https://www-sop.inria.fr/reves/Basilic/2020/RLPWSD20/)|Simon Rodriguez, Thomas Leimkühler, Siddhant Prakash, Chris Wyman, Peter Shirley, George Drettakis|2020|ACM SIGGRAPH Asia/ACM ToG|
 |[Spherical Gaussian Light-field Textures for Fast Precomputed Global Illumination](https://onlinelibrary.wiley.com/doi/full/10.1111/cgf.13918)|R. R. Currius, D. Dolonius, U. Assarsson, E. Sintorn|2020|EG/CGF|
-|[Stratified Markov Chain Monte Carlo Light Transport](https://profs.etsmtl.ca/agruson/publication/2020_SMCMC/)|Adrien Gruson, Rex West, Toshiya Hachisuka|2020|EG/CGF|
-|[An Efficient Transport Estimator for Complex Layered Materials](https://lc.fie.umich.mx/~legg/complexlayered.php)|Luis E. Gamboa, Adrien Gruson, Derek Nowrouzezahrai|2020|EG/CGF|
 |[RayCaching: Amortized Isosurface Rendering for Virtual Reality](https://onlinelibrary.wiley.com/doi/full/10.1111/cgf.13762)|F. Nysjö, F. Malmberg, I. Nyström|2020|EG/CGF|
-|[Spectral Mollification for Bidirectional Fluorescence](https://cg.ivd.kit.edu/spectral_mollification.php)|Alisa Jung, Johannes Hanika, Carsten Dachsbacher|2020|EG/CGF|
 |[A Survey of Multifragment Rendering](https://abasilak.github.io/#cgf2020star)|A. A. Vasilakis, K. Vardis, G. Papaioannou|2020|EG/CGF|
 |[Stochastic Substitute Trees for Real-Time Global Illumination](https://www.markussteinberger.net/publications.php)|Wolfgang Tatzgern, Benedikt Mayr, Bernhard Kerbl, Markus Steinberger|2020|ACM I3D|
-|[Deep Kernel Density Estimation for Photon Mapping](https://cseweb.ucsd.edu/~ravir/#publications)|Shilin Zhu, Zexiang Xu, Henrik Wann Jensen, Hao Su, Ravi Ramamoorthi|2020|EGSR|
-|[Adaptive Matrix Completion for Fast Visibility Computations with Many Lights Rendering](https://hal.inria.fr/hal-02873134/)|Sunrise Wang, Nicolas Holzschuch|2020|EGSR|
-|[Neural Complex Luminaires: Representation and Rendering](https://dl.acm.org/doi/abs/10.1145/3450626.3459798)|Junqiu Zhu, Yaoyi Bai, Zilin Xu, Steve Bako, Edgar Velázquez-Armendáriz, Lu Wang, Pradeep Sen, Miloš Hašan, Ling-Qi Yan|2021|ACM SIGGRAPH/ACM ToG|
 |[Real-time Neural Radiance Caching for Path Tracing](https://research.nvidia.com/publication/2021-06_Real-time-Neural-Radiance)|Thomas Muller, Fabrice Rousselle, Jan Novak, Alex Keller|2021|ACM SIGGRAPH/ACM ToG|
-|[Gaussian Product Sampling for Rendering Layered Materials](https://onlinelibrary.wiley.com/doi/full/10.1111/cgf.13883)|Mengqi (Mandy) Xia, Bruce Walter, Christophe Hery, Steve Marschner|2021|EG/CGF|
 |[Guided Visibility Sampling++](https://dl.acm.org/doi/10.1145/3451266)|Thomas Koch, Michael Wimmer|2021|I3D/ACM CGIT|
-|[Firefly removal in Monte Carlo rendering with adaptive Median of meaNs](https://hal.archives-ouvertes.fr/hal-03201630/)|Jerome Buisine, Samuel Delepoulle, Christophe Renaud|2021|EGSR|
 |[Moving Basis Decomposition for Precomputed Light Transport](https://onlinelibrary.wiley.com/doi/full/10.1111/cgf.14346)|Ari Silvennoinen, Peter-Pike Sloan|2021|EGSR|
 |[ReSTIR GI: Effective Path Resampling for Real-Time Path Tracing](https://research.nvidia.com/publication/2021-06_ReSTIR-GI%3A-Path)|Yaobin Ouyang, Shiqiu Liu, Markus Kettunen, Matt Pharr, Jacopo Pantaleoni|2021|HPG/CGF|
-|[Fast Radius Search Exploiting Ray Tracing Frameworks](https://jcgt.org/published/0010/01/02/)|I. Evangelou, G. Papaioannou, K. Vardis, A. A. Vasilakis|2021|JCGT|
 
 ## Courses
 
