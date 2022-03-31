@@ -27,3 +27,4 @@ Game Development Studies with Books
         * [광선 추적법 기초](Notes/2022/03/Korean/RayTracingEssentials.md)
         * [전역 조명 공부 노트](Notes/2022/03/Korean/GlobalIlluminationStudies.md)
         * [지형 생성 트렌드](Notes/2022/03/Korean/TerrainGenerationTrends.md)
+        * [지형에 일관된 식물상과 동물상 저작하기 (논문 번역)](Notes/2022/03/Korean/AuthoringConsistentLandscapesWithFloraAndFauna.md)
