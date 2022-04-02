@@ -57,7 +57,7 @@
 이 논문의 목표는 아티스트/생물학자/고생물학자 등의 의도대로 식물상과 동물상이 경관에 일관적으로 존재하며, 생활하는 모습을 생성하는 것임. 여기서 사용자의 의도를 반영해주기 위해서 새로운 파이프라인을 제시함([그림 2](#figure_2) 참고). 이 파이프라인을 통해 **안정 상태 가설steady-state hypothesis** 하에서 지형 위에 지형과 일관되게 식물, 초식동물, 육식동물을 생성하고 통합해줄 수 있음.
 
 <div style="text-align: center" id="figure_2">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure2.png" alt="Figure2">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure2.jpeg" alt="Figure2">
 <p>그림 2. 시스템 개요: 자원 맵을 초기화한 뒤 각 먹이 사슬 단계마다, 즉 식물에서 육식 동물까지 해당하는 단계에서의 자원 접근 그래프(RAG), 같은 단계 내의 종 간 경쟁의 결과, 동물의 일상 경로, 직전 단계의 자원의 남은 잉여를 계산함. 결과로 나온 밀도 맵과 지형에 대한 침식된 경로, 동물의 일상 계획을 통해 실제처럼 움직이는, 생태계가 존재하는 경관을 생성함. 사용자는 맵 위에 직접 그려줄 수 있어 직관적으로 맵을 수정할 수 있음.</p>
 </div>
 
@@ -78,7 +78,7 @@
 우리 논문에서 제시하는 알고리듬의 핵심은 바로 **자원 접근 그래프Resource Access Graph** (RAG)라는 방향성 그래프 자료구조. 여러 먹이 사슬 단계에서의 종 간의 상호작용과 종과 지형 간의 관계를 인코딩해줌. [그림 3](#figure_3) 참고.
 
 <div style="text-align: center" id="figure_3">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure3.png" alt="Figure3">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure3.jpeg" alt="Figure3">
 <p>그림 3. 자원 접근 그래프의 개념도. 종 별 다른 색으로 잉여 노드를 구분함. RAG<sup>0</sup>에서는 식물이 필요로하는 자원을 인코딩함. RAG<sup>1</sup>은 초식동물의 자원인 숲이나 강둑 등을 인코딩함. 영양은 강 여울에서만 강을 건널 수 있고, 절벽을 건널 수는 없기에 세 개의 제한 구역으로 나뉨. RAG<sup>2</sup>은 육식동물(늑대)의 자원(영양)을 인코딩함. RAG<sup>1</sup>에서 연결된 성분들 중에서 영양이 잉여를 생산하는 부분(밑의 부분과 오른쪽 부분)은 RAG<sup>2</sup>에서는 하나의 자원 노드로 통합됨. 모서리를 통해 늑대는 절벽을 다른 이동 속도로 오르내릴 수 있음을 알 수 있음.</p>
 </div>
 
@@ -132,7 +132,7 @@ RAG의 계층을 통해 각 종이 곧 다른 종의 자원이 될 수 있음을
 
 ## 4.3. 경쟁 알고리듬
 
-지형을 여러 제한 영역 C로 나누었다고 가정. 이때 각 제한 영역 C<sub>j</ssub>에 대응하는 자원 집합을 R<sub>j</sub>으로 표기. 이때 q(r, C<sub>j</sub>)은 r ∈ R<sub>j</sub>인 C<sub>j</sub> 내의 자원 r의 연간 소비 가능한 자원량을 의미.
+지형을 여러 제한 영역 C로 나누었다고 가정. 이때 각 제한 영역 C<sub>j</sub>에 대응하는 자원 집합을 R<sub>j</sub>으로 표기. 이때 q(r, C<sub>j</sub>)은 r ∈ R<sub>j</sub>인 C<sub>j</sub> 내의 자원 r의 연간 소비 가능한 자원량을 의미.
 
 참고로 종별로 영역이 달라지지는 않음. 종 간 이동 가능성이 달라지면 서로 이동 능력이 다른 종 간의 제한 영역 간의 교집합을 새로운 제한 영역으로 만들어줌. 이 경우 생성된 모집단 단위는 해당 종의 본래 제한 영역에 할당함.
 
