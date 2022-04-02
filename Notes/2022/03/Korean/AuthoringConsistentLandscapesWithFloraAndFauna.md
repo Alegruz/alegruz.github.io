@@ -122,7 +122,13 @@ RAG의 계층을 통해 각 종이 곧 다른 종의 자원이 될 수 있음을
 
 ## 4.2. 지역 종의 적응도 점수
 
-**적응도 점수fitness score**
+한 먹이 사슬 단계에 속한 종들이 소비할 수 있는, r ∈ R인 자원 r이 어떤 영역에 존재한다고 가정. 이때 종들 중 누가 이 자리를 차지할 확률이 높느냐를 계산할 땐 **적응도 점수fitness score** fit(s, R)을 사용함.
+
+각 r ∈ R인 자원 r들에 대해 종의 적응도 범위 F(s, r) 중 주어진 자원 r의 연간 변화량 r<sub>year</sub>에 해당하는 범위를 계산함. 가장 드문 드문 난 자원이 s가 그곳에 거주할 수 있는지 여부를 결정할 수 있으므로, 최소값을 사용해주면 됨:
+
+![FitnessScore](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/FitnessScore.png)
+
+월간 시간적 변화도 주어진다면 위의 최소값에 자원별로 여러 항들을 사용해주면 됨. 위의 식의 결과는 0 <= fit(s, R) <= 1인 연속된 값이 나옴. 0이면 s가 생존이 불가능하다는 것이고, 1이면 제일 적응도가 높다는 것임. 어쨋든 모든 자원의 변화량은 종의 적응도 범위 내에 있음.
 
 ## 4.3. 경쟁 알고리듬
 
@@ -201,3 +207,11 @@ RAG의 계층을 통해 각 종이 곧 다른 종의 자원이 될 수 있음을
 <div id="berg2008">Jur van den Berg, Ming Lin, and Dinesh Manocha. 2008. <a href="https://ieeexplore.ieee.org/document/4543489">Reciprocal Velocity Obstacles for real-time multi-agent navigation</a>. IEEE, 1928-1935.</div><br>
 <div id="wang2014">Xinjie Wang, Linling Zhou, Zhigang Deng, and Xiaogang Jin. 2014. <a href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.736.3242&rep=rep1&type=pdf">Flock morphing animation</a>. Computer Animation and Virtual Worlds 25, 3-4 (May 2014), 351-360.</div><br>
 <div id="xu2008">Jiayi Xu, Xiaogang Jin, Yizhou Yu, Tian Shen, and Mingdong Zhou. 2008. <a href="https://i.cs.hku.hk/~yzyu/publication/flock-casa08.pdf">Shape-constrained flock animation</a>. Computer Animation and Virtual Worlds 19, 3-4 (2008).</div>
+
+---
+
+## Latex
+
+```
+\textup{fits}\left ( s, R \right ) = \min_{r \in R} \left ( \frac{\min \left ( \mathfrak{F}_{max}\left ( s, R \right ), r_{max} \right ) - \max \left ( \mathfrak{F}_{min}\left ( s, R \right ), r_{min} \right )}{\left (r_{max} - r_{min}\right )} \right )
+```
