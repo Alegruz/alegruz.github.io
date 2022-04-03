@@ -160,11 +160,38 @@ vectorization: <a href="//commons.wikimedia.org/wiki/User:Wjh31" title="User:Wjh
 
 #### 라디오시티
 
-*라디오시티Radiosity* 
+*라디오시티Radiosity*는 확산 표면 간에 반사광을 처음으로 시뮬레이션해주는 최초의 컴퓨터 그래픽스 기술임. 가장 기본적인 라디오시티 알고리듬에서는 모든 간접광은 확산 표면에서 왔다고 가정하는 것으로 시작함. 그래서 LD*E임.
+
+이때 모든 표면은 몇 개의 패치로 이루어져있다고 가정함. 이러한 패치마다 평균 라디오시티 값 하나를 구함. 그래서 빛을 좀 더 디테일하게 잡으려면 패치 크기가 작아야함.
+
+렌더링 방정식을 바탕으로 패치 i의 라디오시티를 다음과 같이 구할 수 있음:
+
+![Radiosity](/Images/GlobalIllumination/Radiosity.png)
+
+여기서 B<sub>i</sub>는 패치 i의 라디오시티를 의미하고, B<sub>i</sub><sup>e</sup>는 복사 *발산도exitance*, 즉 패치 i가 발산하는 라디오시티를 의미하며, &rho;<sub>ss</sub>는 부분면의 알베도임. F<sub>ij</sub>는 패치 i와 j 사이의 *파형률form factor*를 의미함. 여기서 파형률은 다음과 같음:
+
+![FormFactor](/Images/GlobalIllumination/FormFactor.png)
+
+여기서 A<sub>i</sub>는 패치 i의 영역을 의미하고, V(**i**, **j**)는 점 **i**와 **j** 간의 가시성 함수를 의미함. 각도 &theta;<sub>i</sub>와 &theta;<sub>j</sub>는 두 패치의 각 법선과 두 점 **i**와 **j**를 잇는 광선 간의 각도를 의미하며, d<sub>ij</sub>는 광선의 길이를 의미함.
+
+![FormFactorImage](https://i.stack.imgur.com/Yh4v5.png)
+[Reference](https://computergraphics.stackexchange.com/questions/4196/what-is-radiosity)
+
+파형률은 순수하게 기하학적인 단어일 뿐임. 결국은 패치 i에서 떠난 균일 난반사 복사 에너지의 일부가 패치 j에 닿는 것임. 한 장면 내에 속한 서로 다른 두 패치 간의 파형률을 정확하게 구하는 것이 라디오시티 알고리듬의 상당한 부분을 차지한다고 볼 수 있음.
+
+파형률을 다 계산했다면 모든 패치에 대한 방정식을 하나의 선형 시스템으로 합쳐줄 수 있음. 이 시스템의 해를 구하면 모든 패치의 라디오시티 값을 구할 수 있게 됨. 당연히 패치 수가 증가할 수록 계산 복잡도가 증가하므로 사용하는 행렬의 개수를 줄이는 방안을 고려해봐야함.
+
+이 알고리듬의 경우 확장성도 별로고, 기타 다른 한계점이 있기 때문에 전통적인 라디오시티 자체는 거의 사용하지 않긴 함. 하지만 파형률을 사전에 계산해두고 실시간에 사용하는 식으로 광전파를 구현한다는 아이디어 자체는 요즘 현대적인 실시간 전역 조명 시스템에서 널리 사용되긴 함.
 
 ---
 
 Latex:
+
+파형률:
+
+```
+F_{ij} = \frac{1}{A_{i}}\int_{A_{i}}{\int_{A_{j}}{V \left ( \textbf{i}, \textbf{j} \right )\frac{cos{\theta_{i}}cos{\theta_{j}}}{\pi d_{ij}^{2}}}da_{i}}da_{j}
+```
 
 반사 방정식:
 
@@ -176,4 +203,10 @@ L_{o}\left ( \textbf{\textrm{p}}, \textbf{\textrm{v}} \right ) = \int_{\textbf{\
 
 ```
 L_{o}\left ( \textbf{p}, \textbf{v} \right ) = L_{e}\left ( \textbf{p}, \textbf{v} \right ) + \int_{\textbf{l}\in \Omega }{f\left ( \textbf{l}, \textbf{v} \right )}L_{o}\left ( r\left ( \textbf{p}, \textbf{l} \right ), -\textbf{l} \right )\left ( \textbf{n}\cdot \textbf{l} \right )^{+}d\textbf{l}
+```
+
+라디오시티:
+
+```
+B_{i} = B_{i}^{e} + \rho_{ss}\sum_{j}{F_{ij}B_{j}}
 ```
