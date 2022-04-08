@@ -30,3 +30,4 @@ Game Development Studies with Books
         * [지형에 일관된 식물상과 동물상 저작하기 (논문 번역)](Notes/2022/03/Korean/AuthoringConsistentLandscapesWithFloraAndFauna.md)
     * 4월
         * [실시간 광선 추적법 공부 노트](Notes/2022/04/Korean/RealTimeRayTracingNotes.md)
+        * [ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집](Notes/2022/04/Korean/ReStirGiPathResamplingForRealTimePathTracing.md)
