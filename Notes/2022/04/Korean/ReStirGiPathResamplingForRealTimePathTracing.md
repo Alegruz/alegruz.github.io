@@ -75,9 +75,9 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 실시간 렌더링에서 근본적으로 풀어야하는 문제는 결국 어떤 점 x에서 방향 &omega;<sub>0</sub>으로 나가는 방사 휘도를 구할 수 있는 렌더링 방정식을 푸는 것임. 완전히 반사적인 표면의 경우 식은 다음과 같음:
 
 <div id="eq_1">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(1)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
+ <p style="float: left; width:10%; text-align:right;">(1)</p>
 </div>
 <div style="clear: both;"></div>
 
