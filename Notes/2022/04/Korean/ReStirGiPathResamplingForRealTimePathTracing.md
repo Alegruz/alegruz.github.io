@@ -230,7 +230,7 @@ ReSTIR로 간접 조명을 표집하기 위해서는 간접 조명에 영향을 
 <p><strong>그림 2:</strong>: ReSTIR과 ReSTIR GI. (a) 원본 ReSTIR 알고리듬<a href="#bwp*20">[BWP*20]</a>은 장면에서의 빛에서 무작위로 표본을 생성하는 것으로 시작함. (b) 재표집 이후 아무런 영향을 주지 않는 표본을 버림; 유용한 표본은 시공간적으로 공유하며 이들의 기여도에 따른 확률에 따라 사용함. (c) 이 논문에서 제시한 방법의 경우 무작위 방향을 표집하고, 광선을 추적하여 최근접 교차점을 찾아 초기 표본을 생성함. 이때 교차점에서 경로 추적법을 통해 반사 방사 휘도를 계산함. (d) 시공간 재표집을 비슷한 방법으로 적용해줌. 이를 통해 의미 있는 간접 조명을 주는 방향을 찾을 수 있음. 이건 ReSTIR에서는 해주지 못했음.</p>
 </div>
 
-<div style="text-align: center" id="figure_3">
+<div id="figure_3">
 <pre><code><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Sample</span></span>
     float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/VisiblePoint.png" alt="VisiblePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/VisiblePointSurfaceNormal.png" alt="VisiblePointSurfaceNormal">    <span class="hljs-comment">// 가시점과 표면 법선</span>
     float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePoint.png" alt="SamplePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePointSurfaceNormal.png" alt="SamplePointSurfaceNormal">    <span class="hljs-comment">// 표본점과 표면 법선</span>
