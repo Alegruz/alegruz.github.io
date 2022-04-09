@@ -224,8 +224,9 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 <div id="eq_1">
  <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/PrescenceProbability.png" alt="PrescenceProbability">
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/PrescenceProbability.png" alt="PrescenceProbability"/></p>
  <p style="float: left; width:33.33333%; text-align:right;">(1)</p>
+</div>
 <div style="clear: both;"></div>
 
 여기서 q(r, C)는 영역 C에서 소비 가능한 r의 총량임.
@@ -234,16 +235,18 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 <div id="eq_2">
  <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/MovementProbability.png" alt="MovementProbability">
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/MovementProbability.png" alt="MovementProbability"/></p>
  <p style="float: left; width:33.33333%; text-align:right;">(2)</p>
+</div>
 <div style="clear: both;"></div>
 
 종 s가 C 안의 v와 v' 간의 경로에서의 침식에 얼마나 영향을 주느냐는 연간 해당 공간 모서리를 이동한 표본의 질량의 총합에 비례함. [식 1](#eq_1)과 [식 2](#eq_2)에서 구한 확률과 C에서의 표본수 ||s||와 평균 질량 m<sub>s</sub>를 사용하여 구할 수 있음:
 
 <div id="eq_3">
  <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ErosionImpact.png" alt="ErosionImpact">
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ErosionImpact.png" alt="ErosionImpact"/></p>
  <p style="float: left; width:33.33333%; text-align:right;">(3)</p>
+</div>
 <div style="clear: both;"></div>
 
 여기서 w<sub>vv'</sub>는 v에서 v', 그리고 v'에서 v로 이동한 동물들의 무게의 누적임.
