@@ -54,7 +54,100 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 
 # 3. 배경
 
+실시간 렌더링에서 근본적으로 풀어야하는 문제는 결국 어떤 점 x에서 방향 &omega;<sub>0</sub>으로 나가는 방사 휘도를 구할 수 있는 렌더링 방정식을 푸는 것임. 완전히 반사적인 표면의 경우 식은 다음과 같음:
+
+<div id="eq_1">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(1)</p>
+</div>
+<div style="clear: both;"></div>
+
+
+* L: 나가는 방향의 방사 휘도
+* L<sub>e</sub>: 발산하는 방사 휘도
+* &Omega;: 표면 법선 주위로 방향들이 이루는 반구
+* L<sub>i</sub>: 들어오는 방사 휘도
+* f: BSDF
+* &lt;cos&theta;<sub>i</sub>&gt;: 방향 &omega;<sub>i</sub>와 표면 법선 간의 각의 코사인 값. 이때 음수는 전부 0으로 클램핑해줌
+* d&omega;: 입체각 척도
+
+중간에 참여하는 매체가 없다는 가정하에 입사 방사 휘도 L<sub>i</sub>는 x에서 &omega;<sub>i</sub> 방향으로의 광선에 따라 처음으로 볼 수 있는 표면에서 나가는 방사 휘도에 대하여 다시 써줄 수 있음:
+
+<div id="eq_2">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Equation2.png" alt="Equation2"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(2)</p>
+</div>
+<div style="clear: both;"></div>
+
+여기서 TRACE 함수는 x에서 &omega;<sub>i</sub> 방향으로 가장 가까운 점을 반환해주는 함수임. 전통적인 몬테 카를로 방법의 경우 다음 추정 법칙을 사용함:
+
+<div id="eq_3">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(3)</p>
+</div>
+<div style="clear: both;"></div>
+
+* N: 고려할 독립적인 표본의 수
+* p(&omega;<sub>j</sub>): 표본이 이루는 확률 밀도 함수(PDF)
+
+적분 결과가 0이 아닐 때 p(&omega;) > 0이기만 하면 추정 법칙은 적분에 대해 편향되지 않은 추정치를 제공함(Pharr et al.[PJH16](#pjh16) 등의 자료를 바탕으로 몬테 카를로 방법과 이를 렌더링에 적용하는 부분에 대한 추가 정보를 참고).
+
+PDF p가 적분과 비슷할수록 몬테 카를로 추정 법칙의 오류가 낮아짐. 재표집 중요도 표집[[TCE05](#tce05)]은 직접 표집할 수 없는 복잡한 분포에서 표집을 하는 효과적인 방법임. 표본을 생성할 때 2패스 알고리듬을 사용함. 우선 원본 분포 p(y)로부터 M 개의 후보 표본 **y** = y<sub>1</sub>, &hellip;, y<sub>M</sub>을 표집함. 이후 *목표 PDF* ![TargetPdf](/Images/ReStirGi/TargetPdf.png)로부터 아래 확률로 **y**로부터 표본 z 하나를 재표집함:
+
+<div id="eq_4">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(4)</p>
+</div>
+<div style="clear: both;"></div>
+
+이때 w(y)는 다음과 같음:
+
+<div id="eq_5">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(5)</p>
+</div>
+<div style="clear: both;"></div>
+
+w(y)는 표본의 상대 가중치임. M이 증가할 수록 z 표본의 분포가 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)와 더욱 비슷해짐. 재표집을 위해 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)을 목표 PDF에 비례하면서 정규화normalize하지 않은 목표 함수로 교체해줘도 됨. 앞으로 이러한 성질을 장점으로 삼을 것이며, 앞으로는 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)를 목표 함수로 부를 것임.
+
+**y**로부터 재표집한 z가 주어졌을 때, 적분이 0이 아닐 때 ![TargetPdf](/Images/ReStirGi/TargetPdf.png) > 0이기만 하면 적분 ![Integrand](/Images/ReStirGi/Integrand.png)에 대해 편향되지 않은 추정치를 RIS 추정 법칙으로 구할 수 있음:
+
+<div id="eq_6">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(6)</p>
+</div>
+<div style="clear: both;"></div>
+
+만약 목표 PDF가 p보다 더 적분과 유사하다면 RIS가 오류를 줄여줌.
+
+Bitterli et al. [[BWP*20](#bwp*20)]에서 보여주었듯, 가중 저장소 표집(WRS)[[Vit85](#vit85), [Cha82](#cha82)]을 통해 RIS를 GPU에서 효율적으로 구현할 수 있음. 참고를 위해 WRS 알고리듬을 [알고리듬 1](#알고리듬-1-가중-저장소-표집)에 적어두었으며, 여기에 표본 하나로 저장소를 업데이트하는 함수와 다른 저장소와 병합하는 함수도 포함함. 이 함수를 통해 두 저장소를 고려하여 후보로 뽑은 표본 중 하나를 얻을 수 있음. Bitterli et al.에 따라 이 논문의 저장소 또한 저장소의 한 표본 z의 가중치 W를 저장하며, 이 값은 다음과 같음:
+
+<div id="eq_7">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Weight.png" alt="Weight"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(7)</p>
+</div>
+<div style="clear: both;"></div>
+
+그러므로 RIS 추정 법칙은 다음과 같이 쉽게 구할 수 있음:
+
+<div id="eq_8">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
+ <p style="float: left; width:33.33333%; text-align:right;">(8)</p>
+</div>
+<div style="clear: both;"></div>
+
+
 # 4. ReSTIR GI
+
+### 알고리듬 1: 가중 저장소 표집
 
 ## 4.1. 표본 생성
 
@@ -118,3 +211,29 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 <div id="wggh20">WEST R., GEORGIEV I., GRUSON A., HACHISUKA T.: Continuous multiple importance sampling. ACM Transactions on Graphics (TOG) 39, 4 (July 2020). <a href="https://doi.org/10.1145/3386569.3392436">doi:10.1145/3386569.3392436</a>.</div><br>
 <div id="wp21">WYMAN C., PANTELEEV A.: <a href="https://research.nvidia.com/publication/2021-07_Rearchitecting-Spatiotemporal-Resampling">Rearchitecting spatiotemporal resampling for production</a>. In Proceedings of ACM/EG Symposium on High Performance Graphics (2021), HPG ’21.</div><br>
 <div id="zz19">ZHENG Q., ZWICKER M.: <a href="https://arxiv.org/abs/1808.07840">Learning to importance sample in primary sample space</a>. In Computer Graphics Forum (2019), vol. 38, Wiley Online Library, pp. 169–179. </div>
+
+---
+
+```
+L\left (x, \omega_{o} \right ) = L_{e} \left (x, \omega_{o} \right ) + \int_{\Omega} {L_i \left ( x, \omega_{i} \right )f\left(\omega_{o}, \omega_{i} \right )\left \langle \cos{\theta_{i}} \right \rangle \textbf{d}\omega_{i}}
+```
+
+```
+\hat{L} = L_{e}(x, \omega_{o}) + \frac{1}{N}\sum_{j = 1}^{N}{\frac{L_{i}\left(x, \omega_{j} \right )f\left(\omega_{o}, \omega_{j} \right )\cos{\omega_{j}}}{p\left(\omega_{j} \right )}}
+```
+
+```
+p(z | \textrm{y}) = \frac{w\left(z \right )}{\sum_{j=1}^{M}{w\left(y_{i} \right )}}
+```
+
+```
+w\left(y \right ) = \frac{\hat{p}\left(y \right )}{p\left(y \right )}
+```
+
+```
+\hat{L} = \frac{f\left(z \right )}{\hat{p}\left(z \right )} \frac{1}{M} \sum_{j = 1}^{M}{\frac{\hat{p}\left(y_{j} \right )}{p\left(y_{j} \right )}}
+```
+
+```
+W\left(z \right ) = \frac{1}{\hat{p}\left(z \right )M}\sum_{j = 1}^{M}{\frac{\hat{p}\left(y_{j} \right )}{p\left(y_{j} \right )}}
+```
