@@ -14,7 +14,7 @@
 
 # 초록
 
-최근에 GPU 많이 발전해서 광선추적법 하드웨어로 가속할 수 있긴 한데, 실시간 어플리케이션에서는 실질적으로 픽셀 당 추적 가능한 광선의 수가 얼마 안 됨. 그렇기에 경로 추적법을 사용할 경우, 현존하는 가장 성능이 좋은 디노이징 알고리듬을 사용하더라도 해결해야할 문제들이 있음. 최근에 개발한 ReSTIR 알고리듬[[BWP*20](#bwp*20)]의 경우 픽셀당 그림자 광선을 얼마 쓰지 않으면서도 수백만개의 광원이 있는 장면을 고품질로 렌더링할 수 있었음. 하지만 간접 조명을 표집할 좋은 알고리듬이 추가적으로 필요함.
+최근에 GPU 많이 발전해서 광선추적법 하드웨어로 가속할 수 있긴 한데, 실시간 어플리케이션에서는 실질적으로 픽셀 당 추적 가능한 광선의 수가 얼마 안 됨. 그렇기에 경로 추적법을 사용할 경우, 현존하는 가장 성능이 좋은 디노이징 알고리듬을 사용하더라도 해결해야할 문제들이 있음. 최근에 개발한 ReSTIR 알고리듬[[BWP&ast;20](#bwp*20)]의 경우 픽셀당 그림자 광선을 얼마 쓰지 않으면서도 수백만개의 광원이 있는 장면을 고품질로 렌더링할 수 있었음. 하지만 간접 조명을 표집할 좋은 알고리듬이 추가적으로 필요함.
 
 그렇기에 간접광에 대한 병렬 중심 GPU 구조에 적합하면서 성능도 좋은 경로 표집화 알고리듬을 이 논문에서 소개하고자 함. 이 논문의 방법 또한 ReSTIR의 스크린 스페이스 시공간 재표집 원칙에 기반해서 다중 바운스 경로 추적법을 통해 얻은 간접광의 경로를 재표집함. 이를 통해 시간과 이미지의 픽셀에 대해 어떤 경로가 제일 빛에 영향을 많이 주는 중요한 경로인지에 대한 정보를 공유할 수 있음. 결과적으로 이 알고리듬을 통해 경로 추적법에 비해 오류가 상당히 감소함: 이 알고리듬을 사용할 경우, 이 논문에서 사용한 실험 장면 기준 각 프레임마다 모든 픽셀의 한 표본마다 9.3에서 166 배 정도의 범위만큼이나 MSE가 개선되었음. 디노이저까지 사용할 경우 최신 GPU 기준 실시간 프레임율을 보이면서 고품질의 경로 추적 기반 전역 조명을 렌더링할 수 있었음.
 
@@ -40,7 +40,7 @@
 
 경로 추적법은 유연하면서도 일반적임 [[Kaj86](#kaj86)]. 즉, 복잡한 조명, 재질, 기하를 갖는 장면을 실사에 가깝게 렌더링해주면서도 사용하는 알고리듬은 하나로 통일되어있음. 그렇기에 실시간 렌더링에서 경로 추적법을 선호할 수 밖에 없음. 하지만 워낙 비용이 비싸다보니 하드웨어 가속 광선 추적법이 나왔음에도 실시간 프레임율 기준으로 픽셀 당 겨우 광선 열 몇 개가 최대로 추적이 가능하기에 실시간 분야에서는 경로 추적법을 잘 선호하지 않은지 좀 됐음[[McC13](#mcc13), [NVI18](#nvi18)]. 좋은 디노이징 알고리듬(예를 들어 Scheid et al의 SVGF 알고리듬[[SKW*17](#skw*17), [SPD18](#spd18)]이나 Munkberg와 Hasselgren의 [[MH20](#mh20)]와 같은 신경망을 사용한 방법)이 노이즈가 있는 이미지의 품질을 개선할 수는 있겠지만 그럼에도 애초에 광선을 좀 더 효과적으로 표집하여 장면의 조명에 대한 정보를 좀 더 제공할 수 있도록 하는 것은 중요함.
 
-이 논문의 핵심은 디노이징 이전에 경로 추적법을 사용한 다중 바운스 전역 조명(GI)의 품질을 높이는 것임. 간접광 표집의 효율성을 높여 경로 추적 전역 조명이 실시간에 가능하도록 하는 것이 목표임. 이를 달성하기 위해 Bitterli et al.이 직접 조명을 표집할 때 사용한 ReSTIR 알고리듬, 즉 재표집한 중요도 표집(RIS)[[TCE](#tce05)]과 저장소 재표집[[Vit85](#vit85), [Cha82](#cha82)]을 합친 방법을 사용함[BWP*20](#bwp*20).
+이 논문의 핵심은 디노이징 이전에 경로 추적법을 사용한 다중 바운스 전역 조명(GI)의 품질을 높이는 것임. 간접광 표집의 효율성을 높여 경로 추적 전역 조명이 실시간에 가능하도록 하는 것이 목표임. 이를 달성하기 위해 Bitterli et al.이 직접 조명을 표집할 때 사용한 ReSTIR 알고리듬, 즉 재표집한 중요도 표집(RIS)[[TCE](#tce05)]과 저장소 재표집[[Vit85](#vit85), [Cha82](#cha82)]을 합친 방법을 사용함[BWP&ast;20](#bwp*20).
 
 ReSTIR과의 차이점이라면, ReSTIR은 전역광 공간에서 초기 표집을 하는데에 반해, 이 논문에서는 셰이딩하는 점에서 모든 방향을 의미하는 지역 구 내에서의 공간에서 초기 표집을 함. 해당 광선을 추적하면 장면의 표면 위의 점을 얻을 수 있음; 광선의 원점으로 다시 산란되는 빛의 양이 RIS의 가중치가 됨. 이 점을 다시 시공간에서 재표집하게 되면, 장면의 간접 조명을 근사하는 분포로부터 가중치 표본을 생성할 수 있어 오류가 감소하게 됨.
 
@@ -52,19 +52,19 @@ ReSTIR과의 차이점이라면, ReSTIR은 전역광 공간에서 초기 표집�
 
 실시간으로 간접 난반사 전역 조명을 구현하는 방법(예를 들어 [[MMSM21](#mmsm21), [HKL16](#hkl16)])은 넘치고 넘침. 대부분의 방법이 상당히 편향되어있어 손쉽게 정량화하기 어려운 반면, 이 논문에서 제시한 방법은 평향이 없거나 평향이 매우 낮기 때문에 비슷한 방법들만 언급하고 넘어갈 것임.
 
-Talbot et al. [[TCE05](#tce05)]의 재표집한 중요도 표집 기법에 기반하여 Bitterli et al.은 ReSTIR 알고리듬을 공개함. 이 알고리듬은 직접 조명을 위해 광원 표본에 대한 스크린 스페이스와 시간에서의 재표집을 적용함[[BWP*20](#bwp*20)]. 이 방법에서는 픽셀마다 하나 이상의 빛 표본을 저장한 작은 저장소를 통해 저장소 표집을 적용[[Vit85](#vit85), [Cha82](#cha82)]하여 BSDF, 광원과 이진 가시성 항을 곱한 결과를 근사하는 분포로부터 표본을 생성함. 이 알고리듬은 편향된 버전도 있고, 편향되지 않은 버전도 있으며, 둘 다 표본 재사용 및 픽셀 간 정보 공유라는 점 덕에 그 전까지 가장 성능이 좋던 빛 표집 알고리듬에 비해 상당히 오류가 감소했음.
+Talbot et al. [[TCE05](#tce05)]의 재표집한 중요도 표집 기법에 기반하여 Bitterli et al.은 ReSTIR 알고리듬을 공개함. 이 알고리듬은 직접 조명을 위해 광원 표본에 대한 스크린 스페이스와 시간에서의 재표집을 적용함[[BWP&ast;20](#bwp*20)]. 이 방법에서는 픽셀마다 하나 이상의 빛 표본을 저장한 작은 저장소를 통해 저장소 표집을 적용[[Vit85](#vit85), [Cha82](#cha82)]하여 BSDF, 광원과 이진 가시성 항을 곱한 결과를 근사하는 분포로부터 표본을 생성함. 이 알고리듬은 편향된 버전도 있고, 편향되지 않은 버전도 있으며, 둘 다 표본 재사용 및 픽셀 간 정보 공유라는 점 덕에 그 전까지 가장 성능이 좋던 빛 표집 알고리듬에 비해 상당히 오류가 감소했음.
 
 간접광은 직접광에 비해 적분 부분이 근본적으로 더 복잡하고 차원도 높기 때문에 더 다룰 문제들이 많음. 일반적인 경로 추적법에서는 보통 경로 위의 각 정점마다 방향을 지역 BSDF에 잘 맞는 분포에 따라 중요도 표집을 함. 이러한 BSDF 표집 알고리듬이 많이 개발되어왔음; Pharr et al.의 [[PJH16](#pjh16)] 참고. 물론 간접광의 변화량이 느리면 BSDF 표집이 잘 작동하지만, 상당히 세고 확 구분되는 간접 조명에는 그리 잘 작동하지는 않음.
 
 비균일 간접광이 있을 땐 *경로 가이딩path guiding* 알고리듬을 사용하여 오류를 상당히 줄여줄 수 있음. 경로 가이딩 알고리듬이란 입사 간접광이나 BSDF과 간접광의 곱에 따라 표집을 해주는 알고리듬임. 경로 가이딩 분야의 초기 연구로는 경로 추적 전처리 기반 5D 공간 방향성 트리를 소개한 Lafortune과 Willems의 연구[[LW95](#lw95)], Jensen의 광자 맵[[Jen96](#jen96)]과 이를 경로 가이딩에 사용한 연구[[Jen95](#jen95)], Jensen의 연구를 개선한 Hey와 Purgathofer의 연구[[HP02](#hp02)] 등이 있음. 이 연구에서 제시한 방법들은 우선 전처리로 자료 구조를 만든 다음, 렌더링에 사용한다는 점에서 2패스 방법임. 이 자료구조는 렌더링 시에는 읽기 전용이 되기 때문에 GPU와 같이 병렬성이 높은 아키텍처에 적합하지만, 병렬로 생성하는 방법은 시간이 오래 걸릴 뿐더러 최근에 소개되는 방법에 비해서는 오류 감소가 그리 좋지 않음.
 
-최근에 나온 Vorba et al. [[VKS*14](#vks*14)]과 Herholz et al. [[HEV*16](#hev*16)] 등의 연구에서는 가우시안 혼합 모델을 사용하여 렌더링 중에 입사 조명을 학습해줌. Müller와 그의 연구원들은 장면을 팔진트리로 분해하는 적응형 공간적 분해 방법과 사진트리에 기반한 적응형 방향적 분해 방법에 기반한 대중적인 방법을 개발함[[MGN17](#mgn17), [VHH*19](#vhh*19)]. Diolatzis et al. [[DGJ*20](#dgj*20)]에서는 이 방법을 조명과 BSDF의 곱을 고려하도록 확장해줌. Ruppert et al.은 공간 분해할 때 셀 간 시차의 효과까지를 고려해준 방법[[RHL20](#rhl20)]을 소개했으며, Deng et al.은 경로 가이딩을 렌더링에 참여하는 매체에 적용해줌[[DWWH20](#dwwh20)]. 이 방법들이 오류를 상당히 줄여주기는 하지만, 이 구조를 GPU에서 수천개의 스레드로 병렬로 생성해주면 상당한 오버헤드가 발생하기에 실시간 어플리케이션에 적합하지는 않음[Pan20](#pan20). Dittebrandt et al.은 최근에 더 비용이 적으면서 확장성이 있는 경로 가이딩 방법을 공개했음[[DHD20](#dhd20)].
+최근에 나온 Vorba et al. [[VKS&ast;14](#vks*14)]과 Herholz et al. [[HEV&ast;16](#hev*16)] 등의 연구에서는 가우시안 혼합 모델을 사용하여 렌더링 중에 입사 조명을 학습해줌. Müller와 그의 연구원들은 장면을 팔진트리로 분해하는 적응형 공간적 분해 방법과 사진트리에 기반한 적응형 방향적 분해 방법에 기반한 대중적인 방법을 개발함[[MGN17](#mgn17), [VHH&ast;19](#vhh*19)]. Diolatzis et al. [[DGJ&ast;20](#dgj*20)]에서는 이 방법을 조명과 BSDF의 곱을 고려하도록 확장해줌. Ruppert et al.은 공간 분해할 때 셀 간 시차의 효과까지를 고려해준 방법[[RHL20](#rhl20)]을 소개했으며, Deng et al.은 경로 가이딩을 렌더링에 참여하는 매체에 적용해줌[[DWWH20](#dwwh20)]. 이 방법들이 오류를 상당히 줄여주기는 하지만, 이 구조를 GPU에서 수천개의 스레드로 병렬로 생성해주면 상당한 오버헤드가 발생하기에 실시간 어플리케이션에 적합하지는 않음[Pan20](#pan20). Dittebrandt et al.은 최근에 더 비용이 적으면서 확장성이 있는 경로 가이딩 방법을 공개했음[[DHD20](#dhd20)].
 
-심화학습을 경로 가이딩에 적용해준 연구 또한 Müller et al.[[MMR*19](#mmr*19)], Zheng과 Zwicker[[ZZ19](#zz19)], Bako et al. [[BMDS19](#bmds19)] 등이 있음. 이 방법들은 경로 표집이 더 효과적이기에 오류 감소가 상당하지만 훈련과 추론이라는 부분 때문에 실시간 어플리케이션에는 적합하지 않음.
+심화학습을 경로 가이딩에 적용해준 연구 또한 Müller et al.[[MMR&ast;19](#mmr*19)], Zheng과 Zwicker[[ZZ19](#zz19)], Bako et al. [[BMDS19](#bmds19)] 등이 있음. 이 방법들은 경로 표집이 더 효과적이기에 오류 감소가 상당하지만 훈련과 추론이라는 부분 때문에 실시간 어플리케이션에는 적합하지 않음.
 
 Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다른 학습 방법 또한 경로 가이딩에 사용되었음. 이 논문을 확장시켜 온라인 학습이 고차원 변량 조절과 공간적 방향성 해싱을 통한 실시간 방사 휘도 캐싱을 성공적으로 학습했음[[Pan20](#pan20)].
 
-이 논문에서는 직접 경로를 가이드해주는 대신 시간(프레임)과 공간(픽셀)에 대해서 경로 표본을 재사용해줌. 전역 조명에서 경로 재사용을 해준 초기 방법들은 가상 포인트 라이트(VPL)에 기반함[[Kel97](#kel97), [DKH*14](#dkh*14)]. 이 방법들은 광원으로부터 나온 빛의 부분 경로를 표집하여 그들의 정점을 가상 광원으로 재사용하여 카메라에서 볼 수 있는 점들을 비춰줌. 이 방법은 이후에 더 정교한 다중 광원 방법을 적용하고[[HPB07](#hpb07)] 완전 양방향성 경로 추적 변형들을 적용[[PRDD15](#prdd15), [CBH*15](#cbh*15), [TH19](#th19)]하는 식으로 확장되었음.
+이 논문에서는 직접 경로를 가이드해주는 대신 시간(프레임)과 공간(픽셀)에 대해서 경로 표본을 재사용해줌. 전역 조명에서 경로 재사용을 해준 초기 방법들은 가상 포인트 라이트(VPL)에 기반함[[Kel97](#kel97), [DKH&ast;14](#dkh*14)]. 이 방법들은 광원으로부터 나온 빛의 부분 경로를 표집하여 그들의 정점을 가상 광원으로 재사용하여 카메라에서 가시점들을 비춰줌. 이 방법은 이후에 더 정교한 다중 광원 방법을 적용하고[[HPB07](#hpb07)] 완전 양방향성 경로 추적 변형들을 적용[[PRDD15](#prdd15), [CBH&ast;15](#cbh*15), [TH19](#th19)]하는 식으로 확장되었음.
 
 카메라로부터 시작한 부분 경로를 재사용하는 방법에 기반한 좀 더 일반적인, 중요한 방법으로는 Bekaert et al. [[[BSH02](#bsh02)]의 방법이 있음. 본 논문에서는 Bekaert et al.의 방법으로부터 여러 아이디어를 차용함. 사실상 같은 정점 재연결 전략을 사용하면서 ReSTIR 저장소 재표집과 병합 알고리듬을 적용하여 복잡한 추가적인 자료구조 없이, 재사용한 부분경로를 선택하고 가중치를 부여함. 결과적으로는 좀 더 유연한 알고리듬을 얻을 수 있음: Bekaert et al.의 알고리듬의 경우 다중 중요도 표집(MIS) 평가를 할 때 재사용한 표본의 수가 M이라면, O(M<sup>2</sup>)의 복잡도를 가졌으며, 고정 타일 재사용 패턴(모든 픽셀이 비용을 다같이 부담한다면)을 사용해줘도 O(M)까지 밖에 줄일 수 없음. 허나 이 논문의 ReSTIR 기반 알고리듬의 경우 임의의 재사용 패턴에 대해 O(M)의 복잡도를 가지면서도 시간적 / 공간적 재사용도 가능함.
 
@@ -81,7 +81,6 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 </div>
 <div style="clear: both;"></div>
 
-
 * L: 나가는 방향의 방사 휘도
 * L<sub>e</sub>: 발산하는 방사 휘도
 * &Omega;: 표면 법선 주위로 방향들이 이루는 반구
@@ -93,18 +92,18 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 중간에 참여하는 매체가 없다는 가정하에 입사 방사 휘도 L<sub>i</sub>는 x에서 &omega;<sub>i</sub> 방향으로의 광선에 따라 처음으로 볼 수 있는 표면에서 나가는 방사 휘도에 대하여 다시 써줄 수 있음:
 
 <div id="eq_2">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Equation2.png" alt="Equation2"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(2)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Equation2.png" alt="Equation2"/></p>
+ <p style="float: left; width:10%; text-align:right;">(2)</p>
 </div>
 <div style="clear: both;"></div>
 
 여기서 TRACE 함수는 x에서 &omega;<sub>i</sub> 방향으로 가장 가까운 점을 반환해주는 함수임. 전통적인 몬테 카를로 방법의 경우 다음 추정 법칙을 사용함:
 
 <div id="eq_3">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(3)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
+ <p style="float: left; width:10%; text-align:right;">(3)</p>
 </div>
 <div style="clear: both;"></div>
 
@@ -116,18 +115,18 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 PDF p가 적분과 비슷할수록 몬테 카를로 추정 법칙의 오류가 낮아짐. 재표집 중요도 표집[[TCE05](#tce05)]은 직접 표집할 수 없는 복잡한 분포에서 표집을 하는 효과적인 방법임. 표본을 생성할 때 2패스 알고리듬을 사용함. 우선 원본 분포 p(y)로부터 M 개의 후보 표본 **y** = y<sub>1</sub>, &hellip;, y<sub>M</sub>을 표집함. 이후 *목표 PDF* ![TargetPdf](/Images/ReStirGi/TargetPdf.png)로부터 아래 확률로 **y**로부터 표본 z 하나를 재표집함:
 
 <div id="eq_4">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(4)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
+ <p style="float: left; width:10%; text-align:right;">(4)</p>
 </div>
 <div style="clear: both;"></div>
 
 이때 w(y)는 다음과 같음:
 
 <div id="eq_5">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(5)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
+ <p style="float: left; width:10%; text-align:right;">(5)</p>
 </div>
 <div style="clear: both;"></div>
 
@@ -136,36 +135,115 @@ w(y)는 표본의 상대 가중치임. M이 증가할 수록 z 표본의 분포�
 **y**로부터 재표집한 z가 주어졌을 때, 적분이 0이 아닐 때 ![TargetPdf](/Images/ReStirGi/TargetPdf.png) > 0이기만 하면 적분 ![Integrand](/Images/ReStirGi/Integrand.png)에 대해 편향되지 않은 추정치를 RIS 추정 법칙으로 구할 수 있음:
 
 <div id="eq_6">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(6)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
+ <p style="float: left; width:10%; text-align:right;">(6)</p>
 </div>
 <div style="clear: both;"></div>
 
 만약 목표 PDF가 p보다 더 적분과 유사하다면 RIS가 오류를 줄여줌.
 
-Bitterli et al. [[BWP*20](#bwp*20)]에서 보여주었듯, 가중 저장소 표집(WRS)[[Vit85](#vit85), [Cha82](#cha82)]을 통해 RIS를 GPU에서 효율적으로 구현할 수 있음. 참고를 위해 WRS 알고리듬을 [알고리듬 1](#알고리듬-1-가중-저장소-표집)에 적어두었으며, 여기에 표본 하나로 저장소를 업데이트하는 함수와 다른 저장소와 병합하는 함수도 포함함. 이 함수를 통해 두 저장소를 고려하여 후보로 뽑은 표본 중 하나를 얻을 수 있음. Bitterli et al.에 따라 이 논문의 저장소 또한 저장소의 한 표본 z의 가중치 W를 저장하며, 이 값은 다음과 같음:
+Bitterli et al. [[BWP&ast;20](#bwp*20)]에서 보여주었듯, 가중 저장소 표집(WRS)[[Vit85](#vit85), [Cha82](#cha82)]을 통해 RIS를 GPU에서 효율적으로 구현할 수 있음. 참고를 위해 WRS 알고리듬을 [알고리듬 1](#알고리듬-1-가중-저장소-표집)에 적어두었으며, 여기에 표본 하나로 저장소를 업데이트하는 함수와 다른 저장소와 병합하는 함수도 포함함. 이 함수를 통해 두 저장소를 고려하여 후보로 뽑은 표본 중 하나를 얻을 수 있음. Bitterli et al.에 따라 이 논문의 저장소 또한 저장소의 한 표본 z의 가중치 W를 저장하며, 이 값은 다음과 같음:
 
 <div id="eq_7">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Weight.png" alt="Weight"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(7)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Weight.png" alt="Weight"/></p>
+ <p style="float: left; width:10%; text-align:right;">(7)</p>
 </div>
 <div style="clear: both;"></div>
 
 그러므로 RIS 추정 법칙은 다음과 같이 쉽게 구할 수 있음:
 
 <div id="eq_8">
- <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
- <p style="float: left; width:33.33333%; text-align:right;">(8)</p>
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
+ <p style="float: left; width:10%; text-align:right;">(8)</p>
 </div>
 <div style="clear: both;"></div>
 
+### 알고리듬 1: 가중 저장소 표집
+
+```
+1:  class Reservoir
+2:      Sample z
+3:      w ← 0
+4:      M ← 0
+5:      W ← 0   // 7번식
+6:      procedure Update(Sample S_new, w_new)
+7:          w ← w + w_new
+8:          M ← M + 1
+9:          if random() < w_new / w then
+10:             z ← S_new
+11:     procedure Merge(Reservoir r, p^hat)
+12:         M_0 ← M
+13:         Update(r.z, p^hat * r.W * r.M)
+14:         M ← M_0 + r.M
+```
+
+#### C++-like pseudo code
+
+```
+class Reservoir
+{
+public:
+    void Update(const Sample& newSample, float newRelativeWeight)
+    {
+        RelativeWeight += newRelativeWeight;
+        ++NumCandidateSamples;
+        if (random() < newRelativeWeight / RelativeWeight)
+        {
+            Sample = newSample;
+        }
+    }
+
+    void Merge(const Reservoir& reservoir, float targetProbability)
+    {
+        uint newNumCandidateSamples = NumCandidateSamples;
+        Update(reservoir.Sample, targetProbability * reservoir.Weight * reservoir.NumCandidateSamples);
+        NumCandidateSamples = newNumCandidateSamples + reservoir.NumCandidateSamples;
+    }
+
+public:
+    Sample Sample;                     // z
+    float RelativeWeight = 0.0f;       // w
+    uint NumCandidateSamples = 0u;     // M
+    float Weight = 0.0f;               // W
+};
+```
 
 # 4. ReSTIR GI
 
-### 알고리듬 1: 가중 저장소 표집
+원본 ReSTIR 알고리듬[[BWP&ast;20](#bwp*20)]에서는 초기 표본을 소스 PDF p(x)가 빛의 표면에서 균일하게 표집해주는 빛 표집을 통해 구함. 이때 이 빛의 표면은 빛이 발하는 힘에 따라 빛 자체가 표집됨. (원본: The original ReSTIR algorithm places initial samples using light sampling where the source PDF p(x) samples uniformly on the surfaces of lights that are themselves sampled according to their emitted power.) 목표 함수 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)는 빛 표본에 의해 그림자가 지지 않은 반사된 방사 휘도로 구할 수 있으며, 이때 이 방사 휘도는 발산 방사 휘도, BSDF와 기하학적 결합항의 곱으로 구할 수 있음.
+
+ReSTIR로 간접 조명을 표집하기 위해서는 간접 조명에 영향을 주는 방향을 표현해줘야함. 이 표현이 공간의 여러 점에서 시공간적으로 재사용이 가능해야하므로 방향을 의미하는 지역 반구의 단위 벡터는 좋은 표현 방법이 아님. 그러므로 표면 위의 점과 입사 광선을 통해 산란되어 돌아오는 방사 휘도를 연관지음.
+
+여기서 *가시점*이란 카메라가 각 픽셀에서 장면의 표면 중 가시점을 의미함. 가시점마다 무작위로 방향을 표집한 다음 추적하여 최근접 교차면을 구함. 이때 교차점을 *표본점sample point*라 부름. 표본 생성은 [4.1 섹션](#41-표본-생성)에서 좀 더 세부적으로 다루도록 함. 표본점을 생성한 후엔 재표집을 수행한 후 가시점마다 셰이딩 값을 계산해줌([4.2 섹션](#42-재표집과-셰이딩)). [그림 2](#figure_2)는 직접광에 대한 ReSTIR과 ReSTIR GI를 비교하며, [그림 4](#figure_4)에서는 알고리듬을 요약해줌.
+
+알고리듬은 세 개의 이미지 크기 버퍼를 관리함. 이 버퍼는 각 픽셀에 다음과 같은 값을 저장함:
+
+* 초기 표본 버퍼: `Sample`형([그림 3](#figure_3)의 초기 표본에 대한 버퍼.
+* 시간적 저장소 버퍼: 픽셀에서 직전에 생성된 표본에 WRS를 적용하여 얻은 표본을 저장하는 `Reservoir`의 버퍼.
+* 공간적 저장소 버퍼: 근처 픽셀에서의 표본에 WRS를 적용하여 얻은 표본을 저장하는 `Reservoir`의 버퍼.
+
+<div style="text-align: center" id="figure_2">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure2.jpeg" alt="Figure2">
+<p><strong>그림 2:</strong>: ReSTIR과 ReSTIR GI. (a) 원본 ReSTIR 알고리듬<a href="#bwp*20">[BWP*20]</a>은 장면에서의 빛에서 무작위로 표본을 생성하는 것으로 시작함. (b) 재표집 이후 아무런 영향을 주지 않는 표본을 버림; 유용한 표본은 시공간적으로 공유하며 이들의 기여도에 따른 확률에 따라 사용함. (c) 이 논문에서 제시한 방법의 경우 무작위 방향을 표집하고, 광선을 추적하여 최근접 교차점을 찾아 초기 표본을 생성함. 이때 교차점에서 경로 추적법을 통해 반사 방사 휘도를 계산함. (d) 시공간 재표집을 비슷한 방법으로 적용해줌. 이를 통해 의미 있는 간접 조명을 주는 방향을 찾을 수 있음. 이건 ReSTIR에서는 해주지 못했음.</p>
+</div>
+
+<div style="text-align: center" id="figure_3">
+<pre><code><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Sample</span></span>
+    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/VisiblePoint.png" alt="VisiblePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/VisiblePointSurfaceNormal.png" alt="VisiblePointSurfaceNormal">    <span class="hljs-comment">// 가시점과 표면 법선</span>
+    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePoint.png" alt="SamplePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePointSurfaceNormal.png" alt="SamplePointSurfaceNormal">    <span class="hljs-comment">// 표본점과 표면 법선</span>
+    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePointOutgoingRadiance.png" alt="SamplePointOutgoingRadiance">        <span class="hljs-comment">// 표본점으로부터 나가는 RGB 방사 휘도</span>
+    float3 Random    <span class="hljs-comment">// 경로에 사용할 임의의 수</span>
+</code></pre>
+<p><strong>그림 3:</strong> 표본 표현. <code>Sample</code>은 표본에서의 지역 기하와 나가는 방사 휘도 값과 표본점을 생성할 때 사용한 가시점에서의 지역 기하를 둘 다 저장해줌. 가시점 기하와 경로 추적에 사용할 임의의 수는 <a href="#43-편향">섹션 4.3</a>에서 설명할 표본 검증 알고리듬에 사용함.</p>
+</div>
+
+<div style="text-align: center" id="figure_4">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure4.jpeg" alt="Figure4">
+<p><strong>그림 4:</strong>: 알고리듬 작업 흐름. 각 프레임마다, 각 픽셀마다 다음 단계를 수행해줌: 초기 샘플링: 가시점(빨간 점)마다 임의의 방향으로 광선을 추적하여 최근접 교차점을 스크린 스페이스 초기 표본 버퍼에 저장함. 교차점의 위치, 법선과 방사 휘도, 다음 이벤트 추정 때 사용할 임의의 숫자, 픽셀의 위치와 법선을 저장함. 시간적 재사용: 초기 표본 버퍼에서의 표본과 현재 프레임에서 생성된 표본 중 하나를 임의로 선택하여 시간적 저장소 버퍼를 업데이트해줌. 시간적 재투영을 적용하여 해당 시간적 저장소를 이전 프레임으로부터 찾아냄. 공간적 재사용: 이웃 픽셀 중 임의의 한 시간적 저장소를 선택하여 공간적 저장소를 업데이트해줌. 편향을 억제하기 위해 선택한 픽셀의 깊이와 법선을 현재 픽셀의 깊이와 법선으로 비교해주어 비슷한 기하학적 특징을 갖는 픽셀을 선택함.</p>
+</div>
 
 ## 4.1. 표본 생성
 
