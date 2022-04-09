@@ -218,6 +218,48 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 ## 6.1. 침식된 경로 맵
 
+보통 동물은 시야에서 잘 보이지 않기 때문에, 동물이 어떤 한 지역에 존재함을 아는 가장 첫번째 흔적은 동물이 남긴 경로임. 그러므로 생태계를 3D로 개체화하기 전 동물들이 그린 경로를 생성해준 다음, 해당 경로의 사용 확률을 누적한 값을 통해 침식을 적용해줌. 이는 각 동물이 자신의 제한 영역 내의 각 RAG 노드마다 얼마나 시간을 보냈는지를 바탕으로 공간 모서리에 동물상이 있을 확률을 구해주고, 이 모서리를 경로로 좀 더 세밀하게 표현해주는 것으로 구현해줄 수 있음.
+
+어떤 종 s의 한 무리 h가 영역 C에 제한되어있다고 가정. h가 어떤 한 자원 노드 v에 존재할 확률은 r ∈ R(s)인 해당 자원에 대한 s의 필요성과 소비 가능량 q(r, v)에 달려있음. s 종의 동물이 C 내의 RAG 노드에 대해서 균일하게 r을 소비하며, 무리가 r에서 머무를 시간은 r에 대한 연간 소비량 대 s가 필요로하는 전체 자원량 c(s, R(s))의 비율에 비례한다고 가정했을 때 s가 v에 있을 확률은 다음과 같음:
+
+<div id="eq_1">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/PrescenceProbability.png" alt="PrescenceProbability">
+ <p style="float: left; width:33.33333%; text-align:right;">(1)</p>
+ </div>
+<div style="clear: both;"></div>
+
+여기서 q(r, C)는 영역 C에서 소비 가능한 r의 총량임.
+
+이제 C의 두 RAG 노드의 공간 모서리 (v, v')에 대해서 무리가 이곳을 이동할 확률을 구할 시간. 이 모서리의 값인 근사 이동 시간 t<sub>s</sub>(v, v')을 통해 무리가 이 직빵 경로를 사용할 것인지, 아니면 다른 자원 노드를 경유할 것인지를 알 수 있게 됨. 그러므로 v에서의 무리가 공간 모서리 (v, v')를 확률인 P<sub>s</sub>(v'|v)를 v'로 갈 확률에 직빵 경로 이동 시간의 역(더 긴 경로는 덜 사용될 것이므로)만큼 가중치로 준 값을 다른 자원으로 갈 확률에 가중치를 마찬가지로 곱한 것들의 총합으로 나눈 것으로 구할 수 있음:
+
+<div id="eq_2">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/MovementProbability.png" alt="MovementProbability">
+ <p style="float: left; width:33.33333%; text-align:right;">(2)</p>
+ </div>
+<div style="clear: both;"></div>
+
+종 s가 C 안의 v와 v' 간의 경로에서의 침식에 얼마나 영향을 주느냐는 연간 해당 공간 모서리를 이동한 표본의 질량의 총합에 비례함. [식 1](#eq_1)과 [식 2](#eq_2)에서 구한 확률과 C에서의 표본수 ||s||와 평균 질량 m<sub>s</sub>를 사용하여 구할 수 있음:
+
+<div id="eq_3">
+ <p style="float: left; width:33.33333%; text-align:left;"></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ErosionImpact.png" alt="ErosionImpact">
+ <p style="float: left; width:33.33333%; text-align:right;">(3)</p>
+ </div>
+<div style="clear: both;"></div>
+
+여기서 w<sub>vv'</sub>는 v에서 v', 그리고 v'에서 v로 이동한 동물들의 무게의 누적임.
+
+이제 RAG 그래프를 무방향으로 간주한 다음, 각 모서리의 값을 w<sub>vv'</sub>로 주어 침식된 경로 맵을 계산함. 우선 가장 w<sub>vv'</sub> 값이 높은 모서리인 지형 위의 최단 경로로 침식 경로를 초기화해준 다음, 반복적으로 지형과 RAG에서 각 모서리의 끝에서 w<sub>vv'</sub> 값이 높은 모서리를 선택하여 확장을 해줌. 이때 경로 중에서도 가장 긴 연속된 루트를 가장 자주 사용하는 것부터 시작해서 스플라인 곡선을 활용하여 부드럽게 만들어줌. 모든 RAG 모서리를 처리해줄 때까지 이 과정을 반복함. 결국 경로는 트리 혹은 그래프 구조가 되게 됨. [그림 5(좌측)](#figure_5)에서 볼 수 있듯, 각 부분의 색의 강도가 곧 해당 경로의 사용 빈도를 의미하며, 무게에 비례하도록 설정했음. 참고로 실제 자연 지형에서도 몇가지 주요 경로가 존재함. 즉, 동물들 입장에선 어떤 지역에 자원이 풍부하다거나 환경 자체가 그곳으로 가도록 강제하기 때문에 같은 위치로 계속 가게 됨. 동물들은 이 주 경로에서 여러 자원들로 퍼져나가게 됨.
+
+이 경로를 실제 렌더링을 해줄 때 시각적으로 표현해주기 위해 이 경로를 식물 밀도 맵에서 빼주며, 가중치에 따라 살짝 지형을 깎아준 뒤 약간 진흙이나 암석 등의 텍스처로 렌더링해줌.
+
+<div style="text-align: center" id="figure_5">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure5.jpeg" alt="Figure5">
+<p>그림 5. 동물 경로 및 맵(좌측)과 3D 탐험을 위해 선택된 영역(우측). 이 예시는 그랜드 캐니언 DEM을 사용했음. 이를 통해 경로가 어떻게 분기하여 좌우로 진행할 뿐만 아니라 계곡 아래로도 내려가는지를 보여줌.</p>
+</div>
+
 ## 6.2. 3D 일상 계획 및 동물 개체화
 
 **일상 계획daily-planning**
@@ -278,4 +320,16 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 ```
 \textup{fits}\left ( s, R \right ) = \min_{r \in R} \left ( \frac{\min \left ( \mathfrak{F}_{max}\left ( s, R \right ), r_{max} \right ) - \max \left ( \mathfrak{F}_{min}\left ( s, R \right ), r_{min} \right )}{\left (r_{max} - r_{min}\right )} \right )
+```
+
+```
+P_{s}\left ( v \right ) = \sum_{r \in R \left ( s \right ) }{ \left( \frac{q\left ( r, v\right )}{q\left ( r, C\right )} \cdot \frac{c\left ( s, r\right )}{c\left ( s, R\left(s\right)\right )}\right )}
+```
+
+```
+P_{s}\left ( v' \mid v \right ) = \frac{t_{s}^{-1}\left (v, v' \right ) \cdot P_{s}\left ( v' \right )}{\sum_{v''} \left ( t_{s}^{-1}\left (v, v'' \right ) \cdot P_{s}\left ( v'' \right ) \right )}
+```
+
+```
+w_{vv'} = \sum_{s} m_{s} \cdot \left \| s \right \| \left ( P_{s}\left ( v \right ) \cdot P_{s}\left ( v' \mid v \right ) + P_{s}\left ( v' \right ) \cdot P_{s}\left ( v \mid v' \right ) \right )
 ```
