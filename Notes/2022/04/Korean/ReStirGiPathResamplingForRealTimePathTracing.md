@@ -242,10 +242,30 @@ ReSTIR로 간접 조명을 표집하기 위해서는 간접 조명에 영향을 
 
 <div style="text-align: center" id="figure_4">
 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure4.jpeg" alt="Figure4">
-<p><strong>그림 4:</strong>: 알고리듬 작업 흐름. 각 프레임마다, 각 픽셀마다 다음 단계를 수행해줌: 초기 샘플링: 가시점(빨간 점)마다 임의의 방향으로 광선을 추적하여 최근접 교차점을 스크린 스페이스 초기 표본 버퍼에 저장함. 교차점의 위치, 법선과 방사 휘도, 다음 이벤트 추정 때 사용할 임의의 숫자, 픽셀의 위치와 법선을 저장함. 시간적 재사용: 초기 표본 버퍼에서의 표본과 현재 프레임에서 생성된 표본 중 하나를 임의로 선택하여 시간적 저장소 버퍼를 업데이트해줌. 시간적 재투영을 적용하여 해당 시간적 저장소를 이전 프레임으로부터 찾아냄. 공간적 재사용: 이웃 픽셀 중 임의의 한 시간적 저장소를 선택하여 공간적 저장소를 업데이트해줌. 편향을 억제하기 위해 선택한 픽셀의 깊이와 법선을 현재 픽셀의 깊이와 법선으로 비교해주어 비슷한 기하학적 특징을 갖는 픽셀을 선택함.</p>
+<p><strong>그림 4:</strong> 알고리듬 작업 흐름. 각 프레임마다, 각 픽셀마다 다음 단계를 수행해줌: 초기 샘플링: 가시점(빨간 점)마다 임의의 방향으로 광선을 추적하여 최근접 교차점을 스크린 스페이스 초기 표본 버퍼에 저장함. 교차점의 위치, 법선과 방사 휘도, 다음 이벤트 추정 때 사용할 임의의 숫자, 픽셀의 위치와 법선을 저장함. 시간적 재사용: 초기 표본 버퍼에서의 표본과 현재 프레임에서 생성된 표본 중 하나를 임의로 선택하여 시간적 저장소 버퍼를 업데이트해줌. 시간적 재투영을 적용하여 해당 시간적 저장소를 이전 프레임으로부터 찾아냄. 공간적 재사용: 이웃 픽셀 중 임의의 한 시간적 저장소를 선택하여 공간적 저장소를 업데이트해줌. 편향을 억제하기 위해 선택한 픽셀의 깊이와 법선을 현재 픽셀의 깊이와 법선으로 비교해주어 비슷한 기하학적 특징을 갖는 픽셀을 선택함.</p>
 </div>
 
 ## 4.1. 표본 생성
+
+ReSTIR GI 알고리듬의 첫번째 단계는 각 가시점마다 새 표본점을 생성하는 단계임. 우선 입력으로 G-버퍼를 받는데, 이때 버퍼엔 각 픽셀마다 가시점의 위치와 표면 법선을 갖고 있음. 광선 추적 우선 가시성과 손쉽게 사용할 수 있긴 함.
+
+각 픽셀 q와 이에 대응하는 가시점 x<sub>v</sub>마다 소스 PDF p<sub>q</sub>(&omega;<sub>i</sub>)를 통해 한 방향 &omega;<sub>i</sub>을 표집하고, 광선을 추적하여 표본점 x<sub>s</sub>을 구함. 소스 PDF는 균일분포여도 되고, 코사인 가중 분포여도 되고, 가시점에서의 BSDF에 기반한 분포여도 됨([6 장](#6-결과)에서 이 분포를 비교함). [알고리듬 2](#알고리듬-2-초기-표집)의 의사 코드를 참고.
+
+각 표본점마다 나가는 방사 휘도 L<sub>o</sub>(x<sub>s</sub> &omega;<sub>o</sub>)를 계산해줌. 이때 &omega;<sub>o</sub>는 가시점으로의 방향 정규 벡터임. 이 방사 휘도 값은 여러 가지 방법으로 구할 수 있음. 여기서는 각 정점마다 후사건 추측(NEE)과 다중 중요도 표집을 사용하여 몬테 카를로 경로 추적법을 사용해주었음. 만약 오로지 직접광만이 방사 휘도 추측값에만 있다면 이 알고리듬에서는 단일 튕김 전역 조명만 계산함. 일반적으로는 이후 n 번 경로 추적할 튕김들이 n + 1 튕김 전역 조명에 대응함. [그림 5](#figure_5) 참고.
+
+### 알고리듬 2: 초기 표집
+
+* **각** 픽셀 q**마다**
+    * G버퍼에서 가시점 x<sub>v</sub>와 법선 ![VisiblePointSurfaceNormal](/Images/ReStirGi/VisiblePointSurfaceNormal.png) 구함
+    * 소스 PDF p<sub>q</sub>에서 임의의 방향 &omega;<sub>i</sub>로의 광선을 표집
+    * 광선 추적하여 표본점 x<sub>s</sub>와 법선 ![SamplePointSurfaceNormal](/Images/ReStirGi/SamplePointSurfaceNormal.png)을 구함
+    * x<sub>s</sub>에서 나가는 방사 휘도 ![SamplePointOutgoingRadiance](/Images/ReStirGi/SamplePointOutgoingRadiance.png) 추정.
+    * InitialSampleBuffer[q] ← Sample(x<sub>v</sub>, ![VisiblePointSurfaceNormal](/Images/ReStirGi/VisiblePointSurfaceNormal.png), x<sub>s</sub>, ![SamplePointSurfaceNormal](/Images/ReStirGi/SamplePointSurfaceNormal.png), ![SamplePointOutgoingRadiance](/Images/ReStirGi/SamplePointOutgoingRadiance.png));
+
+<div style="text-align: center" id="figure_5">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure5.jpeg" alt="Figure5">
+<p><strong>그림 5:</strong> 다중 튕김 GI. 각 표본점 x<sub>2</sub><sup>*</sup>마다 대응하는 가시점에 산란된 방사 휘도를 경로 추적법으로 추정함. 최종 경로 정점에 연결하여 다른 가시점이 전체 경로의 기여도를 재사용할 수 있게됨.</p>
+</div>
 
 ## 4.2. 재표집과 셰이딩
 
