@@ -269,6 +269,77 @@ ReSTIR GI 알고리듬의 첫번째 단계는 각 가시점마다 새 표본점�
 
 ## 4.2. 재표집과 셰이딩
 
+초기 표본을 갓 구한 이후 시공간 재표집을 적용함. 목표 함수
+
+<div id="eq_9">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetFunctionEquation.png" alt="TargetFunctionEquation"/></p>
+ <p style="float: left; width:10%; text-align:right;">(9)</p>
+</div>
+<div style="clear: both;"></div>
+
+에는 가시점에서의 BSDF의 효과와 코사인 항까지 포함하고 있음. 물론, 
+
+<div id="eq_10">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SimpleTargetFunction.png" alt="SimpleTargetFunction"/></p>
+ <p style="float: left; width:10%; text-align:right;">(10)</p>
+</div>
+<div style="clear: both;"></div>
+
+함수와 같이 단순한 목표 함수도 잘 작동은 함. 픽셀 하나에 대한 목표 함수 중 제일 좋은 것은 아니지만, 사용해보니 초기에 생성된 픽셀을 제외한 픽셀에 대해서 효과적이라는 점에서 공간 재표집을 할 때엔 유용함.
+
+초기 표본을 생성한 후에 시간적 재표집을 적용함. 이 단계에서는 각 픽셀마다 초기 표본 버퍼에서 표본 하나를 읽어온 다음, 이를 통해 [식 5](#eq_5)와 소스 PDF를 표집한 방향 p<sub>q</sub>(&omega;<sub>i</sub>)에 대한 PDF로서 사용하고, ![TargetPdf](/Images/ReStirGi/TargetPdf.png)를 [식 10](#eq_10)대로 사용하여 RIS 가중치를 구해주어 무작위로 시간적 저장소를 업데이트해줌. 시간적 재표집 의사 코드는 [알고리듬 3](#알고리듬-3-시간적-재표집)에 제시하였음.
+
+### 알고리듬 3: 시간적 재표집
+
+* **각** 픽셀 q**마다**
+    * S ← InitialSampleBuffer[q]
+    * R ← TemporalReservoirBuffer[q]
+    * w ← ![TargetPdf](/Images/ReStirGi/TargetPdf.png)<sub>q</sub>(S) / p<sub>q</sub>(S)    ([식 5](#eq_5), [식 9](#eq_9) 혹은 [식 10](#eq_10))
+    * R.Update(S, w)
+    * R.W ← R.w / (R.M · ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(R.z)) ([식 7](#eq_7))
+    * TemporalReservoirBuffer[q] ← R
+
+시간적으로 사용해준 다음엔 공간적 재사용을 적용해줌. 근처 픽셀의 시간적 저장소에서 표본을 갖고 와서 또다른 공간적 저장소에 재표집해줌. ([알고리듬 4](#알고리듬-4-공간적-재표집)의 의사 코드 참고.) 공간적 재사용을 할 땐 반드시 픽셀 간 소스 PDF의 차이를 고려해야함. 왜냐면 이 알고리듬에서의 표집 스킴은 가시점의 위치와 표면 법선에 기반하기 때문임. (본래 ReSTIR 알고리듬의 경우 각 픽셀의 지역 기하를 고려하지 않고, 바로 직접적으로 빛을 표집했기에 이러한 정정이 필요 없었음.) 그러므로 픽셀 q에서 온 표본을 픽셀 r에서 재사용하고 싶다면 반드시 입체각 PDF를 현재 픽셀의 입체각 공간으로 변환해주어야함. 이 변환은 해당 변환의 야코비 행렬식으로 나누어지는 식으로 해주는 것임[[KMA&ast;15](#kma*15), [식 13](#eq_13)]:
+
+<div id="eq_11">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/JacobianTransformation.png" alt="JacobianTransformation"/></p>
+ <p style="float: left; width:10%; text-align:right;">(11)</p>
+</div>
+<div style="clear: both;"></div>
+
+이때 x<sub>1</sub><sup>q</sup>와 x<sub>2</sub><sup>q</sup>는 각각 재사용 경로의 첫번째와 두번째 정점이며, x<sub>1</sub><sup>r</sup>는 종착 픽셀으로부터의 가시점이고, &Phi;<sub>2</sub><sup>q</sup>와 &Phi;<sub>2</sub><sup>r</sup>은 벡터 x<sub>1</sub><sup>q</sup> - x<sub>2</sub><sup>q</sup>와 x<sub>1</sub><sup>r</sup> - x<sub>2</sub><sup>q</sup>가 x<sub>2</sub><sup>q</sup>에서의 법선과 이루는 각임([그림 6](#figure_6)). [그림 7](#figure_7)을 통해 이 항이 얼마나 중요한지 볼 수 있음.
+
+공간 재표집 알고리듬 의사 코드는 [알고리듬 4](#알고리듬-4-공간적-재표집)에 주어져 있음. 이 알고리듬에는 Bitterli et al.[[BWP&ast;20](#bwp*20)]의 기하 유사도 테스트를 포함하고 있음. 이 유사도 테스트를 통과하려면 표면 법선이 25˚ 내여야 하고, 두 정규 깊이가 0.05 내여야 함.
+
+시공간 재사용이 끝나면 가시점 x<sub>v</sub>이 간접 조명에 의하여 최종적으로 산란한 방사 휘도를 RIS 추정 법칙인 [식 6](#eq_6)를 통해 구할 수 있음. 여기서 공간 저장소 W의 가중치가 f(y)를 제외한 모든 항을 제공함. f(y)의 경우 BSDF, 코사인 항, 그리고 저장소 표본의 나가는 방사 휘도의 곱으로 구함.
+
+### 알고리듬 4: 공간적 재표집
+
+* **각** 픽셀 q**마다**
+    * R<sub>s</sub> ← SpatialReservoirBuffer[q]
+    * Q ← q
+    * **각** s = 1에서 maxIterations**마다**
+        * 임의의 이웃 픽셀 q<sub>n</sub> 선택
+        * q와 q<sub>n</sub> 기하학적 유사성 계산
+        * **만약** 유사상이 주어진 기준보다 낮**다면**
+            * 다음 s로 진행
+        * R<sub>n</sub> ← TemporalReservoirBuffer[q<sub>n</sub>] 
+        * |J<sub>q<sub>n</sub> → q</sub>| 계산  ([식 11](#eq_11))
+        * ![TargetPdf](/Images/ReStirGi/TargetPdf.png)'<sub>q</sub> ← ![TargetPdf](/Images/ReStirGi/TargetPdf.png)<sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|
+        * **만약** R<sub>n</sub>의 표본점이 q의 x<sub>v</sub>에서 보이지 않는**다면**
+            * ![TargetPdf](/Images/ReStirGi/TargetPdf.png)'<sub>q</sub> ← 0
+        * R<sub>s</sub>.Merge(R<sub>n</sub>, ![TargetPdf](/Images/ReStirGi/TargetPdf.png)'<sub>q</sub>)
+        * Q ← Q ∩ q<sub>n</sub>
+    * Z ← 0
+    * Q의 **각** q<sub>n</sub>**마다**
+        * **만약** ![TargetPdf](/Images/ReStirGi/TargetPdf.png)<sub>q<sub>n</sub></sub> > 0이**라면**
+            * Z ← Z + R<sub>n</sub>.M   (편향 정정)
+    * R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · ![TargetPdf](/Images/ReStirGi/TargetPdf.png)<sub>q</sub>(R<sub>s</sub>.z))   ([식 7](#eq_7))
+    * SpatialReservoirBuffer[q] ← R<sub>s</sub>
+
 ## 4.3. 편향
 
 # 5. 구현
@@ -352,4 +423,16 @@ w\left(y \right ) = \frac{\hat{p}\left(y \right )}{p\left(y \right )}
 
 ```
 W\left(z \right ) = \frac{1}{\hat{p}\left(z \right )M}\sum_{j = 1}^{M}{\frac{\hat{p}\left(y_{j} \right )}{p\left(y_{j} \right )}}
+```
+
+```
+\hat{p} = L_{i}\left(x_{v}, \omega_{i} \right )f\left (\omega_{o}, \omega_{i} \right )\left \langle \cos{\theta_{i}} \right \rangle = L_{o}\left(x_{s}, -\omega_{i} \right )f\left (\omega_{o}, \omega_{i} \right )\left \langle \cos{\theta_{i}} \right \rangle
+```
+
+```
+\hat{p} = L_{o}\left(x_{s}, -\omega_{i} \right )
+```
+
+```
+\left |J_{q\rightarrow r} \right |=\frac{\left | \cos{\Phi_2^r} \right |}{\left | \cos{\Phi_2^q} \right |}\cdot\frac{\left \| x_1^q - x_2^q \right \|^2}{\left \| x_1^r - x_2^q \right \|^2}
 ```
