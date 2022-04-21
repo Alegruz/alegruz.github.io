@@ -109,6 +109,28 @@ div {height:50px;width:100%;}
 
 6. Z- 축의 방향과 가까워질수록 <span style="background-color:rgb(127,127,0)">초갈색</span>.
 
+## World Position?
+
+![WorldPosition](/Images/Phong/WorldPosition.gif)
+
+1. X+Y+Z+ 쪽 대각선 꼭지점의 월드좌표 (1, 1, 1, 1) → RGB (1, 1, 1, 1). <span style="background-color:rgb(255,255,255)">하얀색</span>.
+
+2. X+Y+Z- 쪽 대각선 꼭지점의 월드좌표 (1, 1, -1, 1) → RGB (1, 1, 0, 1). <span style="background-color:rgb(255,255,0)">노란색</span>.
+
+3. X+Y-Z+ 쪽 대각선 꼭지점의 월드좌표 (1, -1, 1, 1) → RGB (1, 0, 1, 1). <span style="background-color:rgb(255,0,255)">핑크색</span>.
+
+4. X+Y-Z- 쪽 대각선 꼭지점의 월드좌표 (1, -1, -1, 1) → RGB (1, 0, 0, 1). <span style="background-color:rgb(255,0,0)">핑크색</span>.
+
+5. X-Y+Z+ 쪽 대각선 꼭지점의 월드좌표 (-1, 1, 1, 1) → RGB (0, 1, 1, 1). <span style="background-color:rgb(0,255,255)">하늘색</span>.
+
+6. X-Y+Z- 쪽 대각선 꼭지점의 월드좌표 (-1, 1, -1, 1) → RGB (0, 1, 0, 1). <span style="background-color:rgb(0,255,0)">초록색</span>.
+
+7. X-Y-Z+ 쪽 대각선 꼭지점의 월드좌표 (-1, -1, 1, 1) → RGB (0, 0, 1, 1). <span style="background-color:rgb(0,0,255)">초록색</span>.
+
+8. X-Y-Z- 쪽 대각선 꼭지점의 월드좌표 (-1, -1, -1, 1) → RGB (0, 0, 0, 1). <span style="background-color:rgb(0,0,0)">검은색</span>.
+
+---
+
 ```
 N = \textrm{number of lights}
 \textbf{c}_{\textrm{shaded}} = \textbf{c}_{\textrm{diffuse}} + \textbf{c}_{\textrm{specular}} + \textbf{c}_{\textrm{ambient}}
