@@ -52,47 +52,62 @@ return float4((normal + 1.0f) / 2.0f, 1.0f);
 
 ![Normal](/Images/Phong/Normal.gif)
 
-1. X+ 축의 방향을 바라보는 면
+1. X+ 축의 방향을 바라보는 면<br>
 
 이 경우 normal은 (1, 0, 0, 0) 이므로, RGB는 (1, 0.5, 0.5, 1). 즉 핑크색임.
 
-<html>
 <style>
 div {height:50px;width:100%;}
 </style>
-<body>
 
 <div style="background-color:rgb(255,127,127)"></div>
 
-2. X- 축의 방향을 바라보는 면
+2. X- 축의 방향을 바라보는 면<br>
 
 이 경우 normal은 (-1, 0, 0, 0) 이므로, RGB는 (0, 0.5, 0.5, 1). 즉 청록색임.
 
 <div style="background-color:rgb(0,127,127)"></div>
 
-3. Y+ 축의 방향을 바라보는 면
+3. Y+ 축의 방향을 바라보는 면<br>
 
 이 경우 normal은 (0, 1, 0, 0) 이므로, RGB는 (0.5, 1, 0.5, 1). 즉 연한 초록색임.
 
 <div style="background-color:rgb(127,255,127)"></div>
 
-4. Y- 축의 방향을 바라보는 면
+4. Y- 축의 방향을 바라보는 면<br>
 
 이 경우 normal은 (0, -1, 0, 0) 이므로, RGB는 (0.5, 0, 0.5, 1). 즉 보라색임.
 
 <div style="background-color:rgb(127,0,127)"></div>
 
-5. Z+ 축의 방향을 바라보는 면
+5. Z+ 축의 방향을 바라보는 면<br>
 
 이 경우 normal은 (0, 0, 1, 0) 이므로, RGB는 (0.5, 0.5, 1, 1). 즉 연한 파란색임.
 
 <div style="background-color:rgb(127,127,255)"></div>
 
-6. Z- 축의 방향을 바라보는 면
+6. Z- 축의 방향을 바라보는 면<br>
 
 이 경우 normal은 (0, 0, -1, 0) 이므로, RGB는 (0.5, 0.5, 0, 1). 즉 초갈색임.
 
 <div style="background-color:rgb(127,127,0)"></div>
+
+## View Direction?
+
+![ViewDirection](/Images/Phong/ViewDirection.gif)
+
+
+1. X+ 축의 방향과 가까워질수록 <span style="background-color:rgb(255,127,127)">핑크색</span>
+
+2. X- 축의 방향과 가까워질수록 <span style="background-color:rgb(0,127,127)">청록색</span>.
+
+3. Y+ 축의 방향과 가까워질수록 <span style="background-color:rgb(127,255,127)">연한 초록색</span>.
+
+4. Y- 축의 방향과 가까워질수록 <span style="background-color:rgb(127,0,127)">보라색</span>.
+
+5. Z+ 축의 방향과 가까워질수록 <span style="background-color:rgb(127,127,255)">연한 파란색</span>.
+
+6. Z- 축의 방향과 가까워질수록 <span style="background-color:rgb(127,127,0)">초갈색</span>.
 
 ```
 N = \textrm{number of lights}
