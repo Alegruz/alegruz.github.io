@@ -34,6 +34,65 @@
 * **v**: **l**이랑 마찬가지로 아마 카메라의 월드 공간에서의 좌표를 constant buffer / uniform 변수로 받았을 텐데, 이걸 `cameraPosition` 변수라 치면, **v** = `cameraPosition - worldPosition`임. ㅇㅇ 방향 반대임.
 * **c**<sub>surface</sub>: 결국 텍스처에서 샘플링해서 구하면 됨.
 
+# 디버깅해보기
+
+## Normal 값 제대로 들어가나?
+
+VS에서 계산한 월드 공간에서의 normal vector의 값을 그대로 색으로 출력해보기.
+
+근데 이때 법선은 정규 벡터라 값의 범위가 [-1.0f, 1.0f], 즉 음수 값이 나올 수도 있으니, 이걸 RGB로 표현 가능한 [0.0f, 1.0f]의 범위로 축소해줘야함.
+
+즉, 1.0f 만큼 더하고 2.0f 만큼 빼주면 됨:
+
+```
+return float4((normal + 1.0f) / 2.0f, 1.0f);
+```
+
+이런 식.
+
+![Normal](/Images/Phong/Normal.gif)
+
+1. X+ 축의 방향을 바라보는 면
+
+이 경우 normal은 (1, 0, 0, 0) 이므로, RGB는 (1, 0.5, 0.5, 1). 즉 핑크색임.
+
+<html>
+<style>
+div {height:50px;width:100%;}
+</style>
+<body>
+
+<div style="background-color:rgb(255,127,127)"></div>
+
+2. X- 축의 방향을 바라보는 면
+
+이 경우 normal은 (-1, 0, 0, 0) 이므로, RGB는 (0, 0.5, 0.5, 1). 즉 청록색임.
+
+<div style="background-color:rgb(0,127,127)"></div>
+
+3. Y+ 축의 방향을 바라보는 면
+
+이 경우 normal은 (0, 1, 0, 0) 이므로, RGB는 (0.5, 1, 0.5, 1). 즉 연한 초록색임.
+
+<div style="background-color:rgb(127,255,127)"></div>
+
+4. Y- 축의 방향을 바라보는 면
+
+이 경우 normal은 (0, -1, 0, 0) 이므로, RGB는 (0.5, 0, 0.5, 1). 즉 보라색임.
+
+<div style="background-color:rgb(127,0,127)"></div>
+
+5. Z+ 축의 방향을 바라보는 면
+
+이 경우 normal은 (0, 0, 1, 0) 이므로, RGB는 (0.5, 0.5, 1, 1). 즉 연한 파란색임.
+
+<div style="background-color:rgb(127,127,255)"></div>
+
+6. Z- 축의 방향을 바라보는 면
+
+이 경우 normal은 (0, 0, -1, 0) 이므로, RGB는 (0.5, 0.5, 0, 1). 즉 초갈색임.
+
+<div style="background-color:rgb(127,127,0)"></div>
 
 ```
 N = \textrm{number of lights}
