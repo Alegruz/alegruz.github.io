@@ -19,7 +19,7 @@
 ```
 N = \textrm{number of lights}
 \textbf{c}_{\textrm{shaded}} = \textbf{c}_{\textrm{diffuse}} + \textbf{c}_{\textrm{specular}} + \textbf{c}_{\textrm{ambient}}
-\textbf{c}_{\textrm{diffuse}} = \textbf{c}_{\textrm{surface}} \sum_{i}^{N}{\left \langle {\textbf{n}}\cdot{\textbf{l}} \right \rangle^+ }
+\textbf{c}_{\textrm{diffuse}} = \textbf{c}_{\textrm{surface}} \sum_{i}^{N}{\left \langle {\textbf{n}}\cdot{\textbf{l}} \right \rangle^+ \textbf{c}_{\textrm{light}_i}}
 \textbf{c}_{\textrm{specular}} = \textbf{c}_{\textrm{surface}} \sum_{i}^{N}{\left \langle {\textbf{r}_i}\cdot{\textbf{v}} \right \rangle^{\textrm{sh}} \textbf{c}_{\textrm{light}_i} }
 \textbf{c}_{\textrm{ambient}} = \textbf{c}_{\textrm{surface}} \sum_{i}^{N}{\textbf{c}_{\textrm{light}_i} \textbf{a}_i}
 ```
