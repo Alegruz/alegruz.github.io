@@ -31,3 +31,5 @@ Game Development Studies with Books
     * 4월
         * [실시간 광선 추적법 공부 노트](Notes/2022/04/Korean/RealTimeRayTracingNotes.md)
         * [ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집](Notes/2022/04/Korean/ReStirGiPathResamplingForRealTimePathTracing.md)
+        * [ReSTIR GI 공부 노트](Notes/2022/04/Korean/ReStirGiStudyNotes.md)
+        * [간단한 퐁 셰이딩 수식](Notes/2022/04/Korean/SimplePhongPseudoCode.md)
