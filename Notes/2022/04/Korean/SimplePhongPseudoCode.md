@@ -6,7 +6,8 @@
 ![NumberOfLights](/Images/Phong/NumberOfLights.png)
 
 ![Figure](/Images/Phong/Figure.png)
-참고: 빛의 방향이라고 해서 광원이 빛을 보내는 방향이라고 생각할 수 있으나, 그래픽스 계에서는 반대로 사용함;;
+
+참고: 빛의 방향이라고 해서 광원이 빛을 보내는 방향이라고 생각할 수 있으나, 그래픽스 계에서는 반대로 사용함;; 이건 **v**도 마찬가지
 
 ![CShaded](/Images/Phong/CShaded.png)
 
