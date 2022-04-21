@@ -129,6 +129,19 @@ div {height:50px;width:100%;}
 
 8. X-Y-Z- 쪽 대각선 꼭지점의 월드좌표 (-1, -1, -1, 1) → RGB (0, 0, 0, 1). <span style="background-color:rgb(0,0,0)">검은색</span>.
 
+## Light Direction?
+
+![LightDirection](/Images/Phong/LightDirection.gif)
+
+이번엔 돌아가는 빛과 큐브 위의 점들 사이의 light direction을 구해봅니다...
+
+이번에도 normal과 유사하게 방향마다 값들이 나옵니다.
+
+1. X+ 쪽 <span style="background-color:rgb(255,127,127)">핑크색</span>.
+2. Z+ 쪽 <span style="background-color:rgb(127,127,255)">연한 파란색</span>.
+3. X- 쪽 <span style="background-color:rgb(0,127,127)">청록색</span>.
+4. Z- 쪽 <span style="background-color:rgb(127,127,0)">초갈색</span>.
+
 ---
 
 ```
