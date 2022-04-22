@@ -19,13 +19,13 @@
 |[A Radiative Transfer Framework for Spatially Correlated Materials](https://dl.acm.org/doi/10.1145/3197517.3201282)|Adrian Jarabo, Carlos Aliaga, Diego Gutierrez|2018|ACM SIGGRAPH/ACM ToG|
 |[Scalable Appearance Filtering for Complex Lighting Effects](https://lc.fie.umich.mx/~legg/gxd.php)|Luis E. Gamboa, Jean-Philippe Guertin, Derek Nowrouzezahrai|2018|ACM SIGGRAPH Asia/ACM ToG|
 |[Differentiable Monte Carlo Ray Tracing through Edge Sampling](https://people.csail.mit.edu/tzumao/diffrt/)|Tzu-Mao Li, Miika Aittala, Frédo Durand, Jaakko Lehtinen|2018|ACM SIGGRAPH Asia/ACM ToG|
-|[Multiple Scattering in Inhomogeneous Participating Media Using Rao-Blackwellization and Control Variates](http://cg.iit.bme.hu/~szirmay/woodcockscatter_link.html)|Laszlo Szirmay-Kalos, Milan Magdics, Mateu Sbert|2018|EG/CGF|
+|[Multiple Scattering in Inhomogeneous Participating Media Using Rao-Blackwellization and Control Variates](https://cg.iit.bme.hu/~szirmay/woodcockscatter_link.html)|Laszlo Szirmay-Kalos, Milan Magdics, Mateu Sbert|2018|EG/CGF|
 |[MIS Compensation: Optimizing Sampling Techniques in Multiple Importance Sampling](https://cgg.mff.cuni.cz/~jaroslav/papers/2019-mis-compensation/index.html)|Ondrej Karlik, Martin Sik, Petr Vevoda, Tomas Skrivan, Jaroslav Krivanek|2019|ACM SIGGRAPH Asia/ACM ToG|
-|[Adversarial Monte Carlo Denoising with Conditioned Auxiliary Feature Modulation](http://adversarial.mcdenoising.org/)|Bing Xu, Junfei Zhang, Rui Wang, Kun Xu, Yong-Liang Yang, Chuan Li, Rui Tang|2019|ACM SIGGRAPH Asia/ACM ToG|
+|[Adversarial Monte Carlo Denoising with Conditioned Auxiliary Feature Modulation](https://adversarial.mcdenoising.org/)|Bing Xu, Junfei Zhang, Rui Wang, Kun Xu, Yong-Liang Yang, Chuan Li, Rui Tang|2019|ACM SIGGRAPH Asia/ACM ToG|
 |[Learning generative models for rendering specular microgeometry](https://dl.acm.org/doi/10.1145/3355089.3356525)|Alexandr Kuznetsov, Miloš Hašan, Zexiang Xu, Ling-Qi Yan, Bruce Walter, Nima Khademi Kalantari, Steve Marschner, Ravi Ramamoorthi|2019|ACM SIGGRAPH Asia/ACM ToG|
 |[Learning to reconstruct shape and spatially-varying reflectance from a single image](https://dl.acm.org/doi/10.1145/3272127.3275055)|Zhengqin Li, Zexiang Xu, Ravi Ramamoorthi, Kalyan Sunkavalli, Manmohan Chandraker|2019|ACM SIGGRAPH Asia/ACM ToG|
 |[Quantifying the Error of Light Transport Algorithms](https://www.cg.tuwien.ac.at/research/publications/2019/celarek_adam-2019-qelta/)|Adam Celarek, Wenzel Jakob, Michael Wimmer, Jaakko Lehtinen|2019|EGSR|
-|[Adaptive Incident Radiance Field Sampling and Reconstruction Using Deep Reinforcement Learning](http://www.cad.zju.edu.cn/home/rwang/projects/path-tracing/path-tracing.html#adaptive)|Yuchi Huo, Rui Wang, Ruzhang Zheng, Hualin Xu, Hujun Bao Sung-Eui Yong|2020|ACM SIGGRAPH/ACM ToG|
+|[Adaptive Incident Radiance Field Sampling and Reconstruction Using Deep Reinforcement Learning](https://www.cad.zju.edu.cn/home/rwang/projects/path-tracing/path-tracing.html#adaptive)|Yuchi Huo, Rui Wang, Ruzhang Zheng, Hualin Xu, Hujun Bao Sung-Eui Yong|2020|ACM SIGGRAPH/ACM ToG|
 |[Microfacet BSDFs Generated From NDFs, Using Explicit Microgeometry](https://mribar03.bitbucket.io/projects/tog_2019/)|Mickaël Ribardière, Benjamin Bringier, Lionel Simonot, Daniel Meneveaux|2020|ACM SIGGRAPH/ACM ToG|
 |[Robust Fitting of Parallax-Aware Mixtures for Path Guiding](https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/computergrafik/lehrstuhl/veroeffentlichungen/publications-since-2012/robust-fitting-of-parallax-aware-mixtures-for-path-guiding/)|Lukas Ruppert, Sebastian Herholz, Hendrik P. A. Lensch|2020|ACM SIGGRAPH/ACM ToG|
 |[Stratified Markov Chain Monte Carlo Light Transport](https://profs.etsmtl.ca/agruson/publication/2020_SMCMC/)|Adrien Gruson, Rex West, Toshiya Hachisuka|2020|EG/CGF|
@@ -77,23 +77,23 @@
 
 |Name|Author|Year|Conference/Journal|
 |----|------|----|------------------|
-|[Fast Approximations for Global Illumination on Dynamic Scenes](http://advances.realtimerendering.com/s2006/index.html)|Alex Evans|2006|ACM SIGGRAPH|
-|[Lighting Research at Bungie](http://advances.realtimerendering.com/s2009/index.html)|Hao Chen, Natalya Tatarchuk|2009|ACM SIGGRAPH|
-|[Rendering techniques in Toy Story 3](http://advances.realtimerendering.com/s2010/index.html)|John-Paul Ownby, Robert Hall, Christopher Hall|2010|ACM SIGGRAPH|
-|[Rendering in Cars 2](http://advances.realtimerendering.com/s2011/index.html)|Chris Hall, Robert Hall, David Edwards|2011|ACM SIGGRAPH|
+|[Fast Approximations for Global Illumination on Dynamic Scenes](https://advances.realtimerendering.com/s2006/index.html)|Alex Evans|2006|ACM SIGGRAPH|
+|[Lighting Research at Bungie](https://advances.realtimerendering.com/s2009/index.html)|Hao Chen, Natalya Tatarchuk|2009|ACM SIGGRAPH|
+|[Rendering techniques in Toy Story 3](https://advances.realtimerendering.com/s2010/index.html)|John-Paul Ownby, Robert Hall, Christopher Hall|2010|ACM SIGGRAPH|
+|[Rendering in Cars 2](https://advances.realtimerendering.com/s2011/index.html)|Chris Hall, Robert Hall, David Edwards|2011|ACM SIGGRAPH|
 |[Automatic Bounding of Shaders for Efficient Global Illumination](https://www.cs.cornell.edu/projects/shader-sa09/)|Bruce Walter|2011|ACM SIGGRAPH|
-|[Real-Time Global Illumination and Reflections in Dust 514](http://advances.realtimerendering.com/s2012/index.html)|Hugh Malan|2012|ACM SIGGRAPH|
+|[Real-Time Global Illumination and Reflections in Dust 514](https://advances.realtimerendering.com/s2012/index.html)|Hugh Malan|2012|ACM SIGGRAPH|
 |[Optimizing Realistic Rendering with Many-Light Methods](https://cgg.mff.cuni.cz/~jaroslav/papers/mlcourse2012/)|Jaroslav Křivánek, Miloš Hašan, Adam Arbree, Carsten Dachsbacher, Alexander Keller, Bruce Walter|2012|ACM SIGGRAPH|
-|[Multi-Scale Global Illumination in Quantum Break](http://advances.realtimerendering.com/s2015/index.html)|Ari Silvennoinen, Ville Timonen|2015|ACM SIGGRAPH|
-|[Volumetric Global Illumination at Treyarch](http://advances.realtimerendering.com/s2016/index.html)|JT Hooker|2016|ACM SIGGRAPH|
+|[Multi-Scale Global Illumination in Quantum Break](https://advances.realtimerendering.com/s2015/index.html)|Ari Silvennoinen, Ville Timonen|2015|ACM SIGGRAPH|
+|[Volumetric Global Illumination at Treyarch](https://advances.realtimerendering.com/s2016/index.html)|JT Hooker|2016|ACM SIGGRAPH|
 |[A Certain Slant of Light: Past, Present and Future Challenges of Global Illumination in Games](https://www.ea.com/seed/news/seed-siggraph2017-global-illumination)|Colin Barré-Brisebois|2017|ACM SIGGRAPH|
 |[Path tracing in Production](https://jo.dreggn.org/path-tracing-in-production/2017/index.html)|Alexander Keller|2018|ACM SIGGRAPH|
 |[Path tracing in Production](https://jo.dreggn.org/path-tracing-in-production/2018/index.html)|Alexander Keller|2018|ACM SIGGRAPH|
 |[Are we done with Ray Tracing?](https://sites.google.com/view/arewedonewithraytracing)|Alexander Keller|2019|ACM SIGGRAPH|
 |[My favorite Samples](https://sites.google.com/view/myfavoritesamples)|Luca Fascione, Johannes Hanika|2019|ACM SIGGRAPH|
 |[Path tracing in Production](https://jo.dreggn.org/path-tracing-in-production/2019/index.html)|Alexander Keller|2019|ACM SIGGRAPH|
-|[From Ray to Path Tracing: Navigating through Dimensions](http://advances.realtimerendering.com/s2020/index.html)|Emmanuel Turquin|2020|ACM SIGGRAPH|
-|[Precomputed Lighting Advances in Call of Duty: Modern Warfare](http://advances.realtimerendering.com/s2020/index.html)|Peter-Pike Sloan, Ari Silvennoinen|2020|ACM SIGGRAPH|
+|[From Ray to Path Tracing: Navigating through Dimensions](https://advances.realtimerendering.com/s2020/index.html)|Emmanuel Turquin|2020|ACM SIGGRAPH|
+|[Precomputed Lighting Advances in Call of Duty: Modern Warfare](https://advances.realtimerendering.com/s2020/index.html)|Peter-Pike Sloan, Ari Silvennoinen|2020|ACM SIGGRAPH|
 |[Large-Scale Global Illumination in Call of Duty](https://research.activision.com/publications/2021/09/large-scale-global-illumination-in-call-of-duty)|Ari Silvennoinen|2021|ACM SIGGRAPH|
 |[Radiance Caching for Real-time Global Illumination](https://arxiv.org/abs/2106.12372)|Thomas Müller, Fabrice Rousselle, Jan Novák, Alexander Keller|2021|ACM SIGGRAPH|
 |[Global Illumination Based on Surfels](https://www.ea.com/seed/news/siggraph21-global-illumination-surfels)|Henrik Halen, Andreas Brinck, Kyle Hayward, Xiangshun Bei|2021|ACM SIGGRAPH|
@@ -102,10 +102,10 @@
 
 |Name|Author|Year|Conference/Journal|
 |----|------|----|------------------|
-|[Interactive Indirect Illumination Using Voxel Cone Tracing: An Insight](http://maverick.inria.fr/Publications/2011/CNSGE11a/index.php)|Cyril Crassin, Fabrice Neyret, Miguel Sainz, Simon Green, Elmar Eisemann|2011|ACM SIGGRAPH|
+|[Interactive Indirect Illumination Using Voxel Cone Tracing: An Insight](https://maverick.inria.fr/Publications/2011/CNSGE11a/index.php)|Cyril Crassin, Fabrice Neyret, Miguel Sainz, Simon Green, Elmar Eisemann|2011|ACM SIGGRAPH|
 |[Out-of-core GPU Ray Tracing of Complex Scenes](https://dl.acm.org/doi/10.1145/2037826.2037854)|Kirill Garanzha, Alexander Bely, Simon Premoze, Vladimir Galaktionov|2011|ACM SIGGRAPH|
 |[Multiresolution Radiosity Caching for Efficient Preview and Final Quality Global Illumination in Movies](https://graphics.pixar.com/library/RadiosityCaching/)|2012|ACM SIGGRAPH|
-|[Point-Based Global Illumination Directional Importance Mapping](http://www.tabellion.org/et/talk12/PBGICutPicking.pdf)|Eric Tabellion|2012|ACM SIGGRAPH|
+|[Point-Based Global Illumination Directional Importance Mapping](https://www.tabellion.org/et/talk12/PBGICutPicking.pdf)|Eric Tabellion|2012|ACM SIGGRAPH|
 |[Optimizing and Deploying Ray-Traced Dynamic Global Illumination](https://developer.nvidia.com/siggraph/2019/video/sig922-vid)|Morgan McGuire|2019|ACM SIGGRAPH|
 |[Ray-Traced Global Illumination for Games: Massively Parallel Path Space Filtering](https://developer.nvidia.com/blog/massively-parallel-path-space-filtering-in-game-development/)|Alex Keller|2019|ACM SIGGRAPH|
 |[Practical Dynamic Lighting for Large-Scale Game Environments](https://www.pearlabyss.com/ko-KR/Company/About/Lab)|Kyungjoon Cho, Kwanghyeon Go, Daeil Kim|2019|ACM SIGGRAPH|
@@ -124,18 +124,18 @@
 |[Advanced Global Illumination](https://graphics.cs.kuleuven.be/publications/AGI2E/index.html)|Kavita Bala, Philip Dutre, Philippe Bekaert|2003|
 |[GPU Gems](https://developer.nvidia.com/gpugems/gpugems/contributors)|Randima Fernando|2004|
 |[GPU Gems 2](https://developer.nvidia.com/gpugems/gpugems2/inside-front-cover)|Matt Pharr, Randima Fernando|2005|
-|[ShaderX5](http://www.shaderx5.com/)|Wolfgang Engel|2006|
-|[Real-Time Volume Graphics](http://www.real-time-volume-graphics.org/)|Christof Rezk-Salama, Joe Kniss, Klaus Engel, Markus Hadwiger, Daniel Weiskopf|2006|
+|[ShaderX5](https://www.shaderx5.com/)|Wolfgang Engel|2006|
+|[Real-Time Volume Graphics](https://www.real-time-volume-graphics.org/)|Christof Rezk-Salama, Joe Kniss, Klaus Engel, Markus Hadwiger, Daniel Weiskopf|2006|
 |[GPU Gems 3](https://developer.nvidia.com/gpugems/gpugems3/foreword)|Hubert Nguyen|2007|
-|[ShaderX6](http://www.shaderx6.com/)|Wolfgang Engel|2007|
-|[ShaderX7: Advanced Rendering Techniques](http://www.shaderx7.com/)|Wolfgang Engel|2009|
+|[ShaderX6](https://www.shaderx6.com/)|Wolfgang Engel|2007|
+|[ShaderX7: Advanced Rendering Techniques](https://www.shaderx7.com/)|Wolfgang Engel|2009|
 |Game Programming Gems 8|Adam Lake|2010|
-|[GPU Pro](http://gpupro.blogspot.com/)|Wolfgang Engel|2010|
-|[GPU Pro 2](http://gpupro.blogspot.com/)|Wolfgang Engel|2010|
+|[GPU Pro](https://gpupro.blogspot.com/)|Wolfgang Engel|2010|
+|[GPU Pro 2](https://gpupro.blogspot.com/)|Wolfgang Engel|2010|
 |[Game Engine Gems 2](https://gameenginegems.com/geg2.php)|Eric Lengyel|2010|
-|[GPU Pro 3](http://gpupro.blogspot.com/)|Wolfgang Engel|2012|
+|[GPU Pro 3](https://gpupro.blogspot.com/)|Wolfgang Engel|2012|
 |Computer Graphics: Principles and Practice| John Hughes, Andries van Dam, Morgan McGuire, David Sklar, James Foley, Steven Feiner, Kurt Akeley|2013|
-|[GPU Pro 4](http://gpupro.blogspot.com/)|Wolfgang Engel|2013|
+|[GPU Pro 4](https://gpupro.blogspot.com/)|Wolfgang Engel|2013|
 |Real-Time 3D Rendering with DirectX and HLSL: A Practical Guide to Graphics Programming|Paul Varcholik|2014|
 |[Physically Based Rendering: From Theory to Implementation](https://www.pbr-book.org/)|Matt Pharr, Wenzel Jakob, Greg Humphreys|2018|
 |[Real-Time Rendering](https://www.realtimerendering.com/)|Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire|2018|
@@ -187,7 +187,7 @@
 |[Part 3: DDGI Overview](https://morgan3d.github.io/articles/2019-04-01-ddgi/overview.html)|Morgan McGuire|2019|
 |[Approximating Global Illumination with Real-Time Ambient Occlusion](https://www.dropbox.com/s/wnlb91fw93kggxu/Approxmiting_Global_Illumination_with_Real_Time_Ambient_Occlusion.pdf?dl=0)|Daniel Fedai Larsen|2019|
 |[RTX Global Illumination Part I](https://developer.nvidia.com/blog/rtx-global-illumination-part-i/)|Morgan McGuire, Adam Marrs, Alexander Majercik|2019|
-|[Anatomy of a frame in AnKi](http://anki3d.org/anatomy-of-a-frame-in-anki/)|Panagiotis Christopoulos Charitos|2019|
+|[Anatomy of a frame in AnKi](https://anki3d.org/anatomy-of-a-frame-in-anki/)|Panagiotis Christopoulos Charitos|2019|
 |[RTX Global Illumination SDK Now Available](https://developer.nvidia.com/blog/announcing-nvidia-rtxgi-sdk/)|Nefi Alarcon|2020|
 |[GTC 2020: RTXGI: Scalable Ray Traced Global Illumination in Real Time](https://developer.nvidia.com/gtc/2020/video/s22692)|Adam Marrs|2020|
 |[ExileCon Dev Talk - Evolving Path of Exile's Renderer](https://youtu.be/whyJzrVEgVc)|Alexander Sannikov|2020|
@@ -199,7 +199,7 @@
 |[Moving Basis Decomposition for Precomputed Light Transport](https://arisilvennoinen.github.io/)|Ari Silvennoinen, Peter-Pike Sloan|2021|
 |[Interplay of Light](https://interplayoflight.wordpress.com/2021/07/10/raytracing-tidbits/)|Kostas Anagnostou|2021|
 |[Tech Focus: Global Illumination - What It Is, How Does It Work And Why Do We Need It?](https://youtu.be/yEkryaaAsBU)|Digital Foundry|2021|
-|[Advances in Real-Time Rendering in 3D Graphics and Games - Siggraph 2021 - course page for the content of Siggraph 2021](http://advances.realtimerendering.com/s2021/index.html)|Natalya Tatarchuk|2021|
+|[Advances in Real-Time Rendering in 3D Graphics and Games - Siggraph 2021 - course page for the content of Siggraph 2021](https://advances.realtimerendering.com/s2021/index.html)|Natalya Tatarchuk|2021|
 |[SCALABLE GLOBAL ILLUMINATION FOR O3DE](https://www.tobias-franke.eu/publications/franke21sgifo/index.html)|Tobias Alexander Franke|2021|
 |[Adventures in Hybrid Rendering](https://diharaw.github.io/post/adventures_in_hybrid_rendering/)|Dihara Wijetunga|2021|
 |[World-space spatiotemporal reservoir reuse for ray-traced global illumination](https://gpuopen.com/download/publications/SA2021_WorldSpace_ReSTIR.pdf)|Guillaume Boissé|2021|

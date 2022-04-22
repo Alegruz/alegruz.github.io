@@ -145,7 +145,7 @@ The triangular meshes generated from marching typically aren't of great quality.
 <div id="footnote_3">
 <p>3. This paragraph is based on the book <a href="https://www.realtimerendering.com/">&lt;Real-Time Rendering></a> by Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, and Sébastien Hillaire</p></div>
 <div id="footnote_4">
-<p>4. This paragraph is based on the book <a href="http://www.pmp-book.org/">&lt;Polygon Mesh Processing></a> by Leif Kobbelt, Mario Botsch, and Mark Pauly</p></div>
+<p>4. This paragraph is based on the book <a href="https://www.pmp-book.org/">&lt;Polygon Mesh Processing></a> by Leif Kobbelt, Mario Botsch, and Mark Pauly</p></div>
 <div id="footnote_5">
 <p>5. C. Montani, R. Scateni, and R. Scopigno. <a href="https://link.springer.com/article/10.1007%2FBF01900830">“A Modified Look-up Table for Implicit Disambiguation of Marching Cubes.”</a> The Visual Computer 10:6 (1994), 353–55.</p></div>
 <div id="footnote_6">

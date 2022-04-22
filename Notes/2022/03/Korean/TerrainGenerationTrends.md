@@ -5,8 +5,8 @@
 
 |Name|Author|Team|Year|Conference/Journal/Publisher|
 |----|------|----|----|----------------------------|
-|[Infinite terrain](http://www.humus.name/index.php?page=3D&ID=23)|Humus|Humus|2002|Blog|
-|[Infinite Terrain II](http://www.humus.name/index.php?page=3D&ID=65)|Humus|Humus|2009|Blog|
+|[Infinite terrain](https://www.humus.name/index.php?page=3D&ID=23)|Humus|Humus|2002|Blog|
+|[Infinite Terrain II](https://www.humus.name/index.php?page=3D&ID=65)|Humus|Humus|2009|Blog|
 |[Building Open Worlds Faster: the Volition Way](https://www.gdcvault.com/play/1014717/Building-Open-Worlds-Faster-the)|Jason Hayes|Volition / THQ|2011|GDC|
 |[Creating FPS Open Worlds Using Procedural Techniques](https://www.gdcvault.com/play/1020340/Creating-FPS-Open-Worlds-Using)|Tom Betts|Big Robot|2014|GDC|
 |[Landscape Creation and Rendering in REDengine 3](https://www.gdcvault.com/play/1020394/Landscape-Creation-and-Rendering-in)|Marcin Gollent|CD Projekt RED|2014|GDC|
@@ -40,7 +40,7 @@
 
 |Name|Author|Team|Year|Conference/Journal/Publisher|
 |----|------|----|----|----------------------------|
-|[Volume roads](http://www.humus.name/index.php?page=3D&ID=84)|Humus|Humus|2010|Blog|
+|[Volume roads](https://www.humus.name/index.php?page=3D&ID=84)|Humus|Humus|2010|Blog|
 |[Real-Time Grass (and Other Procedural Objects) on Terrain](https://jcgt.org/published/0004/01/02/)|Dimitris Papavasiliou| |2015|JCGT|
 |[Procedural Modeling of Cave-like Channels](https://jcgt.org/published/0004/02/02/)|Alex Pytel, Stephen Mann|University of Waterloo|2015|JCGT|
 |[GPU-BASED PROCEDURAL PLACEMENT IN HORIZON ZERO DAWN](https://www.guerrilla-games.com/read/gpu-based-procedural-placement-in-horizon-zero-dawn)|Jaap van Muijden|Guerrilla Games|2017|GDC|

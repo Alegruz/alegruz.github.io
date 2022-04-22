@@ -99,7 +99,7 @@ class Vector2f:
 
 장면(`Scene` 클래스)이란 어플리케이션 워크플로우를 구성하는 독립적인 개체. 여러 장면이 존재할 수는 있어도, 한 순간에 오로지 하나만 활성화 되어있음.
 
-![scenes](http://python.cocos2d.org/doc/_images/scenes.png)
+![scenes](https://python.cocos2d.org/doc/_images/scenes.png)
 
 이 장면을 서로 독립적인 어플리케이션처럼 다뤄줄 수 있음. 이 장면 간의 관계에 어떠한 로직을 넣어줄 수 있음(인트로 끝나면 메뉴로 간다거나 등).
 
@@ -136,7 +136,7 @@ cocos2d에서 장면은 `CocosNode`로 구성된 트리임. 이때 루트 노드
 
 계층을 단순화하자면 투명한 셀로판지에 그릴 걸 그려 놓는 거고, 이런 셀로판지 여러 개를 쌓아두면 장면이 되는 것임.
 
-![layers](http://python.cocos2d.org/doc/_images/layers.png)
+![layers](https://python.cocos2d.org/doc/_images/layers.png)
 
 특정 용도를 위한 계층도 있음. `Menu` 같은 애들.
 
@@ -175,7 +175,7 @@ CollisionManager은 누가 충돌의 대상이 되느냐에 대한 정보를 기
 
 현재 CollisionManager은 CollisionManagerBruteForce와 CollisionManagerGrid로 나뉨. 전자는 단순히 그냥 장면에 존재하는 모든 개체에 대해 for문 처리하겠다는거고, 후자는 나름대로 그리드로 화면을 나눠서 좀 더 효율적으로 탐색을 하겠다는 뜻임. 당연히 성능은 후자가 더 좋음.
 
-![comparing_collision_managers](http://python.cocos2d.org/doc/_images/comparing_collision_managers.png)
+![comparing_collision_managers](https://python.cocos2d.org/doc/_images/comparing_collision_managers.png)
 
 #### 원과 직사각형 충돌 처리
 

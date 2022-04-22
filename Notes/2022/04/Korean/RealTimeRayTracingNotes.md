@@ -73,7 +73,7 @@ Participating media도 게임 같은 실시간 어플리케이션에 중요한 �
     * [광선 추적법과 함께하는 여생](https://raytracing.github.io/books/RayTracingTheRestOfYourLife.html)
 * Pharr et al.의 "[물리 기반 렌더링](https://www.pbrt.org/)". 실무 수준의 책.
 * Suffern의 "[밑바닥부터 시작하는 광선 추적법](https://www.routledge.com/Ray-Tracing-from-the-Ground-Up/Suffern/p/book/9781568812724)". 상대적으로 오래된 책이지만 광범위하게 내용을 다름.
-* Wyman의 [SIGGRAPH 2018 DXR 튜토리얼](https://intro-to-dxr.cwyman.org/)과 그의 [DXR 튜토리얼](http://cwyman.org/code/dxrTutors/dxr_tutors.md.html). DXR 입문용.
+* Wyman의 [SIGGRAPH 2018 DXR 튜토리얼](https://intro-to-dxr.cwyman.org/)과 그의 [DXR 튜토리얼](https://cwyman.org/code/dxrTutors/dxr_tutors.md.html). DXR 입문용.
 * Fascione et al.의 [SIGGRAPH 강의](https://jo.dreggn.org/path-tracing-in-production/). 실무에서의 경로 추적법 다룸.
 * ACM TOG의 [특별 수록글](https://pharr.org/matt/assets/tog_intro.pdf). 현대적인 경로 추적법 활용 등을 다룸.
 * Zwicker et al.의 [조사글](https://cseweb.ucsd.edu/~ravir/STAR.pdf)에서 디노이징에 대한 여러 기술을 소개함.

@@ -145,7 +145,7 @@
 <div id="footnote_3">
 <p>3. 이 문단은 Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire 저자의 <a href="https://www.realtimerendering.com/">&lt;Real-Time Rendering></a>을 참고하여 작성함</p></div>
 <div id="footnote_4">
-<p>4. 이 문단은 Leif Kobbelt, Mario Botsch, Mark Pauly 저자의 <a href="http://www.pmp-book.org/">&lt;Polygon Mesh Processing></a>을 참고하여 작성함</p></div>
+<p>4. 이 문단은 Leif Kobbelt, Mario Botsch, Mark Pauly 저자의 <a href="https://www.pmp-book.org/">&lt;Polygon Mesh Processing></a>을 참고하여 작성함</p></div>
 <div id="footnote_5">
 <p>5. C. Montani, R. Scateni, and R. Scopigno. <a href="https://link.springer.com/article/10.1007%2FBF01900830">“A Modified Look-up Table for Implicit Disambiguation of Marching Cubes.”</a> The Visual Computer 10:6 (1994), 353–55.</p></div>
 <div id="footnote_6">
