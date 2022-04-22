@@ -1,5 +1,5 @@
 # 전역 조명 공부 노트 (2022.03.15)
-[Home](../README.md)
+[Home](README.md)
 
 이 노트는 Real-Time Rendering 책 등을 읽고 한국어로 정리한 책입니다.
 

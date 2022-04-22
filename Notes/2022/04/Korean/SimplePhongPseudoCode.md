@@ -1,5 +1,5 @@
 # 간단한 퐁 셰이딩 수식 (2022.04.21)
-[Home](../README.md)
+[Home](README.md)
 
 # 퐁 셰이딩
 

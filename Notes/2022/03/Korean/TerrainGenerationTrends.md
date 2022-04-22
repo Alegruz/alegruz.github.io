@@ -1,5 +1,5 @@
 # 지형 생성 트렌드 (2022.03.18)
-[Home](../README.md)
+[Home](README.md)
 
 # Generation
 
