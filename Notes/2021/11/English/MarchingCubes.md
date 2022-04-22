@@ -1,5 +1,5 @@
 # Marching Cube Study Note (12 NOV 2021)
-[Home](README.md)
+[Home](../../../README.md)
 
 ## Explicit Surface and Implicit Surface<sup>[1](#footnote_1)</sup>
 

@@ -1,5 +1,5 @@
 # ReSTIR GI 공부 노트 (2022.04.21)
-[Home](README.md)
+[Home](../../../README.md)
 
 $\sum_{i}{i}$
 

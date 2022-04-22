@@ -1,5 +1,5 @@
 # 게임 프로그래밍 입문 공부 노트 (2021.11.21)
-[Home](README.md)
+[Home](../../../README.md)
 
 ## 파이썬 Python
 

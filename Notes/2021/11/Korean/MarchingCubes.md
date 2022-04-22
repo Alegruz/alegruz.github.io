@@ -1,5 +1,5 @@
 # 마칭 큐브 공부 노트 (2021.11.12)
-[Home](README.md)
+[Home](../../../README.md)
 
 ## 명시적 곡면과 암시적 곡면<sup>[1](#footnote_1)</sup>
 

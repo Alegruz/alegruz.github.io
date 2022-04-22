@@ -1,5 +1,5 @@
 # 광선 추적법 기초 (2022.03.13)
-[Home](README.md)
+[Home](../../../README.md)
 
 이 노트는 NVIDIA에서 제공한 광선 추적법 입문 시리즈인 [Ray Tracing Essentials](https://www.youtube.com/playlist?list=PL5B692fm6--sgm8Uiava0IIvUojjFOCSR)를 한국어로 정리/요약한 노트입니다. 광선 추적법을 공부하시는 분들을 위해 남깁니다.
 
