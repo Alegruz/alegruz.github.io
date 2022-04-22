@@ -1,6 +1,73 @@
 # ReSTIR GI 공부 노트 (2022.04.21)
 [Home](README.md)
 
+$\sum_{i}{i}$
+
+# ReSTIR 구현
+
+## ReSTIR DX12
+
+[원글 링크](https://github.com/lindayukeyi/ReSTIR_DX12)
+
+Falcor 3.1
+
+### Pass
+
+1. Ray Traced GBuffer Pass
+    * G 버퍼 및 초기 candidate 생성
+2. Shadow Detection Pass
+    * 보이지 않는 표본 삭제
+3. Temporal Reuse Pass
+    * 시간적 재사용
+4. Spatial Reuse Pass (spatial reuse iteration 번)
+    * 공간적 재사용
+5. Shader Pixel Pass
+    * 최종 색 계산
+6. ATrous Denoise Pass (filter limit 번)
+    * ATrous 디노이저
+7. Copy to Output Pass (디버깅용)
+    * 선택한 텍스처를 채널로 출력
+
+#### `RayTracedGBufferPass`
+
+![RayTracedGBufferPass](/Images/ReStirGi/RayTracedGBufferPass.png)
+
+위의 Pass에 그나마 유사한 것으로 생각하는 Falcor 자체 제공 Pass로는 GBufferRt가 있는 듯:
+
+![GBufferBase](/Images/ReStirGi/GBufferBase.png)
+
+![GBufferRT](/Images/ReStirGi/GBufferRT.png)
+
+## Fast Volume Rendering with Spatiotemporal Reservoir Resampling (Volumetric ReSTIR)
+
+[원글 링크](https://github.com/DQLin/VolumetricReSTIRRelease)
+
+* Daqi Lin. University of Utah.
+* Chris Wyman. NVIDIA.
+* Cem Yuksel. University of Utah.
+
+Falcor 4.2
+
+### Pass
+
+## Dynamic Diffuse Global Illumination Resampling
+
+[원글 링크](https://research.nvidia.com/publication/2021-12_dynamic-diffuse-global-illumination-resampling)
+
+### Pass
+
+## Rendering Many Lights with Grid-Based Reservoirs
+
+[원글 링크](http://cwyman.org/papers/rtg2-manyLightReGIR.pdf)
+
+### Pass
+
+## Reservoir Spatio Temporal Importance Sampling (ReSTIR)
+
+[원글 링크](https://github.com/tatran5/Reservoir-Spatio-Temporal-Importance-Resampling-ReSTIR)
+
+### Pass
+
 # ReSTIR GI 관련 블로그 글
 
 ## 정반사용 ReSTIR GI
@@ -116,3 +183,102 @@ RIS의 특징 중 하나는 반복적으로 사용할 수 있다는 점임<sup>[
 <div id="ref_3">3. Benedikt Bitterli, Chris Wyman, Matt Pharr, Peter Shirley, Aaron Lefohn, Wojciech Jarosz. <a href="https://cs.dartmouth.edu/wjarosz/publications/bitterli20spatiotemporal.html">Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting</a>. ACM Transactions on Graphics (Proceedings of SIGGRAPH), 39(4), July 2020.</div>
 <div id="ref_4">4. Alexey Panteleev. Chris Wyman. <a href="https://youtu.be/QWsfohf0Bqk">Part 1: Rendering Games With Millions of Ray Traced Lights</a>. NVIDIA Developer, YouTube.</div>
 <div id="ref_5">5. Mr. Zyanide. <a href="https://www.zyanidelab.com/uniform-sampling-phong/">Uniform Sampling Phong BRDF</a>. </div>
+
+```
+@startuml
+RenderPass <|-- RayTracedGBufferPass
+class RayTracedGBufferPass {
+    +{static} create(): SharedPtr
+    +~RayTracedGBufferPass()
+    #RayTracedGBufferPass()
+    #initialize(RenderContext*, ResourceManager::SharedPtr): bool
+    #execute(RenderContext*)
+    #initScene(RenderContext*, Scene::SharedPtr)
+    #requiresScene(): bool
+    #usesRayTracing(): bool
+    #mpRays: RayLaunch::SharedPtr
+    #mpScene: RtScene::SharedPtr
+    #mBgColor: vec3
+    #mFrameCount: uint32_t
+}
+@enduml
+```
+
+```
+@startuml
+RenderPass <|-- GBufferBase
+
+enum GBufferBase::SamplePattern {
+   Center
+   DirectX
+   Halton
+   Stratified
+}
+
+class GBufferBase {
+   +renderUI(Gui::Widgets&)
+   +execute(RenderContext*, const RenderData&)
+   +getScriptingDictionary(): Dictionary
+   +setScene(RenderContext*, const Scene::SharedPtr&)
+   #GBufferBase(const Info&)
+   #parseDictionary(const Dictionary&)
+   #setCullMode(RasterizerState::CullMode mode)
+   #updateFrameDim(const uint2)
+   #updateSamplePattern()
+   #getOutput(const RenderData&, const std::string&): Texture::SharedPtr
+   #mpScene: Scene::SharedPtr
+   #mpSampleGenerator: CPUSampleGenerator::SharedPtr
+   #mFrameCount: uint32_t
+   #mFrameDim: uint2
+   #mInvFrameDim: float2
+   #mVBufferFormat: ResourceFormat
+   #mOutputSizeSelection: RenderPassHelpers::IOSize
+   #mFixedOutputSize: uint2
+   #mSamplePattern: SamplePattern
+   #mSampleCount: uint32_t
+   #mUseAlphaTest: bool
+   #mAdjustShadingNormals: bool
+   #mForceCullMode: bool
+   #mCullMode: RasterizerState::CullMode
+   #mOptionsChanged: bool
+   #{static} registerBindings(pybind11::module&)
+   #friend getPasses(Falcor::RenderPassLibrary&)
+}
+@enduml
+```
+
+```
+@startuml
+GBufferBase <|-- GBufferRT
+
+
+class GBufferRT::struct {
+    +pProgram: RtProgram::SharedPtr
+    +pVars: RtProgramVars::SharedPtr
+}
+
+class GBufferRT {
+   +{static} kInfo: const Info
+   +{static} create(RenderContext*, const Dictionary&): SharedPtr
+   +reflect(const CompileData&): RenderPassReflection
+   +execute(RenderContext*, const RenderData&)
+   +renderUI(Gui::Widgets&)
+   +getScriptingDictionary(): Dictionary
+   +setScene(RenderContext*, const Scene::SharedPtr&)
+   -executeRaytrace(RenderContext*, const RenderData&)
+   -executeCompute(RenderContext*, const RenderData&)
+   -getShaderDefines(const RenderData&) Program::DefineList
+   -setShaderData(const ShaderVar&, const RenderData&)
+   -recreatePrograms()
+   -GBufferRT(const Dictionary&)
+   -parseDictionary(const Dictionary&)
+   -mComputeDOF: bool
+   -mpSampleGenerator: SampleGenerator::SharedPtr
+   -mLODMode: TexLODMode
+   -mUseTraceRayInline: bool
+   -mUseDOF: bool
+   -mRaytrace: struct
+   -mpComputePass: ComputePass::SharedPtr
+}
+@enduml
+```
