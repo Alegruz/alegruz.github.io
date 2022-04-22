@@ -1,5 +1,5 @@
 # ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집 (2022.04.09)
-[Home](../../../README.md)
+[Home](../../../../README.md)
 
 * **저자**
     * [Yaobin Ouyang](https://developer.nvidia.com/blog/author/yaobinouyang/). NVIDIA

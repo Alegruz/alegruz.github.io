@@ -1,7 +1,7 @@
 # ReSTIR GI 공부 노트 (2022.04.21)
-[Home](../../../README.md)
+[Home](../../../../README.md)
 
-$$L = 0$$
+<math>\sum_{i}^{i}</math>
 
 # ReSTIR 구현
 
