@@ -1,6 +1,58 @@
 # ReSTIR GI 공부 노트 (2022.04.21)
 [Home](../../../../README.md)
 
+# ReSTIR 논문 요약
+
+## 배경
+
+![RenderingEquation](/Images/ReStirGi/RenderingEquation.png)
+
+결국 위의 방정식 구하자고 하는 짓임.
+
+결국 아래 그림처럼 되는 것임:
+
+![RenderingEquationFigure0](/Images/ReStirGi/RenderingEquationFigure0.png)
+
+여기서 f는 BSDF.
+
+> ### BRDF, BTDF, BSDF
+> <p><a href="https://commons.wikimedia.org/wiki/File:BSDF05_800.png#/media/File:BSDF05_800.png"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/BSDF05_800.png" alt="BSDF05 800.png"></a><br>By <a href="https://en.wikipedia.org/wiki/User:Jurohi" class="extiw" title="w:User:Jurohi">Jurohi</a> (<a href="https://en.wikipedia.org/wiki/User_talk:Jurohi" class="extiw" title="w:User talk:Jurohi">talk</a>) (<a href="https://en.wikipedia.org/wiki/Special:ListFiles/Jurohi" class="extiw" title="w:Special:ListFiles/Jurohi">Uploads</a>) - <span class="int-own-work" lang="en">Own work</span>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=109584028">Link</a></p>
+>
+> * Bidirectional **Reflectance** Distribution Function
+> * Bidirectional **Transmittance** Distribution Function
+> * Bidirectional **Scattering** Distribution Function
+> 
+> BRDF는 "이 표면 위의 한 점에 &omega;<sub>i</sub>의 방향으로 빛이 들어왔을 때, &omega;<sub>o</sub>의 방향으로 빛이 **반사**될 확률이 얼마일까요?라는 의미.
+> 
+> BTDF는 "이 표면 위의 한 점에 &omega;<sub>i</sub>의 방향으로 빛이 들어왔을 때, &omega;<sub>o</sub>의 방향으로 빛이 **투과**할 확률이 얼마일까요?
+> 
+> BSDF는 "이 표면 위의 한 점에 &omega;<sub>i</sub>의 방향으로 빛이 들어왔을 때, &omega;<sub>o</sub>의 방향으로 빛이 **산란**할 확률이 얼마일까요?
+
+위의 예시 그림에서 L<sub>i</sub> 곧바로 광원에서 오는 빛이지만, 사실 광원이 아닌 곳에서 들어오는 간접광일 수도 있음:
+
+![RenderingEquationFigure0](/Images/ReStirGi/RenderingEquationFigure0.png)
+
+L<sub>i</sub>는 들어오는 빛이고, L<sub>o</sub>는 나가는 빛.
+
+즉, **x**로 들어오는 입사광 ![TheRenderingEquationIncomingLight](/Images/RayTracingEssentials/TheRenderingEquationIncomingLight.gif)은 결국 해당 경로를 추적했을 때 가장 가까운 지점 y, 즉 TRACE(**x**, &omega;<sub>i</sub>)에서 **x** 방향으로 나가는 빛, 즉 L<sub>o</sub>(**y**, **x** - **y**) = L<sub>o</sub>(TRACE(**x**, &omega;<sub>i</sub>), -&omega;<sub>i</sub>)임.
+
+여튼 결론적으로 **x** 지점에서 카메라로 오는 빛을 구하는게 핵심인데, **x** 지점에서의 빛은 결국 &Omega;라는 반구 방향으로 오는 빛들을 전부 합한 것임.
+
+![TheRenderingEquationByElement](/Images/RayTracingEssentials/TheRenderingEquationByElement.jpeg)
+
+근데 이게 컴퓨터에서 사실 적분을 하라는 건 컴퓨터보고 죽으라는 소리임.
+
+![WhatNowDie](/Images/ReStirGi/WhatNowDie.jpg)
+
+그럼 이걸 도대체 어떻게 구하라는걸까?
+
+사실 이건 간단하다. 민주주의 체제를 생각하면 된다. 민주주의 체제에서 뭔가 국가적인 판단을 하려면 사실 모든 국민에게 물어보면 된다. 모든 국민이 투표를 하면 끝이지만, 이게 실질적으로 불가능하다. 그러니 행정부, 입법부, 사법부라는 것이 국민을 대표하여 존재하는 것.
+
+이처럼 빛도 대표자를 뽑으면 된다.
+
+
+근데 아무나 뽑으면 나라가 지옥으로 향하는 고속도로 하이패스 끊듯이, 빛도 마찬가지다. **x**로 들어오는 빛도 좋은 친구를 뽑아야 한다.
+
 # ReSTIR 구현
 
 ## ReSTIR DX12
@@ -22,7 +74,7 @@ Falcor 3.1
     * 첫번째 패스에서 선택한 candidate에서 픽셀 당 하나의 그림자 광선을 쏨. 만약 occluded 되어있다면 저장소의 가중치를 0으로 두어 혆재 픽셀이 빛 표본으로부터 아무런 기여를 받지 못하게 해줌. 이러면 occluded된 표본들은 근처 픽셀에 전달되지 않게 됨.
 3. Temporal Reuse Pass (픽셀 셰이더)
     * 시간적 재사용
-    * 픽셀 셰이더 사용 시작. 텍스처만 입력 받아서 계산 몇가지 해주는 것임.
+    * 픽셀 셰이더 사용 시작. 텍스처만 입력 받아서 계산 몇가지 해주는 것임.ㄴ
     * 현재 픽셀에서의 충돌 지점이 주어질 때, 이걸 직전 프레임의 view-projection 행렬과 곱해줘서 직전 프레임에서의 해당 픽셀 위치를 구함.
     * 직전 프레임에서의 픽셀에서의 저장소와 현재 저장소를 합쳐줌.
     * 표본 수는 clamping 해주고, weight을 scaling해주어 무지성으로 표본의 수가 증가하지 않도록 방지해줌.
