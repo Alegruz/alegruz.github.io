@@ -50,78 +50,577 @@ L<sub>i</sub>는 들어오는 빛이고, L<sub>o</sub>는 나가는 빛.
 
 이처럼 빛도 대표자를 뽑으면 된다.
 
+이걸 해주는 것이 바로 몬테 카를로 방법.
 
-근데 아무나 뽑으면 나라가 지옥으로 향하는 고속도로 하이패스 끊듯이, 빛도 마찬가지다. **x**로 들어오는 빛도 좋은 친구를 뽑아야 한다.
+대표자를 뽑기 위해 좋은 확률 분포 함수 p(&omega;<sub>j</sub>)를 사용해주는 것. 확률 분포 함수가 피적분 함수와 비슷할 수록 몬테 카를로 추정치의 오류가 당연히 줄어들 것임.
+
+![TraditionalMonteCarloEstimator](/Images/ReStirGi/TraditionalMonteCarloEstimator.png)
+
+아무나 대표로 뽑으면 나라가 지옥으로 향하는 고속도로 하이패스 끊듯이, 빛도 마찬가지다. **x**로 들어오는 빛도 좋은 친구를 뽑아야 한다. 이럴 때 사용하는 대표적인 방법이 중요도 표집의 재표집(Resampled Importance Sampling. RIS). 이름부터 한 번 표집했던 표본들을 다시 사용해먹겠단 소리니까 우선 p(y)에 따라 M 개의 표본을 **y**를 표집함. 그 다음엔 "목표 확률 분포 함수" ![TargetPdf](/Images/ReStirGi/TargetPdf.png)에 따라 **y**의 한 표본 z를 재표집함:
+
+![ResampleProbability](/Images/ReStirGi/ResampleProbability.png)
+
+이때 
+
+![SampleRelativeWeight](/Images/ReStirGi/SampleRelativeWeight.png)
+
+임.
+
+즉, 재표집 확률 / 초기 표본을 구하는 확률이므로, 상대적인 가중치라 볼 수 있음.
+
 
 # ReSTIR 구현
 
-## ReSTIR DX12
+## RTXDI
 
-[원글 링크](https://github.com/lindayukeyi/ReSTIR_DX12)
-[원글 링크](https://github.com/tatran5/Reservoir-Spatio-Temporal-Importance-Resampling-ReSTIR)
+### Script
 
-Falcor 3.1
+1. VBufferRT [out: vbuffer, mvec]
+2. RTXDIPass [in: vbuffer, mvec], [out: color]
+3. AccumulatePass [in: input], [out: output]
+4. ToneMapper [in: src], [out: dst]
+
+### `RTXDIPass`
+
+![RTXDIPass](/Images/ReStirGi/RTXDIPass.png)
+
+#### `RTXDIPass::reflect`
+
+* Input Channels:
+    * visibility buffer in packed format
+    * texture gradients (optional)
+    * motion vector buffer (float format) (optional)
+* Output Channel
+    * final color
+    * emissive color
+    * diffuse illumination
+    * diffuse reflectance
+    * specular illumination
+    * specular reflectance
+
+#### `RTXDIPass::execute`
+
+1. Update refresh flag if changes that affect the output have occured
+2. Check if GBuffer has adjusted shading normals enabled
+3. RTXDI begin frame
+    * [`RTXDI::beginFrame`](#rtxdibeginframe)
+4. Prepare surface data
+5. RTXDI update
+    * [`RTXDI::update`](#rtxdiupdate)
+6. Final shading
+7. RTXDI end frame
+    * [`RTXDI::endFrame`]()
+
+### `RTXDI`
+
+![RTXDI](/Images/ReStirGi/RTXDI.png)
+
+#### `RTXDI::beginFrame`
+
+* Called by
+    * [`RTXDIPass:execute`](#rtxdipassexecute)
+
+1. Load shaders if required
+    * [`RTXDI::loadShaders`](#rtxdiloadshaders)
+2. Create RTXDI context and allocate resources if required
+    * [`RTXDI::prepareResources`](#rtxdiprepareresources)
+3. Clear reservoir buffer if requested
+4. Determine what, if anything happened since last frame
+5. Pixel Debug begin frame
+
+#### `RTXDI::loadShaders`
+
+* Called by
+    * [`RTXDI:beginFrame`](#rtxdibeginframe)
+
+1. Create compute pass `ReflectTypes.cs.slang`
+2. Issue warnings if packed types are not aligned to 16B for best performance
+3. Helper for creating compute passes
+4. Load compute passes for setting up RTXDI light information
+    1. Create update lights compute pass [`LightUpdater.cs.slang`](#lightupdatercsslang)
+    2. Create update environment light compute pass [`EnvLightUpdater.cs.slang`](#envlightupdatercsslang)
+5. Load compute passes for RTXDI sampling and resampling
+    1. Create presample local lights compute pass `RTXDISetup.cs.slang` [`presampleLocalLights`](#rtxdipresamplelocallights)
+    2. Create presample environment light compute pass `RTXDISetup.cs.slang`, [`presampleEnvLight`](#rtxdipresampleenvlight)
+    3. Create generate candidates compute pass `RTXDISetup.cs.slang`, [`generateCandidates`](#rtxdigeneratecandidates-1)
+    4. Create test candidate visibility compute pass `RTXDISetup.cs.slang`, [`testCandidateVisibility`](#rtxditestcandidatevisibility-1)
+    5. Create spatial resampling compute pass `RTXDISetup.cs.slang`, `spatialResampling`
+    6. Create temporal resampling compute pass `RTXDISetup.cs.slang`, `temporalResampling`
+    7. Create spatiotemporal resampling compute pass `RTXDISetup.cs.slang`, `spatiotemporalResampling`
+
+#### `RTXDI::prepareResources`
+
+* Called by
+    * [`RTXDI:beginFrame`](#rtxdibeginframe)
+
+1. Ask for some other refreshes elsewhere to make sure we're all consistent
+2. Make sure the RTXDI context has the current screen resolution
+3. Set the number and size of our presampled tiles
+4. Create a new RTXDI context
+    * Additional resources are allocated lazily in updateLights() and updateEnvMap()
+5. Allocate buffer for presampled light tiles (RTXDI calls this "RIS buffers")
+    * [`rtxdi::Context::GetRisBufferElementCount`](#rtxdicontextgetrisbufferelementcount)
+6. Allocate buffer for compact light info used to improve coherence for presampled light tiles
+7. Allocate buffer for light reservoirs. There are multiple reservoirs (specified by kMaxReservoirs) concatenated together
+    * [`rtxdi::Context::GetReservoirBufferElementCount`](#rtxdicontextgetreservoirbufferelementcount)
+8. Allocate buffer for surface data for current and previous frames
+9. Allocate buffer for neighbor offsets
+    * [`rtxdi::Context::FillNeighborOffsetBuffer`](#rtxdicontextfillneighboroffsetbuffer)
+
+#### `RTXDI::update` 
+
+* Called by
+    * [`RTXDIPass:execute`](#rtxdipassexecute)
+
+1. Create a PDF texture for our primitive lights (for now, just triangles)
+    * Update lights
+        * [`RTXDI::updateLights`](#rtxdiupdatelights)
+    * Update environment lights
+        * [`RTXDI::updateEnvLight`](#rtxdiupdateenvlight)
+2. Update our parameters for the current frame and pass them into our GPU structure
+    * Set RTXDI frame parameters
+        * [`RTXDI::setRTXDIFrameParameters`](#rtxdisetrtxdiframeparameters)
+3. Create tiles of presampled lights once per frame to improve per-pixel memory coherence
+    * Presample lights
+        * [`RTXDI::presampleLights`](#rtxdipresamplelights)
+4. Reservoir buffer containing reservoirs after sampling/resampling
+    1. Generate candidates
+        * [`RTXDI::generateCandidates`](#rtxdigeneratecandidates)
+    2. Test candidate visibility
+        * [`RTXDI::testCandidateVisibility`](#rtxditestcandidatevisibility)
+    3. Spatial / temporal resampling
+        * [`RTXDI::spatialResampling`](#rtxdispatialresampling)
+        * `RTXDI::temporalResampling`
+        * `RTXDI::spatiotemporalResampling`
+
+#### `RTXDI::updateLights`
+
+* Called by:
+    * [`RTXDI::update`](#rtxdiupdate)
+
+1. Update our list of analytic lights to use (except analytic area lights)
+    1. Update light counts
+    2. Update list of light IDs, local lights followed by infinite lights
+    3. Create GPU buffer for holding light IDs
+    4. Update GPU buffer
+2. Update other light counts
+3. Allocate buffer for light infos
+4. Allocate local light PDF texture, which RTXDI uses for importance sampling
+5. If the layout of local lights has changed, we need to make sure to remove any extra non-zero entries in the local light PDF texture. We simply clear the texture and populate it from scratch
+6. If the number of emissive lights has changed, we need to update the analytic lights because they change position in the light info buffer
+7. Run the update pass if any lights have changed
+    1. Compute launch dimensions
+        * Execute update lights pass `LightUpdater.cs.slang`
+8. Update the light PDF texture mipmap chain if necessary
+9. Keep track of the number of local lights for the next frame
+
+#### `RTXDI::updateEnvLight`
+
+* Called by:
+    * [`RTXDI::update`](#rtxdiupdate)
+
+1. If scene uses an environment light, create a luminance & pdf texture for sampling it
+    1. RTXDI expects power-of-two textures
+    2. Create luminance texture if it doesn't exist yet or has the wrong dimensions
+    3. Create pdf texture if it doesn't exist yet or has the wrong dimensions
+    4. Update env light textures
+        * execute update environment light pass `EnvLightUpdater.cs.slang`
+    5. Create a mipmap chain for pdf texure
+
+#### `RTXDI::setRTXDIFrameParameters`
+
+* Called by
+    * [`RTXDI::update`](#rtxdiupdate)
+
+1. Set current frame index
+2. Always enable importance sampling for local lights
+3. Set the range of local lights
+4. Set the range of infinite lights
+5. Set the environment light
+6. In case we're using ReGIR, update the grid center to be at the camera
+7. Update the parameters RTXDI needs when we call its functions in our shaders
+    * [`rtxdi::Context::FillRuntimeParameters`](#rtxdicontextfillruntimeparameters)
+
+#### `RTXDI::endFrame`
+
+* Called by
+    * [`RTXDIPass:execute`](#rtxdipassexecute)
+
+#### `RTXDI::presampleLights`
+
+* Called by
+    * [`RTXDI:update`](#rtxdiupdate)
+
+1. Presample local lights
+    1. `RTXDI::setShaderDataInternal`
+    2. Execute presample local lights pass `RTXDISetup.cs.slang`, [`presampleLocalLights`](#rtxdipresamplelocallights-1)
+2. Presample environment light
+    1. `RTXDI::setShaderDataInternal`
+    2. Execute presample environment light pass `RTXDISetup.cs.slang`, [`presampleEnvLight`](#rtxdipresampleenvlight)
+
+#### `RTXDI::setShaderDataInternal`
+
+* Called by
+    * [`RTXDI:presampleLights`](#rtxdisetshaderdatainternal)
+    * [`RTXDI:generateCandidates`](#rtxdigeneratecandidates)
+    * [`RTXDI::testCandidateVisibility`](#rtxditestcandidatevisibility)
+
+1. Send our parameter structure down
+2. Parameters needed inside the core RTXDI application bridge
+3. Parameters for initial candidate samples
+4. Parameters for general sample reuse
+5. Parameter for final shading
+6. Parameters for generally spatial sample reuse
+7. Parameters for last frame's camera coordinate
+8. Setup textures and other buffers needed by the RTXDI bridge
+9. PDF textures for importance sampling. Some shaders need UAVs, some SRVs
+
+#### `RTXDI::generateCandidates`
+
+* Called by
+    * [`RTXDI:update`](#rtxdiupdate)
+
+1. [`RTXDI::setShaderDataInternal`](#rtxdisetshaderdatainternal)
+2. Execute Generate candidates pass `RTXDISetup.cs.slang`, [`generateCandidates`](#rtxdigeneratecandidates-1)
+
+#### `RTXDI::testCandidateVisibility`
+
+* Called by
+    * [`RTXDI:update`](#rtxdiupdate)
+
+1. [`RTXDI::setShaderDataInternal`](#rtxdisetshaderdatainternal)
+2. Execute test candidate visibility pass `RTXDISetup.cs.slang`, [`testCandidateVisibility`](#rtxdigeneratecandidates-1)
+
+#### `RTXDI::spatialResampling`
+
+* Called by
+    * [`RTXDI:update`](#rtxdiupdate)
+
+1. [`RTXDI::setShaderDataInternal`](#rtxdisetshaderdatainternal)
+2. Execute spatial resampling pass `RTXDISetup.cs.slang`, [`spatialResampling`](#rtxdidospatialresampling)
+
+### `rtxdi::Context`
+
+#### `rtxdi::Context::GetRisBufferElementCount`
+
+* Called by
+    * [`RTXDI:prepareResources`](#rtxdiprepareresources)
+
+* `rtxdi::Context::GetReGIRLightSlotCount`
+
+#### `rtxdi::Context::GetReGIRLightSlotCount`
+
+* Called by
+    * [`rtxdi::Context::GetRisBufferElementCount`](#rtxdicontextgetrisbufferelementcount)
+
+* Returns number of light slots by given ReGIR Mode
+
+#### `rtxdi::Context::GetReservoirBufferElementCount`
+
+* Called by
+    * [`RTXDI:prepareResources`](#rtxdiprepareresources)
+
+#### `rtxdi::Context::FillNeighborOffsetBuffer`
+
+* Called by
+    * [`RTXDI:prepareResources`](#rtxdiprepareresources)
+
+* Create a sequence of low-discrepancy samples within a unit radius around the origin for "randomly" sampling neighbors during spatial resampling
+
+#### `rtxdi::ComputePdfTextureSize`
+
+* Called by
+    * [`RTXDI:updateLights`](#rtxdiupdatelights)
+
+* Compute the size of a power-of-2 rectangle that fits all items, 1 item per pixel
+
+#### `rtxdi::Context::FillRuntimeParameters`
+
+* Called by
+    * [`RTXDI::setRTXDIFrameParameters`](#rtxdisetrtxdiframeparameters)
+
+### `LightUpdater.cs.slang`
+
+#### `LightUpdater::execute`
+
+* Executed by:
+    * [`RTXDI::updateLights`](#rtxdiupdatelights)
+
+Update the light info and local light PDF texture
+
+1. If light index is lower than the first local analytic light
+    * Create emissive lights
+        1. Get the scene triangle index of the emissive light
+        2. Load emissive triangle data
+        3. Setup emissive light
+2. Else if light index is lower than the environment light index
+    * Create analytic lights
+        1. Get the index of the light in the scene
+        2. Setup analytic light
+3. Else (if light index equals the environment light index)
+    * Create environment light
+
+### `EnvLightUpdater.cs.slang`
+
+#### `EnvLightUpdater::execute`
+
+* Executed by:
+    * [`RTXDI::updateEnvLight`](#rtxdiupdateenvlight)
+
+1. Compute UV coordinates in env map
+2. Evaluate the env map luminance
+3. Write luminance
+4. Compute relative solid angle to account for compression at the poles
+5. Write PDF
+
+### `RTXDI.slang`
+
+#### `RTXDI::presampleLocalLights`
+
+* Executed by:
+    * [`RTXDI::presampleLights`](#rtxdipresamplelights)
+
+Presample local lights into presampled light tiles
+
+1. Initialize random sampler
+2. Presample local lights
+    * [`RTXDI_PresampleLocalLights`](#rtxdipresamplelocallights-1)
+
+#### `RTXDI::presampleEnvLight`
+
+* Executed by:
+    * [`RTXDI::presampleLights`](#rtxdipresamplelights)
+
+Presample environment light into presampled light tiles
+
+* [`RTXDI_PresampleEnvironmentMap`]()
+
+#### `RTXDI::generateCandidates`
+
+* Executed by:
+    * [`RTXDI::generateCandidates`](#rtxdigeneratecandidates)
+
+1. Initialize random samplers
+2. Load surface data
+    * [`RTXDI_InitSampleParameters`](#rtxdiinitsampleparameters)
+3. Generate initial candidates
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+4. Store selected light sample in a reservoir for later reuse and shading
+    * [`RTXDI_StoreReservoir`](#rtxdistorereservoir)
+
+#### `RTXDI::testCandidateVisibility`
+
+* Executed by:
+    * [`RTXDI::testCandidateVisibility`](#rtxditestcandidatevisibility)
+
+Trace a visibility ray from the primary hit surface to the light sample in the reservoir. Update the reservoir if the light is not visible.
+
+1. Load surface data and reservoir containing the light sample
+2. Get the light sample, so we have data to construct our visibility query
+3. Trace a visibility ray and update the reservoir
+
+#### `RTXDI::doSpatialResampling`
+
+* Executed by:
+    * [`RTXDI::spatialResampling`](#rtxdispatialresampling)
+
+Perform spatial resampling
+
+1. Initialize random sampler
+2. Load surface data
+3. Load reservoir at the current pixel
+4. Setup resampling parameters
+5. Execute resampling
+    * [`RTXDI_SpatialResampling`](#rtxdispatialresampling-1)
+
+### `ResamplingFunctions.hlsli`
+
+#### `RTXDI_PresampleLocalLights`
+
+* Executed by:
+    * [`RTXDI::presampleLocalLights`](#rtxdipresamplelocallights)
+
+1. Sample PDF Mipmap
+    * [`RTXDI_SamplePdfMipmap`](#rtxdisamplepdfmipmap)
+2. Store the index of the light that we found and its inverse pdf. Or zero and zero if we somehow found nothing
+
+#### `RTXDI_SamplePdfMipmap`
+
+* Executed by:
+    * [`RTXDI_PresampleLocalLights`](#rtxdipresamplelocallights-1)
+
+#### `RTXDI_InitSampleParameters`
+
+* Executed by:
+    * [`RTXDI::generateCandidates`](#rtxdigeneratecandidates-1)
+
+* Sample parameters struct
+* Defined so that so these can be compile time constants as defined by the user
+* brdfCutoff Value in range [0, 1] to determine how much to shorten BRDF rays. 0 to disable shortening
+
+#### `RTXDI_SampleLightsForSurface`
+
+* Executed by:
+    * [`RTXDI::generateCandidates`](#rtxdigeneratecandidates-1)
+
+Samples ReGIR and the local and infinite light pools for a given surface
+
+1. Local lights
+    * If ReGIR is enabled and the surface is inside the grid, sample the grid. Otherwise, fall back to source pool sampling.
+        * [`RTXDI_SampleLocalLightsFromReGIR`](#rtxdisamplelocallightsfromregir) or [`RTXDI_SampleLocalLights`](#rtxdisamplelocallights)
+2. Infinite lights
+    * [`RTXDI_SampleInfiniteLights`](#rtxdisampleinfinitelights)
+3. Environment map
+    * [`RTXDI_SampleEnvironmentMap`](#rtxdisampleenvironmentmap)
+4. BRDF
+    * [`RTXDI_SampleBrdf`](#rtxdisamplebrdf)
+5. Combine reservoirs
+    * [`RTXDI_CombineReservoirs`](#rtxdicombinereservoirs)
+6. Finalize resampling    
+    * [`RTXDI_FinalizeResampling`](#rtxdifinalizeresampling)
+
+#### `RTXDI_SampleLocalLightsFromReGIR`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+Sampling lights for a surface from the ReGIR structure or the local light pool.
+If the surface is inside the ReGIR structure, and ReGIR is enabled, and `numRegirSamples` is nonzero, then this function will sample the ReGIR structure.
+Otherwise, it samples the local light pool.
+
+#### `RTXDI_SampleLocalLights`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+Samples the local light pool for the given surface
+
+#### `RTXDI_SampleInfiniteLights`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+Samples the infinite light pool for the given surface
+
+#### `RTXDI_SampleEnvironmentMap`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+#### `RTXDI_SampleBrdf`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+#### `RTXDI_CombineReservoirs`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+Adds `newReservoir` into `reservoir`, returns true if the new reservoir's sample was selected.
+Algorithm (4) from the ReSTIR paper, Combining the streams of multiple reservoirs.
+
+Normalization - Equation (6) - is postponed until all reservoirs are combined.
+
+#### `RTXDI_FinalizeResampling`
+
+* Executed by:
+    * [`RTXDI_SampleLightsForSurface`](#rtxdisamplelightsforsurface)
+
+Performs normalization of the reservoir after streaming.
+Equation (6) from the ReSTIR paper.
+
+#### `RTXDI_StoreReservoir`
+
+* Called by:
+    * [`RTXDI::generateCandidates`](#rtxdigeneratecandidates-1)
+
+#### `RTXDI_PresampleEnvironmentMap`
+
+* Called by:
+    * [`RTXDI::presampleEnvLight`](#rtxdipresampleenvlight)
+
+1. Uniform sampling inside the pixels
+2. Convert texel positions to UV and pack it
+3. Compute the inverse PDF if we found something
+4. Store the result
+
+#### `RTXDI_SpatialResampling`
+
+* Called by:
+    * [`RTXDI::doSpatialResampling`](#rtxdidospatialresampling)
+
+Spatial resampling pass
+Operates on the current frame G-buffer and its reservoirs
+
+
+# ReSTIR GI 구현
+
+## Kajiya
 
 ### Pass
 
-1. Ray Traced GBuffer Pass
-    * G 버퍼 및 초기 candidate 생성
-    * 레이트레이싱 G버퍼 + RIS
-    * 우선 카메라에서 광선을 쏴서 G버퍼 만들고, 여기에 픽셀별로 저장소를 사용해서 RIS 결과를 저장함.
-    * 이때 저장소는 다음 패스에서 서로 공유할 수 있도록 따로 텍스처를 만들어서 공유함.
-2. Shadow Detection Pass
-    * 보이지 않는 표본 삭제
-    * 첫번째 패스에서 선택한 candidate에서 픽셀 당 하나의 그림자 광선을 쏨. 만약 occluded 되어있다면 저장소의 가중치를 0으로 두어 혆재 픽셀이 빛 표본으로부터 아무런 기여를 받지 못하게 해줌. 이러면 occluded된 표본들은 근처 픽셀에 전달되지 않게 됨.
-3. Temporal Reuse Pass (픽셀 셰이더)
-    * 시간적 재사용
-    * 픽셀 셰이더 사용 시작. 텍스처만 입력 받아서 계산 몇가지 해주는 것임.ㄴ
-    * 현재 픽셀에서의 충돌 지점이 주어질 때, 이걸 직전 프레임의 view-projection 행렬과 곱해줘서 직전 프레임에서의 해당 픽셀 위치를 구함.
-    * 직전 프레임에서의 픽셀에서의 저장소와 현재 저장소를 합쳐줌.
-    * 표본 수는 clamping 해주고, weight을 scaling해주어 무지성으로 표본의 수가 증가하지 않도록 방지해줌.
-4. Spatial Reuse Pass (spatial reuse iteration 번) (픽셀 셰이더)
-    * 공간적 재사용
-    * 현재 저장소와, 화면 공간 기준 이웃 저장소 몇 개를 합쳐줌. 근처 픽셀이 비슷한 조명 상태나 occlusion을 갖고 있다면 좋은 표본을 재사용해줄 수 있음. 하지만 bias가 발생함. bias 한정해주는 법은 둘 간의 법선의 차이나 depth 차이가 특정 범위를 넘어서면 해당 이웃의 저장소는 무시하는 식으로 해줄 수 있음.
-5. Shader Pixel Pass
-    * 최종 색 계산
-    * 저장소랑 기존 패스의 G버퍼를 바탕으로 최종 이미지 겟.
-6. ATrous Denoise Pass (filter limit 번) (픽셀 셰이더. 선택 사항)
-    * ATrous 디노이저
-7. Copy to Output Pass (디버깅용)
-    * 선택한 텍스처를 채널로 출력
+`rtdgi`
 
-#### `RayTracedGBufferPass`
+* `rtdgi temporal` / `/shaders/rtdgi/temporal_filter2.hlsl`
+* `rtdgi spatial2` / `/shaders/rtdgi/spatial_filter2.hlsl`
+* `rtdgi reproject` / `/shaders/rtdgi/fullres_reproject.hlsl`
+* `rtdgi trace`
+    * `/shaders/rtdgi/trace_diffuse.rgen.hlsl`
+    * `/shaders/rt/gbuffer.rmiss.hlsl`
+    * `/shaders/rt/shadow.rmiss.hlsl`
+    * `/shaders/rt/gbuffer.rchit.hlsl`
+* `validity integrate` / `/shaders/rtdgi/temporal_validity_integrate.hlsl`
+* `restir temporal` / `/shaders/rtdgi/restir_temporal.hlsl`
+    * Reads:
+        * Half view normal (from GBuffer)
+        * GBuffer depth
+        * Candidate irradiance  (from RTDGI)
+        * Candidate normal
+        * Irradiance history
+        * Ray origin history
+        * Ray history
+        * Reservoir history
+        * Reprojection map
+        * Hit normal history
+        * Candidate history
+        * Validity
+    * Writes:
+        * Irradiance
+        * Ray origin
+        * Ray
+        * Hit normal
+        * Reservoir
+        * Candidate
+* `restir spatial` / `/shaders/rtdgi/restir_spatial.hlsl`
+    * Reads:
+        * Irradiance
+        * Hit normal
+        * Ray
+        * Reservoir
+        * GBuffer depth
+        * Half view normal
+        * Half depth
+        * SSAO
+        * Candidate
+    * Writes:
+        * Reservoir
+* `restir resolve` / `/shaders/rtdgi/restir_resolve.hlsl`
+    * Reads:
+        * Irradiance
+        * Hit normal
+        * Ray
+        * Reservoir
+        * GBuffer depth
+        * Half view normal
+        * Half depth
+        * SSAO
+        * Candidate irradiance
+        * Candidate normal
+    * Writes:
+        * Irradiance output
 
-![RayTracedGBufferPass](/Images/ReStirGi/RayTracedGBufferPass.png)
-
-위의 Pass에 그나마 유사한 것으로 생각하는 Falcor 자체 제공 Pass로는 GBufferRt가 있는 듯:
-
-![GBufferBase](/Images/ReStirGi/GBufferBase.png)
-
-![GBufferRT](/Images/ReStirGi/GBufferRT.png)
-
-## Fast Volume Rendering with Spatiotemporal Reservoir Resampling (Volumetric ReSTIR)
-
-[원글 링크](https://github.com/DQLin/VolumetricReSTIRRelease)
-
-* Daqi Lin. University of Utah.
-* Chris Wyman. NVIDIA.
-* Cem Yuksel. University of Utah.
-
-Falcor 4.2
-
-### Pass
-
-## Dynamic Diffuse Global Illumination Resampling
-
-[원글 링크](https://research.nvidia.com/publication/2021-12_dynamic-diffuse-global-illumination-resampling)
-
-### Pass
-
-## Rendering Many Lights with Grid-Based Reservoirs
-
-[원글 링크](http://cwyman.org/papers/rtg2-manyLightReGIR.pdf)
-
-### Pass
+## Falcor
 
 # ReSTIR GI 관련 블로그 글
 
@@ -239,6 +738,8 @@ RIS의 특징 중 하나는 반복적으로 사용할 수 있다는 점임<sup>[
 <div id="ref_4">4. Alexey Panteleev. Chris Wyman. <a href="https://youtu.be/QWsfohf0Bqk">Part 1: Rendering Games With Millions of Ray Traced Lights</a>. NVIDIA Developer, YouTube.</div>
 <div id="ref_5">5. Mr. Zyanide. <a href="http://www.zyanidelab.com/uniform-sampling-phong/">Uniform Sampling Phong BRDF</a>. </div>
 
+---
+
 ```
 @startuml
 RenderPass <|-- RayTracedGBufferPass
@@ -334,6 +835,168 @@ class GBufferRT {
    -mUseDOF: bool
    -mRaytrace: struct
    -mpComputePass: ComputePass::SharedPtr
+}
+@enduml
+```
+
+```
+@startuml
+RenderPass <|-- RTXDIPass
+
+class RTXDIPass {
+    +{static} kInfo: const Info
+    +{static} create(RenderContext*, const Dictionary&): SharedPtr
+    +getScriptingDictionary(): Dictionary
+    +reflect(const CompileData&): RenderPassReflection
+    +compile(RenderContext*, const CompileData&)
+    +execute(RenderContext*, const RenderData&)
+    +renderUI(Gui::Widgets&)
+    +setScene(RenderContext*, const Scene::SharedPtr&)
+    -RTXDIPass(const Dictionary&)
+    -parseDictionary(const Dictionary&)
+    -prepareSurfaceData(RenderContext*, const Texture::SharedPtr&)
+    -finalShading(RenderContext*, const Texture::SharedPtr&, const RenderData&)
+    -mpScene: Scene::SharedPtr
+    -mpRTXDI: RTXDI::SharedPtr
+    -mOptions: RTXDI::Options
+    -mpPrepareSurfaceDataPass: ComputePass::SharedPtr
+    -mpFinalShadingPass: ComputePass::SharedPtr
+    -mFrameDim: uint2
+    -mOptionsChanged: bool
+    -mGBufferAdjustShadingNormals: bool
+}
+@enduml
+```
+
+```
+@startuml
+enum RTXDI::Mode {
+    NoResampling
+    SpatialResampling
+    TemporalResampling
+    SpatiotemporalResampling
+}
+
+enum RTXDI::BiasCorrection
+{
+    Off
+    Basic
+    Pairwise
+    RayTraced
+}
+
+class RTXDI::Options
+{
+    +mode: Mode
+    +presampledTileCount: uint32_t
+    +presampledTileSize: uint32_t
+    +storeCompactLightInfo: bool
+    +localLightCandidateCount: uint32_t
+    +infiniteLightCandidateCount: uint32_t
+    +envLightCandidateCount: uint32_t
+    +brdfCandidateCount: uint32_t
+    +brdfCutoff: float
+    +testCandidateVisibility: bool
+    +BiasCorrection biasCorrection
+    +depthThreshold: float
+    +normalThreshold: float
+    +samplingRadius: float
+    +spatialSampleCount: uint32_t
+    +spatialIterations: uint32_t
+    +maxHistoryLength: uint32_t
+    +boilingFilterStrength: float
+    +rayEpsilon: float
+    +enableVisibilityShortcut: bool
+    +enablePermutationSampling: bool
+}
+
+class RTXDI::Light
+{
+    +emissiveLightCount: uint32_t
+    +localAnalyticLightCount: uint32_t
+    +infiniteAnalyticLightCount: uint32_t
+    +bool envLightPresent
+    +prevEmissiveLightCount: uint32_t
+    +prevLocalAnalyticLightCount: uint32_t
+    +std::vector<uint32_t> analyticLightIDs
+    +getLocalLightCount(): uint32_t
+    +getInfiniteLightCount(): uint32_t
+    +getTotalLightCount(): uint32_t
+    +getFirstLocalLightIndex(): uint32_t
+    +getFirstInfiniteLightIndex(): uint32_t
+    +getEnvLightIndex(): uint32_t
+}
+
+class RTXDI::Flag
+{
+    +updateEmissiveLights: bool
+    +updateEmissiveLightsFlux: bool
+    +updateAnalyticLights: bool
+    +updateAnalyticLightsFlux: bool
+    +updateEnvLight: bool
+    +recompileShaders: bool
+    +clearReservoirs: bool
+}
+
+class RTXDI
+{
+    +{static} isInstalled(): bool
+    +{static} create(const Scene::SharedPtr&, const Options&): SharedPtr
+    +setOptions(const Options& options);
+    +const Options& getOptions() { return mOptions; }
+    +bool renderUI(Gui::Widgets& widget);
+    +Program::DefineList getDefines() const;
+    +setShaderData(const ShaderVar& rootVar);
+    +beginFrame(RenderContext* pRenderContext, const uint2& frameDim);
+    +endFrame(RenderContext* pRenderContext);
+    +update(RenderContext* pRenderContext, const Texture::SharedPtr& pMotionVectors);
+    +const PixelDebug::SharedPtr& getPixelDebug() const { return mpPixelDebug; }
+    -RTXDI(const Scene::SharedPtr& pScene, const Options& options);
+    -Scene::SharedPtr                    mpScene
+    -Options                             mOptions
+    -rtxdi::ContextParameters            mRTXGIContextParams
+    -RTXDI_ResamplingRuntimeParameters   mRTXDIShaderParams
+    -std::unique_ptr<rtxdi::Context>     mpRTXDIContext
+    -uint        mFrameIndex
+    -uint2       mFrameDim
+    -uint32_t    mLastFrameReservoirID
+    -uint32_t    mCurrentSurfaceBufferIndex
+    -CameraData  mPrevCameraData
+    -mLights: Light
+    -mFlags: Flag
+    -mpPixelDebug: PixelDebug::SharedPtr
+    -mpAnalyticLightIDBuffer: Buffer::SharedPtr
+    -mpLightInfoBuffer: Buffer::SharedPtr
+    -mpLocalLightPdfTexture: Texture::SharedPtr
+    -mpEnvLightLuminanceTexture: Texture::SharedPtr
+    -mpEnvLightPdfTexture: Texture::SharedPtr
+    -mpLightTileBuffer: Buffer::SharedPtr
+    -mpCompactLightInfoBuffer: Buffer::SharedPtr
+    -mpReservoirBuffer: Buffer::SharedPtr
+    -mpSurfaceDataBuffer: Buffer::SharedPtr
+    -mpNeighborOffsetsBuffer: Buffer::SharedPtr
+    -mpReflectTypes: ComputePass::SharedPtr
+    -mpUpdateLightsPass: ComputePass::SharedPtr
+    -mpUpdateEnvLightPass: ComputePass::SharedPtr
+    -mpPresampleLocalLightsPass: ComputePass::SharedPtr
+    -mpPresampleEnvLightPass: ComputePass::SharedPtr
+    -mpGenerateCandidatesPass: ComputePass::SharedPtr
+    -mpTestCandidateVisibilityPass: ComputePass::SharedPtr
+    -mpSpatialResamplingPass: ComputePass::SharedPtr
+    -mpTemporalResamplingPass: ComputePass::SharedPtr
+    -mpSpatiotemporalResamplingPass: ComputePass::SharedPtr
+    -setShaderDataInternal(const ShaderVar&, const Texture::SharedPtr&);
+    -updateLights(RenderContext*);
+    -updateEnvLight(RenderContext*);
+    -presampleLights(RenderContext*);
+    -generateCandidates(RenderContext*, uint32_t);
+    -testCandidateVisibility(RenderContext*, uint32_t);
+    -uint32_t spatialResampling(RenderContext*, uint32_t);
+    -uint32_t temporalResampling(RenderContext*, const Texture::SharedPtr&, uint32_t, uint32_t)
+    -uint32_t spatiotemporalResampling(RenderContext*, const Texture::SharedPtr&, uint32_t, uint32_t)
+    -loadShaders()
+    -prepareResources(RenderContext*)
+    -setRTXDIFrameParameters()
 }
 @enduml
 ```
