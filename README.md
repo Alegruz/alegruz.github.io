@@ -34,3 +34,5 @@ Game Development Studies with Books
         * [ReSTIR GI 공부 노트](Notes/2022/04/Korean/ReStirGiStudyNotes.md)
         * [간단한 퐁 셰이딩 수식](Notes/2022/04/Korean/SimplePhongPseudoCode.md)
         * [지형에 일관된 식물상과 동물상 저작하기 소스 코드 분석](Notes/2022/04/Korean/AuthoringConsistentLandscapesWithFloraAndFaunaSourceCodeAnalysis.md)
+    * 6월
+        * [게임공학 공부 노트](Notes\2022\05\Korean\GameEngineeringStudiesNote.md)
