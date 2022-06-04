@@ -398,3 +398,7 @@ J의 행들은 일차 독립적이므로 JJ<sup>T</sup>은 invertible이며, 유
 이제 위의 식에서 약간의 수정을 해준 다음, LU 분해를 통해 β에 대한 아래 방정식을 풀 수 있게 됨:
 
 ![LUDecomposedPseudoInverse](/Images\GameEngineering\LUDecomposedPseudoInverse.png)
+
+이걸 이제 아래 식으로 수정해서 ![AngularVelocity](/Images\GameEngineering\AngularVelocity.png)를 구할 수 있음:
+
+![SubstitutedVelocities](/Images\GameEngineering\SubstitutedVelocities.png)
