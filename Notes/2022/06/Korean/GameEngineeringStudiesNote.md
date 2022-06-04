@@ -252,3 +252,149 @@ s<sup>2</sup> - t<sup>2</sup> = cosθ
 여기서 **n**은 **a** × **b**와 같은 방향을 가리키는 단위 벡터임. 이건 2θ만큼 회전하는 것이니, θ만큼 회전하려면:
 
 **R** = cos(θ/2) - (sin(θ/2)) **n**<sup>-</sup>
+
+## 2. IK의 수치적 해법
+
+### 각속도
+
+아래 그림에서처럼 질량이 m인 어떤 한 입자를 단위 벡터 **A**에 길이가 r인 줄로 연결했다고 가정.
+
+![AngularVelocityFigure](/Images\GameEngineering\AngularVelocityFigure.png)
+
+이때 오른손 좌표계라고 할 때(**X** × **Y** = **A**) θ(t)가 입자를 매단 줄을 **XY** 평면에 사영한 벡터가 시간 t 때 반시계 방향으로 **X** 축과 이루는 각도라고 가정. 이때 이 입자의 *각속도*는 각도의 변화량이며, 보통 ω로 표기함:
+
+![AngularVelocityEquation](/Images\GameEngineering\AngularVelocityEquation.png)
+
+각속도는 보통 회전축 **A**에 평행하면서 크기가 \|ω(t)\|인 벡터로 표기함. 즉 각속도 벡터 **ω***(t)는 다음과 같음:
+
+![AngularVelocityVectorEquation](/Images\GameEngineering\AngularVelocityVectorEquation.png)
+
+회전하는 이 입자가 공간에서 이동하는 속력 v(t)는 이 입자의 각속도와 이 입자와 회전축 간의 길이 간의 곱으로 구할 수 있음:
+
+v(t) = \|ω(t) r\|
+
+여기서 방향 정보를 추가한다고 가정. 벡터 함수 **r**(t)이 회전축을 기준으로 한 상대 위치라고 가정할 때, 선형 속도 벡터 **v**(t)는 다음과 같음:
+
+**v**(t) = **ω**(t) × **r**(t)
+
+![LinearVelocityFigure](/Images\GameEngineering\LinearVelocityFigure.png)
+
+이때 선형 속도는 각속도와 직각을 이룸.
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Angular_velocity1.svg#/media/File:Angular_velocity1.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Angular_velocity1.svg/1200px-Angular_velocity1.svg.png" alt="Angular velocity1.svg"></a><br>By <a href="//commons.wikimedia.org/wiki/User:Krishnavedala" title="User:Krishnavedala">Krishnavedala</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=18123063">Link</a></p>
+
+만약 이 입자가 선형 속도 **v**만큼 이동할 때의 각속도는 결국 **v**의 수직 성분 **v**<sub>⊥</sub>에 대해서 구할 수 있음. v(t) = ω(t) r 이므로 
+
+v<sub>⊥</sub> = ω(t) × r<br>
+ω(t) = v<sub>⊥</sub> / r<br>
+ω(t) = (v sin(θ)) / r
+
+이건 2D에서의 얘기이므로, 벡터로 확장하면,
+
+![AngularVelocityVectorEquation](/Images\GameEngineering\AngularVelocityVectorEquation.png)
+
+이므로,
+
+**ω**(t) = ω(t) **A** = ((\|**v**\| sin(θ)) / r) **A**<br>
+**ω**(t) = ((r \|**v**\| sin(θ **A**)) / (r r))<br>
+**ω**(t) = ((**r** × **v**) / r<sup>2</sup>)
+
+**a** × **b** = \|**a**\|\|**b**\|sin(θ)**n**이기 때문 ^_^
+
+### 야코비 방법
+
+해석학적인 방법으로 IK를 해결하기엔 요즘 애니메이션들은 좀 복잡한 편임. 이 경우엔 매 프레임마다 지속적으로 목표 지점까지 다다르도록 각 관절의 각도를 변화시켜주는 것임. 여러 방법이 있지만 가장 대중적인 방법이 바로 *야코비Jacobian* 방법임. 야코비 방법은 야코비 행렬을 사용하는 방법으로, 이 행렬은 편미분으로 구성된 행렬을 의미함.
+
+수학적으로 보자면, 만약 임의의 여섯 가지 함수가 존재하고, 여섯 가지의 서로 독립적인 변수들 x<sub>i</sub>가 있을 때, 그 결과인 y<sub>i</sub> = f<sub>i</sub>(x<sub>i</sub>)이 있을 것임.
+
+이때 각 결과값의 변화량을 각 입력값의 변화량으로 표현할 수 있음:
+
+![DifferentialsOfYi](/Images\GameEngineering\DifferentialsOfYi.png)
+
+위의 식을 벡터에 대해서 표현할 수 있음:
+
+![VectorDifferentialsOfY](/Images\GameEngineering\VectorDifferentialsOfY.png)
+
+이때 이 X에 대한 F의 편미분으로 구성된 행렬을 야코비라 부르며, 현재 x<sub>i</sub> 값들에 대한 함수라고 보면 됨. 마치 X의 속도를 정의역으로, Y의 속도를 치역으로 갖는 함수라고 생각하면 됨:
+
+![JacobianMapping](/Images\GameEngineering\JacobianMapping.png)
+
+어떤 시점에서 야코비는 결국 x<sub>i</sub>에 대한 함수임. 그 다음 시점에서는 **X**가 바뀌기에 야코비로 그 변환을 표현해줄 수 있음. 즉, x<sub>i</sub>는 각 관절의 값이 되며, y<sub>i</sub>는 end effector의 위치와 orientation이 됨.
+
+![EndEffectorY](/Images\GameEngineering\EndEffectorY.png)
+
+이런 식으로 표현할 수도 있는 것임.
+
+IK의 경우 야코비는 곧 관절의 각속도 ![AngularVelocity](/Images\GameEngineering\AngularVelocity.png)를 end effector의 위치와 orientation ![EndEffectorPositionOrientation](/Images\GameEngineering\EndEffectorPositionOrientation.png)이 됨. 즉,
+
+![JacobianEndEffector](/Images\GameEngineering\JacobianEndEffector.png)
+
+여기서 **V**는 선형 및 회전 속도로 구성된 벡터이므로, end effector의 희망 변화량을 의미하게 됨. 이 희망 변화량은 현재 위치/orientation과 목표 간의 차이에 기반하여 구하게 될 것임.
+
+![VelocityVector](/Images\GameEngineering\VelocityVector.png)
+
+![AngularVelocity](/Images\GameEngineering\AngularVelocity.png)는 각 관절의 속도, 혹은 각 관절의 변화량을 의미함. 이게 결국 구해야하는 값임:
+
+![AngularVelocitiesVector](/Images\GameEngineering\AngularVelocitiesVector.png)
+
+야코비 행렬 J는 결국 뒤의 둘 사이의 관계를 의미하며, 현재 pose에 대한 함수임. 이 행렬은 다음과 같이 생겼을 것임:
+
+![JacobianMatrix](/Images\GameEngineering\JacobianMatrix.png)
+
+야코비 행렬의 각 항은 결국 특정 관절이 특정 end effector에게 주는 변화량을 의미함. 예를 들어 팔꿈치 관절이라면 end effector에 대한 회전 변화량 ω은 그저 해당 관절에서의 회전축에 대한 속도를 의미할 뿐임. 회전 관절의 경우 end effector의 선형 변화량은 곧 관절의 회전축과, 해당 관절에서 end effector까지를 잇는 벡터의 외적과 같음. 회전 관절에서의 회전은 곧 즉각적으로 end effector의 선형 움직임이 됨.
+
+목표 각속도 및 선형 속도는 현재 end effector의 설정 값과 목표 설정 값 간의 차를 바탕으로 구하는 것임. end effector의 각속도와 선형 속도를 각 관절의 회전으로 구하는 방법:
+
+![AngularLinearVelocities](/Images\GameEngineering\AngularLinearVelocities.png)
+
+여기서 문제는 end effector의 목표 속도를 가장 잘 맞추는 일차 결합을 구하는 것임. 야코비는 이 문제를 행렬의 형태로 처리하려는 것임.
+
+참고로 이때 야코비 행렬을 만들 때, 각 관절의 좌표계가 동일해야한다는 것임.
+
+예를 들어 검지처럼 한 방향으로만 회전이 가능한 관절이 세 개인 경우, 
+
+![PlanarThreeJointManipulator](/Images\GameEngineering\PlanarThreeJointManipulator.png)
+
+end effector인 E를 목표 G로 옮겨야 함. 각 관절의 회전축은 현재 그림과 수직임. 각 관절마다의 회전을 적용한 결과 벡터 g<sub>i</sub>는 각 관절의 회전축와 각 관절에서 end effector까지를 가리키는 벡터 **V**<sub>i</sub>의 외적으로 구할 수 있으며, 이것이 야코비 행렬의 열을 결정하게 됨. 이때 g<sub>i</sub>의 크기는 관절과 end effector 간의 거리를 의미하는 함수가 됨.
+
+![ChangesInPosition](/Images\GameEngineering\ChangesInPosition.png)
+
+end effector에 가할 목표 변화량은 end effector의 현재 위치와 목표 위치 간의 차임 (선형 변화량. 선형 속도):
+
+![DesiredChange](/Images\GameEngineering\DesiredChange.png)
+
+이제 목표 변화량을 값으로 표현한 벡터를 야코비 행렬 곱하기 관절 변화량으로 두면 됨:
+
+![JacobianEndEffector](/Images\GameEngineering\JacobianEndEffector.png)
+
+선형 속도: Z<sub>i</sub> × (E - J<sub>i</sub>)
+
+![JointAngleChangesJacobian](/Images\GameEngineering\JointAngleChangesJacobian.png)
+
+### 야코비 역행렬
+
+야코비를 이제 구했으면 
+
+![JointAngleVelocities](/Images\GameEngineering\JointAngleVelocities.png)
+
+이 식을 해결해야함. 만약 J가 사각행렬이라면 역행렬 J<sup>-1</sub>을 구해서 end effector의 속도가 주어졌을 때 각 관절의 각속도를 구할 수 있음. 
+
+![JacobianInverse](/Images\GameEngineering\JacobianInverse.png)
+
+근데 만약 역행렬이 존재하지 않는다면 현재 system은 주어진 관절 각도에 대해 singular 상태라고 함. 특이성은 관절의 속도의 일차 결합이 희망 end effector 속도를 낼 수 없을 때 발생함. 예를 들어 완전히 손가락을 쭉 편 상태에서, target 위치가 손가락 끝마디나 중간마디 중간 어딘가에 있을 때에 특이성이 발생함. 이 경우 각 관절 각도의 변화량 g는 언제나 목표 방향과 수직일 것임. 그러므로 어떻게 결합을 하든 목표 방향 벡터를 만들 수가 없음. 근데 이건 우리가 시각적으로 보이니까 특이성이 발생하는 걸 알지, 이게 언제나 그렇게 판단할 수는 없는 것임.
+
+![SingularConfiguation](/Images\GameEngineering\SingularConfiguation.png)
+
+이게 단순히 특이성이 아니라고 해서 문제가 없는 건 아님. 만약 위의 예시에서 약간은 수직이 아니라고 해도, 저 g들 갖고 desired motion vector 만들려면 값이 엄청 커짐. 이러면 특이성 근처의 상황에서는 막 확 확 바뀌게 됨. 이건 좀 더 그럴 듯한 값으로 좀 clamping을 해줘야 함. 그렇게 해도 수치적 오류에 의해 예측하기 어려운 움직임을 낼 수도 있음.
+
+특이성의 문제를 줄이려면 manipulator가 반복적이면 됨. 즉, 만족할 제한사항보다 더 많은 DOF가 있으면 됨. 이러면 야코비가 사각 행렬이 아니고, IK 문제에 대해 여러 가지, 무한한 해가 존재할 수도 있음. 야코비 행렬이 사각 행렬이 아니므로 전통적인 역행렬이 존재하지 않음. 하지만 만약 J의 열들이 일차 독립적이라면(즉, J가 full column rank를 갖는다면) (J<sup>T</sup>J)<sup>-1</sup>이 존재하므로, *유사역원pseudoinverse* J<sup>+</sub>로 J<sup>+</sub> 사용. 이게 가능한 이유가, 어떤 행렬을 자신의 전치행렬과 곱하면 그 결과는 무조건 사각행렬이기 때문에 역행렬이 존재할 수도 있음:
+
+![PseudoInverse](/Images\GameEngineering\PseudoInverse.png)
+
+J의 행들은 일차 독립적이므로 JJ<sup>T</sup>은 invertible이며, 유사역행렬은 J<sup>+</sup> = J<sup>T</sup>(JJ<sup>T</sup>)<sup>-1</sup>이 됨. 유사역행렬은 end effector의 목표 속도를 필요한 관절의 각도 변화량으로 매핑해주는 함수임. 이를 통해 역행렬을 대체하면 됨:
+
+![PseudoInverseMapping](/Images\GameEngineering\PseudoInverseMapping.png)
+
+이제 위의 식에서 약간의 수정을 해준 다음, LU 분해를 통해 β에 대한 아래 방정식을 풀 수 있게 됨:
+
+![LUDecomposedPseudoInverse](/Images\GameEngineering\LUDecomposedPseudoInverse.png)
