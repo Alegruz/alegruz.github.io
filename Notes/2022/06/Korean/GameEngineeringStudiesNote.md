@@ -1,5 +1,4 @@
 # 게임공학 공부 노트 (2022.06.03)
-
 [Home](../../../../README.md)
 
 ## 1. Inverse Kinematics 입문
@@ -402,3 +401,19 @@ J의 행들은 일차 독립적이므로 JJ<sup>T</sup>은 invertible이며, 유
 이걸 이제 아래 식으로 수정해서 ![AngularVelocity](/Images\GameEngineering\AngularVelocity.png)를 구할 수 있음:
 
 ![SubstitutedVelocities](/Images\GameEngineering\SubstitutedVelocities.png)
+
+이때 단순 [오일러 방법](https://en.wikipedia.org/wiki/Euler_method)으로 관절의 각도를 업데이트해줘도 됨. 참고로 매 프레임마다 야코비 행렬을 새로 구해야줘야 함. 이건 end effector가 목표에 적당한 범위 내에 도달할 때까지 반복하는 것임.
+
+참고로 이게 매 프레임마다 처리되는거다보니까 프레임이 너무 크면, 확 확 확 바뀌어서 오히려 target으로 잘 못 갈 수도 있음. 그래서 차라리 의도적으로 업데이트 주기를 줄이는게 나을 수도 있음.
+
+![IK2dExample](/Images\GameEngineering\IK2dExample.png)
+
+예를 들어 위에서처럼 검지를 2차원에 맵핑한 예시를 들어봅시다. 이때 각각 길이가 15, 10, 5고, 초기 각도가 π/8, π/4, π/4라고 하고, 목표 위치가 ( -20, 5 )라고 가정. 이러면 end effector가 목표까지 가는데 21 개의 프레임이 생성이 됨. 위의 그림은 0번째, 5번째, 10번째, 15번째, 20번째 프레임을 보여주는 것임. end effector만 보면 거의 직선으로 움직였다는 것을 알 수 있음.
+
+근데 제한을 준 경우에도 특이성 문제가 발생할 수 있음. 이걸 해결하려는 한 방법 중 하나가 damped least-squares approach임:
+
+![DampedLeastSquaresApproach](/Images\GameEngineering\DampedLeastSquaresApproach.png)
+
+이 방정식이 원래 방정식에 비해서 특이성에 근접한 범위에선 더 잘 되긴 함. 대신 해로 수렴하는 데에 지불하는 비용이 조금 더 커질 뿐임. 아래 그림에서처럼 A가 야코비, B가 DLS일 때의 차이점을 보여줌. 이때 target이 손가락의 범위를 벗어나있는 ( -35, 5 )인데, 이 경우 DLS를 썻을 때가 더 좋은 결과를 보여줌.
+
+![PseudoInverseVsDampedLeastSquares](/Images\GameEngineering\PseudoInverseVsDampedLeastSquares.png)
