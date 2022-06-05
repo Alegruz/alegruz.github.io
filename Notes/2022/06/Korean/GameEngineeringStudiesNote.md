@@ -554,3 +554,33 @@ B를 ∇<sup>2</sup>F(θ<sub>n</sub>)로 근사할 때, B가 최대한 계산하
 |Broyden family|![B_BroydenFamily](https://wikimedia.org/api/rest_v1/media/math/render/svg/fa9eb38c00340e37df5324b45a8acec21d05e4d7)| |
 |[DFP](https://en.wikipedia.org/wiki/DFP_updating_formula)|![B_DFP](https://wikimedia.org/api/rest_v1/media/math/render/svg/ba5c8847c10288543785906e900fb1a299a20c1a)|![H_DFP](https://wikimedia.org/api/rest_v1/media/math/render/svg/5a2149816eb28a00e39c7f0f0f4c8e1b411f4f12)|
 |[SR1](https://en.wikipedia.org/wiki/SR1_formula)|![B_SR1](https://wikimedia.org/api/rest_v1/media/math/render/svg/29e5f5a58430ed04fed964b72a73245a1f76d39b)|![H_SR1](https://wikimedia.org/api/rest_v1/media/math/render/svg/616ba9d63f32105991eb999709a13fefa809978c)|
+
+### Broyden-Fletcher-Goldfarb-Shanno (BFGS) 방법
+
+BFGS에서는 B 행렬을 다음과 같이 업데이트함:
+
+![BFGSUpdate](/Images\GameEngineering\BFGSUpdate.png)
+
+역행렬은 다음과 같이 업데이트 가능:
+
+![BFGSInverseUpdate](/Images\GameEngineering\BFGSInverseUpdate.png)
+
+둘 다 O(n<sup>2</sup>) 정도의 비용이 들음.
+
+만약 y<sup>T</sup>Δθ > 0이라면, BFGS는 B<sub>k</sub>의 양의 정부호성을 유지함. 다시 말하자면 ![DeltaTheta](/Images\GameEngineering\DeltaTheta.png)가 내려가는 방향이라는 것임. 이건 역 행렬 업데이트 공식으로 구할 수 있음:
+
+![BFGSInverseUpdateRewritten](/Images\GameEngineering\BFGSInverseUpdateRewritten.png)
+
+만약 B<sub>k</sub> > 0이고 y<sup>T</sup>Δθ > 0라면 두 항은 모든 v에 대해 음수가 아님. 즉, 정부호 행렬의 조건에 따라 B는 양의 정부호 행렬이 됨.
+
+BFGS 업데이트는 할선 조건을 만족함:
+
+Δθ = θ<sub>k + 1</sub> -θ<sub>k</sub>, y = ∇F(θ<sub>k + 1</sub>) - ∇F(θ<sub>k</sub>)일때 B<sub>k + 1</sub>Δθ = y임.
+
+할선법은 뉴턴 방법을 상당히 손쉽게 변형한 방법으로, 2차 도함수를 모르더라도, 유한차분법을 사용하여 f'로 f''를 근사할 수 있음:
+
+![FiniteDifferencing](/Images\GameEngineering\FiniteDifferencing.png)
+
+이걸 다르게 재작성하면:
+
+![FiniteDifferencingSecantMethod](/Images\GameEngineering\FiniteDifferencingSecantMethod.png)
