@@ -417,3 +417,140 @@ J의 행들은 일차 독립적이므로 JJ<sup>T</sup>은 invertible이며, 유
 이 방정식이 원래 방정식에 비해서 특이성에 근접한 범위에선 더 잘 되긴 함. 대신 해로 수렴하는 데에 지불하는 비용이 조금 더 커질 뿐임. 아래 그림에서처럼 A가 야코비, B가 DLS일 때의 차이점을 보여줌. 이때 target이 손가락의 범위를 벗어나있는 ( -35, 5 )인데, 이 경우 DLS를 썻을 때가 더 좋은 결과를 보여줌.
 
 ![PseudoInverseVsDampedLeastSquares](/Images\GameEngineering\PseudoInverseVsDampedLeastSquares.png)
+
+## 4. IK에서의 뉴턴 방법
+
+### 뉴턴 방법
+
+원문은 뉴턴-랩슨 방법이지만, 간단히 그냥 뉴턴 방법이라 부름. 그냥 어떤 임의의 연속 함수가 주어졌을 때, 그 해를 찾는 반복적인 방법임.
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Newton_iteration.svg#/media/File:Newton_iteration.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Newton_iteration.svg/1200px-Newton_iteration.svg.png" alt="Illustration of Newton's method"></a><br>By <span style="display:inline-block;padding:0 3px;background-color:#BDC"><a href="//commons.wikimedia.org/wiki/File:Newton_iteration.png" title="File:Newton iteration.png">Original: </a></span> <span style="display:inline-block;padding:3px 0;"><a href="//commons.wikimedia.org/wiki/User:Olegalexandrov" class="mw-redirect" title="User:Olegalexandrov">Olegalexandrov</a></span> <span style="display:inline-block;padding:0 3px;background-color:#CCF">Vector: </span> <span style="display:inline-block;"><a href="//commons.wikimedia.org/wiki/User:Pbroks13" title="User:Pbroks13">Pbroks13</a></span> - Own work based on: <a href="//commons.wikimedia.org/wiki/File:Newton_iteration.png" title="File:Newton iteration.png">Newton iteration.png</a>, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=4150612">Link</a></p>
+
+위와 같은 그림의 함수의 해를 찾는다고 가정. 이때 우선 대충 x<sub>0</sub>으로 찍어봄. 처음부터 잘 찍는 방법도 있는데, 일단 이건 나중에 얘기하도록 하고, 우선 일단 찍었다고 가정. 이때 이 점 ( x<sub>0</sub>, f(x<sub>0</sub>) )에서의 기울기는 그 도함수로 구할 수 있음: f'(x<sub>0</sub>). 이때 법선은 다음과 같이 구할 수 있음:
+
+y - f(x<sub>0</sub>) = f'(x<sub>0</sub>)(x - x<sub>0</sub>)
+
+참고로 이때 이 법선이 x축과 접하는 점과 실제 해 사이의 거리가 x<sub>0</sub>와 해 사이의 거리보다 작음. 즉, x<sub>0</sub>보다 이 법선이 x축과 접하는 점이 실제 해에 더 가까움. 위의 법선의 방정식에서 x축과 접할 때의 x 값을 구해보면:
+
+x<sub>i + 1</sub> = x<sub>i</sub> - f(x<sub>i</sub>) / f'(x<sub>i</sub>)
+
+으로 구할 수 있음. 여기서 x가 x<sub>i + 1</sub>, x<sub>0</sub>가 x<sub>i</sub>임. 이걸 여러번 반복하면 x<sub>0</sub>, x<sub>1</sub>, &hellip; 을 구할 수 있는데, 이 값들은 올바른 조건 내에서는 f의 해에 접근하게 됨.
+
+뉴턴 방법은 상당히 빨리 수렴하기에 몇 번만 반복하면 그만임. 그 속도가 2차 함수의 속도임.
+
+이제 이 방법을 사용해 **V** - f(θ) = 0, 즉 해를 구하면 됨. 근데 이게 사실 바로 **V** - f(θ) = 0를 푸는 건 힘들고, **V** - f(θ)를 최소화하는 방법을 사용함. 이때 이 식을 F(θ)으로 표기하도록 할 것.
+
+여기에 테일러 급수를 활용하여 F(θ)를 근사할 것:
+
+![NewtonRaphsonTaylorSeries](/Images\GameEngineering\NewtonRaphsonTaylorSeries.png)
+
+이때 (θ<sub>0</sub> + Δθ)이 F(θ)를 최소화하는 값이 되도록 하는 Δθ를 찾을 것임. F'(θ) = 0일 때의 x의 근사값을 얻으려면, 2차 테일러 다항식으로 급수를 줄여서 사용하여 도함수가 0이 되는 지점을 찾으면 됨:
+
+![NewtonRaphsonTaylorSeriesSecondOrder](/Images\GameEngineering\NewtonRaphsonTaylorSeriesSecondOrder.png)
+
+IK에서 이 방법을 사용하려면 뉴턴 방법을 다변수 버전으로 확장해야함. 즉, F'(θ<sub>n</sub>)라는 도함수는 ∇F(θ<sub>n</sub>)로 표기하며, 이차도함수의 역수였던 1/F''(θ<sub>n</sub>)는 헤시안 행렬의 역으로 표현해야함: HF(θ<sub>n</sub>)<sup>-1</sup>.
+
+여기서 헤시안 행렬 H란, 이차편미분으로 이루어진 행렬이다. 즉, H(f(x)) = J(∇f(x))라는 의미.
+
+즉, 각도를 갱신할 때 한 관절에 대해서만 표현할 땐 
+
+![NewtonRaphsonSingleValueUpdate](/Images\GameEngineering\NewtonRaphsonSingleValueUpdate.png)
+
+이렇게만 했을 것임.
+
+하지만 이제는 다변수 함수이므로:
+
+![NewtonRaphsonMultivariateUpdate](/Images\GameEngineering\NewtonRaphsonMultivariateUpdate.png)
+
+가 됨.
+
+참고로 이게 더 수렴은 빠르긴 한데, 계산하기엔 이게 더 비싸기도 하고, 헤시안 행렬을 저장해야한다는 점도 있음. 그래서 이거 말고 유사 뉴턴 방법이 선호되는 편임.
+
+## 5. IK에서의 유사 뉴턴 방법
+
+뉴턴 방법 대신해서 0(해)이나 지역 최대값 등을 찾는 방법임. 야코비나 헤시안을 구할 수 없거나, 매번 구하기 어려울 때 (너무 비싸다거나...) 사용하는 방법.
+
+일단 크게 보면 뉴턴 방법이랑 비슷한데, 몇 가지 다른 점이 있음:
+
+* 장점: 유사 뉴턴 방법이 계산은 더 빠름
+* 단점: 헤시안 계산에서 정밀도가 떨어져서 수렴이 느림
+
+|뉴턴 방법|유사 뉴턴 방법|
+|--------|-------------|
+|계산이 비쌈|계산이 쌈|
+|매번 2차 도함수 구해야 함|2차 도함수가 필요 없음|
+|매번 연립일차방정식 풀어야함|연립일차방정식 풀 필요가 없음|
+|수렴이 빠름|수렴이 느림|
+|수렴 경로가 정밀함|수렴 경로가 덜 정밀함|
+
+### 정부호 행렬 definite matrix
+
+x<sup>T</sup>가 x의 전치행렬, x<sup>*</sup>가 x의 켤레전치행렬, 그리고 0이 n 차원 0벡터라고 할 때,
+
+* 어떤 n × n 대칭 실수 행렬 M이 R<sup>n</sup>에 속한 모든 0이 아닌 x에 대해 x<sup>T</sup>Mx > 0일 때 M은 양의 정부호 행렬이라 부름. 즉, 모든 고유값이 양수인 경우임.
+* 어떤 n × n 대칭 실수 행렬 M이 R<sup>n</sup>에 속한 모든 x에 대해 x<sup>T</sup>Mx ≥ 0일 때 M은 양의 준정부호 행렬이라 부름. 즉, 모든 고유값이 음수가 아닌 경우임.
+* 어떤 n × n 대칭 실수 행렬 M이 R<sup>n</sup>에 속한 모든 0이 아닌 x에 대해 x<sup>T</sup>Mx < 0일 때 M은 음의 정부호 행렬이라 부름. 즉, 모든 고유값이 음수인 경우임.
+* 어떤 n × n 대칭 실수 행렬 M이 R<sup>n</sup>에 속한 모든 x에 대해 x<sup>T</sup>Mx ≤ 0일 때 M은 음의 준정부호 행렬이라 부름. 즉, 모든 고유값이 양수가 아닌 경우임.
+
+여기서 양의 정부호/준정부호 실수 행렬이 convex 최적화 문제의 기본임. 만약 어떤 점 p에서 어떤 행렬의 헤시안 행렬이 양의 정부호 행렬이라면, 함수는 p 근처에서 convex의 형태를 띠고 있음.
+
+### 할선법
+
+<p><a href="https://commons.wikimedia.org/wiki/File:CIRCLE_LINES-en.svg#/media/File:CIRCLE_LINES-en.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/CIRCLE_LINES-en.svg/1200px-CIRCLE_LINES-en.svg.png" alt="CIRCLE LINES-en.svg"></a><br>By <a href="//commons.wikimedia.org/wiki/User:Jleedev" title="User:Jleedev">Jleedev</a> - <span class="int-own-work" lang="en">Own work</span> in Inkscape 0.42, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=445449">Link</a></p>
+
+뉴턴 방법처럼 어떤 함수 f가 주어졌을 때, 할선의 해를 통해 f의 해를 추정하는 방법임. 할선이란 어떤 곡선이 있을 때, 이 곡선과 최소 두 점과 교차하는 선을 의미함.
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Secant_method.svg#/media/File:Secant_method.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Secant_method.svg/1200px-Secant_method.svg.png" alt="Secant method.svg"></a><br>By No machine-readable author provided. <a href="//commons.wikimedia.org/wiki/User:Jitse_Niesen" title="User:Jitse Niesen">Jitse Niesen</a> assumed (based on copyright claims). - No machine-readable source provided. Own work assumed (based on copyright claims)., Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=877497">Link</a></p>
+
+할선법은 재귀적임:
+
+![SecantMethod](https://wikimedia.org/api/rest_v1/media/math/render/svg/93f178fd896cad8b93b2fa4e22880fb8fe29a28d)
+
+### 극값 찾기 (최적화 문제)
+
+어떤 스칼라값을 치역으로 갖는 함수에 대하여 극값을 갖는 문제는 결국 그 함수의 기울기가 0이 되는 지점을 찾는 것임. 다시 말해, f의 기울기가 g라고 할 때, 벡터 함수 g의 0벡터를 찾는 것이 스칼라 함수 f의 극값을 찾는 것임.
+
+g의 야코비 행렬은 f의 헤시안일 것임.
+
+뉴턴 방법의 경우 함수를 지역적으로 근사하는 방법임. 해를 구할 함수를 해 즈음에 극값을 갖는 2차 함수로 표현하고, 1차, 2차 도함수를 통해 그 지점을 찾는 것임.
+
+뉴턴의 방법은 최소화할 함수의 기울기와 헤시안 행렬을 활용함. 유사 뉴턴 방법은 반대로 헤시안 행렬을 구할 필요가 없음. 헤시안은 그냥 연속된 기울기 벡터를 해석하여 갱신함.
+
+뉴턴 방법에선 매번 헤시안을 구하고, 역행렬을 구해야했음.
+
+근데 유사 뉴턴 방법에서는 헤시안을 실제로 구하는게 아니라, 양의 정부호 행렬 B로 근사해서 구하는 것임. 이때 이 행렬은 직전에 구했던 정보를 바탕으로 구할 수 있음. 이때 B를 구하는 방법은 어떤 유사 뉴턴 방법을 쓰느냐에 달려있음. 이때 반드시 지켜야하는 조건이 하나 있음. 바로 헤시안을 근사한 B는 유사 뉴턴 조건(혹은 할선 방정식)을 만족해야함:
+
+![QuasiNewtonCondition0](/Images\GameEngineering\QuasiNewtonCondition0.png)
+
+위의 식을 행렬식으로 다시 작성하면:
+
+![QuasiNewtonCondition1](/Images\GameEngineering\QuasiNewtonCondition1.png)
+
+이제 기울기가 0인 지점을 구해야하니, ![GradientIsZero](/Images\GameEngineering\GradientIsZero.png)를 만족해야함. 즉, 
+
+![DeltaTheta](/Images\GameEngineering\DeltaTheta.png)
+
+할선 방정식 뿐만 아니라, 대부분의 경우 B는 대칭이며, 헤시안이랑 최대한 비슷해야함.
+
+B를 ∇<sup>2</sup>F(θ<sub>n</sub>)로 근사할 때, B가 최대한 계산하기 쉬워야하고, ![DeltaTheta](/Images\GameEngineering\DeltaTheta.png)는 풀기 쉬워야 함.
+
+### 유사 뉴턴 방법
+
+일반적인 유사 뉴턴 방법의 순서:
+
+1. ![DeltaTheta](/Images\GameEngineering\DeltaTheta.png) 풀기
+2. 한 턴의 크기(혹은 학습율)  t<sub>n</sub> 정하기
+3. θ<sub>n + 1</sub> = θ<sub>n</sub> + t<sub>n</sub>Δθ<sub>n</sub> 업데이트하기 (t가 학습율)
+4. B<sub>n</sub>으로 B<sub>n + 1</sub> 구하기 (사용하는 유사 뉴턴 방법마다 이 단계가 다름)
+
+유사 뉴턴 방법의 기본 아이디어는 이미 헤시안에 대한 정보를 갖고 있는 B<sub>n - 1</sub>로부터 B<sub>n</sub>을 잘 구하는 방법을 사용하는 것임.
+
+유명한 방정식들:
+
+|방법|B<sub>k + 1</sub> =|H<sub>k + 1</sub> = B<sub>k + 1</sub><sup>-1</sup>|
+|----|-------------------|--------------------------------------------------|
+|[BFGS](https://en.wikipedia.org/wiki/BFGS_method)|![B_BFGS](https://wikimedia.org/api/rest_v1/media/math/render/svg/7c3e0288e813c7b99f0a7ba41ac86930acd1face)|![H_BFGS](https://wikimedia.org/api/rest_v1/media/math/render/svg/3ccda97ecc1680ec2c5f8f177e66b3e3b46189d3)|
+|[Broyden](https://en.wikipedia.org/wiki/Broyden%27s_method)|![B_Broyden](https://wikimedia.org/api/rest_v1/media/math/render/svg/5b75df7b8a7dd815c180713ac035e4892ab493a0)|![H_Broyden](https://wikimedia.org/api/rest_v1/media/math/render/svg/1ca25c055e6e876fb88fffa000dc9fc52a0e11d2)|
+|Broyden family|![B_BroydenFamily](https://wikimedia.org/api/rest_v1/media/math/render/svg/fa9eb38c00340e37df5324b45a8acec21d05e4d7)| |
+|[DFP](https://en.wikipedia.org/wiki/DFP_updating_formula)|![B_DFP](https://wikimedia.org/api/rest_v1/media/math/render/svg/ba5c8847c10288543785906e900fb1a299a20c1a)|![H_DFP](https://wikimedia.org/api/rest_v1/media/math/render/svg/5a2149816eb28a00e39c7f0f0f4c8e1b411f4f12)|
+|[SR1](https://en.wikipedia.org/wiki/SR1_formula)|![B_SR1](https://wikimedia.org/api/rest_v1/media/math/render/svg/29e5f5a58430ed04fed964b72a73245a1f76d39b)|![H_SR1](https://wikimedia.org/api/rest_v1/media/math/render/svg/616ba9d63f32105991eb999709a13fefa809978c)|
