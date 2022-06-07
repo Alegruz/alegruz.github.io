@@ -584,3 +584,299 @@ BFGS 업데이트는 할선 조건을 만족함:
 이걸 다르게 재작성하면:
 
 ![FiniteDifferencingSecantMethod](/Images\GameEngineering\FiniteDifferencingSecantMethod.png)
+
+## 6. 휴리스틱 IK 알고리듬
+
+### Cyclic Coordinate Descent
+
+수치적인 방법으로 관절의 속도를 구하지 말고, 좀 더 유연하면서 절차적인 방법을 사용할 수 있음. CCD는 각 관절을 하나 하나, 밖에서 안 순으로 처리함. 각 관절마다 end effector를 목표로 움직이게 하는 최선의 각도를 구해주는 것임.
+
+![CCDFigure](/Images\GameEngineering\CCDFigure.png)
+
+위의 그림에서처럼 총 21 프레임 동안 처리할 때, 0, 5, 10, 15, 20 번째 프레임의 모습임.
+
+CCD의 핵심 알고리듬:
+
+1. 루프 카운터를 0으로
+2. 가장 마지막 관절에서 시작
+3. 목표를 바라보도록 회전
+4. 그 다음 관절로 간 다음 2번으로
+5. 첫번째 관절에 도달한 경우, 목표에 도달을 했거나 루프를 사전에 정한 한계만큼 돌렸다면 알고리듬을 종료. 아니라면 루프 카운터 증가시키고 다시 2번으로
+
+여기서 3번에서 목표를 바라보도록 회전한다는 것은 다음 사진으로 이해할 수 있음:
+
+![CCDAngleFigure](/Images\GameEngineering\CCDAngleFigure.png)
+
+### Triangulation IK
+
+Triangulation IK 방법은 코사인 법칙을 사용해서 관절의 root부터 end effector까지 순차적으로 각도를 계산하는 방법임. 관절에 제약이 없고, 목표가 범위 내에만 있다면 해법을 반드시 구할 수 있음. 또한 CCD과 달리 여러번 연산하는 것이 아닌, 한 번만 훑고 바로 답이 나오기에 계산 비용이 적음.
+
+![TriangulationIKFigure](/Images\GameEngineering\TriangulationIKFigure.png)
+
+하지만 이 방법의 경우 end effector에 가까워질 수록 각도의 변화가 적어 거의 일직선을 유지함. 이 알고리듬 자체가 root에서 시작하기 때문에 root에 가까운 관절들이 제일 많이 바뀔 수 밖에 없음. 게다가 end effector가 한 개 밖에 없는 경우에만 쓸 수 있음. 또한 관절에 제약이 있거나, 목표가 범위 밖에 있으면 사용할 수 없음. 이건 각 관절이 서로 독립적으로 처리되기 때문임.
+
+### 순차적 IK
+
+순차적 IK(SIK)란 해석-반복적 IK 방법으로 실시간으로 인간을 재구성하는 방법임.
+
+입력값: end effector(손목, 발목, 머리, 골반 등 인간의 포즈를 나타낼 수 있는 뼈들) 위치
+
+알고리듬:
+
+1. root 관절은 이미 알려진 end effector의 위치로부터 추정함
+2. 위에서 추정한 orientation과 root과 head markers의 위치를 합친 혼합 IK 방법으로 척추 설정함
+3. 쇄골의 orientation은 쇄골의 end effector의 위치와 척추의 위치로 결정
+4. 최종적으로 사지를 end effector 위치에 따라 설정
+
+### FABRIK
+
+**F**orward **A**nd **B**ackward **R**eaching **IK**. 즉 직전에 계산한 관절의 위치를 바탕으로 다음 업데이트 땐 전후방으로 반복하며 관절의 위치를 구함.
+
+기본적으로 업데이트할 때 한 번에 한 관절의 각도를 수정하여 전체 system의 오류를 최소하하는 방법임.
+
+우선 마지막 관절에서 시작해서 앞으로 진행하고, 진행하는 동안 관절들을 수정해주는 것임. 그렇게 첫번째 관절에 도달하면 같은 방법으로 방향만 반대로 진행함. 이러면 한 사이클이 끝난 것임.
+
+다른 방법은 관절의 각도를 정하는데에 반해, FABRIK은 선 위의 점을 찾는 방식으로 각 관절의 위치를 구하기 수렴하는데 필요한 사이클이 적고, 계산 비용도 적고, 시각적으로도 현실적인 결과가 나옴.
+
+* 각 관절의 위치를 p<sub>i</sub>로 표기하고, p<sub>1</sub>이, root, p<sub>n</sub>을 end effector로 둠.
+* 목표는 **t**라 부름.
+
+알고리듬:
+
+1. 각 관절 사이의 길이 d<sub>i</sub>를 구함: d<sub>i</sub> = \|p<sub>i + 1</sub> - p<sub>i</sub>\|
+2. 목표가 범위 내에 있는지를 판단함. root에서 목표까지의 거리와 모든 d의 합을 비교해주면 됨
+3. 만약 범위 내에 있다면 한 사이클을 돌림. 이때 한 사이클은 두 단계로 나뉨
+4. 첫번째 단계:
+    1. end effector부터 root 순으로 각 관절의 위치를 추정함
+    2. end effector의 새 위치를 목표 위치로 둠, p'<sub>n</sub> = **t**.
+    3. p<sub>n</sub>과 p'<sub>n</sub>를 지나는 선 l<sub>n - 1</sub>을 구함.
+    4. (n - 1)번째 관절의 새 위치는 p'<sub>n</sub>으로부터 선 l<sub>n - 1</sub>을 따라 d<sub>n - 1</sub>만큼 떨어진 곳 p'<sub>n - 1</sub>임.
+    5. 이걸 다음 관절에 대해서 계속해서 반복함.
+    6. root, 즉 p'<sub>1</sub>까지 다 새롭게 위치를 정했을 때까지 반복함.
+5. 두번째 단계:
+    1. 방법은 같지만, 이번엔 root에서 end effector 방향으로 진행
+    2. 첫번째 관절, 즉 root의 새 위치 p''<sub>1</sub>는 root의 초기 위치 p<sub>1</sub>으로 둠.
+    3. 점 p''<sub>1</sub>과 p'<sub>2</sub>을 잇는 선 l<sub>1</sub>을 활용하여 p''<sub>1</sub>에서 선 l<sub>1</sub>을 따라 d<sub>1</sub>만큼 떨어진 곳에 있는 p''<sub>2</sub>을 두번째 관절의 새 위치로 선정.
+    4. end effector까지 이 방법을 적용함
+6. 한 사이클이 끝나면 end effector이 거의 목표 근처에 근접해있을 것임.
+7. end effector가 목표와 같아지거나 적당히 근접할 때까지 이 방법을 반복함.
+
+![FABRIKFigure0](/Images\GameEngineering\FABRIKFigure0.png)
+
+![FABRIKFigure1](/Images\GameEngineering\FABRIKFigure1.png)
+
+![FABRIKFigure2](/Images\GameEngineering\FABRIKFigure2.png)
+
+#### end effector가 여러 개 인 경우
+
+end effector가 여러 개가 있는 경우 손쉽게 확장할 수 있음. 이를 위해선 root 뿐만 아니라 subbase 관절, chain의 개수와 구조 등이 필요함.
+
+> subbase 관절이란 두 개 이상의 chain을 연결하는 관절임. 대표적으로 머리, 척추, 쇄골을 잇는 subbase 관절 등이 있음.
+
+1. 첫번째 단계:
+    1. 기존과 같지만, 이번엔 각 end effector에서부터 부모 subbase로 이동함
+    2. 이러면 같은 subbase에 연결된 서로 다른 end effector에 따라 같은 subbase가 서로 다른 위치를 갖게 될 것임.
+        * 즉, subbase sb가 두 end effector s1, s2가 있을 때, s1를 따라 FABRIK을 적용하면 sb의 위치가 p1일 것이고, s2를 따라 적용하면 p2일 것임. 이때 이 p1과 p2가 서로 다른 위치라는 것.
+    3. 이때 이러한 서로 다른 위치들의 중심점을 subbase의 새 위치로 정함
+    4. 다시 이 subbase부터 그 다음 root(혹은 subbase)로 또다시 FABRIK을 진행함
+2. 두번째 단계:
+    1. 이번엔 root에서 다음 subbase로 진행
+    2. end effector(혹은 subbase)까지 갈 때까지 각 chain마다 독립적으로 FABRIK을 수행.
+    3. end effector가 목표에 닿았거나 직전 사이클과 현재 사이클이 그렇게 크게 다르지 않을 경우 종료
+
+대부분의 인간 모델은 생체역학적 제약이 있는 관절들로 이루어짐. 이 제약들로 인해 인간과 같은 움직임을 보이게 되는 것. 
+
+FABRIK은 반복적인 방법이다보니 각 사이클마다 결과로 나온 orientation을 바탕으로 유효한 범위에 있도록 강제하여 관절에 제약을 줄 수 있음. 여기서 핵심 아이디어는 목표를 유효한 범위로 끌고 와서 관절 제약이 언제나 만족하도록 해주는 것임. 다른 관절 제약 방법과는 달리 FABRIK은 3D 문제를 2D 문제로 단순화하기에 그 복잡도나 처리 시간이 줄어 들음.
+
+만약 ball & socket 관절(구상관절)이 있고, 이것이 로터 R과 회전 제약 θ<sub>1</sub>, &hellip;, θ<sub>4</sub>으로 orientational 제약을 준다고 가정. 그러면 이 각도로 관절의 범위를 일종의 콘 유사한 모양으로 만들 수 있게 됨:
+
+![FABRIKJointRestriction](/Images\GameEngineering\FABRIKJointRestriction.png)
+
+세 가지 범위가 있음:
+
+1. 모든 θ가 같다면, 원형 콘이 생김.
+2. 만약 θ가 둘 다 90도보다 작지만 서로 같지 않다면 타원형의 콘이 생김.
+3. 만약 θ가 둘 중 하나가 90도보다 크고, 나머지 하나는 90도보다 작다면 포물선형의 콘이 생김.
+
+대부분의 경우엔 2번 케이스임.
+
+![FABRIKEllipsoidalShape](/Images\GameEngineering\FABRIKEllipsoidalShape.png)
+
+이때 타원은 위의 그림에서처럼 거리 q<sub>j</sub>에 의해 정의됨.
+
+관절의 orientation은 다음과 같이 정해짐:
+
+1. 우선 첫번째 단계에 있다고 가정. 즉, p'<sub>i</sub>의 새 위치를 구하여 이것으로 (i - 1)번째 관절의 새 위치 p'<sub>i - 1</sub>를 구하고 있는 중임.
+2. 즉, 관절 p'<sub>i</sub>와 p<sub>i - 1</sub>의 orientation을 구할 때 회전을 의미하는 rotor를 찾음. 이때 rotor가 제약보다 더 큰 회전을 한다면, p<sub>i - 1</sub>이 제약 내에 있도록 규제해줌.
+
+![FABRIKEllipsoidalShapeFigure0](/Images\GameEngineering\FABRIKEllipsoidalShapeFigure0.png)
+
+## 7. 게임과 폰트
+
+### 폰트와 타입페이스
+
+Typeface ⊃ Font
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                Font
+            </th>
+            <th>
+                Typeface
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <ul>
+                    <li>
+                        특정 스타일과 크기를 갖는 어떤 문자 집합.
+                    </li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>
+                        같은 디자인을 따르는 문자 / 글자 / 숫자 등의 집합
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<ul>
+    <li>
+        Typeface
+        <ul>
+            <li style="font-family: Helvetica">
+                Helvetica
+            </li>
+        </ul>
+    </li>
+    <li>
+        Font
+        <ul>
+            <li style="font-family: Helvetica">
+                Helvetica Regular
+            </li>
+            <li style="font-family: Helvetica">
+                <i>Helvetica Oblique</i>
+            </li>
+            <li style="font-family: Helvetica">
+                <b>Helvetica Bold</b>
+            </li>
+            <li style="font-family: Helvetica">
+                <b><i>Helvetica Bold Oblique</i></b>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+### Typeface
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Typography_Line_Terms.svg#/media/File:Typography_Line_Terms.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Typography_Line_Terms.svg/1200px-Typography_Line_Terms.svg.png" alt="Typography Line Terms.svg"></a><br>By <a href="//commons.wikimedia.org/w/index.php?title=User:Max_Naylor&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="User:Max Naylor (page does not exist)">Max Naylor</a> - <span class="int-own-work" lang="en">Own work</span>, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=2138205">Link</a></p>
+
+#### Baseline
+
+인도-유럽어족의 경우 위의 그림에서처럼 어떤 기반 위에 글자를 쓰게 됨. 이때 영어의 'p'처럼 baseline 밑으로 뚫고 가는 부분을 descender이라 부름. 'p'의 body는 baseline 위에 딱 있음.
+
+대부분의 경우:
+* 대문자는 baseline 위에 앉아 있음. J나 Q 정도가 예외사항.
+* Lining figures(아랍 숫자 등)는 baseline 위에 앉아 있음.
+* 3 4 5 7 9, g j p q y 정도는 descender가 있을 수도 있음.
+* 0 3 6 8 c C G J o O Q 정도는 baseline보다 살짝 아래까지 내려가서(overshoot) baseline 위에 앉아 있다는 착시 현상을 일으키고, 위로는 x-height이나 대문자 크기보다 살짝 위로 올라가서 H x X 1 5 7과 같은 글자와 같은 길이라는 착시 현상을 일으킴.
+
+#### Body Height, Capital Height, X-Height
+
+Body Height이란 가장 높은 곳부터 가장 낮은 곳 사이의 거리를 의미.
+
+Capital Height이란 플랫한 대문자(M I 등)의 높이를 의미함. S나 A와 같이 둥글거나 뾰족한 애들은 이 높이를 overshoot하여 착시 현상을 줌. 모든 typeface는 고유한 capital height을 가짐.
+
+소문자의 높이가 x-height임. x-height이 큰 typeface가 보통 더 가독성이 좋음.
+
+#### Ascender, Descender
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Typographic_ascenders.png#/media/File:Typographic_ascenders.png"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Typographic_ascenders.png" alt="Typographic ascenders.png"></a><br><a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=384976">Link</a></p>
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Descender.png#/media/File:Descender.png"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Descender.png" alt="Descender.png"></a><br>Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=501526">Link</a></p>
+
+Ascender과 Descender은 글자의 가독성을 높여줌. 그래서 표지판처럼 가독성이 무조건 좋아야하는 경우 전부 대문자로 쓰지 않는 것임.
+
+가끔 숫자 3 4 5 7 9에도 descender를 사용하는 경우가 있는데, 이런 걸 old-style numeral이라 부름.
+
+#### Font
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Helvetica_Neue_typeface_weights.svg#/media/File:Helvetica_Neue_typeface_weights.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Helvetica_Neue_typeface_weights.svg/1200px-Helvetica_Neue_typeface_weights.svg.png" alt="Helvetica Neue typeface weights.svg"></a><br>By Vectorised by <a href="//commons.wikimedia.org/wiki/User:Froztbyte" title="User:Froztbyte">Froztbyte</a> - <span class="int-own-work" lang="en">Own work</span>, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=11343550">Link</a></p>
+
+Weight이란 보통 폰트의 굵기를 의미함.
+
+일반적으로 다음과 같이 나눔:
+
+1. Light
+2. Regular
+3. Medium
+4. Bold
+
+#### Serif
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Serif_and_sans-serif_01.svg#/media/File:Serif_and_sans-serif_01.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Serif_and_sans-serif_01.svg/1200px-Serif_and_sans-serif_01.svg.png" alt="Serif and sans-serif 01.svg"></a><br>By Recreated by <a href="//commons.wikimedia.org/wiki/User:Stannered" title="User:Stannered">User:Stannered</a>, original by <a href="https://en.wikipedia.org/wiki/User:Chmod007" class="extiw" title="en:User:Chmod007">en:User:Chmod007</a> - <a href="https://en.wikipedia.org/wiki/Image:Serif_and_sans-serif_01.png" class="extiw" title="en:Image:Serif and sans-serif 01.png">en:Image:Serif and sans-serif 01.png</a>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=2058303">Link</a></p>
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Serif_and_sans-serif_03.svg#/media/File:Serif_and_sans-serif_03.svg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Serif_and_sans-serif_03.svg/1200px-Serif_and_sans-serif_03.svg.png" alt="Serif and sans-serif 03.svg"></a><br>By Recreated by <a href="//commons.wikimedia.org/wiki/User:Stannered" title="User:Stannered">User:Stannered</a>, original by <a href="https://en.wikipedia.org/wiki/User:Chmod007" class="extiw" title="en:User:Chmod007">en:User:Chmod007</a> - <a href="https://en.wikipedia.org/wiki/Image:Serif_and_sans-serif_03.png" class="extiw" title="en:Image:Serif and sans-serif 03.png">en:Image:Serif and sans-serif 03.png</a>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=2058310">Link</a></p>
+
+Serif는 끝에 약간 뭔가 뭔가가 있음. 근데 이게 있는게 보통 더 가독성이 좋다고 함. 좀 클래식하고 포멀한 느낌.
+
+Sans-Serif는 끝에 뭐가 없는 것임. sans가 without을 의미하는 프랑스어라고 함. 좀 더 미니멀, 캐주얼한 느낌.
+
+### 래스터화
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Rasterization-simple.png#/media/File:Rasterization-simple.png"><img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Rasterization-simple.png" alt="Rasterization-simple.png"></a><br>By The original uploader was &lt;a href="https://en.wikipedia.org/wiki/User:Aarchiba" class="extiw" title="wikipedia:User:Aarchiba"&gt;Aarchiba&lt;/a&gt; at &lt;a href="https://en.wikipedia.org/wiki/" class="extiw" title="wikipedia:"&gt;English Wikipedia&lt;/a&gt;. - Transferred from &lt;span class="plainlinks"&gt;&lt;a class="external text" href="https://en.wikipedia.org"&gt;en.wikipedia&lt;/a&gt;&lt;/span&gt; to Commons., Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=3730274">Link</a></p>
+
+위처럼 가장 간단한 형태의 래스터화를 bi-level 래스터화라 부름. 그냥 흑백 래스터화 렌더링...
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Font-hinting-example.png#/media/File:Font-hinting-example.png"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Font-hinting-example.png" alt="Font-hinting-example.png"></a><br>By No machine-readable author provided. &lt;a href="//commons.wikimedia.org/w/index.php?title=User:BenFrantzDale~commonswiki&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="User:BenFrantzDale~commonswiki (page does not exist)"&gt;BenFrantzDale~commonswiki&lt;/a&gt; assumed (based on copyright claims). - No machine-readable source provided. Own work assumed (based on copyright claims)., <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=823648">Link</a></p>
+
+가독성을 높이기 위해 일종의 *hint*를 통해 래스터화가 픽셀 잘 렌더링할 수 있도록 만들어 줌. 의도적으로 폰트의 너비와 높이, 글자 앞뒤의 공백의 크기 등을 수정해주는 것.
+
+위의 그림의 경우 위에가 hinting 없는 경우, 그 아래가 hinting 있는 경우. hinting을 쓴게 좀 더 확실하게 구분이 되는 것을 볼 수 있음.
+
+##### PostScript 폰트
+
+![PostScriptText](https://3.bp.blogspot.com/-_koLbMv1lQU/V_zrEcaXEnI/AAAAAAAAAGM/ll0cw3-pVaADLHpl-VvVfbfhsWnNVK8iwCK4B/s320/postscript_text.png)
+
+PostScript 폰트는 폰트의 외곽선에 대한 정보를 주어 베지어 커브로 폰트의 생김새를 결정하는 폰트임.
+
+##### 앤티앨리어싱
+
+폰트를 단순 흑백으로 래스터화하면 사실 좀 자연스럽지 않음. 그래서 앤티앨리어싱 방법을 적용하여 완전 검은색이거나 완전 하얀색인 픽셀이 아니라, 적당히 자연스럽게 gray scale로 폰트를 렌더링하는 방법임.
+
+hinting 없이 안티앨리어싱으로 하면:
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Rasterization-antialiasing-without-hinting-2.png#/media/File:Rasterization-antialiasing-without-hinting-2.png"><img src="https://upload.wikimedia.org/wikipedia/commons/0/09/Rasterization-antialiasing-without-hinting-2.png" alt="Rasterization-antialiasing-without-hinting-2.png"></a><br>By &lt;a href="//commons.wikimedia.org/wiki/File:Rasterization-antialiasing-without-hinting.png" title="File:Rasterization-antialiasing-without-hinting.png"&gt;Rasterization-antialiasing-without-hinting.png&lt;/a&gt;: The original uploader was &lt;a href="https://en.wikipedia.org/wiki/User:Aarchiba" class="extiw" title="wikipedia:User:Aarchiba"&gt;Aarchiba&lt;/a&gt; at &lt;a href="https://en.wikipedia.org/wiki/" class="extiw" title="wikipedia:"&gt;English Wikipedia&lt;/a&gt;.
+Later version(s) were uploaded by &lt;a href="https://en.wikipedia.org/wiki/User:Riumplus" class="extiw" title="en:User:Riumplus"&gt;Riumplus&lt;/a&gt; at &lt;a class="external text" href="https://en.wikipedia.org"&gt;en.wikipedia&lt;/a&gt;.
+derivative work: &lt;a href="//commons.wikimedia.org/w/index.php?title=User:Orbik&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="User:Orbik (page does not exist)"&gt;Orbik&lt;/a&gt; (&lt;a href="//commons.wikimedia.org/wiki/User_talk:Orbik" title="User talk:Orbik"&gt;&lt;span class="signature-talk"&gt;talk&lt;/span&gt;&lt;/a&gt;) - &lt;a href="//commons.wikimedia.org/wiki/File:Rasterization-antialiasing-without-hinting.png" title="File:Rasterization-antialiasing-without-hinting.png"&gt;Rasterization-antialiasing-without-hinting.png&lt;/a&gt;, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=12121649">Link</a></p>
+
+hinting 있이 하면:
+
+<p><a href="https://en.wikipedia.org/wiki/File:Rasterization-antialiasing.png#/media/File:Rasterization-antialiasing.png"><img src="https://upload.wikimedia.org/wikipedia/en/e/ec/Rasterization-antialiasing.png" alt="Rasterization-antialiasing.png"></a><br>Public Domain, <a href="https://en.wikipedia.org/w/index.php?curid=10199915">Link</a></p>
+
+##### Subpixel 폰트 렌더링
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Subpixel_rendering.png#/media/File:Subpixel_rendering.png"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Subpixel_rendering.png" alt="Subpixel rendering.png"></a><br>By &lt;a href="https://de.wikipedia.org/wiki/Benutzer:TMg" class="extiw" title="de:Benutzer:TMg"&gt;TMg&lt;/a&gt; - &lt;span class="int-own-work" lang="en"&gt;Own work&lt;/span&gt;. Created in Paint Shop Pro using average resampling. No screenshots used., Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=443132">Link</a></p>
+
+원래 래스터화는 pixel 별로하는 건데, 폰트는 워낙 작다보니까, 아예 각 pixel의 RGB 영역까지 포함해서 출력을 하자는 것임.
+
+위에서 봤던 sample 글자에 subpixel 기술을 적용하면:
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Rasterization-subpixel-RGB.png#/media/File:Rasterization-subpixel-RGB.png"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Rasterization-subpixel-RGB.png" alt="Rasterization-subpixel-RGB.png"></a><br>By The original uploader was &lt;a href="https://en.wikipedia.org/wiki/User:Aarchiba" class="extiw" title="wikipedia:User:Aarchiba"&gt;Aarchiba&lt;/a&gt; at &lt;a href="https://en.wikipedia.org/wiki/" class="extiw" title="wikipedia:"&gt;English Wikipedia&lt;/a&gt;. - Transferred from &lt;span class="plainlinks"&gt;&lt;a class="external text" href="https://en.wikipedia.org"&gt;en.wikipedia&lt;/a&gt;&lt;/span&gt; to Commons., Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=3732794">Link</a></p>
+
+위의 글자를 좀 더 분리해서 보면:
+
+<p><a href="https://commons.wikimedia.org/wiki/File:Subpixel-rendering-RGB.png#/media/File:Subpixel-rendering-RGB.png"><img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Subpixel-rendering-RGB.png" alt="Subpixel-rendering-RGB.png"></a><br>Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=67380">Link</a></p>
+
+LCD 등에는 어울리지만, CRT에는 어울리지 않는 기술임.
+
+subpixel 기술이 괜찮은 이유는, 상당히 작은 글자의 경우 앤티앨리어싱만 적용하면 오히려 글자가 블러 처리가 되어 잘 안 보일텐데, 이걸 subpixel로 렌더링하면 디테일을 전부 잡아낼 수 있기 때문임.
