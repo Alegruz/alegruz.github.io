@@ -36,3 +36,41 @@ Game Development Studies with Books
         * [지형에 일관된 식물상과 동물상 저작하기 소스 코드 분석](Notes/2022/04/Korean/AuthoringConsistentLandscapesWithFloraAndFaunaSourceCodeAnalysis.md)
     * 6월
         * [게임공학 공부 노트](Notes/2022/06/Korean/GameEngineeringStudiesNote.md)
+
+## Mentoring
+
+Themes:
+
+* C Programming
+* C++ Programming
+* Computer Graphics
+    * Introduction
+    * Direct3D 11
+    * Real-Time Path-Traced Global Illumination
+* Win32 API
+* Smoothed Particles Hydrodynamics
+    * CUDA Programming
+
+### Current Mentees
+
+* [mmindoong](https://github.com/mmindoong)
+    * Computer Animation
+* [Tuesberry](https://github.com/Tuesberry)
+    * Game Graphics. Animation. Real-Time Rendering. Simulation
+* [Sunha-i](https://github.com/Sunha-i)
+    * Game Graphics
+* [seoyeonjin](https://github.com/seoyeonjin)
+    * Game Graphics
+* [yuntaewoong](https://github.com/yuntaewoong)
+    * DirectX 12 Raytracing, Real-Time Ray Tracing
+* [GbLeem](https://github.com/GbLeem)
+    * Game Graphics. Game Engine
+* [MINHA-J](https://github.com/MINHA-J)
+    * Game Graphics
+* [WalkPark](https://github.com/WalkPark)
+    * Physics. Fluid Simulation (SPH)
+
+### Alumni
+
+* [mi-song](https://github.com/mi-song)
+    * Studied C Programming, Computer Graphics, Win32 API, Direct3D 11
