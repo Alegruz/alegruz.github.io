@@ -15,6 +15,8 @@ Game Development Studies with Books
     * March
         * [Graphics Conference Trend Analysis](Notes/2022/03/English/GraphicsConferenceTrendAnalysis.md)
         * [Global Illumination Study Resources](Notes/2022/03/English/GlobalIlluminationStudyResources.md)
+    * June
+        * [Rendering Pipeline Study Notes](Notes/2022/06/English/RenderingPipelineStudyNotes.md)
 
 ## Korean Contents
 * 2021
