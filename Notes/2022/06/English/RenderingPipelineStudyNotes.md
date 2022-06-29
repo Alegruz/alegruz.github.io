@@ -42,8 +42,18 @@
 
 ## Books
 
+* GPU Gems 1
+    * Graphics Pipeline Performance
+* GPU Pro 4
+    * Decoupled Deferred Shading on the GPU
+    * Tile Forward Shading
+    * Forward+: A Step Toward Film-Style Shading in Real-Time
 * GPU Zen
     * [Deferred+](https://www.eidosmontreal.com/news/deferred-next-gen-culling-and-rendering-for-dawn-engine/). Hawar Doghramachi, Eidos-Montreal. Jean-Normand Bucci, Eidos-Montreal.
+    * Optimizing the Graphics Pipeline with Compute
+* Ray Tracing Gems
+    * Hybrid Rendering for Real-Time Ray Tracing
+    * Deferred Hybrid Path Tracing
 
 ## Blog
 
