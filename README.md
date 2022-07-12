@@ -17,6 +17,7 @@ Game Development Studies with Books
         * [Global Illumination Study Resources](Notes/2022/03/English/GlobalIlluminationStudyResources.md)
     * June
         * [Rendering Pipeline Study Notes](Notes/2022/06/English/RenderingPipelineStudyNotes.md)
+        * [DirectX 12 Study Notes](Notes/2022/06/English/DirectX12StudyNotes.md)
 
 ## Korean Contents
 * 2021

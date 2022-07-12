@@ -939,6 +939,64 @@ Initialize renderer, load IBL textures, load models, set camera.
 
 Initializes RSs, common vertex input layouts, depth only PSOs, shadow PSOs, default PSOs, skybox PSOs, texture manager, descriptors for textures and samplers, lighting resources.
 
+Root signature contains:
+
+* Parameters
+    1. (Inline Descriptor) VS. Mesh Constant Buffer : `b0`
+       * `MeshConstants`
+          * World Matrix
+          * World IT (object normal to world normal)
+    2. (Inline Descriptor) PS. Material Constant Buffer : `b0`
+       * `MaterialConstants`
+           * Base color factor
+           * Emissive factor
+           * Normal texture scale
+           * Metallic roughness factor
+           * Flags  
+    1. (Descriptor Range) PS. Material SRVs (x10) : `t0`
+       1. `baseColorTexture`
+       2. `metallicRoughnessTexture`
+       3. `occlusionTexture`
+       4. `emissiveTexture`
+       5. `normalTexture`
+    2. (Descriptor Range) PS. Material Samplers (x10) : `s0`
+       1. `baseColorSampler`
+       2. `metallicRoughnessSampler`
+       3. `occlusionSampler`
+       4. `emissiveSampler`
+       5. `normalSampler`
+    3. (Descriptor Range) PS. Common SRVs (x10) : `t10`
+       1. `radianceIBLTexture`
+       2. `irradianceIBLTexture`
+       3. `texSSAO`
+       4. `texSunShadow`
+    4. (Inline Descriptor) Common Constant Buffer : `b1`
+       * `GlobalConstants`
+          *  View, Projection Matrix
+          *  Sun Shadow Matrix
+          *  Viewer Position
+          *  Sun Direction
+          *  Sun Intensity
+          *  IBL Range
+          *  IBL Bias
+    5. (Inline Descriptor) VS. Skinning Matrix : `t20`
+* Samplers
+    * PS. Default Sampler : `s10`
+    * PS. Sampler Shadow : `s11`
+    * PS. Cube Map Sampler : `s12`
+
+PSO:
+* Depth PSOs (Depth Buffer):
+    * Depth Only PSO
+    * Cutout Depth PSO
+    * Skin Depth Only PSO
+* Shadow PSOs (Shadow Buffer):
+    * Depth Only PSO
+    * Cutout Depth PSO
+    * Skin Depth Only PSO
+* Default PSO
+* Skybox PSO
+
 ##### 04.01.01.07.02 `ModelViewer::LoadIBLTextures()`
 
 * `wWinMain` in `GameCore.h`
@@ -948,3 +1006,177 @@ Initializes RSs, common vertex input layouts, depth only PSOs, shadow PSOs, defa
                 * `ModelViewer::LoadIBLTextures` in `ModelViewer.cpp`
 
 IBL: Image-Based Lighting
+
+---
+
+Lighting Root Signature
+
+* Parameters
+    1. (Inline Descriptor) : `b0`
+       * `CSConstants`
+           * Viewport Width, Height
+           * InvTileDim
+           * RcpZMagic
+           * TileCountX
+           * View, Projection Matrix
+    2. (Descriptor Range) SRVs (x2) : `t0`
+       1. Light Buffer
+       2. Depth Texture
+    3. (Descriptor Range) UAVs (x2) : `u0`
+       1. Light Grid
+       2. Light Grid Bit Mask
+
+ComputePSO:
+* Fill Light Grid
+
+---
+
+SSAO Root Signature
+
+* Parameters
+    1. (Constant) 4 `DWORD`s : `b0`
+       * `CB0`
+           * ZMagic / InvSourceDimension
+    2. (Inline Descriptor) Constant Buffer : `b1`
+       * `CB1` 
+           * InvThickness Table     /   Inv Low Resolution
+           * Sample Weight Table    /   Inv High Resolution
+           * InvSlice Dimension     /   Noise Filter Strength
+           * Reject Fadeoff         /   Step Size
+           * Rcp Accentuation       /   Blur Tolerance
+           * Upsample Tolerance
+    3. (Descriptor Range) UAVs (x5) : `u0`
+       1. LinearZ   /   DS4x        /   Occlusion   /   AoResult
+       2. DS2x      /   DS8x
+       3. DS2xAtlas /   DS8xAtlas
+       4. DS4x      /   DS16x
+       5. DS4xAtlas /   DS16xAtlas
+    4. (Descriptor Range) SRVs (x5) : `t0`
+       1. Depth /   LoResDB
+       2. HiResDB
+       3. LoResA01
+    5. (Inline Descriptor) SRV : `t5`
+* Samplers
+    1. Linear Clamp : `s0`
+    2. Linear Border : `s1`
+
+---
+
+Model Root Signature
+
+* Parameters
+    1. (Inline Descriptor) VS. Mesh Constant Buffer : `b0`
+       * `VSConstants`
+          * Model To Projection
+          * Model To Shadow
+          * Viewer Position
+    2. (Inline Descriptor) PS. Material Constant Buffer : `b0`
+       * `PSConstants`
+           * Sun Direction
+           * Sun Color
+           * Ambient Color
+           * Shadow Texel Size
+           * Inv Tile Dim
+           * Tile Count
+           * First Light Index
+           * Frame Index Mod2 
+    3. (Descriptor Range) PS. Material SRVs (x10) : `t0`
+       1. `texDiffuse`
+       2. `texSpecular`
+       3. `texEmissive`
+       4. `texNormal`
+       5. `texLightmap`
+       6. `texReflection`
+    4. (Descriptor Range) PS. Material Samplers (x10) : `s0`
+       1. `baseColorSampler`
+       2. `metallicRoughnessSampler`
+       3. `occlusionSampler`
+       4. `emissiveSampler`
+       5. `normalSampler`
+    5. (Descriptor Range) PS. Common SRVs (x10) : `t10`
+       1. `radianceIBLTexture`
+       2. `irradianceIBLTexture`
+       3. `texSSAO`
+       4. `texSunShadow` / `texShadow`
+       5. `lightBuffer`
+       6. `lightShadowArrayTex`
+       7. `lightGrid`
+       8. `lightGridBitMask`
+       9. ...
+       10. ...
+    6. (Inline Descriptor) Common Constant Buffer : `b1`
+       * `StartVertex`
+          * material index
+    7. (Inline Descriptor) VS. Skinning Matrix : `t20`
+* Samplers
+    * PS. Default Sampler : `s10`
+    * PS. Sampler Shadow : `s11`
+    * PS. Cube Map Sampler : `s12`
+
+
+
+### 04.01.02 `GameCore::UpdateApplication`
+
+MiniEngine uses the class `CommandContext` to wrap the functionalities of `ID3D12GraphicsCommandList`. The resulting class resembles Direct3D 11's immediate context.
+
+#### 04.01.02.01 `ModelViewer::RenderScene`
+
+According the Microsoft's render flow:
+
+* 01 Populate the command list
+    * 01.01 Reset the command list allocator
+        * Re-use the memory that is associated with the command allocator
+        * [`ID3D12CommandAllocator::Reset`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12commandallocator-reset)
+    * 01.02 Reset the command list
+        * [`ID3D12GraphicsCommandList::Reset`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-reset)
+    * 01.03 Set the graphics root signature
+        * Sets the graphics root signature to use for the current command list
+        * [`ID3D12GraphicsCommandList::SetGraphicsRootSignature`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-setgraphicsrootsignature)
+    * 01.04 Set the viewport and scissor rectangles
+        * [`ID3D12GraphicsCommandList::RSSetViewports`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-rssetviewports)
+        * [`ID3D12GraphicsCommandList::RSSetScissorRects`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-rssetscissorrects)
+    * 01.05 Set a resource barrier, indicating the back buffer is to be used as a render target
+        * Resource barriers are used to manage resource transitions
+        * [`ID3D12GraphicsCommandList::ResourceBarrier`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-resourcebarrier)
+        * [`ID3D12DescriptorHeap::GetCPUDescriptorHandleForHeapStart`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12descriptorheap-getcpudescriptorhandleforheapstart)
+        * [`D3D12GraphicsCommandList::OMSetRenderTargets`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-omsetrendertargets)
+    * 01.06 Record commands into the command list
+        * [`ID3D12GraphicsCommandList::ClearRenderTargetView`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-clearrendertargetview)
+        * [`ID3D12GraphicsCommandList::IASetPrimitiveTopology`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-iasetprimitivetopology)
+        * [`ID3D12GraphicsCommandList::IASetVertexBuffers`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-iasetvertexbuffers)
+        * [`ID3D12GraphicsCommandList::DrawInstanced`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-drawinstanced)
+    * 01.07 Indicate the back buffer will be used to present after the command list has executed
+        * Another call to set a resource barrier
+        * [`ID3D12GraphicsCommandList::ResourceBarrier`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-resourcebarrier)
+    * 01.08 Close the command list to further recording
+        * [`ID3D12GraphicsCommandList::Close`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-close)
+* 02 Execute the command list
+    * [`ID3D12CommandQueue::ExecuteCommandLists`](https://docs.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12commandqueue-executecommandlists)
+* 03 Present the frame
+    * [`IDXGISwapChain1::Present1`](https://docs.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgiswapchain1-present1)
+* 04 Wait for the GPU to finish
+    * Keep updating and checking the fence
+
+1. Shadow PSO, Cutout Shadow PSO -> Shadow Buffer `m_LightShadowTempBuffer`
+   * `m_LightShadowTempBuffer` is copied to `m_LightShadowArray`
+   * `m_LightShadowArray`'s state is now PS resource
+2. Z Pre Pass
+   1.  Opaque
+       * Depth PSO -> Depth Buffer `g_SceneDepthBuffer`
+   2.  Cutout
+       * Cutout Depth PSO -> Depth Buffer `g_SceneDepthBuffer`
+3. SSAO
+   1. SSAO Generation
+    `g_SceneDepthBuffer`, `g_SSAOFullScreen`
+4. Diffuse Pass
+    * Fill Light Grid
+        * SRVs: `m_LightBuffer`, `LinearDepth`
+        * UAVs: `m_LightGrid`, `m_LightGridBitMask`
+    * Main Render
+        * `g_SceneColorBuffer`, `g_SceneNormalBuffer` to Render State
+        * Clear Color Buffer
+5. Shadow Map
+6. Diffuse Pass
+    * `g_SSAOFullScreen` to PS resource state
+    * 
+7. 
