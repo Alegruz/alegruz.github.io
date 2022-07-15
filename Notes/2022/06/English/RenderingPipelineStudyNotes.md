@@ -9,6 +9,8 @@
     * <a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">Starcraft II: Effects and Techniques</a>. Dominic Filion, Blizzard. Rob McNaughton, Blizzard Entertainment.
 * 2015
     * [GPU-Driven Rendering Pipelines](https://advances.realtimerendering.com/s2015/aaltonenhaar_siggraph2015_combined_final_footer_220dpi.pdf). Ulrich Haar, Lead Programmer 3D, Ubisoft Montreal. Sebastian Aaltonen, Senior Lead Programmer, RedLynx a Ubisoft Studio
+* 2016
+  * <a id="ElGarawany16" href="https://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fadvances.realtimerendering.com%2Fs2016%2Fs16_ramy_final.pptx&wdOrigin=BROWSELINK">Deferred Lighting in Uncharted 4</a>. Ramy El Garawany, Naughty Dog.
 * 2020
     * [Software-Based Variable Rate Shading in Call of Duty: Modern Warfare](https://research.activision.com/publications/2020-09/software-based-variable-rate-shading-in-call-of-duty--modern-war). Michal Drobot, Infinity Ward / Activision.
 * 2021
@@ -16,6 +18,16 @@
     * [Rendering Engine Architecture at Activision](http://enginearchitecture.realtimerendering.com/2021_course/). Michael Vance, Activision.
     * [Roblox (Rendering) Engine Architecture](http://enginearchitecture.realtimerendering.com/2021_course/). Angelo Pesce, Roblox.
     * [Unity Rendering Architecture](http://enginearchitecture.realtimerendering.com/2021_course/). Natalya Tatarchuk, Unity.
+
+## SIGGRAPH
+
+* 2015
+    * <a id="Olsson15" href="https://efficientshading.com/2015/01/01/real-time-many-light-management-and-shadows-with-clustered-shading/">Introduction to Real-Time Shading with Many Lights</a>. Ola Olsson, Chalmers University of Technology.
+
+## SIGGRAPH Asia
+
+* 2014
+    * <a id="Olsson14" href="https://www.zora.uzh.ch/id/eprint/107598/1/a11-olsson.pdf">Introduction to Real-Time Shading with Many Lights</a>. Ola Olsson, Chalmers University of Technology.
 
 ## JCGT
 
@@ -40,6 +52,7 @@
     * <a id="Thibieroz11" href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2FDeferred%2520Shading%2520Optimizations.pps&wdOrigin=BROWSELINK">Deferred Shading Optimizations</a>. Nicolas Thibieroz.
 * 2016
     * [Optimizing the Graphics Pipeline with Compute](https://www.gdcvault.com/play/1023109/Optimizing-the-Graphics-Pipeline-With). Graham Wihlidal, Frostbite Engine / Electronic Arts.
+    * <a id="ElMansouri16" href="https://youtu.be/RAy8UoO2blc">Rendering Rainbox Six Siege</a>. Jalal El Mansouri, Ubisoft Montreal.
 * 2020
     * [Lima Oscar Delta!: Scaling Content in 'Call of Duty: Modern Warfare'](https://www.gdcvault.com/play/1026892/Lima-Oscar-Delta-Scaling-Content). Rulon Raymond, Infinity Ward / Activision.
 
@@ -63,7 +76,7 @@
 * GPU Pro 4
     * Decoupled Deferred Shading on the GPU
     * Tile Forward Shading
-    * Forward+: A Step Toward Film-Style Shading in Real-Time
+    * <a id="HaradaMcKeeYang13" href="https://books.google.co.kr/books?id=TUuhiPLNmbAC&printsec=frontcover&redir_esc=y#v=onepage&q&f=false"> Forward+: A Step Toward Film-Style Shading in Real-Time</a>. Takahiro Harada, AMD. Jay McKee, AMD. Jason C. Yang, AMD.
 * GPU Zen
     * [Deferred+](https://www.eidosmontreal.com/news/deferred-next-gen-culling-and-rendering-for-dawn-engine/). Hawar Doghramachi, Eidos-Montreal. Jean-Normand Bucci, Eidos-Montreal.
     * Optimizing the Graphics Pipeline with Compute
@@ -77,16 +90,59 @@
     * <a id="Calver03" href="https://www.beyond3d.com/content/articles/19/1">Photo-Realistic Deferred Lighting</a>. Dean Calver.
 * 2016
     * [Triangle Visibility Buffer](http://diaryofagraphicsprogrammer.blogspot.com/2018/03/triangle-visibility-buffer.html). Wolfgang Engel.
+* 2018
+    * <a id="Ortiz18" href="http://www.aortiz.me/2018/12/21/CG.html">A Primer on Efficient Rendering Algorithms & Clustered Shading</a>. Ángel Ortiz, Rockstart North.
+    * <a id="Hammer18" href="https://de.slideshare.net/philiphammer/dissecting-the-rendering-of-the-surge/">Dissecting the Rendedring of The Surge</a>. Philip Hammer, id Software.
+* 2019
+    * <a id="Schreiner19" href="https://web.archive.org/web/20190805013649/https://aschrein.github.io/2019/08/01/re2_breakdown.html">Resident Evil 2 Frame Breakdown</a>. Anton Schreiner.
+    * <a id="Charitos19" href="http://anki3d.org/anatomy-of-a-frame-in-anki/">Anatomy of a frame in AnKi</a>. Panagiotis Christopoulos Charitos, ARM.
+* 2020
+    * <a id="Patry20" href="https://blog.selfshadow.com/publications/s2020-shading-course/patry/slides/index.html">Samurai Shading in Ghost of Tsushima</a>. Jasmin Patry, Sucker Punch Productions.
+    * <a id="Maister20" href="https://themaister.net/blog/2020/01/10/clustered-shading-evolution-in-granite/">Clustered shading evolution in Granite</a>. Maister.
+    * <a id="Moradin20" href="http://morad.in/2020/04/03/unmasking-arkham-knight/">Unmasking the Arkham Knight</a>. m0radin.
+* 2021
+    * <a id="CodeCorsair0321" href="https://www.elopezr.com/the-rendering-of-jurassic-world-evolution/">The Rendering of Jurassic World: Evolution</a>. Code Corsair.
+    * <a id="Ong21" href="https://www.jeremyong.com/cpp/2021/05/20/graphics-pipelines-for-young-bloods/">Graphics Pipelines for Young Bloods</a>. Jeremy Ong, Amazon Web Services.
+    * <a id="CodeCorsair0821" href="https://www.elopezr.com/the-rendering-of-mafia-definitive-edition/">The Rendering of Mafia: Definitive Edition</a>. Code Corsair.
 
 # Study Notes
 
 ## Forward Rendering
 
+Simple pseudo-code:<sup>[Ortiz18](#Ortiz18)</sup>
+
+```
+// Shaders
+Shader simpleShader
+
+// Buffers:
+Buffer display
+
+for mesh in scene
+    for light in scene
+        display += simpleShader(mesh, light)
+```
+
+* Advantages<sup>[Olsson14](#Olsson14)</sup>
+    * Single pass
+    * Low storage overhead
+        * Single frame buffer
+    * Simple if only few lights (e.g., the sun)
+    * MSAA works
+    * Varying shading models is easy
+    * Transparency works
 * Issues:
     * Computing which lights affect each body consumes CPU time, worst case O(n &times; m) operation<sup>[Koonce07](#Koonce07)</sup>
-    * Shader often require more than one render pass to perform lighting, worst cast O(n) render passes for n lights<sup>[Koonce07](#Koonce07)</sup>
+    * Shader often require more than one render pass to perform lighting, worst cast O(n) render passes for n lights<sup>[Koonce07](#Koonce07)</sup><sup>[Ortiz18](#Ortiz18)</sup>
     * Adding new lighting models or light types requires changing all effect source files<sup>[Koonce07](#Koonce07)</sup>
     * Shaders quickly encounter the instruction count limit of Shader Model 2.0<sup>[Koonce07](#Koonce07)</sup>
+    * Overdrawing<sup>[Olsson14](#Olsson14)</sup><sup>[Ortiz18](#Ortiz18)</sup>
+    * Multi Pass<sup>[Olsson14](#Olsson14)</sup>
+    * Light management<sup>[Olsson14](#Olsson14)</sup>
+        * Expensive for many lights
+    * Batching coupled with lighting<sup>[Olsson14](#Olsson14)</sup>
+    * Shader management<sup>[Olsson14](#Olsson14)</sup>
+        * Permutations of #lights/type
 
 ### Single Pass<sup>[Valient07](#Valient07)</sup>
 
@@ -112,6 +168,17 @@
     * Lots of repeated work
         * Full vertex shaders, texture filtering
 
+### Examples
+
+#### Example 1: Jurassic World Evolution<sup>[CodeCorsair0321](#CodeCorsair0321)</sup>
+
+* Tiled Forward Lighting
+  * 8 x 8 pixel tiles
+* Depth Prepass
+* Thin GBuffer
+  * Normal + roughness
+  * Motion Vectors
+
 ## Deferred Shading
 
 1. For each object<sup>[Valient07](#Valient07)</sup>
@@ -120,19 +187,83 @@
    1. Use G-Buffer to compute lighting
    2. Add result to frame buffer
 
+Simple Z pre-pass pseudo-code:<sup>[Ortiz18](#Ortiz18)</sup>
+
+```
+// Buffers:
+Buffer display
+Buffer depthBuffer
+
+// Shaders:
+Shader simpleShader
+Shader writeDepth
+
+// Visibility
+for mesh in scene
+    if mesh.depth < depthBuffer.depth
+        depthBuffer = writeDepth(mesh)
+
+// Shading and lighting
+for mesh in scene
+    if mesh.depth == depthBuffer.depth
+        for light in scene
+            display += simpleShader(mesh, light)
+```
+
+Simple multi-pass deferred rendering pseudo-code:<sup>[Ortiz18](#Ortiz18)</sup>
+
+```
+// Buffers:
+Buffer display
+Buffer GBuffer
+
+// Shaders:
+Shader simpleShader
+Shader writeShadingAttributes
+
+// Visibility & materials
+for mesh in scene
+    if mesh.depth < GBuffer.depth
+        GBuffer = writeShadingAttributes(mesh)
+
+// Shading & lighting - multi-pass
+for light in scene
+    display += simpleShader(GBuffer, light)
+```
+
+Simple single-pass deferred rendering pseudo-code:<sup>[Ortiz18](#Ortiz18)</sup>
+
+```
+// Buffers:
+Buffer display
+Buffer GBuffer
+
+// Shaders:
+Shader manyLightShader
+Shader writeShadingAttributes
+
+// Visibility & materials
+for mesh in scene
+    if mesh.depth < GBuffer.depth
+        GBuffer = writeShadingAttributes(mesh)
+
+// Shading & lighting - multi-pass
+display = manyLightShader(GBuffer, scene.lights)
+```
+
 * Advantages
-    1. Uses single geometry pass<sup>[Thibieroz03](#Thibieroz03)</sup>
+    1. Uses single geometry pass<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Olsson14](#Olsson14)</sup>
     2. Performs all shading calculations per-pixel<sup>[Thibieroz03](#Thibieroz03)</sup>
     3. Reduces pixel overdraw<sup>[Thibieroz03](#Thibieroz03)</sup>
     4. Lights major cost is based on the screen area covered (shading / lighting only applied to visible fragments)<sup>[Calver03](#Calver03)</sup><sup>[Shishkovtsov05](#Shishkovtsov05)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
     5. Lights can be occluded like other objects, this allows fast hardware Z-Reject<sup>[Calver03](#Calver03)</sup>
-    6. Shadow mapping is fairly cheap<sup>[Calver03](#Calver03)</sup>
+    6. Shadow mapping is fairly cheap<sup>[Calver03](#Calver03)</sup><sup>[Olsson14](#Olsson14)</sup>
     7. Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[Valient07](#Valient07)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup>
     8. Scene geometry decoupled from lighting<sup>[Koonce07](#Koonce07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
     9. Reduction in render states<sup>[Koonce07](#Koonce07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
     10. G-Buffer already produces data required for post-processing<sup>[Thibieroz11](#Thibieroz11)</sup>
     11. Excellent batching<sup>[Hargreaves04](#Hargreaves04)</sup>
-    12. Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>
+    12. Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Olsson14](#Olsson14)</sup>
     13. Shade each visible pixel exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>
     14. Easy to add new types of lighting shader, simple shaders<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Valient07](#Valient07)</sup><sup>[Koonce07](#Koonce07)</sup>
     15. Gives artistic freedom<sup>[Valient07](#Valient07)</sup>
@@ -144,15 +275,20 @@
     17. Simplified scene management<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
     18. Ability to cut down on large numbers of batches<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
     19. Reduced CPU usage<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
+    20. Enables many lights<sup>[Olsson14](#Olsson14)</sup>
+    21. Trivial light management<sup>[Olsson14](#Olsson14)</sup>
+    22. Simple (light) shader management<sup>[Olsson14](#Olsson14)</sup>
 * Considerations
-    1. Memory footprint (Large frame-buffer size)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
-    2. Bandwidth requirements (Potentially high fill-rate)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup>
+    1. Memory footprint (Large frame-buffer size)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
+    2. Bandwidth requirements (Potentially high fill-rate)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Olsson14](#Olsson14)</sup>
     3. Multiple light equations difficult<sup>[Calver03](#Calver03)</sup>
-    4. Transparency is very hard. Forward rendering required for translucent objects<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+    4. Transparency is very hard. Forward rendering required for translucent objects<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
     5. Comparatively expensive to have multiple light models
-    6. Antialiasing. Costly and complex MSAA<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+    6. Antialiasing. Costly and complex MSAA<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
     7. Significant engine rework<sup>[Thibieroz11](#Thibieroz11)</sup>
-    8. Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup>
+    8. Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Olsson14](#Olsson14)</sup>
+    9. Accumulates light in frame buffer<sup>[Olsson14](#Olsson14)</sup>
+       1.  High precision needed
 
 Builds an attribute buffer, also known as the G-Buffer.<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup>
 
@@ -477,6 +613,150 @@ Light Optimization:
         * Shadows start to fade out
         * Switch to non-shadow casting light
 
+##### Example 5 : Mafia: Definitive Edition<sup>[CodeCorsair0821](#CodeCorsair0821)</sup>
+
+* Depth Prepass
+* GBuffer Pass
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R16F</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G16F</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z B16F</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Roughness A16F</td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Metalness A8</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">MotionVectors.X R16U</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">MotionVectors.Y G16U</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">MotionVector.Z  B16U</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Encoded Vertex Normal A16U</td>
+</tr>
+<tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Specular Intensity R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">0.5 G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Curvature or Thickness (for SSS) B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">SSS Profile A8</td>
+</tr>
+<tr>
+<td>RT 4</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Emissive.R R11F</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Emissive.g G11F</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emissive.b B11F</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black"></td>
+</tr>
+</tbody>
+</table>
+
+##### Example 6: Resident Evil 2<sup>[Schreiner19](#Schreiner19)</sup>
+
+* Depth prepass
+* G-Buffer pass Geometry + Decals
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Emissive.R R11</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Emissive.G G11</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emissive.B B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black"></td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Metalness A8</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.R R10</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.G G10</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Roughness B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Miscellanous A2</td>
+</tr>
+<tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Baked AO R16</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Velocity.Y G16</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Velocity.Z B16</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">SSS A16</td>
+</tr>
+</tbody>
+</table>
+
+##### Example 7: Batman: Arkham Knights<sup>[Moradin20](#Moradin20)</sup>
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Emissive.R R11</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Emissive.G G11</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emissive.B B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black"></td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R10</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G10</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A2</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Material Masking A8</td>
+</tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Material Properties R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Material Properties G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Material Properties B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Material Properties A8</td>
+</tr>
+</tbody>
+</table>
+
 ### Lighting Phase
 
 * Apply lighting as a 2D postprocess using MRT buffers as input<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -550,6 +830,320 @@ Full screen lighting is actually slower than forward rendering.
 
 * S.T.A.L.K.E.R. uses hierarchical occlusion-culling system that utilized both the CPU and the GPU<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
     * Coarsest test was sector-portal culling followed by CPU-based occlusion culling (similar to the hierarchical z-buffer)
+
+---
+
+* Most lighting in Ghost of Tsushima is deferred:<sup>[Patry20](#Patry20)</sup>
+    * Lambertian diffuse
+        * Optional translucency
+        * Optional simplified asperity scattering (fuzziness)
+    * Isotropic GGX specular
+        * Optional colored specular via "metallic" channel
+* Other materials are forward lit, e.g. when using:<sup>[Patry20](#Patry20)</sup>
+    * Anisotropic GGX specular
+    * Full anisotropic asperity scattering BRDF
+    * Subsurface scattering
+
+#### Tiled Shading
+
+---
+
+<sup>[Olsson14](#Olsson14)</sup>
+
+The Bandwith problem:
+* New type of overdraw
+  * Light overdraw
+* N lights cover a certain pixel
+  * N reads from the same G-Buffer location
+* Deferred shading
+
+```
+for each light
+    for each covered pixel
+        read G-Buffer
+        compute shading
+        read + write frame buffer   // requires repeated reading and writing of the G-Buffers and frame buffer
+```
+
+```
+for each pixel
+    read G-Buffer
+    for each affecting light
+        compute shading
+    write frame buffer  // single write
+```
+
+* This scheme requires sequential access to lights for each pixel
+  * Global list
+    * inefficient
+  * List per pixel
+    * Lots of data
+    * Slow construction
+  * Share list in screen space tiles
+    * e.g. 32 x 32 pixels
+    * Simple construction
+    * little storage
+      * 1 list per 1024 pixels
+    * coherent access
+* For each light,
+  * Find screen space AABB to the light
+  * Add index of the light to affected tiles
+  * Perform min/max depth to cull away lights occupying empty space
+* Global Light List
+* Tile Light Index Lists
+* Light Grid
+  * 2D grid
+  * Each cell stores an offset and count that represent a range in a global buffer
+
+ex)
+
+<table>
+<thead>
+<tr>
+<th colspan="8">Global Light List
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background-color:rgba(255, 99, 71, 1); color:white">
+<td>L<sub>0</sub></td>
+<td>L<sub>1</sub></td>
+<td>L<sub>2</sub></td>
+<td>L<sub>3</sub></td>
+<td>L<sub>4</sub></td>
+<td>L<sub>5</sub></td>
+<td>L<sub>6</sub></td>
+<td>L<sub>7</sub></td>
+<td>&hellip;</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th colspan="8">Tile Light Index Lists
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="background-color:rgba(53, 90, 255, 1); color:white">0</td>
+<td style="background-color:rgba(255, 205, 10, 1); color:white">0</td>
+<td style="background-color:rgba(255, 205, 10, 1); color:white">6</td>
+<td style="background-color:rgba(255, 205, 10, 1); color:white">3</td>
+<td style="background-color:rgba(255, 105, 10, 1); color:white">0</td>
+<td style="background-color:rgba(255, 105, 10, 1); color:white">6</td>
+<td style="background-color:rgba(255, 105, 10, 1); color:white">4</td>
+<td style="background-color:rgba(30, 205, 10, 1); color:white">4</td>
+<td>&hellip;</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th colspan="5">Tile Light Index Lists
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="background-color:rgba(53, 90, 255, 1); color:white">0</td>
+<td style="background-color:rgba(255, 205, 10, 1); color:white">1</td>
+<td style="background-color:rgba(255, 105, 10, 1); color:white">4</td>
+<td style="background-color:rgba(30, 205, 10, 1); color:white">7</td>
+<td>&hellip;</td>
+</tr>
+<tr>
+<td style="background-color:rgba(53, 90, 255, 1); color:white">1</td>
+<td style="background-color:rgba(255, 205, 10, 1); color:white">3</td>
+<td style="background-color:rgba(255, 105, 10, 1); color:white">3</td>
+<td style="background-color:rgba(30, 205, 10, 1); color:white">1</td>
+<td>&hellip;</td>
+</tr>
+<tr>
+<td>66</td>
+<td>67</td>
+<td>69</td>
+<td>&hellip;</td>
+<td>&hellip;</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>&hellip;</td>
+<td>&hellip;</td>
+</tr>
+</tbody>
+</table>
+
+* Light grid provides:
+  * Access to light list for each pixel
+  * List shared within tile
+    * Low memory usage
+    * Good access coherency
+    * Not pixel exact
+* Light grid building
+  * Is pretty quick
+  * CPU for hundres of lights
+
+1. Render Scene to G-Buffers
+   * Store geometry attributes per pixel
+     * G-Buffers
+1. Build Light Grid
+2. Full Screen Quad (or CUDA, or Compute Shaders, or SPUs)
+   * For each pixel
+     * Fetch G-Buffer Data
+     * Find Tile
+     * Loop over lights and accumulate shading
+     * Write shading
+
+
+* Depth Range Optimization
+  * Min/Max depth per tile
+* For each light
+  * Test depth bounds
+  * If light volume does not intersects with the depth bounds, then reject the light
+* However...
+  * Tiles: 2D
+  * Geometry Samples: 3D
+    * Fragments / Pixels
+  * Light density: 3D
+  * View dependent
+    * Unpredictable shading times
+
+---
+
+Simple single-pass deferred rendering using tiled shading pseudo-code:<sup>[Ortiz18](#Ortiz18)</sup>
+
+```
+// Buffers:
+Buffer display
+Buffer GBuffer
+Buffer tileArray
+
+// Shaders:
+Shader manyLightShader
+Shader writeShadingAttributes
+CompShader lightInTile
+
+// Visibility & materials
+for mesh in scene
+    if mesh.depth < GBuffer.depth
+        GBuffer = writeShadingAttributes(mesh)
+
+// Light culling
+for tile in tileArray
+    for light in scene
+        if lightInTile(tile, light)
+            tile += light
+
+// Shading & lighting - multi-pass
+display = manyLightShader(GBuffer, tileArray)
+```
+
+Based on the light attenuation, we can calculate the influence of a light to create a concrete volume of influence which is represented with different shapes for each type of light source.<sup>[Ortiz18](#Ortiz18)</sup>
+
+* Point lights<sup>[Ortiz18](#Ortiz18)</sup>
+    * Sphere
+* Spotlights<sup>[Ortiz18](#Ortiz18)</sup>
+    * Cones
+* Directional lights<sup>[Ortiz18](#Ortiz18)</sup>
+    * Full-screen quads
+
+Based on these shapes, perform a collision detection between the light volumes and tiles. Tile forward shading is sometimes also referred to as Forward+.<sup>[Ortiz18](#Ortiz18)</sup>
+
+However, tiles has no information regarding the depth discontinuity of the lights.<sup>[Ortiz18](#Ortiz18)</sup>
+
+#### Clustered Shading
+
+---
+
+<sup>[Ortiz18](#Ortiz18)</sup>
+
+If tiled shading is a 2D approach, clustered shading is a 3D approach.
+
+Simple single-pass deferred rendering using clustered shading pseudo-code:
+
+```
+Buffer display
+Buffer GBuffer
+Buffer clusterArray
+
+// Shaders:
+Shader manyLightShader
+Shader writeShadingAttributes
+CompShader lightInCluster
+
+// Visibility & materials
+for mesh in scene
+    if mesh.depth < GBuffer.depth
+        GBuffer = writeShadingAttributes(mesh)
+
+// Light culling
+for cluster in clusterArray
+    for light in scene
+        if lightInCluster(cluster, light)
+            cluster += light
+
+// Shading & lighting - multi-pass
+display = manyLightShader(GBuffer, clusterArray)
+```
+
+---
+
+<sup>[Olsson14](#Olsson14)</sup>
+
+* Adding the 3rd dimension
+  * Tile also in depth direction = cluster
+* Bounded volume around samples
+  * Shading cost ~ Light density
+* New Challenges
+  * Many more (potential) clusters
+    * Must find those actually used
+  * Adding lights no longer screen space
+
+Algorithm:
+* Rasterize G-Buffers
+  * Forward: pre-z pass
+* Cluster assignment
+  * Cluster key:
+    * ck = (i, j, k) integer tuple
+  * i, j = 2D tile id
+    * Divide the fragment coordinate by the tile size
+  * k = &thickapprox;log(view space z)
+  * (quantized normal)
+* Find unique clusters
+  * Full screen pass
+  * Flag used clusters
+    * Read depth
+    * Compute ck
+    * Set cell in grid to one
+  * Forward:
+    * Geometry pass with side effect
+  * Compact Non-Zero
+    * Yields list of non-empty clusters
+  * Parallel prefix sum
+    * chag::pp (CUDA)
+    * thrust (CUDA)
+    * Compute Shader API?
+* Assign lights to clusters
+  * Many clusters
+  * Many lights
+  * Hierarchical approach
+    * Hierarchy over lights
+      * 32-way tree (matches SIMD of GPU)
+      * Dynamically rebuilt on GPU
+    * Each cluster traverses light tree
+      * BV tests
+* Shade view samples
+  * Deferred: Full screen pass
+  * Forward: Geometry pass
+
+---
 
 #### Light Volume Rendering<sup>[Thibieroz11](#Thibieroz11)</sup>
 
@@ -1149,3 +1743,536 @@ float4 main(PSInput psInput) : SV_Target
           * Increment stencil for back faces
           * Decrement stencil for front faces
       * Render some geometry where stencil != 0
+
+#### Example 3: AnKi 3D Engine<sup>[Charitos19](#Charitos19)</sup>
+
+* Clustered Deferred Shading
+  * Bin various primitives into a number of clusters
+      * Happens in the CPU
+      * Point lights
+      * Spot lights
+      * Decals
+      * Fog density probes
+      * Reflection probes
+      * Diffuse GI probes
+
+Passs:
+
+* Depth pre-pass
+* GBuffer pass
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Albedo.R R8U</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Albedo.G G8U</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Albedo.B B8U</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Subsurface term A8U</td>
+</tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Roughness R8U</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Metallic G8U</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Fresnel term B8U</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Emission scaling A8U</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">WS Normal.X R10U_PACK32</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">WS Normal.Y G10U_PACK32</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emission B10U_PACK32</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Sign of the Normal's Z A2U_PACK32</td>
+</tr>
+<tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Velocity R16S</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Velocity G16S</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white"></td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black"></td>
+</tr>
+</tbody>
+</table>
+
+* Volumetric lighting accumulation
+  * Compute job that calculatese the lighting for eaach cell and the fog density
+  * Every compute invocation operates on a single cluster
+    * Each invocation a random point inside the cluster will be chosen and the lighting of each light will be accumulated to compute the final result
+  * Final result is stored into a 3D texture
+* Light shading, forward shading, and fog
+  * Light shading
+    * Fullscreen(triangle) draw that unpacks the GBuffer and iterates the lights of the affected cluster
+
+#### Example 4: The Surge<sup>[Hammer18](#Hammer18)</sup>
+
+* Clustered Deferred Rendering
+* Volumetric Lighting
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Material ID</td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">VS Normal.X R10</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">VS Normal.Y G10</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">VS Normal.Z B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A2</td>
+</tr>
+<td>RT 2</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Roughness R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Metalness G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Occlusion B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">(shared) A8</td>
+</tr>
+<tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Motion Vectors X R16</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Motion Vectors Y G16</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white"></td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black"></td>
+</tr>
+</tbody>
+</table>
+
+PBR:
+* Material ID indexes directly into StructuredBuffer to query per=material data
+  * Save G-Buffer space
+* (shared) - per pixel context dependent
+  * mutual exclusive material data
+  * based on per-material data
+  * Emissive mask
+    * Defines whether or not to interpret albedo as emissive
+    * Emissive combined in final "combine" pass
+    * Effectively saves dedicated emissive channel
+  * Translucency
+
+Clustered Deferred Rendering:
+* Switch from rasterization-based light volume rendering to full (async) compute-based approach
+  * Low CPU overhead
+    * Light culling runs entirely on GPU
+    * Filling a buffer with light infos instead of dispatching thousands of drawcalls
+  * Advantages on GPU
+    * No need to fetch G-Buffer for every light
+  * Async Compute: Lighting runs in parallel to shadow rendering (at least on consoles)
+  * But: many more optimizations necessary to get better performance
+* Could render environment probes in the same pass
+  * Environment probes are still clustered but rendered in a separate (pixeshader) pass together with SSR
+* Divide view frustum into a 3D grid
+  * 16 x 8 x 24
+* Culling: Assignn lights to grid cells
+  * Upload light culling info to GPU (StructuredBuffer with Position, AABB, etc.)
+  * Create list of light indices for each cell (single large uint buffer)
+* Dispatching lighting compute shader
+  * In fact we dispatch twice: unshadowed and shadowed lights
+  * Unshadowed can run in parallel with shadowmap generation
+* Can use cluster information also for forward rendering
+  * We do this for our lit transparent objects
+  * Simply compute grid cell index for a position and query light list
+
+#### Example 5: Rainbow Six Siege<sup>[ElMansouri16](#ElMansouri16)</sup>
+
+* Single Frame:
+  * GPU:
+    * Graphics Pipeline + Async Pipeline
+    * Average 5ms spent on geometry rendering
+      * Heavy us of culling
+      * Shadow caching
+    * Average 5ms spent on lighting (SSR included)
+      * Checkerboard rendering helps
+      * SSAO & SSR ray trace done in async
+  * CPU:
+    * 10ms avg on the critical path
+      * All passes and tasks able to fork and join to minimize critical path
+      * Shadow caching
+    * Max 4ms linear spent on opaque pass
+      * Material based draw call system
+* Opaque rendering:
+  1. First person rendering
+     * GBuffer, Depth buffer
+  2. 400 best occluders to depth buffer
+  3. Generate Hi-Z Buffer
+  4. Opaque culling & rendering
+     * Hierarchical z-buffer used for culling 
+* Lighting
+  * Uses a clustered structure on the frustum:
+    * 32 x 32 pixels based tile
+    * Z exponential distribution  
+  * Hierarchical culling of light volume to fill the structure
+  * Local cubemaps regarded as lights
+  * Shadows, cubemaps and gobos reside in textures arrays
+    * Deferred uses pre-resolved shadow texture array
+    * Forward uses shadows depth buffer array
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Emissive.R R11</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Emissive.G G11</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emissive.B B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black"></td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R10</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G10</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z B10</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A2</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Material Masking A8</td>
+</tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Material Properties R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Material Properties G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Material Properties B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Material Properties A8</td>
+</tr>
+</tbody>
+</table>
+
+#### Example 6: Uncharted 4<sup>[ElGarawany16](#ElGarawany16)</sup>
+
+* 16 bits-per-pixel unsigned buffers
+
+<table>
+<thead>
+<tr>
+<td>GBuffers</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GBuffer 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R<br>G</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">B<br>Spec</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.X<br>Normal.Y</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">iblUseParent, Normal Extra<br>Roughness</td>
+</tr>
+<tr>
+<td>GBuffer 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Ambient Translucency<br>Sun Shadow High<br>Spec Occlusion</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Heightmap Shadowing<br>Sun Shadow Low<br>Metallic</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Dominant Direction X<br>Dominant Direction Y</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">AO<br>Extra Material Mask<br>Sheen<br>Thin Wall Translucency</td>
+</tr>
+<tr>
+<td>GBuffer 2 (optional)</td>
+<td colspan="4">Used by more complicated materials</td>
+</tr>
+</tbody>
+</table>
+
+* Using a material ID(bitmask) texture
+  * 12-bits compressed into 8-bits
+
+## Forward+<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+
+* Z prepass
+  * Reduces the pixel overdraws of the final shading step
+* Light culling
+  * Calculates the list of lights affecting a pixel
+* Final shading
+  * Shades the entire surface
+  * Any lights in a scene have to be accessible from shaders rather than binding some subset of lights for each objects
+
+### Light Culling
+
+* Split the screen into tiles
+* Light indices are calculated on a per-tile basis
+
+#### Implementation and Optimization
+
+* Computation is done on a by-tile basis
+  * Execute a thread group for a tile
+* CS for light culling is executed as a two-dimensional (2D) work group
+
+Pseudo-code:
+
+* `GET_GROUP_IDX`: thread group index in X direction (`SV_GroupID`)
+* `GET_GROUP_IDY`: thread group index in Y direction (`SV_GroupID`)
+* `GET_GLOBAL_IDX`: global thread index in X direction (`SV_DispatchThreadID`)
+* `GET_GLOBAL_IDY`: thread group index in X direction (`SV_DispatchThreadID`)
+* `GET_LOCAL_IDX`: local thread index in X direction (`SV_GroupThreadID`)
+* `GET_LOCAL_IDY`: local thread index in X direction (`SV_GroupThreadID`)
+
+* The first step is computation of the frustum of a tile in view space
+* Calculate the view-space coordinates of the four corner points of the tile
+
+```c
+float4 frustum[4];
+{   // construct frustum
+    float4 v[4];
+    v[0] = projToView(8 * GET_GROUP_IDX, 8 * GET_GROUP_IDY, 1.f);
+    v[1] = projToView(8 * (GET_GROUP_IDX + 1), 8 * GET_GROUP_IDY, 1.f);
+    v[2] = projToView(8 * (GET_GROUP_IDX + 1), 8 * (GET_GROUP_IDY + 1), 1.f);
+    v[3] = projToView(8 * GET_GROUP_IDX, 8 * (GET_GROUP_IDY + 1), 1.f);
+    float4 o = make_float4(0.f, 0.f, 0.f, 0.f);
+    for (int i = 0; i < 4; ++i)
+    {
+        frustum[i] = createEquation(o, v[i], v[(i + 1) & 3]);
+    }
+}
+```
+
+* `projToView()` is a function that takes screen-space pixel indices and depth value and returns coordinates in view space
+* `createEquation()` creates a plane equation from three vertex positions
+* We can clip the frustum by using the max/min depth values from the depth buffer created in the depth prepass.
+
+```c
+float depth = depthIn.Load(uint3(GET_GLOBAL_IDX, GET_GLOBAL_IDY, 0));
+
+float4 viewPos = projToView(GET_GLOBAL_IDX, GET_GLOBAL_IDY, depth);
+
+int lIdx = GET_LOCAL_IDX + GET_LOCAL_IDY * 8;
+{   // Calculate bound
+    if (lIdx == 0)  // Initialize
+    {
+        ldsZMax = 0;
+        ldsZMin = 0xffffffff;
+    }
+    GroupMemoryBarrierWithGroupSync();
+    u32 z = asuint(viewPos.z);
+    if (depth != 1.f)
+    {
+        AtomMax(ldsZMax, z);
+        AtomMin(ldsZMin, z);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    maxZ = asfloat(ldsZMax);
+    minZ = asfloat(ldsZMin);
+}
+```
+
+* `ldsZMax`, `ldsZMin` store max/min z coordinates, which are bounds of a frustum in the z direction, in shared memory
+
+MiniEngine version:
+
+```c
+// Read all depth values for this tile and compute the tile min and max values
+for (uint dx = GTid.x; dx < WORK_GROUP_SIZE_X; dx += 8)
+{
+    for (uint dy = GTid.y; dy < WORK_GROUP_SIZE_Y; dy += 8)
+    {
+        uint2 DTid = Gid * uint2(WORK_GROUP_SIZE_X, WORK_GROUP_SIZE_Y) + uint2(dx, dy);
+
+        // If pixel coordinates are in bounds...
+        if (DTid.x < ViewportWidth && DTid.y < ViewportHeight)
+        {
+            // Load and compare depth
+            uint depthUInt = asuint(depthTex[DTid.xy]);
+            InterlockedMin(minDepthUInt, depthUInt);
+            InterlockedMax(maxDepthUInt, depthUInt);
+        }
+    }
+}
+
+GroupMemoryBarrierWithGroupSync();
+```
+
+* We are using 8 x 8 for the size of a thread group
+  * 64 lights are processed in parallel
+
+```c
+for (int i = 0; i < nBodies; i += 64)
+{
+    int il = lIdx + i;
+    if (il < nBodies)
+    {
+        if (overlaps(frustum, gLightGeometry[i]))
+        {
+            appendLightToList(il);
+        }
+    }
+}
+```
+
+* `overlaps()`: chekcs light-geometry overlap against a frustum using the separating axis theorem
+  * If a light is overlapping the frustum, the light index is stored to the list of the overlapping lights in `appendLightToList()`
+* A tile is computed by a thread group, and so we can use shared memory for the first level storage
+* Light index storage and counter for the storage is allocated as follows:
+
+```c
+groupshared u32 ldsLightIdx[LIGHT_CAPACITY];
+groupshared u32 ldsLightIdxCounter;
+```
+
+```c
+void appendLightToList(int i)
+{
+    u32 dstIdx = 0;
+    InterlockedAdd(ldsLightIdxCounter, 1, dstIdx);
+    if (dstIdx < LIGHT_CAPACITY)
+    {
+        ldsLightIdx[dstIdx] = i;
+    }
+}
+```
+
+MiniEngine version:
+
+```c
+groupshared uint tileLightCountSphere;
+groupshared uint tileLightCountCone;
+groupshared uint tileLightCountConeShadowed;
+
+groupshared uint tileLightIndicesSphere[MAX_LIGHTS];
+groupshared uint tileLightIndicesCone[MAX_LIGHTS];
+groupshared uint tileLightIndicesConeShadowed[MAX_LIGHTS];
+
+// find set of lights that overlap this tile
+for (uint lightIndex = GI; lightIndex < MAX_LIGHTS; lightIndex += 64)
+{
+    LightData lightData = lightBuffer[lightIndex];
+    float3 lightWorldPos = lightData.pos;
+    float lightCullRadius = sqrt(lightData.radiusSq);
+
+    bool overlapping = true;
+    for (int p = 0; p < 6; p++)
+    {
+        float d = dot(lightWorldPos, frustumPlanes[p].xyz) + frustumPlanes[p].w;
+        if (d < -lightCullRadius)
+        {
+            overlapping = false;
+        }
+    }
+    
+    if (!overlapping)
+        continue;
+
+    uint slot;
+
+    switch (lightData.type)
+    {
+    case 0: // sphere
+        InterlockedAdd(tileLightCountSphere, 1, slot);
+        tileLightIndicesSphere[slot] = lightIndex;
+        break;
+
+    case 1: // cone
+        InterlockedAdd(tileLightCountCone, 1, slot);
+        tileLightIndicesCone[slot] = lightIndex;
+        break;
+
+    case 2: // cone w/ shadow map
+        InterlockedAdd(tileLightCountConeShadowed, 1, slot);
+        tileLightIndicesConeShadowed[slot] = lightIndex;
+        break;
+    }
+
+    // update bitmask
+    InterlockedOr(tileLightBitMask[lightIndex / 32], 1 << (lightIndex % 32));
+}
+
+GroupMemoryBarrierWithGroupSync();
+```
+
+* Now indices of lights overlapping that frustum are collected in the shared memory
+  * We have to write these to the global memory
+* For the storage of light indices in the global memory, we allocated two buffers:
+  * `gLightIdx`: memory pool for the indices
+    * First reserve memory here
+      * Done by an atomic operation to `gLightIdxCounter` using a thread in the thread group
+  * `gLightIdxCounter`: memory counter for the memory pool
+* Once a memory offset is obtained, we just fill the light indices to the assigned contiguous memory of `gLightIdx` using all the threads in a thread group
+
+```c
+{   // Write back
+    u32 startOffset = 0;
+    if (lIdx == 0)
+    {   // Reserve memory
+        if (ldsLightIdxCounter != 0)
+        {
+            InterlockedAdd(gLightIdxCounter, ldsLightIdxCounter, startOffset);
+        }
+
+        ptLowerBound[tileIdx] = startOffset;
+        ldsLightIdxStart = startOffset;
+    }
+    GroupMemoryBarrierWithGroupSync();
+    startOffset = ldsLightIdxStart;
+
+    for (int i = lIdx; i < ldsLightIdxCounter; i += 64)
+    {
+        gLightIdx[startOffset + i] = ldsLightIdx[i];
+    }
+}
+```
+
+MiniEngine version:
+
+```c
+if (GI == 0)
+{
+    uint lightCount = 
+        ((tileLightCountSphere & 0xff) << 0) |
+        ((tileLightCountCone & 0xff) << 8) |
+        ((tileLightCountConeShadowed & 0xff) << 16);
+    lightGrid.Store(tileOffset + 0, lightCount);
+
+    uint storeOffset = tileOffset + 4;
+    uint n;
+    for (n = 0; n < tileLightCountSphere; n++)
+    {
+        lightGrid.Store(storeOffset, tileLightIndicesSphere[n]);
+        storeOffset += 4;
+    }
+    for (n = 0; n < tileLightCountCone; n++)
+    {
+        lightGrid.Store(storeOffset, tileLightIndicesCone[n]);
+        storeOffset += 4;
+    }
+    for (n = 0; n < tileLightCountConeShadowed; n++)
+    {
+        lightGrid.Store(storeOffset, tileLightIndicesConeShadowed[n]);
+        storeOffset += 4;
+    }
+
+    lightGridBitMask.Store4(tileIndex * 16, tileLightBitMask);
+}
+```
+
+### Shading
+
+* With UAV support, per-material instance information can be stored and accessed in linear structured buffers passed to material shaders
+

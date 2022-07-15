@@ -1014,17 +1014,17 @@ Lighting Root Signature
 * Parameters
     1. (Inline Descriptor) : `b0`
        * `CSConstants`
-           * Viewport Width, Height
-           * InvTileDim
-           * RcpZMagic
-           * TileCountX
-           * View, Projection Matrix
+           * Viewport Width, Height: `uint`
+           * InvTileDim: `float`
+           * RcpZMagic: `float`
+           * TileCountX: `uint`
+           * View, Projection Matrix: `float4x4`
     2. (Descriptor Range) SRVs (x2) : `t0`
-       1. Light Buffer
-       2. Depth Texture
+       1. Light Buffer: `StructuredBuffer<LightData>`
+       2. Depth Texture: `Texture2D<float>`
     3. (Descriptor Range) UAVs (x2) : `u0`
-       1. Light Grid
-       2. Light Grid Bit Mask
+       1. Light Grid: `RWByteAddressBuffer`
+       2. Light Grid Bit Mask: `RWByteAddressBuffer`
 
 ComputePSO:
 * Fill Light Grid
