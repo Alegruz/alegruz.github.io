@@ -7,10 +7,16 @@
 
 * 2008
     * <a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">Starcraft II: Effects and Techniques</a>. Dominic Filion, Blizzard. Rob McNaughton, Blizzard Entertainment.
+* 2009
+  * <a id="EngelSiggraph09" href="https://www.slideshare.net/cagetu/light-prepass">Light Pre-Pass; Deferred Lighting: Latest Development</a>. Wolfgang Engel.
+* 2010
+  * <a id="Kaplanyan10" href="http://advances.realtimerendering.com/s2010/index.html">CryENGINE 3: Reaching the Speed of Light</a>. Anton Kaplanyan, Crytek.
 * 2015
     * [GPU-Driven Rendering Pipelines](https://advances.realtimerendering.com/s2015/aaltonenhaar_siggraph2015_combined_final_footer_220dpi.pdf). Ulrich Haar, Lead Programmer 3D, Ubisoft Montreal. Sebastian Aaltonen, Senior Lead Programmer, RedLynx a Ubisoft Studio
 * 2016
   * <a id="ElGarawany16" href="https://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fadvances.realtimerendering.com%2Fs2016%2Fs16_ramy_final.pptx&wdOrigin=BROWSELINK">Deferred Lighting in Uncharted 4</a>. Ramy El Garawany, Naughty Dog.
+* 2018
+  * <a id="Golubev18" href="https://advances.realtimerendering.com/s2018/index.htm">The Road toward Unified Rendering with Unity’s High Definition Render Pipeline</a>. Evgenii Golubev, Unity.
 * 2020
     * [Software-Based Variable Rate Shading in Call of Duty: Modern Warfare](https://research.activision.com/publications/2020-09/software-based-variable-rate-shading-in-call-of-duty--modern-war). Michal Drobot, Infinity Ward / Activision.
 * 2021
@@ -23,6 +29,7 @@
 
 * 2015
     * <a id="Olsson15" href="https://efficientshading.com/2015/01/01/real-time-many-light-management-and-shadows-with-clustered-shading/">Introduction to Real-Time Shading with Many Lights</a>. Ola Olsson, Chalmers University of Technology.
+    * <a id="Persson15" href="https://efficientshading.com/wp-content/uploads/s2015_practical.pdf">Practical Clustered Shading</a>. Emil Persson, Avalanche Studios.
 
 ## SIGGRAPH Asia
 
@@ -39,6 +46,8 @@
 
 ## HPG
 
+* 2012
+  * <a id="OlssonBilleterAssarsson12" href="https://diglib.eg.org/bitstream/handle/10.2312/EGGH.HPG12.087-096/087-096.pdf?sequence=1&isAllowed=y">Clustered Deferred and Forward Shading</a>. Ola Olsson, Chalmers University of Technology. Markus Billeter, Chalmers University of Technology. Ulf Assarsson, , Chalmers University of Technology.
 * 2015
     * [Deferred attribute interpolation for memory-efficient deferred shading](https://dl.acm.org/doi/abs/10.1145/2790060.2790066). Christoph Schied, Karlsruhe Institute of Technology. Carsten Dachsbacher, Karlsruhe Institute of Technology.
 
@@ -67,6 +76,8 @@
     * <a id="Thibieroz03" href="http://www.shaderx2.com/Tables%20of%20Content.htm">Deferred Shading with Multiple Render Targets</a>. Nicolas Thibieroz.
 * ShaderX5
     * <a id="Placeres06" href="http://www.shaderx5.com/TOC.html">Overcoming Deferred Shading Drawbacks</a>. Frank Puig Placeres.
+* ShaderX7
+    * <a id="EngelShaderX709" href="http://www.shaderx7.com/TOC.html">Designing a Renderer for Multiple Lights: The Light Pre-Pass Renderer</a>. Wolfgang Engel, Rockstar Games.
 * GPU Gems 1
     * Graphics Pipeline Performance
 * GPU Gems 2
@@ -259,7 +270,7 @@ display = manyLightShader(GBuffer, scene.lights)
     5. Lights can be occluded like other objects, this allows fast hardware Z-Reject<sup>[Calver03](#Calver03)</sup>
     6. Shadow mapping is fairly cheap<sup>[Calver03](#Calver03)</sup><sup>[Olsson14](#Olsson14)</sup>
     7. Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[Valient07](#Valient07)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup>
-    8. Scene geometry decoupled from lighting<sup>[Koonce07](#Koonce07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+    8. Scene geometry decoupled from lighting<sup>[Koonce07](#Koonce07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
     9. Reduction in render states<sup>[Koonce07](#Koonce07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
     10. G-Buffer already produces data required for post-processing<sup>[Thibieroz11](#Thibieroz11)</sup>
     11. Excellent batching<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -278,17 +289,20 @@ display = manyLightShader(GBuffer, scene.lights)
     20. Enables many lights<sup>[Olsson14](#Olsson14)</sup>
     21. Trivial light management<sup>[Olsson14](#Olsson14)</sup>
     22. Simple (light) shader management<sup>[Olsson14](#Olsson14)</sup>
+    23. Good decomposition of lighting<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+        * No lighting-geometry interdependency
 * Considerations
-    1. Memory footprint (Large frame-buffer size)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
-    2. Bandwidth requirements (Potentially high fill-rate)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Olsson14](#Olsson14)</sup>
+    1. Memory footprint (Large frame-buffer size)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
+    2. Bandwidth requirements (Potentially high fill-rate)<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Olsson14](#Olsson14)</sup>
     3. Multiple light equations difficult<sup>[Calver03](#Calver03)</sup>
-    4. Transparency is very hard. Forward rendering required for translucent objects<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
+    4. Transparency is very hard. Forward rendering required for translucent objects<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
     5. Comparatively expensive to have multiple light models
-    6. Antialiasing. Costly and complex MSAA<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
+    6. Antialiasing. Costly and complex MSAA<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Olsson14](#Olsson14)</sup>
     7. Significant engine rework<sup>[Thibieroz11](#Thibieroz11)</sup>
     8. Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Olsson14](#Olsson14)</sup>
     9. Accumulates light in frame buffer<sup>[Olsson14](#Olsson14)</sup>
-       1.  High precision needed
+       * High precision needed
+    10. Limitied materials variations<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
 Builds an attribute buffer, also known as the G-Buffer.<sup>[Thibieroz03](#Thibieroz03)</sup><sup>[Calver03](#Calver03)</sup>
 
@@ -362,6 +376,11 @@ How to reduce export cost (PS to MRT)?
         * If all the lighting is performed in view space, then the front-faced polygons are always going to have negative / positive Z components depending on the frame of reference used
     * Single byte is commonly used for a normal component when dealing with normal maps or other precomputed textures<sup>[Placeres06](#Placeres06)</sup>
     * Store normals in A2R10G10B10<sup>[Hargreaves04](#Hargreaves04)</sup>
+    * Normals at 24bpp are too quantized, lighting is of a low quality<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+      * 24bpp = 256 x 256 x 256 cells = 16,777,216 values
+      * However, we are storing the normalized normals:
+        * 289,880 cells out of 16,777,216 cells ~ 1.73%
+      * Use a normal cube map
 * Color
 * Material Atrributes
     * Specular power, glow factor, occlusion term, etc.<sup>[Placeres06](#Placeres06)</sup>
@@ -1145,7 +1164,11 @@ Algorithm:
 
 ---
 
-#### Light Volume Rendering<sup>[Thibieroz11](#Thibieroz11)</sup>
+#### Light Volume Rendering
+
+---
+
+<sup>[Thibieroz11](#Thibieroz11)</sup>
 
 * Render light volumes corresponding to light's range
     * Fullscreen tri/quad (ambient or directional light)
@@ -1160,6 +1183,13 @@ Algorithm:
   * Index re-use(post VS cache), sequential vertex reads (pre VS cache)
   * Common oversight for algorithmically generated meshes (spheres, cones, etc.)
   * Especially important when depth/stencil-only rendering is used
+
+---
+
+<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+
+* Use artist-defined clipping geometry: clip volumes
+  * Mast the stencil in addition to light volume masking
 
 ---
 
@@ -2006,6 +2036,56 @@ Clustered Deferred Rendering:
 * Using a material ID(bitmask) texture
   * 12-bits compressed into 8-bits
 
+#### Example 7: CryENGINE 3<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+
+* Indirect Lighting
+  * Ambient term
+  * Tagged ambient areas
+  * Local cubemaps
+  * Local deferred lights
+  * Diffuse Indirect Lighting from LPVs
+  * SSAO
+* Direct lighting
+  * All direct light sources, with and without shadows
+* GBuffer. The smaller the better
+  * Minimal G-Buffer layout: 64 bits / pixel
+    * RT0: Depth 24bpp + Stencil 8bpp
+    * RT1: Normals 24bpp + Glossiness 8bpp
+      * Glossiness is non-deferrable
+        * Required at lighting accumulation pass
+        * Specular is non-accumulative otherwise
+  * Stencil to mark objects in lighting groups
+    * Portals / indoors
+    * Custom environment reflections
+    * Different ambient / indirect lighting
+  * Problems:
+    * Only Phong BRDF (normal + glossiness)
+      * No aniso materials
+    * Normals at 24bpp are too quantized
+      * Lighting is banded / of low quality
+      * Use baked normal map
+
+#### Example 8: Unity<sup>[Golubev18](#Golubev18)</sup>
+
+* Optimize with both Tile and Cluster approaches
+* Goal
+  * Focus on removing false positives
+    * Ex: Narrow shadow casting spot lights
+  * False positives are more expensive in lighting pass
+    * Light culling execute async during shadow rendering
+    * Deferred lighting pass is not running async
+    * Move cost where it can be hidden
+    * High register pressure in lighting pass
+* Hierarchical approach
+  1. Find screen-space AABB for each visible light
+  2. Big tile 64 x 64 prepass
+     * Coarse intersection test
+     * Use AABBs for initial early out (2D no depth)
+     * Follow up with exact intersection test between tile and convex hull
+     * Use bounding spheres as an extra testing criteria
+  3. Build Tile or Cluster Light list 
+     * Narrow intersection test
+
 ## Forward+<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
 * Z prepass
@@ -2032,7 +2112,7 @@ Pseudo-code:
 * `GET_GROUP_IDX`: thread group index in X direction (`SV_GroupID`)
 * `GET_GROUP_IDY`: thread group index in Y direction (`SV_GroupID`)
 * `GET_GLOBAL_IDX`: global thread index in X direction (`SV_DispatchThreadID`)
-* `GET_GLOBAL_IDY`: thread group index in X direction (`SV_DispatchThreadID`)
+* `GET_GLOBAL_IDY`: global thread index in X direction (`SV_DispatchThreadID`)
 * `GET_LOCAL_IDX`: local thread index in X direction (`SV_GroupThreadID`)
 * `GET_LOCAL_IDY`: local thread index in X direction (`SV_GroupThreadID`)
 
@@ -2276,3 +2356,142 @@ if (GI == 0)
 
 * With UAV support, per-material instance information can be stored and accessed in linear structured buffers passed to material shaders
 
+## Tiled Shading
+
+<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+
+## Light Pre-Pass Renderer
+
+![LightPrePassRenderer](/Images/DeferredShading/LightPrePassRenderer.png)<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+
+* Store depth / normal<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+  * Normal: R8G8B8A8
+      * WS Normal will be of better quality when stored in spherical coordinates
+* Store light properties of all lights in a light buffer<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+  * Only light properties (no shadows, reflections, etc.)
+  * Light dependant terms need to be stored by their locality in space by applying the diffuse term N.L and the attenuation factor to all of them
+  * Typical L-Buffer:
+    1. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Red</sub> * Attenuation<sub>i</sub>
+    2. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Green</sub> * Attenuation<sub>i</sub>
+    3. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Blue</sub> * Attenuation<sub>i</sub>
+    4. &Sigma;<sub>i</sub> N · L<sub>i</sub> * (N · H<sub>i</sub>)<sup>n</sup> * Attenuation<sub>i</sub>
+    * If the specular term can be separated in a later rendering pass, a dedicated material shininess value can be applied
+      * (&Sigma;<sub>i</sub> (N · H<sub>i</sub>)<sup>n</sup>)<sup>mn</sup>
+  * Applying a material shiniess value to the specular reflection can be done in several ways
+    1. Similar to a deferred renderer, a material specular shininess can be stored in the normal / depth buffer (stencil area) 
+    2. Moving into a different color space that reuses some of the ideas here to achieve a tighter packed render target
+    3. A separate term can be stored to reconstruct the specular term in a later render pass
+       1. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Red</sub> * Attenuation<sub>i</sub>
+       2. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Green</sub> * Attenuation<sub>i</sub>
+       3. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Blue</sub> * Attenuation<sub>i</sub>
+       4. &Sigma;<sub>i</sub> N · L<sub>i</sub> * (N · H<sub>i</sub>)<sup>n</sup> * Attenuation<sub>i</sub>
+       5. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Attenuation<sub>i</sub>
+       * With the additional term, we can reconstruct the specular term:
+         *  (&Sigma;<sub>i</sub> N · L<sub>i</sub> * (N · H<sub>i</sub>)<sup>n</sup> * Attenuation<sub>i</sub>) / (&Sigma;<sub>i</sub> N · L<sub>i</sub> * Attenuation<sub>i</sub>)
+       *  The result of this equation can be used to apply a material shininess value
+    1. The diffuse term stored in the first three channels of the light buffer can be converted to luminance and then used to reconstruct the specular reflection term
+    2. The common rules for constructing a specular term can be bended by creating a new term that fits better into this renderer design
+* 
+
+### Comparison and Conclusion
+
+|Forward / Z Pre-Pass Renderer|Light Pre-Pass Renderer|
+|---|---|
+|Lots of geometry throughput| |
+|Need to split up geometry following light distribution| |
+|Dependent texture look-up and lights are not fully dynamic| |
+<sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
+
+|Deferred Renderer|Light Pre-Pass Renderer|
+|---|---|
+|Lights are independent from geometry| |
+|Geometry pass stores all material and light properties|Geometry pass fills up normal and depth buffer,<br>Lighting pass stores light properties in light buffer|
+|Only one geometry pass for the main view|(Version A) Second geometry buffer fetches light buffer and apply different material terms per surface by reconstructing the lighting equation<br>(Version B) Ambient + Resolve(MSAA) pass fetches light buffer and uses its content as diffuse / specular content and add the ambient term while resolving into the main buffer|
+|Lights are blit and therefore only limited by memory bandwidth||
+|Memory bandwidth| | 
+|Recalculate full lighting equation for every light| |
+|Limited material representation in G-Buffer| |
+|MSAA difficult compared to Forward renderer| |
+<sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
+
+* Compared to a deferred renderer<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+  * Offers more flexibility regarding material implementations
+  * Reads memory bandwidth is lower
+  * Using MSAA can be more efficient
+  * Renders all geometry for the main view twice
+* Compared to a Z pre-pass renderer<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+  * Offers less flexibility but a flexible and fast multi-light solution
+
+* Implementation (D3D11)<sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
+  * GS bounding box
+    * construct bounding box in geometry shader
+  * implement lighting with the compute shader
+  * Balance quality / performance
+    * Stop rendering dynamic lights after a certain range for example 40 meters and render glow cards instead
+    * Use smaller light buffer for distant lights and scale up
+
+## Clustered Shading
+
+### Cluster Deferred Shading Algorithm<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+
+1. Render scene to G-Buffers
+2. Cluster assignment
+3. Find unique clusters
+4. Assign lights to clusters
+5. Shade samples
+
+#### Cluster Assignment
+
+* Goal of the cluster assignment:
+  * Compute an integer *cluster key* for a given view sample from the information available G-Buffer
+    * position, normal (optional)
+* Subdivide the view frustum along x, y, z-axis in view space (or NDC)
+  * Due to the non-linear nature of NDC, clusters close to the near plane becomes very thin, where as those towards the far plane becomes very long
+  * Uniform subdivision in view space produces the opposite artifact
+  * **Space the divisions exponentially**
+* near<sub>k</sub> = near<sub>k - 1</sub> + h<sub>k - 1</sub>
+* near<sub>0</sub> = near (first subdivision)
+* h<sub>0</sub> = (2 near tan &theta;) / S<sub>y</sub> (S<sub>y</sub> = number of subdivisions in the Y direction, FoV = 2&theta;)
+* near<sub>k</sub> = near(1 + (2 tan &theta;) / S<sub>y</sub>)<sup>k</sup>
+* ![ClusterK](/Images/DeferredShading/ClusterK.png)
+* Cluster key tuple ![ClusterKey](/Images/DeferredShading/ClusterKey.png)
+
+#### Finding Unique Clusters
+
+
+---
+
+```
+@startuml
+start
+split
+group Render Opaque Objects
+    split
+    :Normals;
+    split again
+    :Depth Buffer;
+    end split
+    :Switch Off Depth Write;
+    :Light Buffer; 
+floating note left: Sort Back-To-Front
+    :Forward Rendering;
+floating note left: Sort Front-To-Back
+end group
+split again
+group Transparent Objects
+    :Switch Off Depth Write;
+    :Forward Rendering;
+    floating note right: Sort Back-To-Front
+end group
+end split
+stop
+@enduml
+```
+
+```
+k = \left \lfloor \frac{\log{\left(-z_{vs}/near\right)}}{\log{\left(1 + \frac{2 \tan{\theta}}{S_y} \right )}} \right \rfloor
+```
+
+```
+\left(i, j, k \right ) = \left(\left \lfloor x_{ss}/t_x \right \rfloor, \left \lfloor y_{ss}/t_y \right \rfloor, \left \lfloor \frac{\log{\left(-z_{vs}/near\right)}}{\log{\left(1 + \frac{2 \tan{\theta}}{S_y} \right )}} \right \rfloor \right )
+```
