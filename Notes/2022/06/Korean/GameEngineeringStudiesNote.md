@@ -880,3 +880,141 @@ hinting 있이 하면:
 LCD 등에는 어울리지만, CRT에는 어울리지 않는 기술임.
 
 subpixel 기술이 괜찮은 이유는, 상당히 작은 글자의 경우 앤티앨리어싱만 적용하면 오히려 글자가 블러 처리가 되어 잘 안 보일텐데, 이걸 subpixel로 렌더링하면 디테일을 전부 잡아낼 수 있기 때문임.
+
+## 8. 오디오 프로그래밍
+
+### Windows 10 Audio Stack Diagram
+
+![AudioWindows10StackDiagram](https://docs.microsoft.com/en-us/windows-hardware/drivers/audio/images/audio-windows-10-stack-diagram.png)
+
+#### API
+
+* 상위 계층 API: 어플리케이션 개발에 사용함.
+    * 현재 사용 중인 API:
+        * XAML MediaElement 클래스 (C#, VB, C++)
+        * HTML Audio 오브젝트, Video 오브젝트 &lt;tags&gt; (웹사이트나 윈도우즈 웹앱에서 사용)
+        * Windows.Media.Capture 네임스페이스 (C#, VB, C++)
+        * Microsoft Media Foundation (C++)
+    * 현재 사용 X
+        * DirectShow
+        * DirectSound
+        * PlaySound
+        * Windows.Media.MediaControl
+* 하위 계층 API
+    * 오디오 스트리밍용
+        * WASAPI (고성능. 복잡함.)
+        * IXAudio2 (게임에서 보통 사용)
+        * MIDI
+    * enumeration용
+        * Windows.Devices.Enumeration
+    * Windows 어플에 추천 X
+        * About MMDevice API (Windows.Devices.Enumeration로 대체됨)
+        * DeviceTopology API
+        * EndpointVolume API
+
+#### Microsoft Media Foundation
+
+Windows Vista 이후의 Windows에서 디지털 미디어를 다루는 어플리케이션 개발에 사용.
+
+![MediaFoundationArchitecture](https://docs.microsoft.com/en-us/windows/win32/medfound/images/mfarch01.png)
+
+왼쪽 모델은 미디어 데이터에 대해서 end-to-end 파이프라인을 사용하는 케이스임. 우선 어플리케이션 측에서 파이프라인을 초기화(실행할 파일의 URL을 준다는가)를 한 다음, 스트리밍을 제어할 메서드를 호출함.
+
+오른쪽 모델은 소스로부터 데이터를 빼오거나, 데이터를 destination에 푸시해줌(둘 다도 가능). 이건 데이터 스트림에 직접 접근할 수 있어서 데이터를 처리할 때 유용함.
+
+#### WASAPI
+
+Windows Audio Session API.
+
+클라이언트 어플리케이션이 어플리케이션과 audio endpoint device 간의 오디오 데이터의 흐름을 관리할 수 있도록 해주는 API.
+
+여기서 Audio Endpoint 장치를 이해하려면 우선 endpoint 장치를 이해하면 됨. endpoint 장치란 데이터 흐름 경로가 시작하거나, 끝나는 하드웨어 장치를 의미함. 흐름이 시작하는 곳이라면 마이크, CD 플레이어, 끝나는 곳이라면 스피커, 헤드폰이 있음.
+
+WASAPI 내부엔 여러 인터페이스가 있는데, 여기에 접근하려면 우선 audio endpoint device에 해당하는 `IAudioClinet` 인터페이스 오브젝트를 `IIMDevice::Activate` 메소드로 생성해야함.
+
+#### MIDI
+
+Musical Instrument Digital Interface (MIDI).
+
+MIDI란 여러 전자 악기나 컴퓨터 등 음악을 연주하거나, 수정하거나, 녹음하는 오디오 장치를 연결하는 어떤 통신 프로토콜, 디지털 인터페이스, 전기 커넥터를 의미하는 기술 표준임.
+
+결국 장치 간 메시지 전달 컨셉에 기반했다는 것이 제일 중요함. MIDI 메시지는 단순히 한 액션에 대한 수치적 정보임. 이 수치적 정보는 누른 key임.
+
+Win32 API는 MIDI 데이터를 처리할 때 다음 인터페이스를 제공함:
+
+1. Media Control Interface (MCI).
+    * MCI 시스템이 MIDI 파일을 실행하므로, 어플리케이션에선 MCI를 통해 손쉽게 MIDI 연주 가능.
+    * 다만, MCI는 MIDI 출력만 지원하며, MIDI 이벤트와 다른 실시간 이벤트 간의 동기화 방법을 제공하지 않음.
+    * 그러므로 정확한 MIDI 합성이 필요하면 스트림 버퍼나 MIDI 서비스를 사용해야함.
+2. 스트림 버퍼
+    * 어플리케이션이 시간 기반의 MIDI 데이터로 이루어진 버퍼를 수정하여 실행이 가능하도록 함.
+    * 스트림 버퍼는 MCI보다 더 세밀한 제어가 필요한 어플리케이션에서 사용함.
+    * MIDI 이벤트의 시간 정보는 `MIDIEVENT` 구조체의 `dwDeltaTime` 멤버에 있음.
+    * 시간은 tick 기준이며, 이 tick은 표준 MIDI 파일 1.0 스펙에 정의되어 있음.
+3. MIDI 서비스
+    * 가장 MIDI 데이터를 세밀하게 제어해야하는 어플리케이션은 이걸 사용함.
+    * 진짜 MIDI에 미친 개발자, 즉 MIDI 제어, 시퀀싱 툴 등을 개발한다면 이걸 사용하면 됨.
+
+#### 오디오 엔진
+
+오디오 엔진은 두 성분으로 이루어짐:
+
+* 오디오 장치 그래프 (audiodg.exe)
+    * 오디오 엔진을 로딩함
+* 오디오 엔진 (audioeng.dll)
+    * 오디오 스트림을 믹싱하고 처리함.
+    * 오디오 신호를 처리하는 특정 하드웨어 전용 플러그인인 오디오 처리 개체 (APO)를 로딩해줌.
+
+#### 오디오 드라이버
+
+오디오 드라이버는:
+
+* 오디오 스택이 여러 오디오 장치(내장 스피커, 마이크 등)로부터 오디오를 출력 / 입력하게 해줌.
+
+#### 하드웨어
+
+오디오 하드웨어란 예를 들면:
+
+* 오디오 코덱
+* DSP (선택 사항)
+* 내장 스피커, 마이크 등
+* 외부 장치: USB 오디오 장치, 블루투스 오디오 장치, HDMI 오디오 등
+
+### 디지털 오디오
+
+디지털의 형태로 소리를 저장한 것이 디지털 오디오. 보통 순차적으로 수치적인 샘플로 인코딩된 오디오 신호를 의미함. 디지털 오디오 시스템에서는 아날로그 전기 신호를 analog to digital converter (ADC)로 디지털 신호로 변환함. 전기학에서 ADC란 아날로그 신호를 디지털 신호로 변환해주는 시스템이며, 이건 입력을 양자화하기에 약간의 오류나 노이즈가 발생함.
+
+디지털 오디오 기술은 녹음 / 수정 / 대량생산 / 음원 배포(노래, 팟캐스트, 음성 효과 등) 등에 사용함. 과거에는 실제 물리적인 데이터를 팔았음. 아날로그 오디오 시스템이란 소리의 물리적인 파형을 마이크와 같은 변환기로 전기 신호로 변환해줌. 허나 아날로그 오디오 신호는 전기 회로나 관련 장치의 내재적인 특성 때문에 노이즈나 왜곡이 들어갈 수도 있음. 디지털 오디오 신호는 데이터를 저장할 때 correction에 사용하는 인코딩 기술에서나 신호를 전달할 때 오류가 발생할 수 있음.
+
+#### 디지털 오디오 압축
+
+당연히 저장이나 오디오 데이터 전달이 좀 더 효율적이게 됨.
+
+손실 압축이든 무손실 압축이든 어쨋든 정보의 반복을 코딩, 양자화, 이산 코사인 변환, 선형 예측 등으로 줄일 수 있음.
+
+손실 압축 알고리듬의 경우 압축률이 상당히 높아 여러 오디오 어플리케이션에서 사용함.
+
+* 사실상 *심리 음향학psychoacoustics*을 사용하여 거의 들리지 않는 소리들의 음질을 죽여 이런 소리들을 저장하거나 전달하는 공간을 줄이게 됨.
+* 압축률은 거의 원본의 80~90%임.
+* ac-3, mp3, aac, mp4, vorbis, wma 등이 있음
+
+무손실 압축의 경우 원본으로 완벽하게 복원할 수 있도록 디코딩 될 수 있게 디지털 데이터로 저장됨.
+
+* 압축률은 거의 원본의 50~60% 정도로, 보통 다른 일반적인(영상 포함) 무손실 데이터 압축과 비슷함.
+* 무손실 코덱은 curve fitting이나 선형 예측으로 신호를 추정함.
+* flac, alac, ape, ofr, wv, tta, mpeg-4 als 등
+
+##### 심리 음향학
+
+심리 음향학이란 음향학과 청각 생리학을 합쳐서 소리의 특징과 청각적인 감각 간의 관계를 결정함.
+
+Loudness란 소리의 강도를 느끼는 정도에 대한 주관적인 측정치임. 이걸로 큰 소리와 작은 소리를 구분할 수 있게 됨.
+
+* 절대적 청각 임계점
+    * 조용한 환경에서 청각적인 감각이 발생하는 가장 작은 소리의 압력 정도를 의미함.
+    * 사람마다, 소리 주파수마다 다름.
+* 불편함 정도
+    * 불편함을 느끼는 가장 작은 소리 압력의 정도를 의미함.
+    * 사람마다, 소리 주파수마다 다름.
+* 일반 임계점
+    * 여러 일반적인 청각을 갖는 사람들로부터 기록한 평균 입계점을 의미.
