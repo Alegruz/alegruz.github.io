@@ -127,6 +127,13 @@ For each light and lit pixel
 ```
 <sup>[Valient07](#Valient07)</sup>
 
+* Traditional deferred shading<sup>[Andersson09](#Andersson09)</sup>
+  1. Graphics pipeline rasterizes gbuffer for opaque surfaces
+     * Normal, albedos, roughness, etc. 
+  2. Light sources are rendered & accumulate lighting to a texture
+     * Light volume or screen-space tile rendering 
+  3. Combine shading & lighting for final output
+
 * Worst case complexity is num_objects + num_lights<sup>[Hargreaves04](#Hargreaves04)</sup>
 * Perfect batching<sup>[Hargreaves04](#Hargreaves04)</sup>
 * Many small lights are just as cheap as a few big ones<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -141,12 +148,13 @@ G-Buffers are 2D images that store geometric details in a texture, storing posit
 |Attribute|Format|Comment|Optimization|
 |---------|------|-------|------------|
 |Depth<sup>[Calver03](#Calver03)</sup><br><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br><sup>[Placeres06](#Placeres06)</sup>| | |In GBuffer, `G_Buffer.z = length(Input.PosInViewSpace);`, In VS, `out.vEyeToScreen = float3(Input.ScreenPos.x * ViewAspect, Input.ScreenPos.y, invTanHalfFOV);`, In PS, `float3 PixelPos = normalize(Input.vEyeToScreen) * G_Buffer.z;`<sup>[Placeres06](#Placeres06)</sup><br>`float3 vViewPos.xy = INTERPOLANT VPOS * half2(2.0f, -2.0f) + half2(-1.0f, 1.0f)) * 0.5 * p vCameraNearSize * p vRecipRenderTargetSize;`<br>`vViewPos.zw = half2(1.0f, 1.0f);`<br>`vViewPos.xyz = vViewPos.xyz * fSampledDepth;`<br>`float3 vWorldPos = mul(p_mInvViewTransform, vViewPos).xyz;`|
-|Normal<sup>[Calver03](#Calver03)</sup><br><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br><sup>[Placeres06](#Placeres06)</sup>|`R10G10B10A2_FLOAT`<sup>[Hargreaves04](#Hargreaves04)</sup><br>`U10V10W10A2`<sup>[Thibieroz04](#Thibieroz04)</sup>, `U8V8W8Q8`<sup>[Thibieroz04](#Thibieroz04)</sup>|Model space vs Tangent space<sup>[Thibieroz04](#Thibieroz04)</sup>|Reconstruct z from xy(z = sqrt(1 - x<sup>2</sup> - y<sup>2</sup>))<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup><br>If all the lighting is performed in view space, then the front-faced polygons are always gonig to have negative or positive Z components<sup>[Placeres06](#Placeres06)</sup>|
-|Diffuse Albedo<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>|`R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>| | |
+|Normal<sup>[Calver03](#Calver03)</sup><br><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br><sup>[Placeres06](#Placeres06)</sup><br><sup>[Andersson09](#Andersson09)</sup>|`R10G10B10A2_FLOAT`<sup>[Hargreaves04](#Hargreaves04)</sup><br>`U10V10W10A2`<sup>[Thibieroz04](#Thibieroz04)</sup>, `U8V8W8Q8`<sup>[Thibieroz04](#Thibieroz04)</sup>|Model space vs Tangent space<sup>[Thibieroz04](#Thibieroz04)</sup>|Reconstruct z from xy(z = sqrt(1 - x<sup>2</sup> - y<sup>2</sup>))<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup><br>If all the lighting is performed in view space, then the front-faced polygons are always gonig to have negative or positive Z components<sup>[Placeres06](#Placeres06)</sup>|
+|Diffuse Albedo<sup>[Calver03](#Calver03)</sup><br><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br><sup>[Andersson09](#Andersson09)</sup>|`R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>| | |
 |Specular/Exponent Map<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>| | | |
 |Emissive<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>| | | |
 |Light Map<sup>[HargreavesHarris04](#HargreavesHarris04)</sup>| | |
 |Material ID<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>| | | |
+|Roughness<sup>[Andersson09](#Andersson09)</sup>| | | |
 
 ## Examples
 
@@ -619,10 +627,194 @@ I simply turn off the occlusion culling if the light shader hits the near plane 
 
 ### Tiled Shading
 
-* Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
-* Find which lights intersect each cell<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
-* Render quads over each cell calculating up to 8 lights per pass<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
+1. Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
+2. Find which lights intersect each cell<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
+   * +How many lights<sup>[Andersson09](#Andersson09)</sup> 
+3. Render quads over each cell calculating up to 8 lights per pass<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
   * Results in a light buffer
+  * Only apply the visible light sources on pixels in each tile<sup>[Andersson09](#Andersson09)</sup>
+
+Computer Shader Steps:<sup>[Andersson09](#Andersson09)</sup>
+<ol>
+<li>Load gbuffers & depth</li>
+<li>
+Calculate min & max z in threadgroup / tile
+  <ul>
+  <li>Using <code>InterlockedMin</code>/<code>Max</code> on <code>groupshared</code> variable</li>
+  <li>Atomics only work on ints</li>
+  <li>But casting works (z is always +) </li>
+  <li><strong>Can skip if we could resolve out min & max z to a texture directly using HiZ / Z Culling</strong></li>
+  <li><pre><code class="lang-c">groupshared uint minDepthInt;
+  groupshared uint maxDepthInt;
+
+  // --- globals above, function below -------
+
+  float depth = depthTexture.Load(uint3(texCoord, 0)).r;
+  uint depthInt = asuint(depth);
+
+  minDepthInt = 0xFFFFFFFF</span>;
+  maxDepthInt = 0;
+  GroupMemoryBarrierWithGroupSync();
+
+  InterlockedMin(minDepthInt, depthInt);
+  InterlockedMax(maxDepthInt, depthInt);
+
+  GroupMemoryBarrierWithGroupSync();
+
+  float minGroupDepth = asfloat(minDepthInt);
+  float maxGroupDepth = asfloat(maxDepthInt);
+  </code></pre>
+  </li>
+  </ul>
+</li>
+<li>
+  Determine visible light sources for each tile
+  <ul>
+    <li>
+      Cull all light sources against tile "frustum"
+      <ul>
+        <li>Light sources can either naively be all light sources in the scene, or CPU frustum culled potentially visible light sources</li>
+      </ul>
+    </li>
+    <li>
+      Output for each tile is:
+      <ul>
+        <li># of visible light sources</li>
+        <li>Index list of visible light sources</li>
+        <li>
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Lights</th>
+                <th>Indices</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Global list</th>
+                <td>1000+</td>
+                <td>0 1 2 3 4 5 6 7 8 &hellip;</td>
+              </tr>
+              <tr>
+                <th>Tile visible list</th>
+                <td>~0-40+</td>
+                <td>0 2 5 6 8 &hellip;</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>Key part of the algorithm and compute shader</li>
+        <li>
+        Each thread switches to process light sources instead of a pixel
+        <ul>
+          <li>Wow, parallelism switcheroo!</li>
+          <li>256 light sources in parallel per tile</li>
+          <li>Multiple iterations for >256 lights</li>
+        </ul>
+        </li>
+        <li>
+        Intersect light source & tile
+        <ul>
+          <li>Many variants dep. on accuracy requirements & performance</li>
+          <li>Tile min & max z is used as a shader "depth bounds" test</li>
+        </ul>
+        </li>
+        <li>
+        For visible lights, append light index to index list
+        <ul>
+          <li>Atomic add to threadgroup shared memory. "inlined stream compaction"</li>
+          <li>Prefix sum + stream compaction should be faster than atomics, but more limiting</li>
+        </ul>
+        </li>
+        <li>
+        Synchronize group & switch back to processing pixels
+        <ul>
+          <li>We now know which light sources affect the tile</li>
+        </ul>
+        </li>
+      </ul>
+    </li>
+    <li><pre><code class="lang-c">struct Light
+{
+    <span class="hljs-type">float3</span> pos;
+    <span class="hljs-type">float</span> sqrRadius;
+    <span class="hljs-type">float3</span> color;
+    <span class="hljs-type">float</span> invSqrRadius;
+};
+<span class="hljs-type">int</span> lightCount;
+StructuredBuffer&lt;Light&gt; lights;
+
+groupshared <span class="hljs-type">uint</span> visibleLightCount = <span class="hljs-number">0</span>;
+groupshared <span class="hljs-type">uint</span> visibleLightIndices[<span class="hljs-number">1024</span>];
+
+<span class="hljs-comment">// ----- globals above, cont. function below ---------</span>
+
+<span class="hljs-type">uint</span> threadCount = BLOCK_SIZE * BLOCK_SIZE;
+<span class="hljs-type">uint</span> passCount = (lightCount + threadCount - <span class="hljs-number">1</span>) / threadCount;
+
+<span class="hljs-keyword">for</span> (<span class="hljs-type">uint</span> passIt = <span class="hljs-number">0</span>; passIt &lt; passCount; ++passIt)
+{
+    <span class="hljs-type">uint</span> lightIndex = passIt * threadCount + groupIndex;
+
+    <span class="hljs-comment">// prevent overrun by clmaping to a last "null" light</span>
+    lightIndex = <span class="hljs-built_in">min</span>(lightIndex, lightCount);
+
+    <span class="hljs-keyword">if</span> (intersects(lights[lightIndex], tile))
+    {
+        <span class="hljs-type">uint</span> <span class="hljs-keyword">offset</span>;
+        InterlockedAdd(visibleLightCount, <span class="hljs-number">1</span>, <span class="hljs-keyword">offset</span>);
+        visibleLightIndices[<span class="hljs-keyword">offset</span>] = lightIndex;
+    }
+}
+
+GroupMemoryBarrierWithGroupSync();
+</code></pre>
+</li>
+  </ul>
+</li>
+<li>
+For each pixel, accumulate lighting from visible lights
+  <ul>
+    <li>Read from tile visible light index list in threadgroup shared memory</li>
+    <li><pre><code class="lang-c">float3 <span class="hljs-keyword">diffuseLight </span>= <span class="hljs-number">0</span>;
+float3 specularLight = <span class="hljs-number">0</span>;
+
+for (uint lightIt = <span class="hljs-number">0</span>; lightIt &lt; visibleLightCount; ++lightIt)
+{<br>  uint lightIndex = visibleLightIndices[lightIt]<span class="hljs-comment">;</span><br>  Light light = lights[lightIndex]<span class="hljs-comment">;</span><br><br>  evaluateAndAccumulateLight(<br>    light,<br>    gbufferParameters,<br>    diffuseLight,<br>    specularLight<br>  );
+}
+</code></pre>
+</li>
+  </ul>
+</li>
+<li>
+  Combine lighting & shading albedos / parameters
+  <ul>
+    <li>Output is non-MSAA HDR texture</li>
+    <li>Render transparent surfaces on top</li>
+  </ul>
+</li>
+</ol>
+
+* Advantages:<sup>[Andersson09](#Andersson09)</sup>
+  * Constant & absolute minimal bandwith
+    * Read gbuffers & depth once!
+  * Doens't need intermediate light buffers
+    * Can take a lot of memory with HDR, MSAA & color specular
+  * Scales up to huge amount of big overlapping light sources
+    * Fine-grained culling (16 &times; 16)
+    * Only ALU cost, good future scaling
+    * Could be useful for accumulating VPLs
+* Disadvantages:<sup>[Andersson09](#Andersson09)</sup>
+  * ~~Requires DX 11 HW~~
+    * ~~CS 4.0 / 4.1 difficult due to atomics & scattered `groupshared` writes~~
+  * Culling overhead for small light sources
+    * Can accumulate them using standard light volume rendering
+    * Or separate CS for tile-classific
+  * Potentially performance
+    * MSAA texture loads / UAV writing might be slower then standard PS
+  * Can't output to MSAA texture
+    * DX11 CS UAV limitation
 
 ### Optimizations
 
@@ -959,3 +1151,8 @@ float DL_GetEdgeWeight(in float2 screenPos)
 
 <a id="BalestraEngstad08" href="https://www.gdcvault.com/play/325/The-Technology-of-UNCHARTED-DRAKE">The Technology of Uncharted: Drake's Fortune</a>. [Christophe Balestra](https://www.linkedin.com/in/christophe-balestra-37bb41/), [Naughty Dog](https://www.naughtydog.com/). [Pål-Kristian Engstad](https://www.linkedin.com/in/p%C3%A5l-kristian-engstad-08a22a1/), [Naughty Dog](https://www.naughtydog.com/). [GDC 2008](https://www.gdcvault.com/free/gdc-08/).<br>
 <a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">StarCraft II: Effects & Techniques</a>. [Dominic Filion](https://www.linkedin.com/in/%E2%80%8Edominic-filion-guay-258202/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [Rob McNaughton](https://www.linkedin.com/in/rob-mcnaughton-4872453/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [SIGGRAPH 2008: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/)
+
+## 2009
+
+<a id="Andersson09" href="https://www.ea.com/frostbite/news/parallel-graphics-in-frostbite-current-future">Parallel Graphics in Frostbite - Current Future</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/). 
+SIGGRAPH 2009: Beyond Programmable Shading Course
