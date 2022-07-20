@@ -635,6 +635,25 @@ I simply turn off the occlusion culling if the light shader hits the near plane 
   * Only apply the visible light sources on pixels in each tile<sup>[Andersson09](#Andersson09)</sup>
 
 Computer Shader Steps:<sup>[Andersson09](#Andersson09)</sup>
+<ul>
+  <li>
+    Requiresments & setup
+    <ul>
+      <li>Input data is gbuffers, depth buffer & light constants</li>
+      <li>Output is fully composited & lit HDR texture</li>
+      <li>1 thread per pixel, 16 x 16 thread groups (aka tile)</li>
+      <li><pre><code>Texture2D&lt;float4&gt; gbufferTexture1 : register(<span class="hljs-built_in">t0</span>);
+Texture2D&lt;float4&gt; gbufferTexture2 : register(<span class="hljs-built_in">t1</span>);
+Texture2D&lt;float4&gt; gbufferTexture3 : register(<span class="hljs-built_in">t2</span>);
+Texture2D&lt;float4&gt; depthTexture : register(<span class="hljs-built_in">t3</span>);<br><br>RWTexture2D&lt;float4&gt; outputTexture : register(u0)<span class="hljs-comment">;</span><br><br>#define BLOCK_SIZE (16)<br><br>[numthreads(<span class="hljs-keyword">BLOCK_SIZE, </span><span class="hljs-keyword">BLOCK_SIZE, </span><span class="hljs-number">1</span>)]
+void csMain(<br>  uint3 groupId : SV_GroupID,<br>  uint3 groupThreadId : SV_GroupThreadID,<br>  uint groupIndex : SV_GroupIndex,<br>  uint3 <span class="hljs-keyword">dispatchThreadId </span>: SV_DispatchThreadID
+)
+{<br>  &hellip;
+}
+</code></pre></li>
+    </ul>
+  </li>
+</ul>
 <ol>
 <li>Load gbuffers & depth</li>
 <li>
