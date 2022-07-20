@@ -1,4 +1,4 @@
-# Rendering Pipeline Study Notes (2022.06.03)
+# Efficient Rendering Study Notes (2022.06.03)
 [Home](/README.md)
 
 # History Overiew
