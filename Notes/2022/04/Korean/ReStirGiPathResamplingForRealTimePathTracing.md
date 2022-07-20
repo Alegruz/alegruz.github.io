@@ -182,33 +182,40 @@ Bitterli et al. [[BWP<span>&#42;</span>20](#bwp*20)]에서 보여주었듯, 가�
 
 #### C++-like pseudo code
 
-```
-class Reservoir
+```cpp
+// GIReservoir.slang
+struct GIReservoir
 {
-public:
-    void Update(const Sample& newSample, float newRelativeWeight)
+    // Sample
+    float3  VisiblePosition;    ///< Visible point's position.
+    float3  VisibleNormal;      ///< Visible point's normal.
+    float3  SamplePosition;     ///< Sample point's position.
+    float3  SampleNormal;       ///< Sample point's normal.
+    float3  SampleRadiance;     ///< Sample outgoing radiance.
+    int     M;                  ///< Input sample count.
+    float   AverageWeight;      ///< Average weight for chosen.
+    uint    Age;                ///< Number of frames the sample has survived.
+}
+
+// GIResampling.cs.slang
+bool UpdateReservoir(float weight, GIReservoir srcReservoir, inout TinyUniformSampleGenerator sg, inout float weightSum, inout GIReservoir dstReservoir)
+{
+    weightSum += weight;
+    dstReservoir.M += srcReservoir.M;
+
+    // Conditionally update reservoir
+    float random = sampleNext1D(sg);
+    bool bIsUpdate = random * weightSum <= weight;
+    if (bIsUpdate)
     {
-        RelativeWeight += newRelativeWeight;
-        ++NumCandidateSamples;
-        if (random() < newRelativeWeight / RelativeWeight)
-        {
-            Sample = newSample;
-        }
+        dstReservoir.SamplePosition = srcReservoir.SamplePosition;
+        dstReservoir.SampleNormal = srcReservoir.SampleNormal;
+        dstReservoir.SampleRadiance = srcReservoir.SampleRadiance;
+        dstReservoir.Age = srcReservoir.Age;
     }
 
-    void Merge(const Reservoir& reservoir, float targetProbability)
-    {
-        uint newNumCandidateSamples = NumCandidateSamples;
-        Update(reservoir.Sample, targetProbability * reservoir.Weight * reservoir.NumCandidateSamples);
-        NumCandidateSamples = newNumCandidateSamples + reservoir.NumCandidateSamples;
-    }
-
-public:
-    Sample Sample;                     // z
-    float RelativeWeight = 0.0f;       // w
-    uint NumCandidateSamples = 0u;     // M
-    float Weight = 0.0f;               // W
-};
+    return bIsUpdate;
+}
 ```
 
 # 4. ReSTIR GI
@@ -262,6 +269,41 @@ ReSTIR GI 알고리듬의 첫번째 단계는 각 가시점마다 새 표본점�
     * x<sub>s</sub>에서 나가는 방사 휘도 ![SamplePointOutgoingRadiance](/Images/ReStirGi/SamplePointOutgoingRadiance.png) 추정.
     * InitialSampleBuffer[q] ← Sample(x<sub>v</sub>, ![VisiblePointSurfaceNormal](/Images/ReStirGi/VisiblePointSurfaceNormal.png), x<sub>s</sub>, ![SamplePointSurfaceNormal](/Images/ReStirGi/SamplePointSurfaceNormal.png), ![SamplePointOutgoingRadiance](/Images/ReStirGi/SamplePointOutgoingRadiance.png));
 
+```cpp
+// ScreenSpaceReSTIR.slang
+void SetGIInitialSample(uint2 pixel, float3 visiblePosition, float3 visibleNormal, float3 samplePosition, float3 sampleNormal, float3 sampleRadiance, float srcPDF, int reservoirIndexOffset=0)
+{
+    GIReservoir initialSample;
+    initialSample.VisiblePosition = visiblePosition;
+    initialSample.VisibleNormal = visibleNormal;
+    initialSample.SamplePosition = samplePosition;
+    initialSample.SampleNormal = sampleNormal;
+
+    if (dot(initialSample.SampleNormal, initialSample.VisiblePosition - initialSample.SamplePosition) < 0)
+    {
+        initialSample.SampleNormal *= -1;
+    }
+    if (dot(initialSample.VisibleNormal, initialSample.SamplePosition - initialSample.VisiblePosition) < 0)
+    {
+        initialSample.VisibleNormal *= -1;
+    }
+    initialSample.SampleRadiance = sampleRadiance;
+    initialSample.AverageWeight = srcPDF == 0.f ? 0.f : 1.f / srcPDF;   // 1;
+    initialSample.M = 1;
+    initialSample.Age = 0;
+    uint sampleIndexOffset = reservoirIndexOffset;
+    uint pixelIndex = getPixelIndex(pixel);
+    WriteReservoir(initialSamples, pixelIndex, sampleIndexOffset, frameDim.x * frameDim.y, initialSample);
+}
+
+// GIReservoir.slang
+void WriteReservoir(RWStructuredBuffer<PackedGIReservoir> reservoirBuffer, uint baseIndex, uint sampleIndex, uint elementCount, GIReservoir reservoir)
+{
+    uint index = baseIndex + sampleIndex * elementCount;
+    reservoirBuffer[index] = reservoir.pack();
+}
+```
+
 <div style="text-align: center" id="figure_5">
 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure5.jpeg" alt="Figure5">
 <p><strong>그림 5:</strong> 다중 튕김 GI. 각 표본점 x<sub>2</sub><sup>*</sup>마다 대응하는 가시점에 산란된 방사 휘도를 경로 추적법으로 추정함. 최종 경로 정점에 연결하여 다른 가시점이 전체 경로의 기여도를 재사용할 수 있게됨.</p>
@@ -300,6 +342,110 @@ ReSTIR GI 알고리듬의 첫번째 단계는 각 가시점마다 새 표본점�
     * R.Update(S, w)
     * R.W ← R.w / (R.M · ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(R.z)) ([식 7](#eq_7))
     * TemporalReservoirBuffer[q] ← R
+
+```cpp
+void execute(const uint2 pixel)
+{
+    ...
+    for (uint localIndex = 0; localIndex < reservoirCount; ++localIndex)
+    {
+        // Read latest samples generated by create gather point shader.
+        uint initialSampleIndex =  kReSTIRGIUseReSTIRN ? localIndex : 0;// 1;
+        // LINE 2
+        GIReservoir initialSample = ReadReservoir(initialSamples, pixelIndex, initialSampleIndex, frameDim.x * frameDim.y);
+
+        int indexOffsetBegin = 2 * localIndex;
+        int temporalSourceIndex = indexOffsetBegin;
+        int spatialSourceIndex = indexOffsetBegin + 1;
+        int temporalTargetIndex = temporalSourceIndex;
+        int spatialTargetIndex = spatialSourceIndex;
+
+        // Use input samples only.
+        if (kReSTIRMode == ReSTIRMode::InputOnly)
+        {
+            WriteReservoir(reservoirs, pixelIndex, temporalTargetIndex, frameDim.x * frameDim.y, initialSample);
+            WriteReservoir(reservoirs, pixelIndex, spatialTargetIndex, frameDim.x * frameDim.y, initialSample);
+            continue;
+        }
+
+        // Temporal Reuse.
+        // Read temporal reservoir.
+        // LINE 3
+        GIReservoir temporalReservoir = ReadReservoir(prevReservoirs, prevIdx, temporalSourceIndex, frameDim.x * frameDim.y);
+        if (length(temporalReservoir.VisiblePosition - worldPosition) > 1.f)
+        {
+            isPrevValid = false;
+        }
+
+        float3 radiance = initialSample.SampleRadiance;
+        temporalReservoir.M = clamp(temporalReservoir.M, 0, temporalMaxSamples);
+        if (!isPrevValid || temporalReservoir.Age > maxSampleAge)
+        {
+            temporalReservoir.M = 0;
+        }
+
+        // Compute reuse weight.
+        float tf = EvalTargetFunction(temporalReservoir.radiance, worldNormal, worldPosition, temporalReservoir.SamplePosition, evalContext);
+
+        float jacobian = 1.f;
+
+        if (enableTemporalJacobian)
+        {
+            float3 offsetB = temporalReservoir.position - temporalReservoir.creationPoint;
+            float3 offsetA = temporalReservoir.position - worldPosition;
+
+            float RB2 = dot(offsetB, offsetB);
+            float RA2 = dot(offsetA, offsetA);
+            offsetB = normalize(offsetB);
+            offsetA = normalize(offsetA);
+            float cosA = dot(worldNormal, offsetA);
+            float cosB = dot(temporalReservoir.creationNormal, offsetB);
+            float cosPhiA = -dot(offsetA, temporalReservoir.normal);
+            float cosPhiB = -dot(offsetB, temporalReservoir.normal);
+
+            if (cosA <= 0.f || cosPhiA <= 0.f || RA2 <= 0.f || RB2 <= 0.f || cosB <= 0.f || cosPhiB <= 0.f)
+            {
+                tf = 0.f;
+            }
+
+            // assuming visible
+
+            // Calculate Jacobian determinant and weight.
+            const float maxJacobian = enableJacobianClamping ? jacobianClampThreshold : largeFloat;
+            jacobian = RA2 * cosPhiB <= 0.f ? 0.f : clamp(RB2 * cosPhiA / (RA2 * cosPhiB), 0.f, maxJacobian);
+
+            tf *= jacobian;
+        }
+
+        float wSum = max(0.f, temporalReservoir.AverageWeight) * temporalReservoir.M * tf;
+        print("tf", tf);
+
+        float pNew = EvalTargetFunction(radiance, worldNormal, worldPosition, initialSample.SamplePosition, evalContext);
+        // LINE 4
+        float wi = initialSample.AverageWeight <= 0.f ? 0.f : pNew * initialSample.AverageWeight;
+
+        // LINE 5: Update temporal reservoir.
+        bool selectedNew = updateReservoir(wi, initialSample, sg, wSum, temporalReservoir);
+
+        print("wSum", wSum);
+        float avgWSum = wSum / temporalReservoir.M;
+        pNew = EvalTargetFunction(temporalReservoir.radiance, temporalReservoir.VisibleNormal, temporalReservoir.VisiblePosition, temporalReservoir.SamplePosition, evalContext);
+        // LINE 6
+        temporalReservoir.AverageWeight = pNew <= 0.f ? 0.f : avgWSum / pNew;
+        print("avgWSum", avgWSum);
+        print("pNew", pNew);
+        print("temporalReservoir.AverageWeight", temporalReservoir.AverageWeight);
+        temporalReservoir.M = clamp(temporalReservoir.M, 0, temporalMaxSamples);
+        temporalReservoir.Age++;
+        temporalReservoir.VisiblePosition = worldPosition;
+        temporalReservoir.VisibleNormal = worldNormal;
+
+        // LINE 7
+        WriteReservoir(reservoirs, pixelIndex, temporalTargetIndex, frameDim.x * frameDim.y, temporalReservoir);
+        ...
+    }
+}
+```
 
 시간적으로 사용해준 다음엔 공간적 재사용을 적용해줌. 근처 픽셀의 시간적 저장소에서 표본을 갖고 와서 또다른 공간적 저장소에 재표집해줌. ([알고리듬 4](#알고리듬-4-공간적-재표집)의 의사 코드 참고.) 공간적 재사용을 할 땐 반드시 픽셀 간 소스 PDF의 차이를 고려해야함. 왜냐면 이 알고리듬에서의 표집 스킴은 가시점의 위치와 표면 법선에 기반하기 때문임. (본래 ReSTIR 알고리듬의 경우 각 픽셀의 지역 기하를 고려하지 않고, 바로 직접적으로 빛을 표집했기에 이러한 정정이 필요 없었음.) 그러므로 픽셀 q에서 온 표본을 픽셀 r에서 재사용하고 싶다면 반드시 입체각 PDF를 현재 픽셀의 입체각 공간으로 변환해주어야함. 이 변환은 해당 변환의 야코비 행렬식으로 나누어지는 식으로 해주는 것임[[KMA<span>&#42;</span>15](#kma*15), [식 13](#eq_13)]:
 
@@ -352,6 +498,213 @@ ReSTIR GI 알고리듬의 첫번째 단계는 각 가시점마다 새 표본점�
 21:     R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>s</sub>.z))   (<a href="#eq_7">식 7</a>)
 22:     SpatialReservoirBuffer[q] ← R<sub>s</sub>
 </code></pre>
+
+```cpp
+void execute(const uint2 pixel)
+{
+    ...
+    for (uint localIndex = 0; localIndex < reservoirCount; ++localIndex)
+    {
+        ...
+        // Spatial Reuse.
+        // Read spatial reservoir.
+        // LINE 2
+        GIReservoir spatialReservoir = readReservoir(prevReservoirs, prevIdx, spatialSourceIndex, frameDim.x * frameDim.y);
+
+        spatialReservoir.M = max(0, spatialReservoir.M);
+        if (!isPrevValid || spatialReservoir.Age > maxSampleAge)
+        {
+            spatialReservoir.M = 0;
+        }
+
+        // Add near sample to s reservoir.
+        uint prevIdx2;
+        GIReservoir neighborReservoir = temporalReservoir;
+        float wSumS = max(0.f, spatialReservoir.AverageWeight) * spatialReservoir.M * EvalTargetFunction(spatialReservoir.SampleRadiance, spatialReservoir.VisibleNormal, spatialReservoir.VisiblePosition, spatialReservoir.SamplePosition, evalContext);
+
+        // Determine maximum iteration based on current sample count.
+        // If sample count is low, use more iterations to boost sample count.
+        const float fastReuseRatio = 0.5f;
+        const float fastReuseThreshold = spatialMaxSamples * fastReuseRatio;
+        const int normalIteration = 3;
+        const int fastReuseIteration = 10;
+
+        int maxIteration = spatialReservoir.M > fastReuseThreshold ? normalIteration : fastReuseIteration;
+
+        const float searchRadiusRatio = 0.1f;
+        float searchRadius = frameDim.x * searchRadiusRatio;
+
+        // Initialize reuse history.
+        float3 positionList[10];
+        float3 normalList[10];
+        int MList[10];
+        int nReuse = 0;
+        int reuseID = 0;
+        positionList[nReuse] = worldPosition;
+        normalList[nReuse] = worldNormal;
+        MList[nReuse] = spatialReservoir.M;
+        nReuse++;
+        spatialReservoir.VisiblePosition = worldPosition;
+        spatialReservoir.VisibleNormal = worldNormal;
+
+        // Search and reuse neighbor samples.
+        const uint startIndex = sampleNext1D(sg) * kNeighborOffsetCount;
+
+        // LINE 4
+        for (int i = 0; i < maxIteration; i++)
+        {
+            // Get search radius.
+            const float radiusShrinkRatio = 0.5f;
+            const float minSearchRadius = 10.f;
+            searchRadius = max(searchRadius* radiusShrinkRatio, minSearchRadius);
+            // LINE 5: Randomly sample a neighbor.
+            float3 randOffset = sampleNext3D(sg);
+            randOffset = randOffset * 2.f - 1.f;
+            int2 neighborID = prevID + randOffset.xy * searchRadius;
+
+            uint2 boundary = frameDim.xy - 1;
+            neighborID.x = neighborID.x < 0 ? -neighborID.x : (neighborID.x > boundary.x ? 2 * boundary.x - neighborID.x : neighborID.x);
+            neighborID.y = neighborID.y < 0 ? -neighborID.y : (neighborID.y > boundary.y ? 2 * boundary.y - neighborID.y : neighborID.y);
+
+            // LINE 6: Check geometric similarity.
+            float4 neighborNormalDepth = unpackNormalDepth(prevNormalDepth[neighborID]);
+            // LINE 7
+            if (!evalContext.isValidNeighbor(neighborNormalDepth, normalThreshold, depthThreshold))
+                continue;
+
+            // Read neighbor's spatial reservoir.
+            prevIdx2 = toLinearIndex(neighborID);
+
+            bool bReuseSpatialSample = (kReSTIRMode == ReSTIRMode::TemporalAndUnbiasedSpatial ? i % 2 == 1 : 0);
+            // LINE 9
+            neighborReservoir = ReadReservoir(prevReservoirs, prevIdx2, bReuseSpatialSample ? spatialSourceIndex : temporalSourceIndex, frameDim.x * frameDim.y);
+
+            // Discard black samples.
+            if (neighborReservoir.M <= 0)
+            {
+                continue;
+            }
+
+            // Calculate target function.
+            float3 offsetB = neighborReservoir.position - neighborReservoir.creationPoint;
+            float3 offsetA = neighborReservoir.position - worldPosition;
+            float pNewTN = evalTargetFunction(neighborReservoir.radiance, worldNormal, worldPosition, neighborReservoir.position, evalContext);
+            // Discard back-face.
+            if (dot(worldNormal, offsetA) <= 0.f)
+            {
+                pNewTN = 0.f;
+            }
+
+            float RB2 = dot(offsetB, offsetB);
+            float RA2 = dot(offsetA, offsetA);
+            offsetB = normalize(offsetB);
+            offsetA = normalize(offsetA);
+            float cosA = dot(worldNormal, offsetA);
+            float cosB = dot(neighborReservoir.creationNormal, offsetB);
+            float cosPhiA = -dot(offsetA, neighborReservoir.normal);
+            float cosPhiB = -dot(offsetB, neighborReservoir.normal);
+            if (cosB <= 0.f || cosPhiB <= 0.f)
+            {
+                continue;
+            }
+            if (cosA <= 0.f || cosPhiA <= 0.f || RA2 <= 0.f || RB2 <= 0.f)
+            {
+                pNewTN = 0.f;
+            }
+
+            bool isVisible = evalSegmentVisibility(computeRayOrigin(worldPosition, worldNormal), neighborReservoir.position);
+            if (!isVisible)
+            {
+                pNewTN = 0.f;
+            }
+
+            // Calculate Jacobian determinant and weight.
+            const float maxJacobian = enableJacobianClamping ? jacobianClampThreshold : largeFloat;
+            float jacobian = RA2 * cosPhiB <= 0.f ? 0.f : clamp(RB2 * cosPhiA / (RA2 * cosPhiB), 0.f, maxJacobian);
+            float wiTN = clamp(neighborReservoir.avgWeight * pNewTN * neighborReservoir.M * jacobian, 0.f, largeFloat);
+
+            // Conditionally update spatial reservoir.
+            bool isUpdated = updateReservoir(wiTN, neighborReservoir, sg, wSumS, spatialReservoir);
+            if (isUpdated) reuseID = nReuse;
+
+            // Update reuse history.
+            positionList[nReuse] = neighborReservoir.creationPoint;
+            normalList[nReuse] = neighborReservoir.creationNormal;
+            MList[nReuse] = neighborReservoir.M;
+            nReuse++;
+
+            // Expand search radius.
+            const float radiusExpandRatio = 3.f;
+            searchRadius *= radiusExpandRatio;
+        }
+
+        // Calculate weight of spatial reuse.
+        float m;
+        if (kReSTIRMode == ReSTIRMode::TemporalAndBiasedSpatial)
+        {
+            m = spatialReservoir.M <= 0.f ? 0.f : 1.f / float(spatialReservoir.M);
+        }
+        else if (kReSTIRMode == ReSTIRMode::TemporalAndUnbiasedSpatial)
+        {
+            // Trace extra rays if unbiased spatial reuse is enabled.
+            float totalWeight = 0.f;
+            float chosenWeight = 0.f;
+            int nValid = 0;
+            int Z = 0;
+            for (int i = 0; i < nReuse; i++)
+            {
+                bool isVisible = true;
+                bool shouldTest = true;
+                float3 directionVec = spatialReservoir.position - positionList[i];
+                if (dot(directionVec, normalList[i]) < 0.f)
+                {
+                    shouldTest = false;
+                    isVisible = false;
+                }
+                if (shouldTest)
+                {
+                    isVisible = evalSegmentVisibility(computeRayOrigin(positionList[i], normalList[i]), spatialReservoir.position);
+                }
+                // Discard new sample if it is occluded.
+                if (isVisible)
+                {
+                    if (kReSTIRMISWeight == 0)
+                        totalWeight += MList[i];
+                    else
+                    {
+                        float misWeight = saturate(dot(normalList[i], normalize(directionVec))) * luminance(spatialReservoir.radiance);
+                        totalWeight += misWeight * MList[i];
+                        if (reuseID == i)
+                        {
+                            chosenWeight = misWeight;
+                        }
+                    }
+                    nValid++;
+                }
+                else if (i == 0)
+                {
+                    break;
+                }
+            }
+
+            if (kReSTIRMISWeight == 0) m = totalWeight <= 0.f ? 0.f : 1.f / totalWeight;
+            else m = totalWeight <= 0.f ? 0.f : chosenWeight / totalWeight;
+        }
+
+        pNew = EvalTargetFunction(spatialReservoir.radiance, worldNormal, worldPosition, spatialReservoir.SamplePosition, evalContext);
+        float mWeight = pNew <= 0.f ? 0.f : 1.f / pNew * m;
+        spatialReservoir.M = clamp(spatialReservoir.M, 0, spatialMaxSamples);
+        float W = wSumS * mWeight;
+        // TODO: add UI control for this
+        const float maxSpatialWeight = enableSpatialWeightClamping ? spatialWeightClampThreshold : largeFloat;
+        spatialReservoir.AverageWeight = clamp(W, 0.f, maxSpatialWeight);
+        spatialReservoir.Age++;
+
+        // LINE 21: Write spatial reservoir.
+        WriteReservoir(reservoirs, pixelIndex, spatialTargetIndex, frameDim.x* frameDim.y, spatialReservoir);
+    }
+}
+```
 
 ## 4.3. 편향
 
