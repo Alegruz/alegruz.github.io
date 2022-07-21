@@ -663,13 +663,7 @@ Calculate min & max z in threadgroup / tile
   <li>Atomics only work on ints</li>
   <li>But casting works (z is always +) </li>
   <li><strong>Can skip if we could resolve out min & max z to a texture directly using HiZ / Z Culling</strong></li>
-  <li><pre><code class="lang-c">groupshared uint minDepthInt;
-  groupshared uint maxDepthInt;
-
-  // --- globals above, function below -------
-
-  float depth = depthTexture.Load(uint3(texCoord, 0)).r;
-  uint depthInt = asuint(depth);
+  <li><pre><code class="lang-c">groupshared uint minDepthInt;<br>groupshared uint maxDepthInt;<br><br>// --- globals above, function below -------<br><br>float depth = depthTexture.Load(uint3(texCoord, 0)).r;<br>uint depthInt = asuint(depth);
 
   minDepthInt = 0xFFFFFFFF</span>;
   maxDepthInt = 0;
@@ -773,22 +767,7 @@ groupshared <span class="hljs-type">uint</span> visibleLightIndices[<span class=
 <span class="hljs-type">uint</span> passCount = (lightCount + threadCount - <span class="hljs-number">1</span>) / threadCount;
 
 <span class="hljs-keyword">for</span> (<span class="hljs-type">uint</span> passIt = <span class="hljs-number">0</span>; passIt &lt; passCount; ++passIt)
-{
-    <span class="hljs-type">uint</span> lightIndex = passIt * threadCount + groupIndex;
-
-    <span class="hljs-comment">// prevent overrun by clmaping to a last "null" light</span>
-    lightIndex = <span class="hljs-built_in">min</span>(lightIndex, lightCount);
-
-    <span class="hljs-keyword">if</span> (intersects(lights[lightIndex], tile))
-    {
-        <span class="hljs-type">uint</span> <span class="hljs-keyword">offset</span>;
-        InterlockedAdd(visibleLightCount, <span class="hljs-number">1</span>, <span class="hljs-keyword">offset</span>);
-        visibleLightIndices[<span class="hljs-keyword">offset</span>] = lightIndex;
-    }
-}
-
-GroupMemoryBarrierWithGroupSync();
-</code></pre>
+{<br>    <span class="hljs-type">uint</span> lightIndex = passIt * threadCount + groupIndex;<br><br>    <span class="hljs-comment">// prevent overrun by clmaping to a last "null" light</span><br>    lightIndex = <span class="hljs-built_in">min</span>(lightIndex, lightCount);<br><br>    <span class="hljs-keyword">if</span> (intersects(lights[lightIndex], tile))<br>    {<br>        <span class="hljs-type">uint</span> <span class="hljs-keyword">offset</span>;<br>        InterlockedAdd(visibleLightCount, <span class="hljs-number">1</span>, <span class="hljs-keyword">offset</span>);<br>        visibleLightIndices[<span class="hljs-keyword">offset</span>] = lightIndex;<br>    }<br>}<br><br>GroupMemoryBarrierWithGroupSync();</code></pre>
 </li>
   </ul>
 </li>
@@ -797,9 +776,7 @@ For each pixel, accumulate lighting from visible lights
   <ul>
     <li>Read from tile visible light index list in threadgroup shared memory</li>
     <li><pre><code class="lang-c">float3 <span class="hljs-keyword">diffuseLight </span>= <span class="hljs-number">0</span>;
-float3 specularLight = <span class="hljs-number">0</span>;
-
-for (uint lightIt = <span class="hljs-number">0</span>; lightIt &lt; visibleLightCount; ++lightIt)
+float3 specularLight = <span class="hljs-number">0</span>;<br><br>for (uint lightIt = <span class="hljs-number">0</span>; lightIt &lt; visibleLightCount; ++lightIt)
 {<br>  uint lightIndex = visibleLightIndices[lightIt]<span class="hljs-comment">;</span><br>  Light light = lights[lightIndex]<span class="hljs-comment">;</span><br><br>  evaluateAndAccumulateLight(<br>    light,<br>    gbufferParameters,<br>    diffuseLight,<br>    specularLight<br>  );
 }
 </code></pre>
