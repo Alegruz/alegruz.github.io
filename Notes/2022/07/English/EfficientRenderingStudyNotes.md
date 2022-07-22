@@ -1780,6 +1780,26 @@ Divided the screen into 4 &times; 4 pixel tiles. Each tile is classified accordi
 
 Classify four during our screen-space shadow mask generation, the other three in a per-pixel pass.
 
+## Inferred Lighting
+<sup>[Kircher12](#Kircher12)</sup>
+
+* Developed by Volition, Inc.
+* Low-res MRT Geometry Pass
+  * Normals, DSF ID, Depth
+* Low-res Lighting Pass
+  * Normals, Depth used
+* Full-res Material Pass
+  * DSF ID and Low-res Lighting Pass used
+
+Features:
+* Lots of fully dynamic lights
+* Integrated alpha lighting (no forward rendering)
+* Hardware MSAA support
+* Lit rain (IL required)
+* Better foliage support (applies only to IL)
+* Screen-space decals (enhanced by IL)
+* Radial AO (RAO) (optimized by IL)
+
 # Issues
 
 ## Transparency
@@ -2176,7 +2196,8 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 ## 2012
 
 <a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en). [Eurographics 2012](http://www.eurographics2012.it/).<br>
-<a id="Harada12" href="https://e8040b55-a-62cb3a1a-s-sites.googlegroups.com/site/takahiroharada/storage/2012SA_2.5DCulling.pdf?attachauth=ANoY7crz6LiGa4Pg6UUy3BMrqNfxng8akXQbQQmX6zfKc8so5lMDSGuVO7d6jpoWN5pr1vFTndtY8qGT_4VgMc5_ikexCrof0i9-4cYxoUCrbtswcuGC2w_0ymMqZ3x-WVQ-4XRkD1hMLi1KO3tNpXSf-TnE-o4R1rxKxAFzeK5RS6kXj5yAje2yHKcNQf8ugsHc0ZVZYyyqWNM9WY9rBjcnx37CgAArVwe1pHr9cDHeHe4rFWYXz_w%3D&attredirects=0">A 2.5D Culling for Forward+</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). [SIGGRAPH ASIA 2012](https://www.siggraph.org/asia2012/).
+<a id="Harada12" href="https://e8040b55-a-62cb3a1a-s-sites.googlegroups.com/site/takahiroharada/storage/2012SA_2.5DCulling.pdf?attachauth=ANoY7crz6LiGa4Pg6UUy3BMrqNfxng8akXQbQQmX6zfKc8so5lMDSGuVO7d6jpoWN5pr1vFTndtY8qGT_4VgMc5_ikexCrof0i9-4cYxoUCrbtswcuGC2w_0ymMqZ3x-WVQ-4XRkD1hMLi1KO3tNpXSf-TnE-o4R1rxKxAFzeK5RS6kXj5yAje2yHKcNQf8ugsHc0ZVZYyyqWNM9WY9rBjcnx37CgAArVwe1pHr9cDHeHe4rFWYXz_w%3D&attredirects=0">A 2.5D Culling for Forward+</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). [SIGGRAPH ASIA 2012](https://www.siggraph.org/asia2012/).<br>
+<a id="Kircher12" href="https://www.gdcvault.com/play/1015345/Lighting-and-Simplifying-Saints-Row">Lighting & Simplifying Saints Row: The Third</a>. [Scott Kircher](https://www.linkedin.com/in/scott-kircher-74332b49/), [Volition](https://www.dsvolition.com/). [GDC 2012](https://www.gdcvault.com/free/gdc-12).
 
 ---
 
