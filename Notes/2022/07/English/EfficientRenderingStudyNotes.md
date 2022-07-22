@@ -126,6 +126,106 @@ For each light:
   * Each fragment may be shaded more than once<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
     * Can be addressed by using a pre-z pass
 
+## Forward+ Rendering
+
+* Forward + Light-culling stage before final shading<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Stages:<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+  * Depth Pre-Pass
+  * Light Culling
+  * Final Shading
+
+* Advantages:
+  * Requires less memory traffic than compute-based deferred lighting<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+
+### Light Culling
+
+* Calculates a list of light indices overlapping a pixel<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+  * Hoewever, per-pixel calculation has some issues:
+    * Memory footprint
+    * Efficiency of computation at light-culling stage
+* Split the screen into tiles and light indices are calculated on a per-tile basis<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* How to reduce false positives?
+  * Lights are too far away!
+  * 3D implementation uses too much memory
+  * [2.5 Culling](#25-culling)!
+
+#### Implementation
+
+##### Gather Approach
+
+* Thread group per tile<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Frustum of the tile is calculated using the range of the screen space of the tile and max/min depth values of the pixels<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Kernel first uses all the threads in a thread gropu to read a light to the local register<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+  * Overlap of the lights to the frustum of the tile is checked in parallel
+  * If overlaps, thread accumulates the light to TLS using local atomic operations
+  * Flushes lights to the global memory using all threads
+* Simple and effective if the number of lights is not too large<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+
+##### Scatter Approach
+
+* Computes which tile a light overlaps and writes the light-and tile-index data to a buffer<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Thread per light<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* The data of the buffer (ordered by light index at this point) needs to be sorted by tile index<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+  * We want a list of light indices per tile
+  * Radix sort
+  * Run kernels to find the start and end offsets of each tile in the buffer
+
+#### 2.5 Culling<sup>[Harada12](#Harada12)</sup>
+
+* Additional memory usage
+  * 0B global memory
+  * 4B local memory per work group
+* Additional computation complexity
+  * A few bit and arithmetic instructions
+  * A few lines of codes for light culling
+  * No changes for other stages
+* Additional runtime overhead
+  * < 10% compared to the original light culling
+
+IDEA:
+* Split frustum in z direction
+  * Uniform split for a frustum
+  * Varying split among frustums
+
+FRUSTUM CONSTRUCTION:
+* Calculate depth bound
+  * max/min values of depth
+* Split depth direction into 32 cells
+  * min value and cell size
+* Flag occupied cell
+  * 32 bit depth mask per work group
+
+LIGHT CULLING:
+* If a light overlaps to the frustum
+  * Calculate depth mask for the light
+  * Check overlap using the depth mask of the frustum
+* Depth mask & Depth mask
+
+```
+ 1: frustum[0-4] ← Compute 4 planes at the boundary of a tile
+ 2: z ← Fetch depth value of the pixel
+ 3: ldsMinZ ← atomMin(z)
+ 4: ldsMaxZ ← atomMax(z)
+ 5: frustum[5, 6] ← Compute 2 planes using ldsMinZ, ldsMaxZ
+ 6: depthMaskT ← atomOr(1 << getCellIndex(z))
+ 7: for all the lights do
+ 8:   iLight ← lights[i]
+ 9:   if overlaps(iLight, frustum) then
+10:     depthMaskL ← Compute mask using light extent
+11:     overlapping ← depthMaskT ∧ depthMaskL
+12:     if overlapping then
+13:       appendLight(i)
+14:     end if
+15:   end if
+16: end for
+17: flushLightIndices()
+```
+
+### Shading
+
+* Goes through the list of lights and evaluates materials using information stored for each light<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* High pixel overdraw can kill performance<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+  * Depth Pre-Pass is critical
 
 # Deferred Rendering
 
@@ -1580,9 +1680,9 @@ Three major options:<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
 
 Render your scene to multiple 32 bit buffers, then use a 64 bit accumulation buffer during the light phase.<sup>[Hargreaves04](#Hargreaves04)</sup>
 
-# Examples
+# Minor Architectures
 
-## Example 1: The X-Ray Rendering Architecture<sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup>
+## The X-Ray Rendering Architecture<sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup>
 
 1. G-Stage
 2. Light Stage
@@ -1631,7 +1731,7 @@ Render your scene to multiple 32 bit buffers, then use a 64 bit accumulation buf
 
 * Apply black-outs, film grain, etc.
 
-## Example 2: Light Indexed Deferred Rendering<sup>[Trebilco09](#Trebilco09)</sup>
+## Light Indexed Deferred Rendering<sup>[Trebilco09](#Trebilco09)</sup>
 
 Three basic render passes:
 1. Render depth only pre-pass
@@ -1642,7 +1742,7 @@ Three basic render passes:
 
 In order to support multiple light indexes per-fragment, it would be ideal to store the first light index in the texture's red channel, second light index in the blue index, etc.
 
-## Example 3: Space Marine<sup>[KimBarrero11](#KimBarrero11)</sup>
+## Space Marine<sup>[KimBarrero11](#KimBarrero11)</sup>
 
 |Pass|Budget (ms)|
 |----|-----------|
@@ -1658,7 +1758,7 @@ In order to support multiple light indexes per-fragment, it would be ideal to st
 |UI|0.50|
 |Total|29.20|
 
-## Example 4: Screen-Space Classification<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+## Screen-Space Classification<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
 
 Divided the screen into 4 &times; 4 pixel tiles. Each tile is classified according to the minimum global light properties it requires:
 
@@ -2075,8 +2175,8 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 
 ## 2012
 
-<a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en). [Eurographics 2012](http://www.eurographics2012.it/).
-
+<a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en). [Eurographics 2012](http://www.eurographics2012.it/).<br>
+<a id="Harada12" href="https://e8040b55-a-62cb3a1a-s-sites.googlegroups.com/site/takahiroharada/storage/2012SA_2.5DCulling.pdf?attachauth=ANoY7crz6LiGa4Pg6UUy3BMrqNfxng8akXQbQQmX6zfKc8so5lMDSGuVO7d6jpoWN5pr1vFTndtY8qGT_4VgMc5_ikexCrof0i9-4cYxoUCrbtswcuGC2w_0ymMqZ3x-WVQ-4XRkD1hMLi1KO3tNpXSf-TnE-o4R1rxKxAFzeK5RS6kXj5yAje2yHKcNQf8ugsHc0ZVZYyyqWNM9WY9rBjcnx37CgAArVwe1pHr9cDHeHe4rFWYXz_w%3D&attredirects=0">A 2.5D Culling for Forward+</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). [SIGGRAPH ASIA 2012](https://www.siggraph.org/asia2012/).
 
 ---
 
