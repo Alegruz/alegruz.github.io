@@ -1547,6 +1547,59 @@ Similar to S.T.A.L.K.E.R: Clear Skies
 * Render all dynamic light spheres to a light buffer
 * Allows for hundres of lights
 
+### Clustered Shading
+
+Clustered shading explore higher dimensional tiles, which we collectively call clusters. Each cluster has a fixed maximum 3D extent.<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+
+Deferred Algorithm:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+1. Render scene to G-Buffers
+2. Cluster assignment
+3. Find unique clusters
+4. Assign lights to clusters
+5. Shade samples
+
+#### Cluster Assignment
+
+* Goal: compute an integer cluster key for a given view sample from the information available in the G-Buffer<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+  * Use position, normal (optional)
+* Regular subdivision / quantization of the sample positions<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+  * Fast, predictable cluster sizes
+* Uniform screen space tiling used in tiled deferred shading + extend this by also subdividing along the z-axis in view space (or NDC)<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Due to non-linear nature of NDC, subdivide the z-axis in view space by spacing the divisions exponentially<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Subdivision:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+  * near<sub>k</sub>: near plane for a division k
+  * h<sub>k</sub>: depth of a division k
+    * near<sub>k</sub> = near<sub>k - 1</sub> + h<sub>k - 1</sub>
+  * near<sub>0</sub> = near
+  * h<sub>0</sub> = 2 near tan &theta; / S<sub>y</sub>
+    * 2&theta;: field of view
+    * S<sub>y</sub>: number of subdivisions in the Y direction
+  * near<sub>k</sub> = near ( 1 + 2 tan &theta; / S<sub>y</sub>)<sup>k</sup>
+  * ![ClusterK](/Images/DeferredShading/ClusterK.png)
+* Cluster key tuple (i, j, k):<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+  * ![ClusterKey](/Images/DeferredShading/ClusterKey.png)
+  * Can be extended with a number of bits that encode a quantized normal direction
+
+#### Finding Unique Clusters
+
+* Local Sorting<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+  * Sort samples in each screen space tile locally
+    * Allows us to:
+      * Perform the sorting operation in on-chip shared memory
+      * Use local indices to link back to the source pixel
+  * Extract unique clusters from each tile using a parallel compaction
+    * Compute and store a link from each sample to its associated cluster
+  * Globally unique list of clusters
+* Cluster key defines implicit 3D bounds, and optionally an implicit normal cone<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Compute the explicit bounds by performing a reduction over the samples in each cluster<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+  * e.g., Perform a min/max reduction to find the AABB enclosing each cluster
+* Results of the reduction are stored separately in memory<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+
+#### Light Assignment
+
+* Goal: calculate the list of lights influencing each cluster
+* 
+
 ### Optimizations
 
 The most important optimization for the lighting pass is to render only those lights that actually affect the final image, and for those lights, render only the affected pixels.<sup>[Shishkovtsov05](#Shishkovtsov05)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
@@ -2197,7 +2250,8 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 
 <a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en). [Eurographics 2012](http://www.eurographics2012.it/).<br>
 <a id="Harada12" href="https://e8040b55-a-62cb3a1a-s-sites.googlegroups.com/site/takahiroharada/storage/2012SA_2.5DCulling.pdf?attachauth=ANoY7crz6LiGa4Pg6UUy3BMrqNfxng8akXQbQQmX6zfKc8so5lMDSGuVO7d6jpoWN5pr1vFTndtY8qGT_4VgMc5_ikexCrof0i9-4cYxoUCrbtswcuGC2w_0ymMqZ3x-WVQ-4XRkD1hMLi1KO3tNpXSf-TnE-o4R1rxKxAFzeK5RS6kXj5yAje2yHKcNQf8ugsHc0ZVZYyyqWNM9WY9rBjcnx37CgAArVwe1pHr9cDHeHe4rFWYXz_w%3D&attredirects=0">A 2.5D Culling for Forward+</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). [SIGGRAPH ASIA 2012](https://www.siggraph.org/asia2012/).<br>
-<a id="Kircher12" href="https://www.gdcvault.com/play/1015345/Lighting-and-Simplifying-Saints-Row">Lighting & Simplifying Saints Row: The Third</a>. [Scott Kircher](https://www.linkedin.com/in/scott-kircher-74332b49/), [Volition](https://www.dsvolition.com/). [GDC 2012](https://www.gdcvault.com/free/gdc-12).
+<a id="Kircher12" href="https://www.gdcvault.com/play/1015345/Lighting-and-Simplifying-Saints-Row">Lighting & Simplifying Saints Row: The Third</a>. [Scott Kircher](https://www.linkedin.com/in/scott-kircher-74332b49/), [Volition](https://www.dsvolition.com/). [GDC 2012](https://www.gdcvault.com/free/gdc-12).<br>
+<a id="OlssonBilleterAssarsson12" href="https://efficientshading.com/2012/01/01/clustered-deferred-and-forward-shading/"></a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [HPG 2012](https://kesen.realtimerendering.com/hpg2012-Changelog.htm).
 
 ---
 
