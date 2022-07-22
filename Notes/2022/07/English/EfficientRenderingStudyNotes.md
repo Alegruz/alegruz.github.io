@@ -139,30 +139,30 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Shadow mapping is fairly cheap<sup>[Calver03](#Calver03)</sup>
   * Easily integrates with popular shadow techniques<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup>
   * Excellent batching<sup>[Hargreaves04](#Hargreaves04)</sup>, Greatly simplifies batching<sup>[HargreavesHarris04](#HargreavesHarris04)</sup>, Cuts down on large numbers of batches<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
-  * Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, Only a single geometry pass is required<sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Lee09](#Lee09)</sup>
+  * Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, Only a single geometry pass is required<sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Lee09](#Lee09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
   * Shade each visible pixel exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, "Perfect" O(1) depth complexity for lighting<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
   * Easy to add new types of lighting shader<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Koonce07](#Koonce07)</sup>
-  * Other kinds of postprocessing(blur, heathaze) are just special lights, and fit neatly into the existing framework<sup>[Hargreaves04](#Hargreaves04)</sup>, Simplifies rendering of multiple special effects<sup>[Placeres06](#Placeres06)</sup>
+  * Other kinds of postprocessing(blur, heathaze) are just special lights, and fit neatly into the existing framework<sup>[Hargreaves04](#Hargreaves04)</sup>, Simplifies rendering of multiple special effects<sup>[Placeres06](#Placeres06)</sup>, G-Buffer already produces data required for post-processing<sup>[Thibieroz11](#Thibieroz11)</sup>
   * Simple engine management<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
   * Lots of small lights ~ one big light<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
   * Perfect depth complexity for lighting<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
   * Reduces CPU usage<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
-  * Lighting costs are independent of scene complexity<sup>[Koonce07](#Koonce07)</sup>, Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
-  * No additional render passes on geometry for lighting, resulting in fewer draw calls and fewer state changes required to render the scene<sup>[Koonce07](#Koonce07)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
+  * Lighting costs are independent of scene complexity<sup>[Koonce07](#Koonce07)</sup>, Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+  * No additional render passes on geometry for lighting, resulting in fewer draw calls and fewer state changes required to render the scene<sup>[Koonce07](#Koonce07)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
   * Material shaders do not perform lighting, freeing up instructions for additional geometry processing<sup>[Koonce07](#Koonce07)</sup>
   * Simpler shaders<sup>[Valient07](#Valient07)</sup>
   * More complex materials can be implemented<sup>[Lee09](#Lee09)</sup>
   * Not all buffers need to be updated with matching data, e.g., decal tricks
   * Faster lighting<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
 * Disadvantages:
-  * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup>
+  * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
   * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup>
     * Reading lighting inputs from G-Buffer is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
     * Accumulating ligthing with additive blending is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
   * Multiple light equations difficult<sup>[Calver03](#Calver03)</sup>, Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup>
   * High hardware specifications<sup>[Calver03](#Calver03)</sup>
-  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
-  * Can't take advantage of hardware multisampling<sup>[Hargreaves04](#Hargreaves04)</sup> AA is problematic<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup> MSAA difficult compared to Forward Renderer<sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
+  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Can't take advantage of hardware multisampling<sup>[Hargreaves04](#Hargreaves04)</sup> AA is problematic<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup> MSAA difficult compared to Forward Renderer<sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Costly and complex MSAA<sup>[Thibieroz11](#Thibieroz11)</sup>
     * MYTH!! MSAA did not prove to be an issue!!<sup>[Valient07](#Valient07)</sup>
     * Existing multi-sampling techniques are too heavy for deferred pipeline<sup>[Kaplanyan10](#Kaplanyan10)</sup>
     * Post-process antialiasing doesn't remove aliasing completely<sup>[Kaplanyan10](#Kaplanyan10)</sup>
@@ -177,6 +177,7 @@ A: Combine conventional rendering techniques with the advantages of image space 
     * Only Phong BRDF (normal + glossiness)<sup>[Kaplanyan10](#Kaplanyan10)</sup>
       * No aniso materials<sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * All lights (that cast shadows) must have their shadow maps built before the shading pass<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
+  * Significant engine rework<sup>[Thibieroz11](#Thibieroz11)</sup>
 
 ```
 For each object:
@@ -221,9 +222,9 @@ The smaller the better!<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
 ### Depth
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
 
-Use depth data to reconstruct position data.
+Use depth data to reconstruct position data. Provided by the depth buffer.
 
 Format Suggestion:
 24bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
@@ -264,7 +265,7 @@ Stencil to mark objects in lighting groups<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
 ### Normal
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
 
 Format Suggestions:
 * `R10G10B10A2_FLOAT`<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -312,7 +313,7 @@ float3 unpack_normal(float2 norm)
 
 ### Diffuse Albedo
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
 
 Format Suggestions:
 `R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>
@@ -333,6 +334,7 @@ Format Suggestions:
 * Specular Power<sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup>
 * Motion Vector<sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
 * Shadow<sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
+* Specular Terms<sup>[Thibieroz11](#Thibieroz11)</sup>
 
 ## Examples
 
@@ -668,6 +670,18 @@ Initialize light accumulation buffer with pre-baked light
   Image based lighting on dynamic geometry
 ```
 
+### Optimizations
+
+#### Export Cost
+
+* Render objects in front-to-back order<sup>[Thibieroz11](#Thibieroz11)</sup>
+* Use fewer render targets in your MRT config<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Less fetches during shading passes
+  * Less memory usage
+* Avoid slow formats<sup>[Thibieroz11](#Thibieroz11)</sup>
+* Data Packing<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Trade render target storage for a few extra ALU instructions
+
 #### Light Accumulation Pass<sup>[Valient07](#Valient07)</sup>
 
 * Light is rendered as convex geometry
@@ -688,6 +702,10 @@ For each light:
 The real power of deferred lighting is that lights are first class citizens, this complete separation of lighting and geometry allows lights to be treated in a totally different way from standard rendering. This makes the artist’s job easier as there is less restrictions on how lights affect surfaces, this allows for easy customizable lighting rigs.<sup>[Calver03](#Calver03)</sup>
 
 Light shaders have access to the parameters stored in the G-Buffer at each pixel they light.<sup>[Calver03](#Calver03)</sup>
+
+Add lighting contributions into accumulation buffer<sup>[Thibieroz11](#Thibieroz11)</sup>
+* Use G-Buffer RTs as inputs
+* Render geometries enclosing light area
 
 ```
 Render convex bounding geometry
@@ -924,6 +942,63 @@ The basis of using occlusion culling with light shaders is that the depth buffer
 
 I simply turn off the occlusion culling if the light shader hits the near plane and just render the back faces without depth testing. Its means some pixels run the pixel shader unnecessarily but it’s very cheap on the CPU and the actual difference is usually only a few pixels.<sup>[Calver03](#Calver03)</sup>
 
+##### Accessing Light Properties
+
+* Avoid using dynamic constant buffer indexing in pixel shader<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Generates redundant memory operations repeated for every pixel
+
+ex)
+
+```c
+struct LIGHT_STRUCT
+{
+  float4 vColor;
+  float4 vPos;
+};
+cbuffer cbPointLightArray
+{
+  LIGHT_STRUCT g_Light[NUM_LIGHTS];
+};
+
+float4 PS_PointLight(PS_INPUT i) : SV_TARGET
+{
+  // ...
+  uint uIndex = i.uPrimIndex / 2;
+  float4 vColor = g_Light[uIndex].vColor;   // NO!
+  float4 vLightPos = g_Light[uIndex].vPos;  // NO!
+}
+```
+
+* Instead fetch light properties from CB in VS (or GS)
+* And pass them to PS as interpolants
+  * No actual interpolation needed
+  * Use `noninterpolation` to reduce number of shader instruction
+
+```c
+PS_QUAD_INPUT VS_PointLight(VS_INPUT i)
+{
+  PS_QUAD_INPUT Out = (PS_QUAD_INPUT)0;
+
+  // Pass position
+  Out.vPosition = float4(i.vNDCPosition, 1.0);
+
+  // Pass light properties to PS
+  uint uIndex = i.uVertexIndex / 4;
+  Out.vLightColor = g_Light[uIndex].vColor;
+  Out.vLightPos = g_Light[uLightIndex].vPos;
+
+  return Out;
+}
+
+struct PS_QUAD_INPUT
+{
+  nointerpolation float4 vLightColor : LCOLOR;
+  nointerpolation float4 vLightPos : LPOS;
+  float4 vPosition : SV_POSITION;
+};
+```
+<sup>[Thibieroz11](#Thibieroz11)</sup>
+
 ### Tiled Shading
 
 Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
@@ -931,7 +1006,7 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
 * Fastest and most flexible<sup>[Lauritzen10](#Lauritzen10)</sup>
 * Enable efficient MSAA<sup>[Lauritzen10](#Lauritzen10)</sup>
 
-1. Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup>
+1. Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
 2. Find which lights intersect each cell<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup>
    * +How many lights<sup>[Andersson09](#Andersson09)</sup> 
 3. Render quads over each cell calculating up to 8 lights per pass<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
@@ -941,13 +1016,18 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
 Algorithm:<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 1. Render the (opaque) geometry into the G-Buffers
    * Ordinary deferred geometry pass 
-2. Construct a screen space grid, covering the frame buffer, with some fixed tile size, t = (x, y), e.g. 32 &times; 32 pixels
+2. Construct a screen space grid, covering the frame buffer, with some fixed tile size, t = (x, y), e.g. 32 &times; 32 pixels<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
 3. For each light: find the screen space extents of the light volume and append the light ID to each affected grid cell
    * Find the screen space extents of the light bounding sphere and then insert the light into the covered grid cells<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
+     * Store the culling results in a texture:<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+       * Column == Light ID
+       * Row == Tile ID
+   * Cull analytical lights (point, cone, line), per tile<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
 4. For each fragment in the frame buffer, with location f = (x, y)
    1. Sample the G-Buffers at f
    2. Accumulate light contributions from all lights in tile at &lfloor;f /t&rfloor;
    3. Output total light contributions to frame buffer at f
+   * Compute lighting for all contributing lights, per tile<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup> 
 
 Pseudocode:<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 ```c
@@ -1311,21 +1391,26 @@ float3 specularLight = <span class="hljs-number">0</span>;<br><br>for (uint ligh
 
 #### Optimizations
 
+##### Depth range optimization<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 
-### Light Pre-Pass Renderer<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+Compute min and max Z value for each tile. This requires access to the z buffer.
 
-This is the second rendering pass where we store light properties of all lights in a light buffer(aka L-Buffer).
+### Light Pre-Pass Renderer
+
+This is the second rendering pass where we store light properties of all lights in a light buffer(aka L-Buffer).<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
 ![LightPrePassRenderer](/Images/DeferredShading/LightPrePassRenderer.png)
+<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
-Compared to a deferred renderer, the light pre-pass renderer offers more flexibility regarding material implementations. Compared to a Z pre-pass renderer, it offers less flexibility but a flexible and fast multi-light solution.
+Compared to a deferred renderer, the light pre-pass renderer offers more flexibility regarding material implementations. Compared to a Z pre-pass renderer, it offers less flexibility but a flexible and fast multi-light solution.<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
-Because the light buffer only has to hold light properties, the cost of rendering one light source is lower than for a similar setup in a deferred renderer.
+Because the light buffer only has to hold light properties, the cost of rendering one light source is lower than for a similar setup in a deferred renderer.<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
-* Advantages:<sup>[Lee09](#Lee09)</sup>
-  * Easier to retrofit into "traditional" rendering pipelines
-  * Lower memory and bandwidth usage
-  * Can reuse your primary shaders for forward rendering of alpha
+* Advantages:
+  * Easier to retrofit into "traditional" rendering pipelines<sup>[Lee09](#Lee09)</sup>
+  * Lower memory and bandwidth usage<sup>[Lee09](#Lee09)</sup>
+  * Can reuse your primary shaders for forward rendering of alpha<sup>[Lee09](#Lee09)</sup>
+  * One material fetch per pixel regardless of number of lights<sup>[Thibieroz11](#Thibieroz11)</sup>
 * Disadvantages:
   * Alpha blending is problematic<sup>[Lee09](#Lee09)</sup>
     * MSAA and alpha to coverage can help
@@ -1333,6 +1418,8 @@ Because the light buffer only has to hold light properties, the cost of renderin
     * Coherent fragment program dynamic branching can help
   * 2x geometry pass too expensive on both CPU & GPU<sup>[Andersson11](#Andersson11)</sup>
   * Tile-based deferred shading has major potential<sup>[Andersson11](#Andersson11)</sup>
+  * Two geometry passes required<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Unique lighting model<sup>[Thibieroz11](#Thibieroz11)</sup>
 
 #### Version A<sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
 
@@ -1354,9 +1441,15 @@ Similar to S.T.A.L.K.E.R: Clear Skies
 * Ambient + Resolve (MSAA) Pass
   * Fetch light buffer use its content as diffuse and specular content and add the ambient term while resolving into the main buffer
 
+#### Dragon Age II<sup>[Papathanasis11](#Papathanasis11)</sup>
+
+* Extra pass to render scene normals
+* Render all dynamic light spheres to a light buffer
+* Allows for hundres of lights
+
 ### Optimizations
 
-The most important optimization for the lighting pass is to render only those lights that actually affect the final image, and for those lights, render only the affected pixels.<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
+The most important optimization for the lighting pass is to render only those lights that actually affect the final image, and for those lights, render only the affected pixels.<sup>[Shishkovtsov05](#Shishkovtsov05)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
 
 1. Social Stage:
    * Filter the lights and effects on the scene to produce a smaller list of sources to be processed
@@ -1372,6 +1465,44 @@ The most important optimization for the lighting pass is to render only those li
    4. ~~Enable the scissor test~~
    5. ~~Enable the clipping planes~~
    6. ~~Render a screen quad or the bounding object~~
+
+* Constant Waterfall sucks!<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+  * Kills performance
+  * Use the aL register when iterating over lights
+  * If set properly, ALU / lighting will run at 100% efficiency
+
+```c
+int lightCounter[4] = { count, start, step, 0 };
+pDevice->SetPixelShaderConstantI(0, lightCounter, 1);
+// NO
+
+int tileLightCount : register(i0);
+float4 lightParams[NUM_LIGHT_PARAMS] : register(c0);
+
+[loop]
+for (int iLight = 0;  // start
+     iLight < tileLightCount; // count * step
+     ++iLight)  // step
+{
+  float4 params1 = lightParams[iLight + 0]; // mov r0 c0[0 + aL]
+  float4 params2 = lightParams[iLight + 1]; // mov r1 c0[1 + aL]
+  float4 params3 = lightParams[iLight + 2]; // mov r2 c0[2 + aL]
+}
+```
+<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+
+* These shaders are ALU bound<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+  * Simplify math especially in the loops
+  * Get rid of complicated non 1:1 instructions (e.g. smoothstep)
+  * Play with microcode: -normalize(v) is faster than normalize(-v)
+  * Move code around to help with dual-issuing
+  * Use shader predicates to help the compiler
+    * `[flatten]`, `[branch]`, `[isolate]`, `[ifAny]`, `[ifAll]`, etc.
+    * Tweak GPRs
+* Use GPU freebies<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+  * Texture sampler scale / bias (* 2 - 1)
+* Simply / remove unnedded code via permutations
+* Upload constants via the constnat buffer pointers
 
 #### Sun Rendering
 
@@ -1392,6 +1523,12 @@ Killzone 2 case:<sup>[Valient07](#Valient07)</sup>
   * Normal: Diffuse + Specular * t
   * Far: Diffuse
 </div>
+
+#### Blending Cost
+
+* Use `Discard()` to get rid of pixels not contributing any light
+  * Use this regardless of the light processing method used
+  * Can result in a significant increase in performance
 
 ## Shadows
 
@@ -1619,13 +1756,18 @@ float4 PSMarkStencilWithEdgePixels( PS_INPUT input ) : SV_TARGET
 }
 ```
 
-#### Centroid-Based Edge Detection<sup>[Thibieroz09](#Thibieroz09)</sup>
+#### Centroid-Based Edge Detection
 
-An optimized way to detect edges is to leverage the GPU’s fixed function resolve feature. Centroid sampling is used to adjust the sample position of an interpolated pixel shader input so that it is contained within the area defined by the multisamples covered by the triangle.
+An optimized way to detect edges is to leverage the GPU’s fixed function resolve feature. Centroid sampling is used to adjust the sample position of an interpolated pixel shader input so that it is contained within the area defined by the multisamples covered by the triangle.<sup>[Thibieroz09](#Thibieroz09)</sup>
 
-Centroid sampling can be used to determine whether a sample belongs to an edge pixel or not.
+Centroid sampling can be used to determine whether a sample belongs to an edge pixel or not.<sup>[Thibieroz09](#Thibieroz09)</sup>
 
-This MSAA edge detection technique is quite fast, especially compared to a custom method of comparing every G-Buffer normal and depth samples. It only requires a few bits of storage in a G-Buffer render target.
+This MSAA edge detection technique is quite fast, especially compared to a custom method of comparing every G-Buffer normal and depth samples. It only requires a few bits of storage in a G-Buffer render target.<sup>[Thibieroz09](#Thibieroz09)</sup>
+
+* This is a neat trick, but is not that useful<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Produces too many edges that don't need to be shaded per sample
+  * Especially when tessellation is used!!
+  * Doesn't detect edges from transparent textures
 
 #### S.T.A.L.K.E.R.<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
 
@@ -1858,6 +2000,20 @@ For each shader
 
 <div id="a"><sup>a</sup>Apply Tiled Forward for transparent objects</div>
 
+EA. SIGGRAPH. 2011.
+
+|Light Type<br>(8 lights/tile, every tile)|Performance|
+|-----------------------------------------|-----------|
+|Point                                    |4.0 ms     |
+|Point (with Spec)                        |7.8 ms     |
+|Cone                                     |5.1 ms     |
+|Cone (with Spec)                         |5.3 ms     |
+|Line                                     |5.8 ms     |
+
+* Classification: 1.35ms (with resolves)
+
+<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+
 ---
 
 # References
@@ -1912,7 +2068,15 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="Andersson11" href="https://www.ea.com/frostbite/news/directx-11-rendering-in-battlefield-3">DirectX 11 Rendering in Battlefield 3</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/)<br>
 <a id="KimBarrero11" href="https://blog.popekim.com/en/2011/11/15/slides-rendering-tech-of-space-marine.html">Rendering Tech of Space Marine</a>. [Pope Kim](https://blog.popekim.com/en/), [Relic Entertainment](https://www.relic.com/). [Daniel Barrero](https://www.linkedin.com/in/danielbarrero/), [Relic Entertainment](https://www.relic.com/). [KGC 2011](https://www.khronos.org/events/korea-games-conference-2011).<br>
 <a id="KnightRitchieParrish11" href="https://gameenginegems.com/gemsdb/article.php?id=32">Screen-Space Classification for Efficient Deferred Shading</a>. [Balor Knight](https://twitter.com/kernigit), [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). Matthew Ritchie, [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). [George Parrish](https://sites.google.com/view/georgeparrish/), [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). [Game Engine Gems 2](https://gameenginegems.com/gemsdb/book.php?id=2).<br>
-<a id="OlssonAssarsson11" href="https://efficientshading.com/2011/01/01/tiled-shading/">Tiled Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Journal of Graphics, GPU, and Game Tools](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2011.632611?tab=permissions&scroll=top).
+<a id="OlssonAssarsson11" href="https://efficientshading.com/2011/01/01/tiled-shading/">Tiled Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Journal of Graphics, GPU, and Game Tools](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2011.632611?tab=permissions&scroll=top).<br>
+<a id="Papathanasis11" href="https://cupdf.com/document/dragon-age-ii-dx11-technology.html?page=2">Dragon Age II DX11 Technology</a>. [Andreas Papathanasis](https://andreas-papathanasis.medium.com/), [BioWare](https://www.bioware.com/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
+<a id="Thibieroz11" href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2FDeferred%2520Shading%2520Optimizations.pps&wdOrigin=BROWSELINK">Deferred Shading Optimizations</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [AMD](https://www.amd.com/en). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
+<a id="WhiteBarreBrisebois11" href="https://www.ea.com/frostbite/news/more-performance-five-rendering-ideas-from-battlefield-3-and-need-for-speed-the-run">More Performance! Five Rendering Ideas from Battlefield 3 and Need For Speed: The Run</a>. [John White](https://www.linkedin.com/in/john-white-4090591/), [EA Black Box](https://en.wikipedia.org/wiki/EA_Black_Box). [Colin Barré-Brisebois](https://colinbarrebrisebois.com/), [DICE](https://www.dice.se/). [SIGGRAPH 2011: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2011/index.html).<br>
+
+## 2012
+
+<a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en). [Eurographics 2012](http://www.eurographics2012.it/).
+
 
 ---
 
