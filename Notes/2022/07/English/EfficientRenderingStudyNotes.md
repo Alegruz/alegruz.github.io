@@ -10,6 +10,11 @@
   * Evaluate lighting and accumulate
 * Object rendering pass does everything<sup>[KimBarrero11](#KimBarrero11)</sup>
 
+
+Characteristics:
+* Advantages:
+  * Transparency via alpha blending<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * MSAA and related techniques through hardware features (much less memory storage is required)<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 * Issues:
   * Computing which lights affect each body consumes CPU time, and in the worst cast, it becomes an O(n &times; m) operation<sup>[Koonce07](#Koonce07)</sup>, Ineffective light culling<sup>[Lauritzen10](#Lauritzen10)</sup>
     * Object space at best
@@ -23,6 +28,14 @@
   * Light culling not efficient<sup>[Andersson11](#Andersson11)</sup>
   * Expensive & more difficult decaling / destruction masking<sup>[Andersson11](#Andersson11)</sup>
 
+Classic forward rendering:<sup>[StewartThomas13](#StewartThomas13)</sup>
+* Depth pre-pass
+  * Prevents overdraw when shading
+* Forward shading
+  * Pixel Shader
+    * Iterates through light list *set for each object*
+    * Evaluates material
+      * Diffuse texture, spec mask, bump map, etc.
 
 ## Z Pre-Pass rendering
 
@@ -126,24 +139,153 @@ For each light:
   * Each fragment may be shaded more than once<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
     * Can be addressed by using a pre-z pass
 
+### Basic Algorithm<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+
+1. Subdivide screen into tiles
+2. (Optional): pre-Z pass
+3. (Optional): find min / max z-bounds for each tile
+4. Assign lights to each tile
+5. Render geometry and compute shading for each generated fragment
+
+```c
+// 1D texture holding per-tile light lists
+uniform isampleBuffer tex_tileLightLists;
+
+// uniform buffer holding each tile's light count and
+// start offset of the tile's light list (in
+// tex_tileLightIndices
+uniform TileLightListRanges
+{
+  ivec2 u_lightListRange[MAX_NUM_TILES];
+}
+
+void shading_function(inout FragmentData aFragData)
+{
+  // ...
+
+  // find fragment's tile using gl_FragCoord
+  ivec2 tileCoord = ivec2(gl_FragCoord.xy) / ivec2(TILE_SIZE_X, TILE_SIZE_Y);
+  int tileIdx = tileCoord.x + tileCoord.y * LIGHT_GRID_SIZE_X;
+
+  // fetch tile's light data start offset (.y) and 
+  // number of lights (.x)
+  ivec2 lightListRange = u_lightListRange[tileIdx].xy;
+
+  // iterate over lights affecting this tile
+  for (int i = 0; i < lightListRange.x; ++i)
+  {
+    int lightIndex = lightListRange.y + i;
+
+    // fetch global light ID
+    int globalLightId = texelFetch(tex_tileLightLists, lightIndex).x;
+
+    // get the light's data (position, colors, ...)
+    LightData lightData;
+    light_get_data(lightData, globalLightId);
+
+    // compute shading from the light
+    shade(aFragData, lightData);
+  }
+  // ...
+}
+```
+
+#### Subdivision of Screen
+
+* Regular N &times; N pixel tiles
+
+#### Optional pre-Z Pass
+
+1. Required if we wish to find the Z-bounds for each tile
+2. In the final rendering pass, it can reduce the number of samples that need to be shaded through early-Z tests and similar hardware features
+* Should only include opaque geometry
+
+#### Optional Min / Max Z-Bounds
+
+* Yields a further significant improvement
+* Yields smaller per-tile bounding volumes
+  * Reduces the number of lights that affect a tile
+
+#### Light Assignment
+
+* CPU variant:
+  * Find the screen-space axis-aligned bounding boxes (AABBs) for each light source and loop over all the tiles that are contained in the 2D region of the AABB
+    * If min / max depth is available, perform additional test to discard lights that are outside of the tile in the Z-direction
+* GPU variant:
+  * Each tile gets its own thread group
+
+#### Rendering and Shading
+
+* For each generated sample,
+  * Look up which lights affect that sample by checking what lights are assigned to the sample's tile
+
+#### Transparency Support
+
+```c
+// assign lights to 2D tiles
+tilesD = build_2d_tiles();
+lightLists2D = assign_lights_to_2d_tiles(tiles2D);
+
+// draw opaque geometry in pre-Z pass and find tiles'
+// extents in the Z-direction
+depthBuffer = render_preZ_pass();
+tileZBounds = reduce_z_bounds(tiles2D, depthBuffer);
+
+// for transparent geometry, prune lights against maximum Z-direction
+lightListsTrans = prune_lights_max(lightLists2D, tileZBounds);
+
+// for opaque geometry additionally prune lights against 
+// minimum Z-direction
+lightListsOpaque = prune_lights_min(lightListsTrans, tileZBounds);
+
+// ...
+
+// later: rendering
+draw(opaque geometry, lightListsOpaque);
+draw(transparent geometry, lightListsTrans);
+```
+
 ## Forward+ Rendering
 
-* Forward + Light-culling stage before final shading<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Goal:<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+  * Materials may need to be both physically and nonphysically based
+  * Artists want complete freedom regarding the number of lights that can be placed in a scene at once
+  * Rendering data should be decoupled from the underlying rendering engine
+
+Forward+:<sup>[StewartThomas13](#StewartThomas13)</sup>
+* Depth pre-pass
+  * Prevents overdraw when shading
+  * *Provides tile depth bounds*
+* *Tiled light culling*
+  * *Compute shader*
+  * *Generates per-tile light list*
+* Forward shading
+  * Pixel Shader
+    * Iterates through light list *calculated by tiled light culling*
+    * Evaluates material
+      * Diffuse texture, spec mask, bump map, etc.
+
+* Forward+ Light-culling stage before final shading<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
 * Stages:<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
-  * Depth Pre-Pass
-  * Light Culling
-  * Final Shading
+  * Depth Pre-Pass (Z prepass<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>)
+  * Light Culling<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup> 
+  * Final Shading<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
 * Advantages:
   * Requires less memory traffic than compute-based deferred lighting<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Disadvantages:
+  * Geometry submitted twice<sup>[StewartThomas13](#StewartThomas13)</sup>
+  * Small triangles<sup>[StewartThomas13](#StewartThomas13)</sup>
 
 ### Light Culling
 
-* Calculates a list of light indices overlapping a pixel<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
-  * Hoewever, per-pixel calculation has some issues:
+* Similar to the light-accumulation step of deferred lighting<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+* Calculates a list of light indices overlapping a pixel<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup> instead of lighting components<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+  * However, per-pixel calculation has some issues:
     * Memory footprint
     * Efficiency of computation at light-culling stage
 * Split the screen into tiles and light indices are calculated on a per-tile basis<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Implemented using a single compute shader<sup>[StewartThomas13](#StewartThomas13)</sup>
 * How to reduce false positives?
   * Lights are too far away!
   * 3D implementation uses too much memory
@@ -153,13 +295,133 @@ For each light:
 
 ##### Gather Approach
 
-* Thread group per tile<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
-* Frustum of the tile is calculated using the range of the screen space of the tile and max/min depth values of the pixels<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
-* Kernel first uses all the threads in a thread gropu to read a light to the local register<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+* Thread group per tile<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
+  * e.g. `[numthreads(16, 16, 1)]` for 16 &times; 16 tile size
+* Frustum of the tile is calculated using the range of the screen space of the tile and max/min depth values of the pixels<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
+* Kernel first uses all the threads in a thread group to read a light to the local register<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
   * Overlap of the lights to the frustum of the tile is checked in parallel
   * If overlaps, thread accumulates the light to TLS using local atomic operations
-  * Flushes lights to the global memory using all threads
+    * `groupshared uint ldsLightIdx[MAX_NUM_LIGHTS_PER_TILE]`<sup>[StewartThomas13](#StewartThomas13)</sup>
+  * Flushes lights to the global memory using all threads<sup>[StewartThomas13](#StewartThomas13)</sup>
+    * `RWBuffer<uint> g_PerTileLightIndexBufferOut : register(u0);`<sup>[StewartThomas13](#StewartThomas13)</sup>
+  * 256 lights are culled in parallel (for 16 &times; 16 tile size)<sup>[StewartThomas13](#StewartThomas13)</sup>
 * Simple and effective if the number of lights is not too large<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
+
+```c
+// GET_GROUP_IDX: thread group index in X direction (SV_GroupID)
+// GET_GROUP_IDY: thread group index in Y direction (SV_GroupID)
+// GET_GLOBAL_IDX: global thread index in X direction (SV_DispatchThreadID)
+// GET_GLOBAL_IDY: global thread index in Y direction (SV_DispatchThreadID)
+// GET_LOCAL_IDX: local thread index in X direction (SV_GroupThreadID)
+// GET_LOCAL_IDY: local thread index in Y direction (SV_GroupThreadID)
+
+// No global memory write is necessary until all lights are tested
+groupshared u32 ldsLightIdx[LIGHT_CAPACITY];  // Light index storage
+groupshared u32 ldsLightIdxCounter; // Light index counter for the storage
+
+void appendLightToList(int i)
+{
+  u32 dstIdx = 0;
+  InterlockedAdd(ldsLightIdxCounter, 1, dstIdx);
+  if (dstIdx < LIGHT_CAPACITY)
+  {
+    ldsLightIdx[dstIdx] = i;
+  }
+}
+
+...
+
+  // 1: computation of the frustum of a tile in view space
+  float4 frustum[4];
+  { // construct frustum
+    float4 v[4];
+    // projToView: 
+    //   takes screen-space pixel indices and depth value
+    //   returns coordinates in view space
+    v[0] = projToView(8 * GET_GROUP_IDX,        8 * GET_GROUP_IDY,        1.f);
+    v[1] = projToView(8 * (GET_GROUP_IDX + 1),  8 * GET_GROUP_IDY,        1.f);
+    v[2] = projToView(8 * (GET_GROUP_IDX + 1),  8 * (GET_GROUP_IDY + 1),  1.f);
+    v[3] = projToView(8 * GET_GROUP_IDX,        8 * (GET_GROUP_IDY + 1),  1.f);
+    float4 o = make_float4(0.f, 0.f, 0.f, 0.f);
+    for (int i = 0; i < 4; ++i)
+    {
+      // createEquation:
+      //   Creates a plane equation from three vertex positions
+      frustum[i] = createEquation(o, v[i], v[(i + 1) & 3]);
+    }
+  }
+
+  ...
+
+  // 2: clip the frustum by using the max / min depth values of the pixels in the tile
+  float depth = depthIn.Load(uint3(GET_GLOBAL_IDX, GET_GLOBAL_IDY, 0));
+  float4 viewPos = projToView(GET_GLOBAL_IDX, GET_GLOBAL_IDY, depth);
+
+  int lIdx = GET_LOCAL_IDX + GET_LOCAL_IDY * 8;
+  { // calculate bound
+    if (lIdx == 0)  // initialize
+    {
+      ldsZMax = 0;  // max z coordinates
+      ldsZMin = 0xffffffff; // min z coordinates
+    }
+    GroupMemoryBarrierWithGroupSync();
+    u32 z = asuint(viewPos.z);
+    if (depth != 1.f)
+    {
+      AtomMax(ldsZMax, z);
+      AtomMin(ldsZMin, z);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    maxZ = asfloat(ldsZMax);
+    minZ = asfloat(ldsZMin);
+  }
+
+  ...
+
+  // 3: cull lights
+  // 8 x 8 thread group is used, thus 64 lights are processed in parallel
+  for (int i = 0; i < nBodies; i += 64)
+  {
+    int il = lIdx + i;
+    if (il < nBodies)
+    {
+      // overlaps:
+      //   light-geometry overlap check using separating axis theorem
+      if (overlaps(frustum, gLightGeometry[i]))
+      {
+        // appendLightToList
+        //   Store light index to the lsit of the overlapping lights
+        appendLightToList(il);
+      }
+    }
+  }
+
+  ...
+
+  // 4: fill the light indices to the assigned contiguous memory of gLightIdx using all the threads in a thread group
+  { // write back
+    u32 startOffset = 0;
+
+    if (lIdx == 0)
+    { // reserve memory
+      if (ldsLightIdxCounter != 0)
+      {
+        InterlockedAdd(gLightIdxCounter, ldsLightIdxCounter, startOffset);
+
+        ptLowerBound[tileIdx] = startOffset;
+        ldsLightIdxStart = startOffset;
+      }
+      GroupMemoryBarrierWithGroupSync();
+      startOffset = ldsLightIdxStart;
+
+      for (int i = lIdx; i < ldsLightIdxCounter; i += 64)
+      {
+        gLightIdx[startOffset + i] = ldsLightIdx[i];
+      }
+    }
+  }
+```
+<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
 ##### Scatter Approach
 
@@ -227,6 +489,134 @@ LIGHT CULLING:
 * High pixel overdraw can kill performance<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
   * Depth Pre-Pass is critical
 
+```c
+#define LIGHT_LOOP_BEGIN
+  int tileIndex = GetTileIndex(screenPos);
+  uint startIndex;
+  uint endIndex;
+  GetTileOffsets(tileIndex, startIndex, endIndex);
+
+  for (uint lightListIdx = startIdx; lightListIdx < endIdx; ++lightListIdx)
+  {
+    int lightIdx = LightIndexBuffer[lightListIdx];
+    LightParams directLight;
+    LightParams indirectLight;
+
+    if (isIndirectLight(lightIdx))
+    {
+      FetchIndirectLight(lightIdx, indirectLight);
+    }
+    else
+    {
+      FetchDirectLight(lightIndex, directLight);
+    }
+#define LIGHT_LOOP_END
+  }
+
+...
+
+float4 PS( PSInput i ) : SV_TARGET
+{
+  float3 colorOut = 0;
+#LIGHT_LOOP_BEGIN
+  colorOut += EvaluateMicrofacet(directLight, indirectLight);
+#LIGHT_LOOP_END
+  return float4(colorOut, 1.f);
+}
+```
+<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+
+### Render Passes<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+
+![Forward+RenderPasses](/Images/DeferredShading/Forward%2BRenderPasses.png)
+
+#### One-Bounce Indirect Illumination<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
+
+* Generate a reflective shadow map(RSM) of the scene from the point of view of the light
+  * Normal buffer, color buffer, world-space buffers are generated
+* CS is executed to create spotlights at the location captured in the RSM
+  * Generated spotlights are appended to the main light list
+
+## Forward++ Rendering<sup>[StewartThomas13](#StewartThomas13)</sup>
+
+* Alpha Blended Geometry
+* Shadow Casting Lights
+* Global Illumination using VPLs
+* Optimizations for depth discontinuities
+
+### Alpha Blended Geometry
+
+* Can't use the opaque scene's light lists
+  * Frustum's z extent was based on the opaque z-buffer
+* Render blended geometry to new z-buffer
+* Compute new set of tiled light lists
+  * minZ calculated from blended z-buffer
+  * maxZ calculated from opaque z-buffer
+* Render blended scene using new light lists
+* Geometry rendered using two-sided lighting
+  * Suitable for window glass & game objects
+  * Particle systems are better off using a custom method
+    * Calculating list of lights per emitter
+    * Lighting in vertex shader
+* Two-sided lighting:
+  * Lighting func that accumulates lighting for front and back faces
+
+### Shadow Casting Lights
+
+* Render shadow maps
+  * 2D Texture Atlas or Texture Array
+* For each shadow casting lights, store shadow map index in alpha channel of light color
+* Use dynamic branch in forward lighting pass to compute shadow term
+
+```c
+// global list of lights (shadow casting + non-shadow casting)
+uint shadowIndex = uint(g_PointLightColor[lightIndex].a * 255.0);
+if (shadowIndex < 255)  // is it shadow casting?
+{
+  // Point light
+  int face = DirectionToCubeMapFace(lightDirection);
+
+  // pixel position to light space where the cube map faces
+  float4 texCoord = mul(float4(position, 1), g_ShadowViewProj[shadowIndex][face]);
+  texCoord.xyz /= texCoord.w;
+  texCoord.xy = 0.5 * texCoord.xy + 0.5;
+
+  // undersample per face
+  texCoord.xy *= g_ShadowScaleAndBias.xx;
+  texCoord.xy *= g_ShadowScaleAndBias.yy;
+
+  // set texture coordinates in the atlas
+  texCoord.xy += float2(face, shadowIndex);
+  texCoord.xy *= rcp(float2(6, MAX_POINT_LIGHT_SHADOWS));
+
+  texCoord.z -= g_ShadowZBias;
+
+  // hardware PCF
+  shadowTerm = FilterShadow(g_PointLightShadowAtlas, texCoord.xyz);
+}
+```
+
+* Only update shadow maps if necessary
+  * If geometry has changed
+  * If lighting position has changed
+  * Spread cost of update over multiple frames
+  * Be mindful of multi GPU scenarios
+* Index into projected texture in similar manner to shadow maps
+  * Bit pack the index along with the shadow map index
+
+#### Depth Discontinuities
+
+* Reduce false positives at depth discontinuities
+* Two methods presented
+  1. Split depth range in two at halfway point
+     * Keep two light lists per tile (one for each depth region)
+     * In the forward shading pass, each pixel determines which list to use 
+  2. 2.5D, partition depth range into 32 cells
+     * Determine the cell for each pixel in the tile
+     * Make a bit mask representing which cells are occupied in that tile
+     * Each light gets a similar bit mask (easy for spheres)
+     * Logical AND the light bit mask with the tile bit mask 
+
 # Deferred Rendering
 
 Q: Why deferred rendering?<br>
@@ -240,12 +630,12 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Easily integrates with popular shadow techniques<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup>
   * Excellent batching<sup>[Hargreaves04](#Hargreaves04)</sup>, Greatly simplifies batching<sup>[HargreavesHarris04](#HargreavesHarris04)</sup>, Cuts down on large numbers of batches<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
   * Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, Only a single geometry pass is required<sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Lee09](#Lee09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
-  * Shade each visible pixel exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, "Perfect" O(1) depth complexity for lighting<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+  * Shade each visible pixel exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, "Perfect" O(1) depth complexity for lighting<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>, Perfect depth complexity for lighting<sup>[Shishkovtsov05](#Shishkovtsov05)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
   * Easy to add new types of lighting shader<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Koonce07](#Koonce07)</sup>
   * Other kinds of postprocessing(blur, heathaze) are just special lights, and fit neatly into the existing framework<sup>[Hargreaves04](#Hargreaves04)</sup>, Simplifies rendering of multiple special effects<sup>[Placeres06](#Placeres06)</sup>, G-Buffer already produces data required for post-processing<sup>[Thibieroz11](#Thibieroz11)</sup>
   * Simple engine management<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
   * Lots of small lights ~ one big light<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
-  * Perfect depth complexity for lighting<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
+    * Forward cana do it too!<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
   * Reduces CPU usage<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
   * Lighting costs are independent of scene complexity<sup>[Koonce07](#Koonce07)</sup>, Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
   * No additional render passes on geometry for lighting, resulting in fewer draw calls and fewer state changes required to render the scene<sup>[Koonce07](#Koonce07)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
@@ -255,14 +645,14 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Not all buffers need to be updated with matching data, e.g., decal tricks
   * Faster lighting<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
 * Disadvantages:
-  * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
-  * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup>
+  * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
     * Reading lighting inputs from G-Buffer is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
     * Accumulating ligthing with additive blending is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
   * Multiple light equations difficult<sup>[Calver03](#Calver03)</sup>, Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup>
   * High hardware specifications<sup>[Calver03](#Calver03)</sup>
-  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup>
-  * Can't take advantage of hardware multisampling<sup>[Hargreaves04](#Hargreaves04)</sup> AA is problematic<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup> MSAA difficult compared to Forward Renderer<sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Costly and complex MSAA<sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Can't take advantage of hardware multisampling<sup>[Hargreaves04](#Hargreaves04)</sup> AA is problematic<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup> MSAA difficult compared to Forward Renderer<sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Costly and complex MSAA<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
     * MYTH!! MSAA did not prove to be an issue!!<sup>[Valient07](#Valient07)</sup>
     * Existing multi-sampling techniques are too heavy for deferred pipeline<sup>[Kaplanyan10](#Kaplanyan10)</sup>
     * Post-process antialiasing doesn't remove aliasing completely<sup>[Kaplanyan10](#Kaplanyan10)</sup>
@@ -297,12 +687,17 @@ For each light and lit pixel
 ```
 <sup>[Valient07](#Valient07)</sup>
 
-* Traditional deferred shading<sup>[Andersson09](#Andersson09)</sup>
-  1. Graphics pipeline rasterizes gbuffer for opaque surfaces
-     * Normal, albedos, roughness, etc. 
-  2. Light sources are rendered & accumulate lighting to a texture
-     * Light volume or screen-space tile rendering 
-  3. Combine shading & lighting for final output
+Traditional deferred shading:<sup>[Andersson09](#Andersson09)</sup>
+1. Graphics pipeline rasterizes gbuffer for opaque surfaces
+   * Normal, albedos, roughness, etc. 
+   * Render scene geometry into G-Buffer MRT<sup>[StewartThomas13](#StewartThomas13)</sup>
+     * Store material properties (albedo, specular, normal, etc.)
+     * Write to depth buffer as normal
+2. Light sources are rendered & accumulate lighting to a texture (accumulation buffer)<sup>[StewartThomas13](#StewartThomas13)</sup>
+   * Light volume or screen-space tile rendering 
+   * Use G-Buffer RTs as inputs<sup>[StewartThomas13](#StewartThomas13)</sup>
+   * Render geometries enclosing light area<sup>[StewartThomas13](#StewartThomas13)</sup>
+3. Combine shading & lighting for final output
 
 * Worst case complexity is num_objects + num_lights<sup>[Hargreaves04](#Hargreaves04)</sup>
 * Perfect batching<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -316,7 +711,26 @@ For each light and lit pixel
 
 G-Buffers are 2D images that store geometric details in a texture, storing positions, normals and other details at every pixel. The key ingredient to hardware acceleration of G-Buffers is having the precision to store and process data such as position on a per-pixel basis. The higher precision we have to store the G-Buffer at, the slower the hardware renders.<sup>[Calver03](#Calver03)</sup>
 
+## Thin G-Buffer
+
 The smaller the better!<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+
+* Crysis 3:<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+  * Minimize redundant drawcalls
+  * AB details on G-Buffer with proper glossiness
+  * Tons of vegetation &rarr; Deferred translucency
+  * Multiplatform friendly
+
+* Advantages:
+  * Unified solution across all platforms<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+  * Deferred Rendering for less BW/Memory than vanilla<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+    * Good for MSAA + avoiding tiled rendering on Xbox360
+  * Tackle glossiness for transparent geometry on G-Buffer
+    * Alpha blended cases, e.g. Decals, Deferred Decals, Terrain Layers
+    * Can composite all such cases directly into G-Buffer
+    * Avoid need for multipass
+  * Deferred sub-surface scattering
+    * Visual + performance win, in particular for vegetation rendering
 
 ## What to Store?
 
@@ -702,7 +1116,7 @@ S.T.A.L.E.R: Clear Skies:
 * Color + Gloss (RGBA8 RT1)
 * Trade packing math vs. Less G-Buffer texture ops
 
-### Example 4: Split/Second<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+### Example 7: Split/Second<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
 
 <table>
 <thead>
@@ -735,6 +1149,90 @@ S.T.A.L.E.R: Clear Skies:
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Prelit.G</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Prelit.B</td>
 <td style="background-color:rgba(255, 255, 255, 0.5); color:white">Specular power</td>
+</tr>
+</tbody>
+</table>
+
+### Example 8: Crysis 3<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DS</td>
+<td colspan="3" style="background-color:rgba(127, 127, 127, 0.5); color:white">Depth D24</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">AmbID, Decals S8</td>
+</tr>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Gloss, Z Sign B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Translucency A8</td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.Y R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.Cb, .Cr G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Specular Y B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Per-Project A8</td>
+</tr>
+</tbody>
+</table>
+
+* WS Normal packed into 2 components
+  * Stereographic projection worked ok in practice (also cheap)
+  * (X, Y) = (x / (1 - z), y / (1 - z))
+  * (x, y, z) = (2X / (1 + X<sup>2</sup> + Y<sup>2</sup>), 2Y / (1 + X<sup>2</sup> + Y<sup>2</sup>), (-1 + X<sup>2</sup> + Y<sup>2</sup>) / (1 + X<sup>2</sup> + Y<sup>2</sup>))
+* Glossiness + Normal Z Sign packed together
+  * GlossZsign = (Gloss * Zsign) * 0.5 + 0.5
+* Albedo in Y'CbCr color space
+  * Y' = 0.299 &times; R + 0.587 &times; G + 0.114 &times; B
+  * C<sub>B</sub> = 0.5 + (-0.168 &times; R - 0.331 &times; G + 0.5 &times; B)
+  * C<sub>R</sub> = 0.5 + (0.5 &times; R - 0.418 &times; G - 0.081 &times; B)
+  * R = Y' + 1.402 &times; (C<sub>R</sub> - 0.5)
+  * G = Y' - 0.344 &times; (C<sub>B</sub> - 0.5) - 0.714 &times; (C<sub>R</sub> - 0.5)
+  * B = Y' - 1.772 &times; (C<sub>B</sub> - 0.5)
+
+### Example 9: Destiny<sup>[TatarchukTchouVenzon13](#TatarchukTchouVenzon13)</sup>
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Diffuse Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">AO A8</td>
+</tr>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X * (Biased Specular Smoothness) R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y * (Biased Specular Smoothness) G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z * (Biased Specular Smoothness) B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Material ID A8</td>
+</tr>
+<tr>
+<td>DS</td>
+<td colspan="3" style="background-color:rgba(127, 127, 127, 0.5); color:white">Depth D24</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Stencil S8</td>
 </tr>
 </tbody>
 </table>
@@ -892,6 +1390,21 @@ Modern Implementation<sup>[Lauritzen10](#Lauritzen10)</sup>:
   * Use conservative single-direction depth test
     * Two-pass stencil is more expensive than it is worth
     * Depth bounds test on some hardware, but not batch-friendly
+
+```c
+for each G-Buffer sample
+{
+  sampleAttr = load attributes from G-Buffer
+
+  for each light
+  {
+    color += shade(sampleAttr, light)
+  }
+
+  output pixel color;
+}
+```
+<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 
 ### Pre-Tiled Shading
 
@@ -1103,31 +1616,46 @@ struct PS_QUAD_INPUT
 
 Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
 
-* Fastest and most flexible<sup>[Lauritzen10](#Lauritzen10)</sup>
-* Enable efficient MSAA<sup>[Lauritzen10](#Lauritzen10)</sup>
+* Advantages:
+  * Fastest and most flexible<sup>[Lauritzen10](#Lauritzen10)</sup>
+  * Enable efficient MSAA<sup>[Lauritzen10](#Lauritzen10)</sup>
+  * G-Buffers are read only once for each lit sample<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Framebuffer is written to once<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Common terms of the rendering equation can be factored out and computed once instead of recomputing them for each light<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Work becomes coherent within each tile<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+    * Each sample in a tile requires the same amount of work
+      * Allows for efficient implementation on SIMD-like architectures
+* Disadvantages:
 
-1. Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
-2. Find which lights intersect each cell<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup>
+1. Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+    * (Optional) Find min / max Z-bounds for each tile<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+2. Find which lights intersect each cell<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
    * +How many lights<sup>[Andersson09](#Andersson09)</sup> 
 3. Render quads over each cell calculating up to 8 lights per pass<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
   * Results in a light buffer
-  * Only apply the visible light sources on pixels in each tile<sup>[Andersson09](#Andersson09)</sup><sup>[Andersson11](#Andersson11)</sup>
+  * Only apply the visible light sources on pixels in each tile<sup>[Andersson09](#Andersson09)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 
 Algorithm:<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
-1. Render the (opaque) geometry into the G-Buffers
+1. Render the (opaque) geometry into the G-Buffers<sup>[StewartThomas13](#StewartThomas13)</sup>
    * Ordinary deferred geometry pass 
-2. Construct a screen space grid, covering the frame buffer, with some fixed tile size, t = (x, y), e.g. 32 &times; 32 pixels<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
-3. For each light: find the screen space extents of the light volume and append the light ID to each affected grid cell
+   * Store material properties<sup>[StewartThomas13](#StewartThomas13)</sup>
+   * Provides tile depth bounds<sup>[StewartThomas13](#StewartThomas13)</sup>
+2. Construct a screen space grid, covering the frame buffer, with some fixed tile size, t = (x, y), e.g. 32 &times; 32 pixels<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
+    * (Optional) Find min / max Z-bounds for each tile<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+3. For each light: find the screen space extents of the light volume and append the light ID to each affected grid cell<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
    * Find the screen space extents of the light bounding sphere and then insert the light into the covered grid cells<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
      * Store the culling results in a texture:<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
        * Column == Light ID
        * Row == Tile ID
-   * Cull analytical lights (point, cone, line), per tile<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
+   * Cull analytical lights (point, cone, line), per tile<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
+   * Compute shader<sup>[StewartThomas13](#StewartThomas13)</sup>
+   * Generates per-tile light list<sup>[StewartThomas13](#StewartThomas13)</sup>
+   * Same compute shader then can use per-tile list to do shading<sup>[StewartThomas13](#StewartThomas13)</sup>
 4. For each fragment in the frame buffer, with location f = (x, y)
    1. Sample the G-Buffers at f
    2. Accumulate light contributions from all lights in tile at &lfloor;f /t&rfloor;
    3. Output total light contributions to frame buffer at f
-   * Compute lighting for all contributing lights, per tile<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup> 
+   * Compute lighting for all contributing lights, per tile<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup> <sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 
 Pseudocode:<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 ```c
@@ -1307,6 +1835,7 @@ To facilitate look up from shaders, we must store the data structure in a suitab
   * Graphics pipeline rasterizes gbuffers for opaque surfaces
   * Compute pipeline uses gbuffers, culls lights, computes lighting & combines with shading
   * Graphics pipeline renders transparent surfaces on top
+* MSAA is simpler<sup>[Sousa13](#Sousa13)</sup>
 
 <sup>[Andersson09](#Andersson09)</sup>
 <ul>
@@ -1549,9 +2078,9 @@ Similar to S.T.A.L.K.E.R: Clear Skies
 
 ### Clustered Shading
 
-Clustered shading explore higher dimensional tiles, which we collectively call clusters. Each cluster has a fixed maximum 3D extent.<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+Clustered shading explore higher dimensional tiles, which we collectively call clusters. Each cluster has a fixed maximum 3D extent.<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
 
-Deferred Algorithm:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+Deferred Algorithm:<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
 1. Render scene to G-Buffers
 2. Cluster assignment
 3. Find unique clusters
@@ -1560,13 +2089,13 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)<
 
 #### Cluster Assignment
 
-* Goal: compute an integer cluster key for a given view sample from the information available in the G-Buffer<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Goal: compute an integer cluster key for a given view sample from the information available in the G-Buffer<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * Use position, normal (optional)
-* Regular subdivision / quantization of the sample positions<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Regular subdivision / quantization of the sample positions<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * Fast, predictable cluster sizes
-* Uniform screen space tiling used in tiled deferred shading + extend this by also subdividing along the z-axis in view space (or NDC)<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
-* Due to non-linear nature of NDC, subdivide the z-axis in view space by spacing the divisions exponentially<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
-* Subdivision:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Uniform screen space tiling used in tiled deferred shading + extend this by also subdividing along the z-axis in view space (or NDC)<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
+* Due to non-linear nature of NDC, subdivide the z-axis in view space by spacing the divisions exponentially<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
+* Subdivision:<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * near<sub>k</sub>: near plane for a division k
   * h<sub>k</sub>: depth of a division k
     * near<sub>k</sub> = near<sub>k - 1</sub> + h<sub>k - 1</sub>
@@ -1576,13 +2105,13 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)<
     * S<sub>y</sub>: number of subdivisions in the Y direction
   * near<sub>k</sub> = near ( 1 + 2 tan &theta; / S<sub>y</sub>)<sup>k</sup>
   * ![ClusterK](/Images/DeferredShading/ClusterK.png)
-* Cluster key tuple (i, j, k):<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Cluster key tuple (i, j, k):<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * ![ClusterKey](/Images/DeferredShading/ClusterKey.png)
   * Can be extended with a number of bits that encode a quantized normal direction
 
 #### Finding Unique Clusters
 
-* Local Sorting<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Local Sorting<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * Sort samples in each screen space tile locally
     * Allows us to:
       * Perform the sorting operation in on-chip shared memory
@@ -1590,15 +2119,45 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)<
   * Extract unique clusters from each tile using a parallel compaction
     * Compute and store a link from each sample to its associated cluster
   * Globally unique list of clusters
-* Cluster key defines implicit 3D bounds, and optionally an implicit normal cone<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
-* Compute the explicit bounds by performing a reduction over the samples in each cluster<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Cluster key defines implicit 3D bounds, and optionally an implicit normal cone<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
+* Compute the explicit bounds by performing a reduction over the samples in each cluster<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * e.g., Perform a min/max reduction to find the AABB enclosing each cluster
-* Results of the reduction are stored separately in memory<sup>[OlssonBilleterAssarsson12](#OlssonBilleterAssarsson12)</sup>
+* Results of the reduction are stored separately in memory<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
 
-#### Light Assignment
+#### Light Assignment<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
 
 * Goal: calculate the list of lights influencing each cluster
-* 
+* Fully hierarchical approach based on a spatial tree over the lights is better than tiled shading's brute force approach
+* Bounding Volume Hierarchy (BVH)
+  * Sort the lights according to the Z-order (Morton Code) based on the discretized centre position of each light
+  * Leaves of the search tree is get directly from the sorted data
+  * 32 consecutive leaves are grouped into a bounding volume (AABB) to form the first level above the leaves
+  * Next level is constructed by again combining 32 consecutive elements
+    * Continue until a single root element remains
+  * To construct upper levels of the tree, we launch a CUDA warp (32 threads) for each node to be constructed
+* For each cluster, we traverse this BVH using depth-first traversal (warp is allocated)
+  * At each level, the bounding box of the cluster is tested against the bounding volumes of the child nodes
+  * For the leaf nodes, the sphere bounding the light source is used
+  * The branching factor of 32 allows efficient SIMD-traversal on the GPU and keeps the search tree relatively shallow (up to 5 levels)
+    * Avoid expensive recursion
+    * Support up to 32 million lights
+
+#### Shading<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
+
+To match the pixel and the clusters, we need a direct mapping between the cluster key and the index into the list of unique clusters.
+
+In the sorting approach, we explicitly store this index for each pixel. When the unique cluster is established, store the index to the correct pixel in a full screen buffer.
+
+#### Cluster Key Packing<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
+
+Allocate 8 bits to each i and j components, which allows up to 8192 &times; 8192 size RTs. Depth index k is determined from settings for the near and far planes and ![ClusterK](/Images/DeferredShading/ClusterK.png). 
+
+The paper uses 10 bits, 4 bits for the actually depth data, and 6 bits for the optional normal clustering.
+
+#### Tile Sorting<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
+
+To the cluster ke we attach an additional 10 bits of meta-data, which identifies the sample's original position relative to its tile. We perfrom a tile-local sort of the cluster keys and the associated meta-data. The sort only considers the up-to 16 bits of the cluster key; the meta-data is used as a link back to the original sample after sorting. In each tile, we count the number of unique cluster keys. Using a prefix operation over the counts from each tile, we find the total number of unique cluster keys and assign each cluster a unique ID in the range [0...numClusters). We write the unique ID back to each pixel that is a member of the cluster. The unique ID also serves as an offset in
+memory to where the cluster’s data is stored.
 
 ### Optimizations
 
@@ -1784,16 +2343,22 @@ Render your scene to multiple 32 bit buffers, then use a 64 bit accumulation buf
 
 * Apply black-outs, film grain, etc.
 
-## Light Indexed Deferred Rendering<sup>[Trebilco09](#Trebilco09)</sup>
+## Light Indexed Deferred Rendering
 
-Three basic render passes:
+Three basic render passes:<sup>[Trebilco09](#Trebilco09)</sup>
 1. Render depth only pre-pass
 2. Disable depth writes (depth testing only) and render light volumes into a light index texture
    * Standard deferred lighting / shadow volume techniques can be used to find what fragments are hit by each light volume
 3. Render geometry using standard forward rendering
    * Lighting is done using the light index texture to access lighting properties in each shader 
 
-In order to support multiple light indexes per-fragment, it would be ideal to store the first light index in the texture's red channel, second light index in the blue index, etc.
+In order to support multiple light indexes per-fragment, it would be ideal to store the first light index in the texture's red channel, second light index in the blue index, etc.<sup>[Trebilco09](#Trebilco09)</sup>
+
+### Matt Pettineo's approach<sup>[Pettineo12](#Pettineo12)</sup>
+
+* Depth-only Prepass
+* Depth buffer used by a compute shader to compute the list of intersecting lights per-tile
+  * List is stored in either an `R8_UINT` or `R16_UINT` typed buffer (8-bit for < 255 lights)
 
 ## Space Marine<sup>[KimBarrero11](#KimBarrero11)</sup>
 
@@ -1852,6 +2417,40 @@ Features:
 * Better foliage support (applies only to IL)
 * Screen-space decals (enhanced by IL)
 * Radial AO (RAO) (optimized by IL)
+
+## Hybrid Deferred Rendering<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+
+* Deferred lighting still processed as usual
+  * L-Buffers now using BW friendlier R11G11B10F formats
+  * Precision was sufficient, since material properties not applied yet
+* Deferred shading composited via fullscreen pass
+  * For more complex shading such as Hair or Skin, process forward passes
+* Allowed us to drop almost all opaque forward passes
+  * Less drawcalls, but G-Buffer passes now with higher cost
+    * Fast Double-Z prepass for some of the closest geometry helps slightly
+  * Overwall was nice win, on all platforms*
+
+## Destiny Engine Deferred Rendering<sup>[TatarchukTchouVenzon13](#TatarchukTchouVenzon13)</sup>
+
+1. G-Buffers (96 bits)
+   * Depth, normal, material ids
+   * Opaque geometries + Decals 
+   * Highly-compressed
+2. L-Buffers
+   * Lighting accumulation
+   * Light Geometry
+   * Lights 
+3. Lit Result
+   * Full-screen shading 
+
+* Advantages:
+  * Memory footprint fits in EDRAM (96 bpp)
+  * Single pass over geometry (especially important for decoratos / foliage)
+  * Unified lighting + materials (no matrix of lights vs. geometry types like in Halo)
+  * Allows cheap deferred decals
+  * Complex material appearance
+  * Separate lighting / shading / geometry shaders simplifies shaders
+* Disadvantages:
 
 # Issues
 
@@ -2143,11 +2742,12 @@ For each shader
 ```
 <sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup>
 
-#### MSAA Compute Shader Lighting<sup>[Andersson11](#Andersson11)</sup>
+#### MSAA Compute Shader Lighting
 
-* Only edge pixels need full per-sample lighting
-  * But edges have bad screen-space coherency! Inefficient
-* Compute Shader can build efficient coherent pixel list
+* Only edge pixels need full per-sample lighting<sup>[Andersson11](#Andersson11)</sup>
+  * But edges have bad screen-space coherency! Inefficient<sup>[StewartThomas13](#StewartThomas13)</sup>
+    * Bad for branching<sup>[StewartThomas13](#StewartThomas13)</sup>
+* Compute Shader can build efficient coherent pixel list<sup>[Andersson11](#Andersson11)</sup>
   * Evaluate lighting for each pixel (sample 0)
   * Determine if pixel requires per-sample lighting
   * If so, add to atomic list in shared memory
@@ -2193,65 +2793,76 @@ EA. SIGGRAPH. 2011.
 
 ## 2003
 
-<a id="Calver03" href="https://www.beyond3d.com/content/articles/19/1">Photo-realistic Deferred Lighting</a>. [Dean Calver](https://www.linkedin.com/in/deanoc/), [Climax](https://www.climaxstudios.com/). [Beyond3D](https://www.beyond3d.com/).
+<a id="Calver03" href="https://www.beyond3d.com/content/articles/19/1">Photo-realistic Deferred Lighting</a>. [Dean Calver](https://www.linkedin.com/in/deanoc/), [Climax](https://www.climaxstudios.com/) / [Snapshot Games](https://www.snapshotgames.com/). [Beyond3D](https://www.beyond3d.com/).
 
 ## 2004
 
-<a id="Hargreaves04" href="https://my.eng.utah.edu/~cs5600/slides/Wk%209%20D3DTutorial_DeferredShading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/). [GDC 2004](https://www.gdcvault.com/free/gdc-04/)<BR>
-<a id="HargreavesHarris04" href="http://download.nvidia.com/developer/presentations/2004/6800_Leagues/6800_Leagues_Deferred_Shading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/). [Mark Harris](https://www.linkedin.com/in/themarkharris/), [NVIDIA](https://www.nvidia.com/en-us/). NVIDIA Developers Conference 2004.<br>
-<a id="Thibieroz04" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1762]%20[ShaderX2%202004]%20Deferred%20Shading%20with%20Multiple%20Render%20Targets.pdf">Deferred Shading with Multiple Render Targets</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [PowerVR Technologies](https://www.imaginationtech.com/products/gpu/). [ShaderX2](http://www.shaderx2.com/).
+<a id="Hargreaves04" href="https://my.eng.utah.edu/~cs5600/slides/Wk%209%20D3DTutorial_DeferredShading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/) / [Microsoft](https://www.microsoft.com/ko-kr/). [GDC 2004](https://www.gdcvault.com/free/gdc-04/)<BR>
+<a id="HargreavesHarris04" href="http://download.nvidia.com/developer/presentations/2004/6800_Leagues/6800_Leagues_Deferred_Shading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/) / [Microsoft](https://www.microsoft.com/ko-kr/). [Mark Harris](https://www.linkedin.com/in/themarkharris/), [NVIDIA](https://www.nvidia.com/en-us/). NVIDIA Developers Conference 2004.<br>
+<a id="Thibieroz04" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1762]%20[ShaderX2%202004]%20Deferred%20Shading%20with%20Multiple%20Render%20Targets.pdf">Deferred Shading with Multiple Render Targets</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [PowerVR Technologies](https://www.imaginationtech.com/products/gpu/) / [AMD](https://www.amd.com/en). [ShaderX2](http://www.shaderx2.com/).
 
 ## 2005
 
-<a id="Shishkovtsov05" href="https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-9-deferred-shading-stalker">Deferred Shading in S.T.A.L.K.E.R.</a>. [Oleksandr Shyshkovtsov](https://www.linkedin.com/in/olesshishkovtsov/), [GSC Game World](https://www.gsc-game.com/). [GPU Gems 2](https://developer.nvidia.com/gpugems/gpugems2/inside-front-cover).
+<a id="Shishkovtsov05" href="https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-9-deferred-shading-stalker">Deferred Shading in S.T.A.L.K.E.R.</a>. [Oleksandr Shyshkovtsov](https://www.linkedin.com/in/olesshishkovtsov/), [GSC Game World](https://www.gsc-game.com/) / [4A Games](https://www.4a-games.com.mt/). [GPU Gems 2](https://developer.nvidia.com/gpugems/gpugems2/inside-front-cover).
 
 ## 2006
 
-<a id="Placeres06" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1420]%20[ShaderX5%202006]%20Overcoming%20Deferred%20Shading%20Drawbacks.pdf">Overcoming Deferred Shading Drawbacks</a>. [Frank Puig Placeres](https://www.linkedin.com/in/frank-puig-placeres-454b1633/), [University of Informatic Sciences](https://www.uci.cu/en). [ShaderX5](http://www.shaderx5.com/).
+<a id="Placeres06" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1420]%20[ShaderX5%202006]%20Overcoming%20Deferred%20Shading%20Drawbacks.pdf">Overcoming Deferred Shading Drawbacks</a>. [Frank Puig Placeres](https://www.linkedin.com/in/frank-puig-placeres-454b1633/), [University of Informatic Sciences](https://www.uci.cu/en) / [Amazon](https://www.amazon.com/). [ShaderX5](http://www.shaderx5.com/).
 
 ## 2007
 
-<a id="Koonce07" href="https://developer.nvidia.com/gpugems/gpugems3/part-iii-rendering/chapter-19-deferred-shading-tabula-rasa">Deferred Shading in Tabula Rasa</a>. [Rusty Koonce](https://www.linkedin.com/in/rusty-koonce-9654819/), [NCSoft Corporation](https://kr.ncsoft.com/en/index.do). [GPU Gems 3](https://developer.nvidia.com/gpugems/gpugems3/foreword).<br>
-<a id="Valient07" href="https://www.guerrilla-games.com/read/deferred-rendering-in-killzone-2">Deferred Rendering in Killzone 2</a>. [Michal Valient](https://www.linkedin.com/in/valient/), [Guerilla Games](https://www.guerrilla-games.com/). Developer Conference 2007.
+<a id="Koonce07" href="https://developer.nvidia.com/gpugems/gpugems3/part-iii-rendering/chapter-19-deferred-shading-tabula-rasa">Deferred Shading in Tabula Rasa</a>. [Rusty Koonce](https://www.linkedin.com/in/rusty-koonce-9654819/), [NCSoft Corporation](https://kr.ncsoft.com/en/index.do) / [Facebook](https://about.facebook.com/). [GPU Gems 3](https://developer.nvidia.com/gpugems/gpugems3/foreword).<br>
+<a id="Valient07" href="https://www.guerrilla-games.com/read/deferred-rendering-in-killzone-2">Deferred Rendering in Killzone 2</a>. [Michal Valient](https://www.linkedin.com/in/valient/), [Guerilla Games](https://www.guerrilla-games.com/) / [Epic Games](https://www.epicgames.com/site/en-US/home). Developer Conference 2007.
 
 ## 2008
 
-<a id="BalestraEngstad08" href="https://www.gdcvault.com/play/325/The-Technology-of-UNCHARTED-DRAKE">The Technology of Uncharted: Drake's Fortune</a>. [Christophe Balestra](https://www.linkedin.com/in/christophe-balestra-37bb41/), [Naughty Dog](https://www.naughtydog.com/). [Pål-Kristian Engstad](https://www.linkedin.com/in/p%C3%A5l-kristian-engstad-08a22a1/), [Naughty Dog](https://www.naughtydog.com/). [GDC 2008](https://www.gdcvault.com/free/gdc-08/).<br>
-<a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">StarCraft II: Effects & Techniques</a>. [Dominic Filion](https://www.linkedin.com/in/%E2%80%8Edominic-filion-guay-258202/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [Rob McNaughton](https://www.linkedin.com/in/rob-mcnaughton-4872453/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [SIGGRAPH 2008: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/)
+<a id="BalestraEngstad08" href="https://www.gdcvault.com/play/325/The-Technology-of-UNCHARTED-DRAKE">The Technology of Uncharted: Drake's Fortune</a>. [Christophe Balestra](https://www.linkedin.com/in/christophe-balestra-37bb41/), [Naughty Dog](https://www.naughtydog.com/) / Retired. [Pål-Kristian Engstad](https://www.linkedin.com/in/p%C3%A5l-kristian-engstad-08a22a1/), [Naughty Dog](https://www.naughtydog.com/) / [Apple](https://www.apple.com/). [GDC 2008](https://www.gdcvault.com/free/gdc-08/).<br>
+<a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">StarCraft II: Effects & Techniques</a>. [Dominic Filion](https://www.linkedin.com/in/%E2%80%8Edominic-filion-guay-258202/), [Blizzard Entertainment](https://www.blizzard.com/en-us/) / [Snap Inc.](https://www.snap.com/en-US). [Rob McNaughton](https://www.linkedin.com/in/rob-mcnaughton-4872453/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [SIGGRAPH 2008: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/)
 
 ## 2009
 
-<a id="Andersson09" href="https://www.ea.com/frostbite/news/parallel-graphics-in-frostbite-current-future">Parallel Graphics in Frostbite - Current Future</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/). 
+<a id="Andersson09" href="https://www.ea.com/frostbite/news/parallel-graphics-in-frostbite-current-future">Parallel Graphics in Frostbite - Current Future</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/) / [Embark Studios](https://www.embark-studios.com/). 
 SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
-<a id="EngelShaderX709" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[0431]%20[ShaderX7%202009]%20Designing%20a%20Renderer%20for%20Multiple%20Lights-%20The%20Light%20Pre-Pass%20Renderer.pdf">Designing a Renderer for Multiple Lights: The Light Pre-Pass Renderer</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/). [ShaderX7](http://www.shaderx7.com/).<br>
-<a id="EngelSiggraph09" href="https://www.slideshare.net/cagetu/light-prepass">Light Pre-Pass; Deferred Lighting: Latest Development</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/). [SIGGRAPH 2009: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2009/index.html).<br>
-<a id="Lee09" href="https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2011/06/GDC09_Lee_Prelighting.pdf">Pre-lighting in Resistance 2</a>. [Mark Lee](http://rgba32.blogspot.com/), [Insomniac Games](https://insomniac.games/). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
-<a id="LobanchikovGruen09" href="https://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2F01GDC09AD3DDStalkerClearSky210309.ppt&wdOrigin=BROWSELINK">GSC Game World’s S.T.A.L.K.E.R: Clear Sky—A Showcase for Direct3D 10.0/1</a>. [Igor A. Lobanchikov](https://www.linkedin.com/in/igorlobanchikov/), [GSC Game World](https://www.gsc-game.com/). [Holger Gruen](https://www.linkedin.com/in/holger-gruen-b456791/), [AMD](https://www.amd.com/en). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
-<a id="Swoboda09" href="https://slideplayer.com/slide/1511906/">Deferred Lighting and Post Processing on PLAYSTATION 3</a>. [Matt Swoboda](https://www.linkedin.com/in/matt-swoboda-b820872/), [Sony Computer Entertainment](https://www.sie.com/en/index.html). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
+<a id="EngelShaderX709" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[0431]%20[ShaderX7%202009]%20Designing%20a%20Renderer%20for%20Multiple%20Lights-%20The%20Light%20Pre-Pass%20Renderer.pdf">Designing a Renderer for Multiple Lights: The Light Pre-Pass Renderer</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [ShaderX7](http://www.shaderx7.com/).<br>
+<a id="EngelSiggraph09" href="https://www.slideshare.net/cagetu/light-prepass">Light Pre-Pass; Deferred Lighting: Latest Development</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [SIGGRAPH 2009: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2009/index.html).<br>
+<a id="Lee09" href="https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2011/06/GDC09_Lee_Prelighting.pdf">Pre-lighting in Resistance 2</a>. [Mark Lee](http://rgba32.blogspot.com/), [Insomniac Games](https://insomniac.games/) / [Walt Disney Animation Studios](https://disneyanimation.com/). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
+<a id="LobanchikovGruen09" href="https://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2F01GDC09AD3DDStalkerClearSky210309.ppt&wdOrigin=BROWSELINK">GSC Game World’s S.T.A.L.K.E.R: Clear Sky—A Showcase for Direct3D 10.0/1</a>. [Igor A. Lobanchikov](https://www.linkedin.com/in/igorlobanchikov/), [GSC Game World](https://www.gsc-game.com/) / Retired. [Holger Gruen](https://www.linkedin.com/in/holger-gruen-b456791/), [AMD](https://www.amd.com/en). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
+<a id="Swoboda09" href="https://slideplayer.com/slide/1511906/">Deferred Lighting and Post Processing on PLAYSTATION 3</a>. [Matt Swoboda](https://www.linkedin.com/in/matt-swoboda-b820872/), [Sony Computer Entertainment](https://www.sie.com/en/index.html) / [Notch](https://www.notch.one/). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
 <a id="Thibieroz09" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1764]%20[ShaderX7%202009]%20Deferred%20Shading%20with%20Multisampling%20Anti-Aliasing%20in%20DirectX%2010.pdf">Deferred Shading with Multisampling Anti-Aliasing in DirectX 10</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [AMD](https://www.amd.com/en). [GDC 2009](https://www.gdcvault.com/free/gdc-09/). [ShaderX7](http://www.shaderx7.com/).<br>
-<a id="Trebilco09" href="https://github.com/dtrebilco/lightindexed-deferredrender/blob/master/LightIndexedDeferredLighting1.1.pdf">Light-Indexed Deferred Rendering</a>. [Damian Trebilco](https://www.linkedin.com/in/damian-trebilco-93a95213/), [THQ](https://www.thqnordic.com/). [ShaderX7](http://www.shaderx7.com/).
+<a id="Trebilco09" href="https://github.com/dtrebilco/lightindexed-deferredrender/blob/master/LightIndexedDeferredLighting1.1.pdf">Light-Indexed Deferred Rendering</a>. [Damian Trebilco](https://www.linkedin.com/in/damian-trebilco-93a95213/), [THQ](https://www.thqnordic.com/) / [Situ Systems](https://situsystems.com/). [ShaderX7](http://www.shaderx7.com/).
 
 ## 2010
 
-<a id="Kaplanyan10" href="http://advances.realtimerendering.com/s2010/Kaplanyan-CryEngine3%28SIGGRAPH%202010%20Advanced%20RealTime%20Rendering%20Course%29.pdf">CryENGINE 3: Reaching the Speed of Light</a>. [Anton Kaplanyan](https://kaplanyan.com/), [Crytek](https://www.crytek.com/). [SIGGRAPH 2010: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2010/index.html).<br>
+<a id="Kaplanyan10" href="http://advances.realtimerendering.com/s2010/Kaplanyan-CryEngine3%28SIGGRAPH%202010%20Advanced%20RealTime%20Rendering%20Course%29.pdf">CryENGINE 3: Reaching the Speed of Light</a>. [Anton Kaplanyan](https://kaplanyan.com/), [Crytek](https://www.crytek.com/) / [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). [SIGGRAPH 2010: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2010/index.html).<br>
 <a id="Lauritzen10" href="https://www.intel.com/content/www/us/en/developer/articles/technical/deferred-rendering-for-current-and-future-rendering-pipelines.html">Deferred Rendering for Current and Future Rendering Pipelines</a>. [Andrew Lauritzen](https://dl.acm.org/profile/81310499387), [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). SIGGRAPH 2010: Beyond Programmable Shader Course.
 
 ## 2011
 
-<a id="Andersson11" href="https://www.ea.com/frostbite/news/directx-11-rendering-in-battlefield-3">DirectX 11 Rendering in Battlefield 3</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/)<br>
-<a id="KimBarrero11" href="https://blog.popekim.com/en/2011/11/15/slides-rendering-tech-of-space-marine.html">Rendering Tech of Space Marine</a>. [Pope Kim](https://blog.popekim.com/en/), [Relic Entertainment](https://www.relic.com/). [Daniel Barrero](https://www.linkedin.com/in/danielbarrero/), [Relic Entertainment](https://www.relic.com/). [KGC 2011](https://www.khronos.org/events/korea-games-conference-2011).<br>
+<a id="Andersson11" href="https://www.ea.com/frostbite/news/directx-11-rendering-in-battlefield-3">DirectX 11 Rendering in Battlefield 3</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/) / [Embark Studios](https://www.embark-studios.com/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/)<br>
+<a id="KimBarrero11" href="https://blog.popekim.com/en/2011/11/15/slides-rendering-tech-of-space-marine.html">Rendering Tech of Space Marine</a>. [Pope Kim](https://blog.popekim.com/en/), [Relic Entertainment](https://www.relic.com/) / [POCU](https://pocu.academy/ko). [Daniel Barrero](https://www.linkedin.com/in/danielbarrero/), [Relic Entertainment](https://www.relic.com/). [KGC 2011](https://www.khronos.org/events/korea-games-conference-2011).<br>
 <a id="KnightRitchieParrish11" href="https://gameenginegems.com/gemsdb/article.php?id=32">Screen-Space Classification for Efficient Deferred Shading</a>. [Balor Knight](https://twitter.com/kernigit), [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). Matthew Ritchie, [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). [George Parrish](https://sites.google.com/view/georgeparrish/), [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). [Game Engine Gems 2](https://gameenginegems.com/gemsdb/book.php?id=2).<br>
 <a id="OlssonAssarsson11" href="https://efficientshading.com/2011/01/01/tiled-shading/">Tiled Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Journal of Graphics, GPU, and Game Tools](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2011.632611?tab=permissions&scroll=top).<br>
-<a id="Papathanasis11" href="https://cupdf.com/document/dragon-age-ii-dx11-technology.html?page=2">Dragon Age II DX11 Technology</a>. [Andreas Papathanasis](https://andreas-papathanasis.medium.com/), [BioWare](https://www.bioware.com/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
+<a id="Papathanasis11" href="https://cupdf.com/document/dragon-age-ii-dx11-technology.html?page=2">Dragon Age II DX11 Technology</a>. [Andreas Papathanasis](https://andreas-papathanasis.medium.com/), [BioWare](https://www.bioware.com/) / [Parallel Space Inc.](http://www.hadesstar.com/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
 <a id="Thibieroz11" href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2FDeferred%2520Shading%2520Optimizations.pps&wdOrigin=BROWSELINK">Deferred Shading Optimizations</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [AMD](https://www.amd.com/en). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
-<a id="WhiteBarreBrisebois11" href="https://www.ea.com/frostbite/news/more-performance-five-rendering-ideas-from-battlefield-3-and-need-for-speed-the-run">More Performance! Five Rendering Ideas from Battlefield 3 and Need For Speed: The Run</a>. [John White](https://www.linkedin.com/in/john-white-4090591/), [EA Black Box](https://en.wikipedia.org/wiki/EA_Black_Box). [Colin Barré-Brisebois](https://colinbarrebrisebois.com/), [DICE](https://www.dice.se/). [SIGGRAPH 2011: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2011/index.html).<br>
+<a id="WhiteBarreBrisebois11" href="https://www.ea.com/frostbite/news/more-performance-five-rendering-ideas-from-battlefield-3-and-need-for-speed-the-run">More Performance! Five Rendering Ideas from Battlefield 3 and Need For Speed: The Run</a>. [John White](https://www.linkedin.com/in/john-white-4090591/), [EA Black Box](https://en.wikipedia.org/wiki/EA_Black_Box) / [Roblox](https://www.roblox.com/). [Colin Barré-Brisebois](https://colinbarrebrisebois.com/), [DICE](https://www.dice.se/) / [SEED](https://www.ea.com/seed). [SIGGRAPH 2011: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2011/index.html).<br>
 
 ## 2012
 
-<a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en). [Eurographics 2012](http://www.eurographics2012.it/).<br>
+<a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en) / [DGene](https://www.linkedin.com/company/dgene/). [Eurographics 2012](http://www.eurographics2012.it/).<br>
 <a id="Harada12" href="https://e8040b55-a-62cb3a1a-s-sites.googlegroups.com/site/takahiroharada/storage/2012SA_2.5DCulling.pdf?attachauth=ANoY7crz6LiGa4Pg6UUy3BMrqNfxng8akXQbQQmX6zfKc8so5lMDSGuVO7d6jpoWN5pr1vFTndtY8qGT_4VgMc5_ikexCrof0i9-4cYxoUCrbtswcuGC2w_0ymMqZ3x-WVQ-4XRkD1hMLi1KO3tNpXSf-TnE-o4R1rxKxAFzeK5RS6kXj5yAje2yHKcNQf8ugsHc0ZVZYyyqWNM9WY9rBjcnx37CgAArVwe1pHr9cDHeHe4rFWYXz_w%3D&attredirects=0">A 2.5D Culling for Forward+</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). [SIGGRAPH ASIA 2012](https://www.siggraph.org/asia2012/).<br>
 <a id="Kircher12" href="https://www.gdcvault.com/play/1015345/Lighting-and-Simplifying-Saints-Row">Lighting & Simplifying Saints Row: The Third</a>. [Scott Kircher](https://www.linkedin.com/in/scott-kircher-74332b49/), [Volition](https://www.dsvolition.com/). [GDC 2012](https://www.gdcvault.com/free/gdc-12).<br>
-<a id="OlssonBilleterAssarsson12" href="https://efficientshading.com/2012/01/01/clustered-deferred-and-forward-shading/"></a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [HPG 2012](https://kesen.realtimerendering.com/hpg2012-Changelog.htm).
+<a id="OlssonBilleterAssarssonHpg12" href="https://efficientshading.com/2012/01/01/clustered-deferred-and-forward-shading/"></a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [HPG 2012](https://kesen.realtimerendering.com/hpg2012-Changelog.htm).<br>
+<a id="OlssonBilleterAssarssonSiggraph12" href="">Tiled and Clustered Forward Shading: Supporting Transparency and MSAA</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [SIGGRAPH 2012: Talks](https://dl.acm.org/doi/proceedings/10.1145/2343045).<br>
+<a id="Pettineo12" href="https://therealmjp.github.io/posts/light-indexed-deferred-rendering/">Light Indexed Deferred Rendering</a>. [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [The Danger Zone Blog](https://therealmjp.github.io/).
+
+## 2013
+
+<a id="OlssonBilleterAssarsson13" href="https://efficientshading.com/2013/01/01/tiled-forward-shading/">Tiled Forward Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [University of Leeds](https://www.leeds.ac.uk/). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [GPU Pro 4](http://gpupro.blogspot.com/2012/11/gpu-pro-4-book-cover.html).<br>
+<a id="HaradaMcKeeYang13" href="https://www.taylorfrancis.com/chapters/edit/10.1201/9781351261524-18/forward-step-toward-film-style-shading-real-time-takahiro-harada-jay-mckee-jason-yang"></a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en) / [DGene](https://www.linkedin.com/company/dgene/). [GPU Pro 4](http://gpupro.blogspot.com/2012/11/gpu-pro-4-book-cover.html).<br>
+<a id="SousaWenzelRaine13" href="https://www.crytek-hq.com/crytek/crytek-news/1509-the-rendering-technologies-of-crysis-3">The Rendering Technologies of Crysis 3</a>. [Tiago Sousa](https://www.linkedin.com/in/tsousa/), [Crytek](https://www.crytek.com/) / [id Software](https://www.idsoftware.com/). [Carsten Wenzel](https://www.linkedin.com/in/cwenzel/), [Crytek](https://www.crytek.com/) / [Cloud Imperium Games](https://cloudimperiumgames.com/). [Chris Raine](https://www.linkedin.com/in/christopher-raine-46a9654/), [Crytek](https://www.crytek.com/). [GDC 2013](https://www.gdcvault.com/free/gdc-13/).<br>
+<a id="Sousa13" href="https://advances.realtimerendering.com/s2013/Sousa_Graphics_Gems_CryENGINE3.pptx">CryENGINE 3: Graphics Gems</a>. [Tiago Sousa](https://www.linkedin.com/in/tsousa/), [Crytek](https://www.crytek.com/) / [id Software](https://www.idsoftware.com/). [Nickolay Kasyan](https://www.linkedin.com/in/nikolaskasyan/), [Crytek](https://www.crytek.com/) / [AMD](https://www.amd.com/en). Nicolas Schulz. [SIGGRAPH 2013: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/s2013/index.html).<br>
+<a id="StewartThomas13" href="https://www.gdcvault.com/play/1017627/Advanced-Visual-Effects-with-DirectX">Tiled Rendering Showdown: Forward++ vs. Deferred Rendering</a>. [Jason Stewart](https://www.linkedin.com/in/jasonestewart/), [AMD](https://www.amd.com/en). [Gareth Thomas](https://www.linkedin.com/in/gareth-thomas-032654b/), [AMD](https://www.amd.com/en). [GDC 2013](https://www.gdcvault.com/free/gdc-13/).<br>
+<a id="TatarchukTchouVenzon13" href="https://advances.realtimerendering.com/s2013/Tatarchuk-Destiny-SIGGRAPH2013.pdf">Destiny: From Mythic Science Fiction to Rendering in Real-Time</a>. [Natalya Tatarchuk](https://www.linkedin.com/in/natalyatatarchuk/), [Bungie](https://www.bungie.net/) / [Unity Technologies](https://unity.com/). [Chris Tchou](https://mobile.twitter.com/cdxntchou), [Bungie](https://www.bungie.net/). [Joe Venzon](https://www.linkedin.com/in/joe-venzon-8a411710/), [Bungie](https://www.bungie.net/). [SIGGRAPH 2013: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/s2013/index.html).<br>
 
 ---
 
