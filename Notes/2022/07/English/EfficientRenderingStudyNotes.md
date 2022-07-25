@@ -16,14 +16,21 @@
 
 Characteristics:
 * Advantages:
-  * Transparency via alpha blending<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
-  * MSAA and related techniques through hardware features (much less memory storage is required)<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Transparency via alpha blending<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * MSAA and related techniques through hardware features (much less memory storage is required)<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Olsson15](#Olsson15)</sup>
   * Fastest in its baseline case (single light per pixel, "simple" shaders or even baked lighting)<sup>[Pesce14](#Pesce14)</sup>
     * Doesn't have a "constant" up-front investment, you pay as you go (more lights, more textures&hellip;)
-  * Least memory necessary (least bandwidth, at least in theory). Makes MSAA possible<sup>[Pesce14](#Pesce14)</sup>
+  * Least memory necessary (least bandwidth, at least in theory). Makes MSAA possible<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup><sup>[Olsson15](#Olsson15)</sup>
+    * Single frame buffer<sup>[Olsson15](#Olsson15)</sup>
   * Easy to integrate with shadowmaps (can render them one-at-atime, or almost)<sup>[Pesce14](#Pesce14)</sup>
   * No extra pass over geometry<sup>[Pesce14](#Pesce14)</sup>
   * Any material, except ones that require screen-space passes like Jimenez's SS-SSS<sup>[Pesce14](#Pesce14)</sup>
+  * Single pass<sup>[Olsson15](#Olsson15)</sup>
+  * Simple if only few lights<sup>[Olsson15](#Olsson15)</sup>
+    * e.g., the sun
+  * Varying shading models is easy
+  * Flexible<sup>[Olsson15](#Olsson15)</sup>
+    * Forward or Deferred
 * Issues:
   * Computing which lights affect each body consumes CPU time, and in the worst cast, it becomes an O(n &times; m) operation<sup>[Koonce07](#Koonce07)</sup>, Ineffective light culling<sup>[Lauritzen10](#Lauritzen10)</sup>, Light culling not efficient<sup>[Andersson11](#Andersson11)</sup><sup>[Pesce14](#Pesce14)</sup>
     * Object space at best
@@ -34,15 +41,16 @@ Characteristics:
   * Memory footprint of all inputs<sup>[Lauritzen10](#Lauritzen10)</sup>
     * Everything must be resident at the same time
   * Shading small triangles is inefficient<sup>[Lauritzen10](#Lauritzen10)</sup>
-  * Shader permutations not efficient<sup>[Andersson11](#Andersson11)</sup><sup>[Pesce14](#Pesce14)</sup>
+  * Shader permutations not efficient<sup>[Andersson11](#Andersson11)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
   * Expensive & more difficult decaling / destruction masking<sup>[Andersson11](#Andersson11)</sup>, Decals needs to be multiplass, lit twice.<sup>[Pesce14](#Pesce14)</sup>
     * Alternatively, for static decals mesh can be cut and texture layering used (more shader variations)<sup>[Pesce14](#Pesce14)</sup>
     * or for dynamic decals color can be splatted before main pass (but that costs an access to the offscreen buffer regardless or not a decal is there)<sup>[Pesce14](#Pesce14)</sup>
-  * Complex shaders might not run optimally<sup>[Pesce14](#Pesce14)</sup>
+  * Complex shaders might not run optimally<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
     * Texturing and lighting (and shadowing) is done in the same pass, thus shaders can require a lot of registeres and yield limited occupancy
     * Accessing many textures in sequence might create more trashing than accessing them in separate passes
   * Many "modern" rendering effecs require a depth/normal pre-pass anyways (i.e. SSAO, screen-space shadwos, reflections, and so on)<sup>[Pesce14](#Pesce14)</sup>
-  * All shading is done on geometry, which means we pay all the eventual inefficiencies (e.g. partial quads, overdraw) on all shaders<sup>[Pesce14](#Pesce14)</sup>
+  * All shading is done on geometry, which means we pay all the eventual inefficiencies (e.g. partial quads, overdraw) on all shaders<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * No shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
 
 Classic forward rendering:<sup>[StewartThomas13](#StewartThomas13)</sup>
 * Depth pre-pass
@@ -52,6 +60,17 @@ Classic forward rendering:<sup>[StewartThomas13](#StewartThomas13)</sup>
     * Iterates through light list *set for each object*
     * Evaluates material
       * Diffuse texture, spec mask, bump map, etc.
+
+Modern Forward Shading:<sup>[Olsson15](#Olsson15)</sup>
+1. Optional Pre-Z / Geometry Pass
+2. Light Assignment
+   * Build Light Acceleration Structure (Grid) 
+3. Geometry Pass
+   * Just your normal shading pass
+   * For each fragment
+     * Look up light list in acceleration structure
+     * Loop over lights and accumulate shading
+     * Write shading to frame buffer 
 
 ## Z Pre-Pass rendering
 
@@ -654,6 +673,10 @@ if (shadowIndex < 255)  // is it shadow casting?
 
 # Deferred Rendering
 
+Goal:
+* Decouple shading from geometric complexity<sup>[Olsson15](#Olsson15)</sup>
+* Solve overdraw (shade once / sample)<sup>[Olsson15](#Olsson15)</sup>
+
 Q: Why deferred rendering?<br>
 A: Combine conventional rendering techniques with the advantages of image space techniques<sup>[Calver03](#Calver03)</sup>
 
@@ -664,8 +687,8 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Shadow mapping is fairly cheap<sup>[Calver03](#Calver03)</sup>
   * Easily integrates with popular shadow techniques<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup>
   * Excellent batching<sup>[Hargreaves04](#Hargreaves04)</sup>, Greatly simplifies batching<sup>[HargreavesHarris04](#HargreavesHarris04)</sup>, Cuts down on large numbers of batches<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
-  * Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, Only a single geometry pass is required<sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Lee09](#Lee09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>, Executes only texturing on geometry so it suffers less from partial quads, overdraw<sup>[Pesce14](#Pesce14)</sup>
-  * Shade each visible pixel exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, "Perfect" O(1) depth complexity for lighting<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>, Perfect depth complexity for lighting<sup>[Shishkovtsov05](#Shishkovtsov05)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
+  * Render each triangle exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, Only a single geometry pass is required<sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Lee09](#Lee09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>, Executes only texturing on geometry so it suffers less from partial quads, overdraw<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * Shade each visible pixel exactly once<sup>[Hargreaves04](#Hargreaves04)</sup>, "Perfect" O(1) depth complexity for lighting<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>, Perfect depth complexity for lighting<sup>[Shishkovtsov05](#Shishkovtsov05)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Olsson15](#Olsson15)</sup>
   * Easy to add new types of lighting shader<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Koonce07](#Koonce07)</sup>
   * Other kinds of postprocessing(blur, heathaze) are just special lights, and fit neatly into the existing framework<sup>[Hargreaves04](#Hargreaves04)</sup>, Simplifies rendering of multiple special effects<sup>[Placeres06](#Placeres06)</sup>, G-Buffer already produces data required for post-processing<sup>[Thibieroz11](#Thibieroz11)</sup>
   * Simple engine management<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
@@ -684,14 +707,19 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Allows volumetric or multipass decals (and special effects) on the G-Buffer (without computing the lighting twice)<sup>[Pesce14](#Pesce14)</sup>
   * Allows full-screen material passes like analytic geometric specular antialiasing (pre-filtering), which really works only done on the G-Buffer<sup>[Pesce14](#Pesce14)</sup>
   * Fails in forward on all hard edges (split normals), and screen-space subsurface scattering<sup>[Pesce14](#Pesce14)</sup>
+  * Trivial light management<sup>[Olsson15](#Olsson15)</sup>
+    * Enables many lights
+  * Simple (light) shader management<sup>[Olsson15](#Olsson15)</sup>
+  * Shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
 * Disadvantages:
-  * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup>
-  * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[StewartThomas13](#StewartThomas13)</sup><sup>[Pesce14](#Pesce14)</sup>
+  * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[StewartThomas13](#StewartThomas13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
     * Reading lighting inputs from G-Buffer is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
     * Accumulating ligthing with additive blending is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
+      * Requires high precision<sup>[Olsson15](#Olsson15)</sup>
   * Multiple light equations difficult<sup>[Calver03](#Calver03)</sup>, Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup>
-  * High hardware specifications<sup>[Calver03](#Calver03)</sup>
-  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup>
+  * ~~High hardware specifications<sup>[Calver03](#Calver03)</sup>~~
+  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
     * If a tiled or clustered deferred is used, the light information can be passed to a forward+ pass for transparencies
   * Can't take advantage of hardware multisampling<sup>[Hargreaves04](#Hargreaves04)</sup> AA is problematic<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup> MSAA difficult compared to Forward Renderer<sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Costly and complex MSAA<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
     * MYTH!! MSAA did not prove to be an issue!!<sup>[Valient07](#Valient07)</sup>
@@ -713,6 +741,8 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * All lights (that cast shadows) must have their shadow maps built before the shading pass<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
   * Significant engine rework<sup>[Thibieroz11](#Thibieroz11)</sup>
   * In general it has lots of enticing benefits over forward, and it -might- be faster in complex lighting / material / decal scenarios, but the baseline simple lighting/shading case is much more expensive<sup>[Pesce14](#Pesce14)</sup>
+  * Difficult to do multiple shading models<sup>[Olsson15](#Olsson15)</sup>
+    * Custom shaders
 
 ```
 For each object:
@@ -743,6 +773,18 @@ Traditional deferred shading:<sup>[Andersson09](#Andersson09)</sup>
    * Use G-Buffer RTs as inputs<sup>[StewartThomas13](#StewartThomas13)</sup>
    * Render geometries enclosing light area<sup>[StewartThomas13](#StewartThomas13)</sup>
 3. Combine shading & lighting for final output
+
+Modern Deferred Shading:<sup>[Olsson15](#Olsson15)</sup>
+1. Render Scene to G-Buffers
+2. Light Assignment
+   * Build Light Acceleration Structure (Grid) 
+3. Full Screen Pass
+   * Quad (or CUDA, or Compute Shaders, or SPUs)
+   * For each pixel
+     * Fetch G-Buffer Data
+     * Look up light list in acceleration structure
+     * Loop over lights and accumulate shading
+     * Write shading
 
 * Worst case complexity is num_objects + num_lights<sup>[Hargreaves04](#Hargreaves04)</sup>
 * Perfect batching<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -1555,6 +1597,69 @@ for each G-Buffer sample
 ```
 <sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 
+```c
+uniform vec3 lightPosition;
+uniform vec3 lightColor;
+uniform float lightRange;
+
+void main()
+{
+  vec3 color = texelFetch(colorTex, gl_FragCoord.xy);
+  vec3 specular = texelFetch(specularTEx, gl_FragCoord.xy);
+  vec3 normal = texelFetch(normalTex, gl_FragCoord.xy);
+  vec3 position = fetchPosition(gl_FragCoord.xy);
+
+  vec3 shading = doLight(position, normal, color,
+                         specular, lightPosition,
+                         lightColor, lightRange);
+
+  resultColor = vec4(shading, 1.0);
+}
+```
+<sup>[Olsson15](#Olsson15)</sup>
+
+### Bandwidth Problem<sup>[Olsson15](#Olsson15)</sup>
+
+* New type of overdraw
+  * Light overdraw
+* N lights cover a certain pixel
+  * N reads from the same G-Buffer location
+
+```
+for each light
+  for each covered pixel
+    read G-Buffer // repeated reads
+    compute shading
+    read + write frame buffer // repeated reads and writes
+```
+
+* Re-write loop!
+
+```
+for each pixel
+  read G-Buffer
+  for each affecting light
+    compute shading
+  write frame buffer
+```
+
+* Modern shading solution:
+
+```
+for each pixel
+  read G-Buffer
+  for each possibly affecting light
+    if affecting
+      compute shading
+  write frame buffer
+```
+
+* Share between groups of similar pixels
+  * Lots of coherency between samples
+  * Coherent access
+  * Little storage
+  * Conservatice lists
+
 ### Pre-Tiled Shading
 
 Weaknesses:<sup>[Andersson11](#Andersson11)</sup>
@@ -1766,17 +1871,26 @@ struct PS_QUAD_INPUT
 Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
 
 * Advantages:
-  * Fastest and most flexible<sup>[Lauritzen10](#Lauritzen10)</sup>
-  * Enable efficient MSAA<sup>[Lauritzen10](#Lauritzen10)</sup>
+  * Fastest and most flexible<sup>[Lauritzen10](#Lauritzen10)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * Enable efficient MSAA<sup>[Lauritzen10](#Lauritzen10)</sup><sup>[Olsson15](#Olsson15)</sup>
   * G-Buffers are read only once for each lit sample<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
   * Framebuffer is written to once<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
   * Common terms of the rendering equation can be factored out and computed once instead of recomputing them for each light<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
   * Work becomes coherent within each tile<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
     * Each sample in a tile requires the same amount of work
       * Allows for efficient implementation on SIMD-like architectures
+  * Low bandwidth<sup>[Olsson15](#Olsson15)</sup>
+  * Simple light assignment<sup>[Olsson15](#Olsson15)</sup>
+  * Trivial light list lookup<sup>[Olsson15](#Olsson15)</sup>
+  * High performance<sup>[Olsson15](#Olsson15)</sup>
+  * Transparency<sup>[Olsson15](#Olsson15)</sup>
 * Disadvantages:
-  * Still tricky to afford many shadowed lights per pixel<sup>[Pesce14](#Pesce14)</sup>
-  * Makes dynamic shadows harder<sup>[Pesce14](#Pesce14)</sup>
+  * Still tricky to afford many shadowed lights per pixel<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>, Makes dynamic shadows harder<sup>[Pesce14](#Pesce14)</sup>
+    * No shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
+  * Complex light shader<sup>[Olsson15](#Olsson15)</sup>
+  * View dependence<sup>[Olsson15](#Olsson15)</sup>
+    * 2D light assignment
+    * Depth discontinuities
 * Challenges:
   * Frustum primitive culling not accurate, creates false positives<sup>[Schulz14](#Schulz14)</sup>
     * Often considerably more pixels shaded than with stencil tested light volumes
@@ -2271,6 +2385,34 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonH
 * Cluster key tuple (i, j, k):<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
   * ![ClusterKey](/Images/DeferredShading/ClusterKey.png)
   * Can be extended with a number of bits that encode a quantized normal direction
+  * i, j = 2D tile id - `gl_FragCoord.xy`<sup>[Olsson15](#Olsson15)</sup>
+  * k = &approx;log(view space z)<sup>[Olsson15](#Olsson15)</sup>
+
+##### Sparse vs Dense Cluster Grid<sup>[Olsson15](#Olsson15)</sup>
+
+* Sparse Cluster Grid
+  * Only store cells that contain samples
+  * Requires pre-z pass / deferred
+  * No redundant light assignment
+  * Geometry info useful for other things
+* Dense Cluster Grid
+  * Must assign lights to all clusters
+  * Can be done on CPU / Asynchronously
+  * Can access any point in view volume
+  * SAME shading cost as for sparse
+
+##### Explicit vs Implicit Cluster<sup>[Olsson15](#Olsson15)</sup>
+
+* Explicit cluster bounds
+  * Actual bounding box of samples
+  * Some storage
+  * Some cost to build
+  * Tight bounds
+  * Extra geometry pass for forward shading
+* Implicit cluster bounds
+  * Implied by grid coordinate
+  * No storage
+  * Can have large empty space
 
 #### Finding Unique Clusters
 
@@ -3204,6 +3346,12 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="NeubeltPettineo14" href="https://www.gdcvault.com/play/1020162/Crafting-a-Next-Gen-Material">Crafting a Next-Gen Material Pipeline for The Order: 1886</a>. [David Neubelt](https://www.linkedin.com/in/coderdave/), [Ready at Dawn](http://www.readyatdawn.com/). [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
 <a id="Pesce14" href="http://c0de517e.blogspot.com/2014/09/notes-on-real-time-renderers.html">Notes on Real-Time Renderers</a>. [Angelo Pesce](), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 <a id="Schulz14" href="https://www.gdcvault.com/play/1020432/Moving-to-the-Next-Generation">Moving to the Next Generation—The Rendering Technology of Ryse</a>. Nicolas Schulz, [Crytek](https://www.crytek.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
+
+## 2015
+
+<a id="OlssonBilleterSintorn15" href="">More Efficient Virtual Shadow Maps for Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Erik Sintorn](https://www.chalmers.se/en/staff/Pages/erik-sintorn.aspx). [IEEE Transactions on Visualization and Computer Graphics](https://www.computer.org/csdl/journal/tg).<br>
+<a id="Olsson15" href="https://efficientshading.com/wp-content/uploads/s2015_introduction.pdf">Introduction to Real-Time Shading with Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html)
+
 
 ---
 
