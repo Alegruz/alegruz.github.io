@@ -101,6 +101,9 @@ Space Marine:<sup>[KimBarrero11](#KimBarrero11)</sup>
   * Big enough objects in project space
 * Other objects will be drawn to Z-buffer in Gbuffer pass
 
+Unreal:<sup>[Anagnostou17](#Anagnostou17)</sup>
+* Uses reverse-Z
+
 ## Lighting Pass
 
 ### Single Pass Lighting
@@ -292,12 +295,15 @@ Forward+:<sup>[StewartThomas13](#StewartThomas13)</sup>
   * Prevents overdraw when shading
   * *Provides tile depth bounds*
   * Separate depth prepass + depth buffer for transparents<sup>[NeubeltPettineo14](#NeubeltPettineo14)</sup>
+  * May include vertex normal and velocity<sup>[Pettineo15](#Pettineo15)</sup>
 * *Tiled light culling*
   * *Compute shader*
   * *Generates per-tile light list*
-  * Transparent light list generated per-tile<sup>[NeubeltPettineo14](#NeubeltPettineo14)</sup>
+  * Transparent light list generated per-tile<sup>[NeubeltPettineo14](#NeubeltPettineo14)</sup><sup>[Pettineo15](#Pettineo15)</sup>
     * TileMinDepth = TileMin(transparentDepth)
     * TileMaxDepth = TileMax(opaqueDepth)
+    * Culled using depth buffer<sup>[Pettineo15](#Pettineo15)</sup>
+  * Async compute -> mostly free<sup>[Pettineo15](#Pettineo15)</sup>
 * Forward shading
   * Pixel Shader
     * Iterates through light list *calculated by tiled light culling*
@@ -1428,6 +1434,54 @@ S.T.A.L.E.R: Clear Skies:
   * Exploiting mutual exclusivity: colored specular just for metal, translucency just for dielectrics
 * Support for prebaked AO value but was just used rarely in the end
 
+### Example 12: Uncharted 4<sup>[ElGarawany16](#ElGarawany16)</sup>
+
+* 16 bits-per-pixel unsigned buffers
+* Constantly moving bits around between features during production
+  * Lots of visual tests to determine exactly how many bits were needed for the various features
+* Heavy use of GCN parameter packing intrinsics
+
+<table>
+<thead>
+<tr>
+<th>Channels</th>
+<th>G-Buffer 0</th>
+<th>Channels</th>
+<th>G-Buffer 1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">r g</td>
+<td>R</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">ambientTranslucency sunShadowHigh specOcclusion</td>
+</tr>
+<tr>
+<td>G</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">b spec</td>
+<td>G</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">heightmapShadowing sunShadowLow metallic</td>
+</tr>
+<tr>
+<td>B</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">normalx normaly</td>
+<td>B</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">dominantDirectionX dominantDirectionY</td>
+</tr>
+<tr>
+<td>A</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">iblUseParent normalExtra roughness</td>
+<td>A</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">ao extraMaterialMask sheen thinWallTranslucency</td>
+</tr>
+</tbody>
+</table>
+
+* A third optional G-Buffer is used by more complicated materials
+  * Interpreted differently based on the type of the material
+  * Fabric, hair, skin, silk, etc.
+
 # Overview
 
 * Don't bother with any lighting while drawing scene geometry<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -2464,6 +2518,57 @@ The paper uses 10 bits, 4 bits for the actually depth data, and 6 bits for the o
 To the cluster ke we attach an additional 10 bits of meta-data, which identifies the sample's original position relative to its tile. We perfrom a tile-local sort of the cluster keys and the associated meta-data. The sort only considers the up-to 16 bits of the cluster key; the meta-data is used as a link back to the original sample after sorting. In each tile, we count the number of unique cluster keys. Using a prefix operation over the counts from each tile, we find the total number of unique cluster keys and assign each cluster a unique ID in the range [0...numClusters). We write the unique ID back to each pixel that is a member of the cluster. The unique ID also serves as an offset in
 memory to where the cluster’s data is stored.
 
+#### Conservative Rasterization<sup>[OrtegrenPersson16](#OrtegrenPersson16)</sup>
+
+* If any part of a primitive overlaps a pixel, that pixel is considered covered and is then rasterized
+
+Algorithm:
+* For each light type:
+  1. Shell pass
+     * Find min / max depths in every tile for every light 
+  2. Fill pass 
+     * Use the min / max depths and fill indices into the light linked list 
+  * When all light types have been processed, light assignment is complete, and the light linked list can be used when shading geometry
+
+Light Shape Representation:
+* Meshes are created as unit shapes, where vertices are constrained to -1 to 1 in the x-, y-, and z-directions
+  * To allow arbitrary scaling of the shape depending on the actual light size
+
+##### Shell Pass
+
+* Responsible for finding the clusters for a light shape that encompasses it in cluster space
+* Finds the near / far clusters for each tile for each light and stores them in an R8G8 RT
+  * Number of RTs == Maximum number of visible lights for each light type
+  * All RTs have the same size and format and are set up in a `Texture2DArray` for each light type
+  * Sizes of the RTs are the same as the x- and y-dimensions of the cluster structure (*tile dimension*)
+* Set `D3D12_CONSERVATIVE_RASTERIZATION_MODE_ON` flag when creating a PSO.
+
+Vertex Shader:
+* Each light type has its own custom vertex shader for translating, rotating, and scaling the light mesh to fit the actual light
+* `SV_InstanceID` is used to extract the position, scale, and other properties to transform each vertex to the correct location in world space
+* Sent to GS containing the view-space position and its light ID
+
+Geometry Shader:
+* 
+
+##### Source Code Analysis
+
+Root Signature:
+* Default
+  * 1 CBV
+    * Camera information
+  * 1 SRV
+    * Point / spot lights
+
+`Draw`:
+* PSO Point
+  * Input Layout: `POSITION`, `R8G8B8A8_SNORM`
+  * Root Signature: Default
+  * VS: `LAPointLight.vertex`
+  * GS: `LA.geometry`
+  * PS: `LAfront.pixel`
+* 
+
 ### Per-Pixel Linked List<sup>[Bezrati14](#Bezrati14)</sup>
 
 ```c
@@ -2631,6 +2736,15 @@ switch (light_env.m_LightType)
 {
   ...
 ```
+
+### 3D Light Grid<sup>[Anagnostou17](#Anagnostou17)</sup>
+
+* View space light grid of dimensions 29 x 16 x 32
+* Screen space tile of 64 x 64 pixels and 32 z-partitions
+  * Partitioning is exponential
+* Assign 9 lights and 2 reflection probes
+* Axis-aligned box of each cell to perform light bounding volume intersections
+* To store the light indices, a linked list is used which is then converted to a contiguous array during the "compact" pass
 
 ### Optimizations
 
@@ -2924,6 +3038,47 @@ Features:
   * Complex material appearance
   * Separate lighting / shading / geometry shaders simplifies shaders
 * Disadvantages:
+
+## Rainbow Six Siege<sup>[ElMansouri16](#ElMansouri16)</sup>
+
+### Opaque Rendering
+
+* First person rendering
+* 400 best occluders to depth buffer
+* Generate Hi-Z
+* Opaque culling & rendering
+
+### Shadow Rendering
+
+* All shadows are cache based
+  * Used cached Hi-Z for culling
+* Sunlight shadow done in full resolution
+  * Separate pass to relieve lighting resolve VGPR pressure
+  * Uses Hi-Z representation of the cached shadow map to reduce the work per pixel
+* Local lights are resolved in a quarter resolution
+  * Resolved results stored in a texture array
+  * Lower VGPR usage on light accumulation
+  * Bilateral upscale
+
+### Lighting
+
+* Clustered structure on the frustum
+  * 32 x 32 pixels based tile
+  * Z exponential distribution
+* Hierarchical culling of light volume to fill the structure
+* Local cubemaps regarded as lights
+* Shadows, cubemaps, and gobos reside in texture arrays
+  * Deferred uses pre-resolved shadow texture array
+  * Forward uses shadows depth buffer array
+
+### Checkerboard Rendering
+
+* Rendering to a 1/4 size (1/2 width by 1/2 height) resolution with MSAA 2X:
+  * We end up with half the samples of the full resolution image
+* D3D MSAA 2X standard pattern
+  * 2 Color and Z samples
+* Sample modifier or SV_SampleIndex input to enforce rendering all sample
+* Each sample falls on the exact pixel center of full screen render target
 
 # Issues
 
@@ -3314,7 +3469,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="Andersson11" href="https://www.ea.com/frostbite/news/directx-11-rendering-in-battlefield-3">DirectX 11 Rendering in Battlefield 3</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/) / [Embark Studios](https://www.embark-studios.com/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/)<br>
 <a id="KimBarrero11" href="https://blog.popekim.com/en/2011/11/15/slides-rendering-tech-of-space-marine.html">Rendering Tech of Space Marine</a>. [Pope Kim](https://blog.popekim.com/en/), [Relic Entertainment](https://www.relic.com/) / [POCU](https://pocu.academy/ko). [Daniel Barrero](https://www.linkedin.com/in/danielbarrero/), [Relic Entertainment](https://www.relic.com/). [KGC 2011](https://www.khronos.org/events/korea-games-conference-2011).<br>
 <a id="KnightRitchieParrish11" href="https://gameenginegems.com/gemsdb/article.php?id=32">Screen-Space Classification for Efficient Deferred Shading</a>. [Balor Knight](https://twitter.com/kernigit), [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). Matthew Ritchie, [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). [George Parrish](https://sites.google.com/view/georgeparrish/), [Black Rock Studio](https://en.wikipedia.org/wiki/Black_Rock_Studio). [Game Engine Gems 2](https://gameenginegems.com/gemsdb/book.php?id=2).<br>
-<a id="OlssonAssarsson11" href="https://efficientshading.com/2011/01/01/tiled-shading/">Tiled Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Journal of Graphics, GPU, and Game Tools](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2011.632611?tab=permissions&scroll=top).<br>
+<a id="OlssonAssarsson11" href="https://efficientshading.com/2011/01/01/tiled-shading/">Tiled Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx)  / [Epic Games](https://www.epicgames.com/site/en-US/home). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Journal of Graphics, GPU, and Game Tools](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2011.632611?tab=permissions&scroll=top).<br>
 <a id="Papathanasis11" href="https://cupdf.com/document/dragon-age-ii-dx11-technology.html?page=2">Dragon Age II DX11 Technology</a>. [Andreas Papathanasis](https://andreas-papathanasis.medium.com/), [BioWare](https://www.bioware.com/) / [Parallel Space Inc.](http://www.hadesstar.com/). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
 <a id="Thibieroz11" href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2FDeferred%2520Shading%2520Optimizations.pps&wdOrigin=BROWSELINK">Deferred Shading Optimizations</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [AMD](https://www.amd.com/en). [GDC 2011](https://www.gdcvault.com/free/gdc-11/).<br>
 <a id="WhiteBarreBrisebois11" href="https://www.ea.com/frostbite/news/more-performance-five-rendering-ideas-from-battlefield-3-and-need-for-speed-the-run">More Performance! Five Rendering Ideas from Battlefield 3 and Need For Speed: The Run</a>. [John White](https://www.linkedin.com/in/john-white-4090591/), [EA Black Box](https://en.wikipedia.org/wiki/EA_Black_Box) / [Roblox](https://www.roblox.com/). [Colin Barré-Brisebois](https://colinbarrebrisebois.com/), [DICE](https://www.dice.se/) / [SEED](https://www.ea.com/seed). [SIGGRAPH 2011: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2011/index.html).<br>
@@ -3324,14 +3479,14 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="HaradaMcKeeYang12" href="https://diglib.eg.org/handle/10.2312/conf.EG2012.short.005-008">Forward+: Bringing Deferred Lighting to the Next Level</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en) / [DGene](https://www.linkedin.com/company/dgene/). [Eurographics 2012](http://www.eurographics2012.it/).<br>
 <a id="Harada12" href="https://e8040b55-a-62cb3a1a-s-sites.googlegroups.com/site/takahiroharada/storage/2012SA_2.5DCulling.pdf?attachauth=ANoY7crz6LiGa4Pg6UUy3BMrqNfxng8akXQbQQmX6zfKc8so5lMDSGuVO7d6jpoWN5pr1vFTndtY8qGT_4VgMc5_ikexCrof0i9-4cYxoUCrbtswcuGC2w_0ymMqZ3x-WVQ-4XRkD1hMLi1KO3tNpXSf-TnE-o4R1rxKxAFzeK5RS6kXj5yAje2yHKcNQf8ugsHc0ZVZYyyqWNM9WY9rBjcnx37CgAArVwe1pHr9cDHeHe4rFWYXz_w%3D&attredirects=0">A 2.5D Culling for Forward+</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). [SIGGRAPH ASIA 2012](https://www.siggraph.org/asia2012/).<br>
 <a id="Kircher12" href="https://www.gdcvault.com/play/1015345/Lighting-and-Simplifying-Saints-Row">Lighting & Simplifying Saints Row: The Third</a>. [Scott Kircher](https://www.linkedin.com/in/scott-kircher-74332b49/), [Volition](https://www.dsvolition.com/). [GDC 2012](https://www.gdcvault.com/free/gdc-12).<br>
-<a id="OlssonBilleterAssarssonHpg12" href="https://efficientshading.com/2012/01/01/clustered-deferred-and-forward-shading/"></a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [HPG 2012](https://kesen.realtimerendering.com/hpg2012-Changelog.htm).<br>
+<a id="OlssonBilleterAssarssonHpg12" href="https://efficientshading.com/2012/01/01/clustered-deferred-and-forward-shading/">Clustered Deferred and Forward Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [HPG 2012](https://kesen.realtimerendering.com/hpg2012-Changelog.htm).<br>
 <a id="OlssonBilleterAssarssonSiggraph12" href="">Tiled and Clustered Forward Shading: Supporting Transparency and MSAA</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [SIGGRAPH 2012: Talks](https://dl.acm.org/doi/proceedings/10.1145/2343045).<br>
 <a id="Pettineo12" href="https://therealmjp.github.io/posts/light-indexed-deferred-rendering/">Light Indexed Deferred Rendering</a>. [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [The Danger Zone Blog](https://therealmjp.github.io/).
 
 ## 2013
 
 <a id="OlssonBilleterAssarsson13" href="https://efficientshading.com/2013/01/01/tiled-forward-shading/">Tiled Forward Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [University of Leeds](https://www.leeds.ac.uk/). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [GPU Pro 4](http://gpupro.blogspot.com/2012/11/gpu-pro-4-book-cover.html).<br>
-<a id="HaradaMcKeeYang13" href="https://www.taylorfrancis.com/chapters/edit/10.1201/9781351261524-18/forward-step-toward-film-style-shading-real-time-takahiro-harada-jay-mckee-jason-yang"></a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en) / [DGene](https://www.linkedin.com/company/dgene/). [GPU Pro 4](http://gpupro.blogspot.com/2012/11/gpu-pro-4-book-cover.html).<br>
+<a id="HaradaMcKeeYang13" href="https://www.taylorfrancis.com/chapters/edit/10.1201/9781351261524-18/forward-step-toward-film-style-shading-real-time-takahiro-harada-jay-mckee-jason-yang">Forward+: A Step Toward Film-Style Shading in Real Time</a>. [Takahiro Harada](https://sites.google.com/site/takahiroharada/), [AMD](https://www.amd.com/en). Jay McKee, [AMD](https://www.amd.com/en). [Jason C. Yang](https://www.linkedin.com/in/jasoncyang/), [AMD](https://www.amd.com/en) / [DGene](https://www.linkedin.com/company/dgene/). [GPU Pro 4](http://gpupro.blogspot.com/2012/11/gpu-pro-4-book-cover.html).<br>
 <a id="SousaWenzelRaine13" href="https://www.crytek-hq.com/crytek/crytek-news/1509-the-rendering-technologies-of-crysis-3">The Rendering Technologies of Crysis 3</a>. [Tiago Sousa](https://www.linkedin.com/in/tsousa/), [Crytek](https://www.crytek.com/) / [id Software](https://www.idsoftware.com/). [Carsten Wenzel](https://www.linkedin.com/in/cwenzel/), [Crytek](https://www.crytek.com/) / [Cloud Imperium Games](https://cloudimperiumgames.com/). [Chris Raine](https://www.linkedin.com/in/christopher-raine-46a9654/), [Crytek](https://www.crytek.com/). [GDC 2013](https://www.gdcvault.com/free/gdc-13/).<br>
 <a id="Sousa13" href="https://advances.realtimerendering.com/s2013/Sousa_Graphics_Gems_CryENGINE3.pptx">CryENGINE 3: Graphics Gems</a>. [Tiago Sousa](https://www.linkedin.com/in/tsousa/), [Crytek](https://www.crytek.com/) / [id Software](https://www.idsoftware.com/). [Nickolay Kasyan](https://www.linkedin.com/in/nikolaskasyan/), [Crytek](https://www.crytek.com/) / [AMD](https://www.amd.com/en). Nicolas Schulz, [Crytek](https://www.crytek.com/). [SIGGRAPH 2013: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/s2013/index.html).<br>
 <a id="StewartThomas13" href="https://www.gdcvault.com/play/1017627/Advanced-Visual-Effects-with-DirectX">Tiled Rendering Showdown: Forward++ vs. Deferred Rendering</a>. [Jason Stewart](https://www.linkedin.com/in/jasonestewart/), [AMD](https://www.amd.com/en). [Gareth Thomas](https://www.linkedin.com/in/gareth-thomas-032654b/), [AMD](https://www.amd.com/en). [GDC 2013](https://www.gdcvault.com/free/gdc-13/).<br>
@@ -3344,14 +3499,380 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="Dufresne14" href="https://www.intel.com/content/www/us/en/developer/articles/technical/forward-clustered-shading.html">Forward Clustered Shading</a>. Marc Fauconneau Dufresne, [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). [Intel Software Developer Zone](https://www.intel.com/content/www/us/en/developer/overview.html).<br>
 <a id="Leadbetter14" href="https://www.eurogamer.net/digitalfoundry-2014-the-making-of-forza-horizon-2">The Making of Forza Horizon 2</a>. [Richard Leadbetter](Richard Leadbetter), [Digital Foundary](https://www.eurogamer.net/digital-foundry). [Eurogamer.net](https://www.eurogamer.net/).<br>
 <a id="NeubeltPettineo14" href="https://www.gdcvault.com/play/1020162/Crafting-a-Next-Gen-Material">Crafting a Next-Gen Material Pipeline for The Order: 1886</a>. [David Neubelt](https://www.linkedin.com/in/coderdave/), [Ready at Dawn](http://www.readyatdawn.com/). [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
-<a id="Pesce14" href="http://c0de517e.blogspot.com/2014/09/notes-on-real-time-renderers.html">Notes on Real-Time Renderers</a>. [Angelo Pesce](), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
+<a id="Pesce14" href="http://c0de517e.blogspot.com/2014/09/notes-on-real-time-renderers.html">Notes on Real-Time Renderers</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 <a id="Schulz14" href="https://www.gdcvault.com/play/1020432/Moving-to-the-Next-Generation">Moving to the Next Generation—The Rendering Technology of Ryse</a>. Nicolas Schulz, [Crytek](https://www.crytek.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
 
 ## 2015
 
-<a id="OlssonBilleterSintorn15" href="">More Efficient Virtual Shadow Maps for Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Erik Sintorn](https://www.chalmers.se/en/staff/Pages/erik-sintorn.aspx). [IEEE Transactions on Visualization and Computer Graphics](https://www.computer.org/csdl/journal/tg).<br>
+<a id="Bezrati15" href="https://www.taylorfrancis.com/chapters/edit/10.1201/b18805-16/1-real-time-lighting-via-light-linked-list-abdul-bezrati">Real-Time Lighting via Light Linked List</a>. [Abdul Bezrati](https://www.linkedin.com/in/abdulbezrati/), [Insomniac Games](https://insomniac.games/). [GPU Pro 6](http://gpupro.blogspot.com/2014/12/gpu-pro-6-table-of-contents.html).<br>
+<a id="OlssonBilleterSintorn15" href="https://efficientshading.com/2015/06/01/more-efficient-virtual-shadow-maps-for-many-lights/">More Efficient Virtual Shadow Maps for Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Erik Sintorn](https://www.chalmers.se/en/staff/Pages/erik-sintorn.aspx), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [IEEE Transactions on Visualization and Computer Graphics](https://www.computer.org/csdl/journal/tg).<br>
 <a id="Olsson15" href="https://efficientshading.com/wp-content/uploads/s2015_introduction.pdf">Introduction to Real-Time Shading with Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html)
+<a id="Pettineo15" href="http://advances.realtimerendering.com/s2015/index.html#_REFLECTION_SYSTEM_IN">Rendering the Alternate History of The Order: 1886</a>. [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [SIGGRAPH 2015: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2015/).<br>
 
+## 2016
+
+<a id="ElGarawany16" href="http://advances.realtimerendering.com/s2016/#_HIGH-QUALITY_TEMPORAL_SUPERSAMPLING">Deferred Lighting in Uncharted 4</a>. [Ramy El Garawany](https://www.linkedin.com/in/ramy-el-garawany-7a805820/), [Naughty Dog](https://www.naughtydog.com/) / [Google](https://careers.google.com/). [SIGGRAPH 2016: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2016/).
+<a id="ElMansouri16" href="https://youtu.be/RAy8UoO2blc">Rendering Tom Clancy’s Rainbow Six Siege</a>. [Jalal El Mansouri](https://www.linkedin.com/in/jalal-el-mansouri-60a73423/), [Ubisoft Montréal](https://montreal.ubisoft.com/en/) / [Haven Studios Inc.](https://www.havenstudios.com/en). [GDC 2016](https://www.gdcvault.com/free/gdc-16/)
+<a id="OrtegrenPersson16" href="https://github.com/kevinortegren/ClusteredShadingConservative">Clustered Shading: Assigning Lights Using Conservative Rasterization in DirectX 12</a>. [Kevin Örtegren](https://www.linkedin.com/in/kevinortegren/), [Avalanche Studios](https://avalanchestudios.com/) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Emil Persson](http://www.humus.name/), [Avalanche Studios](https://avalanchestudios.com/) / [Elemental Games](https://elemental.games/). [GPU Pro 7](http://gpupro.blogspot.com/2016/01/gpu-pro-7-table-of-content.html).
+
+## 2017
+
+<a id="Anagnostou17" href="https://interplayoflight.wordpress.com/2017/10/25/how-unreal-renders-a-frame/">How Unreal Renders a Frame</a>. [Kostas Anagnostou](https://interplayoflight.wordpress.com/), [Radiant Worlds](https://en.wikipedia.org/wiki/Rebellion_Warwick) / [Playground Games](https://playground-games.com/). [Interplay of Light Blog](https://interplayoflight.wordpress.com/)
+
+## People by Company
+
+<table>
+  <thead>
+    <tr>
+      <th>Company</th>
+      <th>People</th>
+      <th>Referene</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Snapshot Games</td>
+      <td>Dean Calver</td>
+      <td><a href="#Calver03">Photo-realistic Deferred Lighting</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">Microsoft</td>
+      <td rowspan="2">Shawn Hargreaves</td>
+      <td><a href="#Hargreaves04">Deferred Shading</a></td>
+    </tr>
+    <tr>
+      <td><a href="#HargreavesHarris04">Deferred Shading</a></td>
+    </tr>
+    <tr>
+      <td>NVIDIA</td>
+      <td>Mark Harris</td>
+      <td><a href="#HargreavesHarris04">Deferred Shading</a></td>
+    </tr>
+    <tr>
+      <td rowspan="11">AMD</td>
+      <td rowspan="3">Nicolas Thibieroz</td>
+      <td><a href="#Thibieroz04">Deferred Shading with Multiple Render Targets</a></td>
+    </tr>
+      <tr>
+        <td><a href="#Thibieroz09">Deferred Shading with Multisampling Anti-Aliasing in DirectX 10</a></td>
+      </tr>
+      <tr>
+        <td><a href="#Thibieroz11">Deferred Shading Optimizations</a></td>
+      </tr>
+      <tr>
+        <td>Holger Gruen</td>
+        <td><a href="#LobanchikovGruen09">GSC Game World’s S.T.A.L.K.E.R: Clear Sky—A Showcase for Direct3D 10.0/1</a></td>
+      </tr>
+      <tr>
+        <td rowspan="3">Takahiro Harada</td>
+        <td><a href="#HaradaMcKeeYang12">Forward+: Bringing Deferred Lighting to the Next Level</a></td>
+      </tr>
+        <tr>
+          <td><a href="#Harada12">A 2.5D Culling for Forward+</a></td>
+        </tr>
+        <tr>
+          <td><a href="#HaradaMcKeeYang13">Forward+: A Step Toward Film-Style Shading in Real Time</a></td>
+        </tr>
+      <tr>
+        <td rowspan="2">Jay McKee</td>
+        <td><a href="#HaradaMcKeeYang12">Forward+: Bringing Deferred Lighting to the Next Level</a></td>
+      </tr>
+        <tr>
+          <td><a href="#HaradaMcKeeYang13">Forward+: A Step Toward Film-Style Shading in Real Time</a></td>
+        </tr>
+      <tr>
+        <td>Jason Stewart</td>
+        <td><a href="#StewartThomas13">Tiled Rendering Showdown: Forward++ vs. Deferred Rendering</a></td>
+      </tr>
+      <tr>
+        <td>Gareth Thomas</td>
+        <td><a href="#StewartThomas13">Tiled Rendering Showdown: Forward++ vs. Deferred Rendering</a></td>
+      </tr>
+    <tr>
+      <td>4A Games</td>
+      <td>Oleksandr Shyshkovtsov</td>
+      <td><a href="#Shishkovtsov05">Deferred Shading in S.T.A.L.K.E.R.</a></td>
+    </tr>
+    <tr>
+      <td>Amazon</td>
+      <td>Frank Puig Placeres</td>
+      <td><a href="#Placeres06">Overcoming Deferred Shading Drawbacks</a></td>
+    </tr>
+    <tr>
+      <td>Facebook</td>
+      <td>Rusty Koonce</td>
+      <td><a href="#Koonce07">Deferred Shading in Tabula Rasa</a></td>
+    </tr>
+    <tr>
+      <td rowspan="8">Epic Games</td>
+      <td>Michal Valient</td>
+      <td><a href="#Valient07">Deferred Rendering in Killzone 2</a></td>
+    </tr>
+      <tr>
+        <td rowspan="6">Ola Olsson</td>
+        <td><a href="#OlssonAssarsson11">Tiled Shading</a></td>
+      </tr>
+        <tr>
+          <td><a href="#OlssonBilleterAssarssonHpg12">Clustered Deferred and Forward Shading</a></td>
+        </tr>
+        <tr>
+          <td><a href="#OlssonBilleterAssarssonSiggraph12">Tiled and Clustered Forward Shading: Supporting Transparency and MSAA</a></td>
+        </tr>
+        <tr>
+          <td><a href="#OlssonBilleterAssarsson13">Tiled Forward Shading</a></td>
+        </tr>
+        <tr>
+          <td><a href="#OlssonBilleterSintorn15">More Efficient Virtual Shadow Maps for Many Lights</a></td>
+        </tr>
+        <tr>
+          <td><a href="#Olsson15">Introduction to Real-Time Shading with Many Lights</a></td>
+        </tr>
+      <tr>
+        <td>Kevin Örtegren</td>
+        <td><a href="#OrtegrenPersson16">Clustered Shading: Assigning Lights Using Conservative Rasterization in DirectX 12</a></td>
+      </tr>
+    <tr>
+      <td>Apple</td>
+      <td>Pål-Kristian Engstad</td>
+      <td><a href="#BalestraEngstad08">The Technology of Uncharted: Drake's Fortune</a></td>
+    </tr>
+    <tr>
+      <td>Snap Inc.</td>
+      <td>Dominic Filion</td>
+      <td><a href="#FilionMcNaughton08">StarCraft II: Effects & Techniques</a></td>
+    </tr>
+    <tr>
+      <td>Blizzard Entertainment</td>
+      <td>Rob McNaughton</td>
+      <td><a href="#FilionMcNaughton08">StarCraft II: Effects & Techniques</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">Embark Studios</td>
+      <td rowspan="2">Johan Andersson</td>
+      <td><a href="#Andersson09">Parallel Graphics in Frostbite - Current Future</a></td>
+    </tr>
+    <tr>
+      <td><a href="#Andersson11">DirectX 11 Rendering in Battlefield 3</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">The Forge</td>
+      <td rowspan="2">Wolfgang Engel</td>
+      <td><a href="#EngelShaderX709">Designing a Renderer for Multiple Lights: The Light Pre-Pass Renderer</a></td>
+    </tr>
+    <tr>
+      <td><a href="#EngelSiggraph09">Light Pre-Pass; Deferred Lighting: Latest Development</a></td>
+    </tr>
+    <tr>
+      <td>Walt Disney Animation Studios</td>
+      <td>Mark Lee</td>
+      <td><a href="#Lee09">Pre-lighting in Resistance 2</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">Retired</td>
+      <td>Christophe Balestra</td>
+      <td><a href="#BalestraEngstad08">The Technology of Uncharted: Drake's Fortune</a></td>
+    </tr>
+    <tr>
+      <td>Igor A. Lobanchikov</td>
+      <td><a href="#LobanchikovGruen09">GSC Game World’s S.T.A.L.K.E.R: Clear Sky—A Showcase for Direct3D 10.0/1</a></td>
+    </tr>
+    <tr>
+      <td>Notch</td>
+      <td>Matt Swoboda</td>
+      <td><a href="#Swoboda09">Deferred Lighting and Post Processing on PLAYSTATION 3</a></td>
+    </tr>
+    <tr>
+      <td>Situ Systems</td>
+      <td>Damian Trebilco</td>
+      <td><a href="#Trebilco09">Light-Indexed Deferred Rendering</a></td>
+    </tr>
+    <tr>
+      <td rowspan="3">Intel Corporation</td>
+      <td>Anton Kaplanyan</td>
+      <td><a href="#Kaplanyan10">CryENGINE 3: Reaching the Speed of Light</a></td>
+    </tr>
+      <tr>
+        <td>Andrew Lauritzen</td>
+        <td><a href="#Lauritzen10">Deferred Rendering for Current and Future Rendering Pipelines</a></td>
+      </tr>
+      <tr>
+        <td>Marc Fauconneau Dufresne</td>
+        <td><a href="#Dufresne14">Forward Clustered Shading</a></td>
+      </tr>
+    <tr>
+      <td>POCU</td>
+      <td>Pope Kim</td>
+      <td><a href="#KimBarrero11">Rendering Tech of Space Marine</a></td>
+    </tr>
+    <tr>
+      <td>Relic Entertainment</td>
+      <td>Daniel Barrero</td>
+      <td><a href="#KimBarrero11">Rendering Tech of Space Marine</a></td>
+    </tr>
+    <tr>
+      <td rowspan="3">Black Rock Studio</td>
+      <td>Balor Knight</td>
+      <td><a href="#KnightRitchieParrish11">Screen-Space Classification for Efficient Deferred Shading</a></td>
+    </tr>
+    <tr>
+      <td>Matthew Ritchie</td>
+      <td><a href="#KnightRitchieParrish11">Screen-Space Classification for Efficient Deferred Shading</a></td>
+    </tr>
+    <tr>
+      <td>George Parrish</td>
+      <td><a href="#KnightRitchieParrish11">Screen-Space Classification for Efficient Deferred Shading</a></td>
+    </tr>
+    <tr>
+      <td rowspan="9">Chalmers University of Technology</td>
+      <td rowspan="4">Ulf Assarsson</td>
+      <td><a href="#OlssonAssarsson11">Tiled Shading</a></td>
+    </tr>
+      <tr>
+        <td><a href="#OlssonBilleterAssarssonHpg12">Clustered Deferred and Forward Shading</a></td>
+      </tr>
+      <tr>
+        <td><a href="#OlssonBilleterAssarssonSiggraph12">Tiled and Clustered Forward Shading: Supporting Transparency and MSAA</a></td>
+      </tr>
+      <tr>
+        <td><a href="#OlssonBilleterAssarsson13">Tiled Forward Shading</a></td>
+      </tr>
+      <tr>
+        <td rowspan="4">Markus Billeter</td>
+        <td><a href="#OlssonBilleterAssarssonHpg12">Clustered Deferred and Forward Shading</a></td>
+      </tr>
+        <tr>
+          <td><a href="#OlssonBilleterAssarssonSiggraph12">Tiled and Clustered Forward Shading: Supporting Transparency and MSAA</a></td>
+        </tr>
+        <tr>
+          <td><a href="#OlssonBilleterAssarsson13">Tiled Forward Shading</a></td>
+        </tr>
+        <tr>
+          <td><a href="#OlssonBilleterSintorn15">More Efficient Virtual Shadow Maps for Many Lights</a></td>
+        </tr>
+      <tr>
+        <td>Erik Sintorn</td>
+        <td><a href="#OlssonBilleterSintorn15">More Efficient Virtual Shadow Maps for Many Lights</a></td>
+      </tr>
+    <tr>
+      <td>Parallel Space Inc.</td>
+      <td>Andreas Papathanasis</td>
+      <td><a href="#Papathanasis11">Dragon Age II DX11 Technology</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">Roblox</td>
+      <td>John White</td>
+      <td><a href="#WhiteBarreBrisebois11">More Performance! Five Rendering Ideas from Battlefield 3 and Need For Speed: The Run</a></td>
+    </tr>
+      <tr>
+        <td>Angelo Pesce</td>
+        <td><a href="#Pesce14">Notes on Real-Time Renderers</a></td>
+      </tr>
+    <tr>
+      <td>SEED</td>
+      <td>Colin Barré-Brisebois</td>
+      <td><a href="#WhiteBarreBrisebois11">More Performance! Five Rendering Ideas from Battlefield 3 and Need For Speed: The Run</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">DGene</td>
+      <td rowspan="2">Jason C. Yang</td>
+      <td><a href="#HaradaMcKeeYang12">Forward+: Bringing Deferred Lighting to the Next Level</a></td>
+    </tr>
+      <tr>
+        <td><a href="#HaradaMcKeeYang13">Forward+: A Step Toward Film-Style Shading in Real Time</a></td>
+      </tr>
+    <tr>
+      <td>Volition</td>
+      <td>Scott Kircher</td>
+      <td><a href="#Kircher12">Lighting & Simplifying Saints Row: The Third</a></td>
+    </tr>
+    <tr>
+      <td rowspan="4">Ready at Dawn</td>
+      <td rowspan="3">Matt Pettineo</td>
+      <td><a href="#Pettineo12">Light Indexed Deferred Rendering</a></td>
+    </tr>
+      <tr>
+        <td><a href="#NeubeltPettineo14">Crafting a Next-Gen Material Pipeline for The Order: 1886</a></td>
+      </tr>
+      <tr>
+        <td><a href="#Pettineo15">Rendering the Alternate History of The Order: 1886</a></td>
+      </tr>
+      <tr>
+        <td>David Neubelt</td>
+        <td><a href="#NeubeltPettineo14">Crafting a Next-Gen Material Pipeline for The Order: 1886</a></td>
+      </tr>
+    <tr>
+      <td rowspan="2">id Software</td>
+      <td rowspan="2">Tiago Sousa</td>
+      <td><a href="#SousaWenzelRaine13">The Rendering Technologies of Crysis 3</a></td>
+    </tr>
+      <tr>
+        <td><a href="#Sousa13">CryENGINE 3: Graphics Gems</a></td>
+      </tr>
+    <tr>
+      <td>Cloud Imperium Games</td>
+      <td>Carsten Wenzel</td>
+      <td><a href="#SousaWenzelRaine13">The Rendering Technologies of Crysis 3</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">Crytek</td>
+      <td>Chris Raine</td>
+      <td><a href="#SousaWenzelRaine13">The Rendering Technologies of Crysis 3</a></td>
+    </tr>
+      <tr>
+        <td>Nicolas Schulz</td>
+        <td><a href="#Schulz14">Moving to the Next Generation—The Rendering Technology of Ryse</a></td>
+      </tr>
+    <tr>
+      <td>Unity Technologies</td>
+      <td>Natalya Tatarchuk</td>
+      <td><a href="#TatarchukTchouVenzon13">Destiny: From Mythic Science Fiction to Rendering in Real-Time</a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">Bungie</td>
+      <td>Chris Tchou</td>
+      <td><a href="#TatarchukTchouVenzon13">Destiny: From Mythic Science Fiction to Rendering in Real-Time</a></td>
+    </tr>
+      <tr>
+        <td>Joe Venzon</td>
+        <td><a href="#TatarchukTchouVenzon13">Destiny: From Mythic Science Fiction to Rendering in Real-Time</a></td>
+      </tr>
+    <tr>
+      <td>Sucker Punch Productions</td>
+      <td>Adrian Bentley</td>
+      <td><a href="#Bentley14">inFAMOUS Second Son Engine Postmortem</a></td>
+    </tr>
+    <tr>
+      <td>Insomniac Games</td>
+      <td>Abdul Bezrati</td>
+      <td><a href="#Bezrati14">Real-Time Lighting via Light Linked List</a></td>
+    </tr>
+    <tr>
+      <td>Digital Foundary</td>
+      <td>Richard Leadbetter</td>
+      <td><a href="#Leadbetter14">The Making of Forza Horizon 2</a></td>
+    </tr>
+    <tr>
+      <td>Google</td>
+      <td>Ramy El Garawany</td>
+      <td><a href="#ElGarawany16">Deferred Lighting in Uncharted 4</a></td>
+    </tr>
+    <tr>
+      <td>Haven Studios Inc.</td>
+      <td>Jalal El Mansouri</td>
+      <td><a href="#ElMansouri16">Rendering Tom Clancy’s Rainbow Six Siege</a></td>
+    </tr>
+    <tr>
+      <td>Elemental Games</td>
+      <td>Emil Persson</td>
+      <td><a href="#OrtegrenPersson16">Clustered Shading: Assigning Lights Using Conservative Rasterization in DirectX 12</a></td>
+    </tr>
+    <tr>
+      <td>Playground Games</td>
+      <td>Kostas Anagnostou</td>
+      <td><a href="#Anagnostou17">How Unreal Renders a Frame</a></td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
