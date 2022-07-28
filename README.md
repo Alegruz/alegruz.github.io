@@ -20,6 +20,7 @@ Game Development Studies with Books
         * [DirectX 12 Study Notes](Notes/2022/06/English/DirectX12StudyNotes.md)
     * July
         * [Efficient Rendering Study Notes](/Notes/2022/07/English/EfficientRenderingStudyNotes.md/)
+        * [Rendering Pipeline Comparison](/Notes/2022/07/English/RenderingPipelineComparison.md/)
 
 ## Korean Contents
 * 2021

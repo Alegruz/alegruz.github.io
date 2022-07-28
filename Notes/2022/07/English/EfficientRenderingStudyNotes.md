@@ -1,4 +1,4 @@
-# Efficient Rendering Study Notes (2022.06.03)
+# Efficient Rendering Study Notes (2022.07.19)
 [Home](/README.md)
 
 # Forward Rendering
@@ -719,13 +719,13 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
 * Disadvantages:
   * Large frame-buffer size<sup>[Calver03](#Calver03)</sup>, Framebuffer bandwidth can easily get out of hand<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
-  * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[StewartThomas13](#StewartThomas13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * Potentially high fill-rate<sup>[Calver03](#Calver03)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Lauritzen10](#Lauritzen10)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[StewartThomas13](#StewartThomas13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup><sup>[Arntzen20](#Arntzen20)</sup>
     * Reading lighting inputs from G-Buffer is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
     * Accumulating ligthing with additive blending is an overhead<sup>[Lauritzen10](#Lauritzen10)</sup>
       * Requires high precision<sup>[Olsson15](#Olsson15)</sup>
   * Multiple light equations difficult<sup>[Calver03](#Calver03)</sup>, Forces a single lighting model across the entire scene (everything has to be 100% per-pixel)<sup>[Hargreaves04](#Hargreaves04)</sup>
   * ~~High hardware specifications<sup>[Calver03](#Calver03)</sup>~~
-  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * Transparency is very hard<sup>[Calver03](#Calver03)</sup>, Alpha blending is a nightmare!<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Valient07](#Valient07)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Forward rendering required for translucent objects<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup><sup>[Arntzen20](#Arntzen20)</sup>
     * If a tiled or clustered deferred is used, the light information can be passed to a forward+ pass for transparencies
   * Can't take advantage of hardware multisampling<sup>[Hargreaves04](#Hargreaves04)</sup> AA is problematic<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Placeres06](#Placeres06)</sup> MSAA difficult compared to Forward Renderer<sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>, Costly and complex MSAA<sup>[Thibieroz11](#Thibieroz11)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
     * MYTH!! MSAA did not prove to be an issue!!<sup>[Valient07](#Valient07)</sup>
@@ -749,6 +749,8 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * In general it has lots of enticing benefits over forward, and it -might- be faster in complex lighting / material / decal scenarios, but the baseline simple lighting/shading case is much more expensive<sup>[Pesce14](#Pesce14)</sup>
   * Difficult to do multiple shading models<sup>[Olsson15](#Olsson15)</sup>
     * Custom shaders
+  * No forward shading support<sup>[Arntzen20](#Arntzen20)</sup>
+  * No volumetric lighting<sup>[Arntzen20](#Arntzen20)</sup>
 
 ```
 For each object:
@@ -1482,6 +1484,88 @@ S.T.A.L.E.R: Clear Skies:
   * Interpreted differently based on the type of the material
   * Fabric, hair, skin, silk, etc.
 
+### Example 13: Jurassic World: Evolution<sup>[TheCodeCorsairJWE21](#TheCodeCorsairJWE21)</sup>
+
+* Tiled Forward Lighting
+  * 8 &times; 8 pixel tiles extruded towards the far plane to create subfrustums
+  * CS is dispatched per tile
+* Depth Prepass
+* Thin GBuffer
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Roughness A</td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td colspan="4" style="background-color:rgba(255, 255, 255, 0.5); color:white">Motion Vectors</td>
+</tr>
+</tbody>
+</table>
+
+### Example 14: Mafia: Definitive Edition<sup>[TheCodeCorsairMDE21](#TheCodeCorsairMDE21)</sup>
+
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R16F</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G16F</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z B16F</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Roughness A16F</td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Diffuse Albedo.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Metalness A8</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td colspan="3" style="background-color:rgba(255, 255, 255, 0.5); color:white">Motion Vectors RGB16U</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Encoded Vertex Normal A16U</td>
+</tr>
+<tr>
+<td>RT 3</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Specular Intensity R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">0.5 G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Curvature or Thickness (for SSS) B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white">SSS Profile A8</td>
+</tr>
+<tr>
+<td>RT 4</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">Emissive.R R11F</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">Emissive.G G11F</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emissive.B B10F</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:white"></td>
+</tr>
+</tbody>
+</table>
+
 # Overview
 
 * Don't bother with any lighting while drawing scene geometry<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -1928,9 +2012,9 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
   * Fastest and most flexible<sup>[Lauritzen10](#Lauritzen10)</sup><sup>[Olsson15](#Olsson15)</sup>
   * Enable efficient MSAA<sup>[Lauritzen10](#Lauritzen10)</sup><sup>[Olsson15](#Olsson15)</sup>
   * G-Buffers are read only once for each lit sample<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
-  * Framebuffer is written to once<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
-  * Common terms of the rendering equation can be factored out and computed once instead of recomputing them for each light<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
-  * Work becomes coherent within each tile<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Framebuffer is written to once<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Common terms of the rendering equation can be factored out and computed once instead of recomputing them for each light<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
+  * Work becomes coherent within each tile<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
     * Each sample in a tile requires the same amount of work
       * Allows for efficient implementation on SIMD-like architectures
   * Low bandwidth<sup>[Olsson15](#Olsson15)</sup>
@@ -1938,6 +2022,15 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
   * Trivial light list lookup<sup>[Olsson15](#Olsson15)</sup>
   * High performance<sup>[Olsson15](#Olsson15)</sup>
   * Transparency<sup>[Olsson15](#Olsson15)</sup>
+  * Constant & absolute minimal bandwith<sup>[Andersson09](#Andersson09)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
+    * Read gbuffers & depth once!
+  * Doens't need intermediate light buffers<sup>[Andersson09](#Andersson09)</sup>
+    * Can take a lot of memory with HDR, MSAA & color specular
+  * Scales up to huge amount of big overlapping light sources<sup>[Andersson09](#Andersson09)</sup>
+    * Fine-grained culling (16 &times; 16)
+    * Only ALU cost, good future scaling
+    * Could be useful for accumulating VPLs
+  * Light accumulatino is done in register, at full floating point precision<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 * Disadvantages:
   * Still tricky to afford many shadowed lights per pixel<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>, Makes dynamic shadows harder<sup>[Pesce14](#Pesce14)</sup>
     * No shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
@@ -1945,6 +2038,15 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
   * View dependence<sup>[Olsson15](#Olsson15)</sup>
     * 2D light assignment
     * Depth discontinuities
+  * ~~Requires DX 11 HW<sup>[Andersson09](#Andersson09)</sup>~~
+    * ~~CS 4.0 / 4.1 difficult due to atomics & scattered `groupshared` writes~~
+  * Culling overhead for small light sources<sup>[Andersson09](#Andersson09)</sup>
+    * Can accumulate them using standard light volume rendering
+    * Or separate CS for tile-classific
+  * Potentially performance<sup>[Andersson09](#Andersson09)</sup>
+    * MSAA texture loads / UAV writing might be slower then standard PS
+  * Can't output to MSAA texture<sup>[Andersson09](#Andersson09)</sup>
+    * DX11 CS UAV limitation
 * Challenges:
   * Frustum primitive culling not accurate, creates false positives<sup>[Schulz14](#Schulz14)</sup>
     * Often considerably more pixels shaded than with stencil tested light volumes
@@ -2027,30 +2129,6 @@ void main()
                               fragPos);
 }
 ```
-
-* Advantages:
-  * Constant & absolute minimal bandwith<sup>[Andersson09](#Andersson09)</sup><sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
-    * Read gbuffers & depth once!
-  * Doens't need intermediate light buffers<sup>[Andersson09](#Andersson09)</sup>
-    * Can take a lot of memory with HDR, MSAA & color specular
-  * Scales up to huge amount of big overlapping light sources<sup>[Andersson09](#Andersson09)</sup>
-    * Fine-grained culling (16 &times; 16)
-    * Only ALU cost, good future scaling
-    * Could be useful for accumulating VPLs
-  * Common terms in the rendering equation can be factored out<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
-  * The frame buffer is written exactly once<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
-  * Light accumulatino is done in register, at full floating point precision<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
-  * Fragments (in the same tile) coherently process the same lights
-* Disadvantages:<sup>[Andersson09](#Andersson09)</sup>
-  * ~~Requires DX 11 HW~~
-    * ~~CS 4.0 / 4.1 difficult due to atomics & scattered `groupshared` writes~~
-  * Culling overhead for small light sources
-    * Can accumulate them using standard light volume rendering
-    * Or separate CS for tile-classific
-  * Potentially performance
-    * MSAA texture loads / UAV writing might be slower then standard PS
-  * Can't output to MSAA texture
-    * DX11 CS UAV limitation
 
 PhyreEngine Implementation:<sup>[Swoboda09](#Swoboda09)</sup>
 
@@ -2441,6 +2519,9 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonH
   * Can be extended with a number of bits that encode a quantized normal direction
   * i, j = 2D tile id - `gl_FragCoord.xy`<sup>[Olsson15](#Olsson15)</sup>
   * k = &approx;log(view space z)<sup>[Olsson15](#Olsson15)</sup>
+
+Granite:
+* Instead of frustums, more grid-like structure provided much simpler culling math<sup>[Arntzen20](#Arntzen20)</sup>
 
 ##### Sparse vs Dense Cluster Grid<sup>[Olsson15](#Olsson15)</sup>
 
@@ -2940,6 +3021,48 @@ Three basic render passes:<sup>[Trebilco09](#Trebilco09)</sup>
    * Lighting is done using the light index texture to access lighting properties in each shader 
 
 In order to support multiple light indexes per-fragment, it would be ideal to store the first light index in the texture's red channel, second light index in the blue index, etc.<sup>[Trebilco09](#Trebilco09)</sup>
+
+* Advantages:<sup>[Trebilco09](#Trebilco09)</sup>
+  * vs Standard Deferred Rendering
+    * Uses forward rendering so no need for "fat buffers" to store normal/position type data
+    * Can layer on existing light schemes
+    * Small buffers size (varies depending on how many lights per fragment are supported)
+    * Light calculations like the reflection vector only needs to be calculated once
+    * MSAA can be supported with fewer resources
+    * Transparency can be supported
+  * vs Multi-pass Forward Rendering
+    * Can render lots of lights with only a fragment size cost per light
+    * Only two passes of the scene geometry - depth only pass then a forward render color pass
+    * Do not have to break geometry up into pieces for individual lighting - can render huge vertex buffers
+    * No Object &rarr; Light interactions need to be calculated on the CPU (for non-shadowing lights)
+    * Light calculations like reflection vectors only needs to be calculated once and texture lookups and filtering only need to be done once
+    * Can render "mesh-shaped" lights - not limited to sphere / cone shaped lights
+  * vs Multi-light Forward Rendering
+    * Can render lots of lights with only a fragment size cost per light
+    * Do not have to break geometry up into pieces for individual lighting - can render huge vertex buffers
+    * Can render "mesh-shaped" lights - not limited to sphere / cone shaped lights
+    * No Object &rarr; Light interactions need to be calculated on the CPU (for non-shadowing lights)
+* Disadvantages:<sup>[Trebilco09](#Trebilco09)</sup>
+  * vs Standard Deferred Rendering
+    * Exotic lighting types are harder to support (e.g., projected texture light)
+    * Need to set a limit on how many lights can hit each fragment (current implementation has a max of 16)
+    * Need to pass the vertex geometry twice - once for depth pre-pass and once for the forward pass
+      * Depth pre-pass is not vital for light indexed deferred rendering(LIDR) but it allows a lot of optimization
+    * Shadows are harder to support
+  * vs Multi-pass Forward Rendering
+    * Exotic lighting types are harder to support (e.g., projected texture light)
+    * Need to set a limit on how many lights can hit each fragment (current implementation has a max of 16)
+    * Requires a full screen buffer to store light index data
+    * All scene shaders need to be updated to support LIDR
+    * Slower on scenes that have few objects and lights
+    * Shadows are harder to support
+  * vs Multi-light Forward Rendering
+    * Exotic lighting types are harder to support (e.g., projected texture light)
+    * Need to set a limit on how many lights can hit each fragment (current implementation has a max of 16)
+    * Requires a full screen buffer to store light index data
+    * Can require two passes of scene geometry - depth only pass then a forward render color pass
+    * Slower on scenes that have few objects and lights
+    * Shadows are harder to support
 
 ### Matt Pettineo's approach<sup>[Pettineo12](#Pettineo12)</sup>
 
@@ -3518,6 +3641,16 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 ## 2017
 
 <a id="Anagnostou17" href="https://interplayoflight.wordpress.com/2017/10/25/how-unreal-renders-a-frame/">How Unreal Renders a Frame</a>. [Kostas Anagnostou](https://interplayoflight.wordpress.com/), [Radiant Worlds](https://en.wikipedia.org/wiki/Rebellion_Warwick) / [Playground Games](https://playground-games.com/). [Interplay of Light Blog](https://interplayoflight.wordpress.com/)
+
+## 2020
+
+<a id="Patry20" href="https://youtu.be/GOee6lcEbWg">Real-Time Samurai Cinema: Lighting, Atmosphere, and Tonemapping in Ghost of Tsushima</a>. [Jasmin Patry](https://www.glowybits.com/page/about/index.html), [Sucker Punch Productions](https://www.suckerpunch.com/). [SIGGRAPH 2021: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2021/).
+<a id="Arntzen20" href="https://themaister.net/blog/2020/01/10/clustered-shading-evolution-in-granite/">Clustered Shading Evolution in Granite</a>. [Hans-Kristian Arntzen](https://themaister.net/), [Arntzen Software AS](https://arntzen-software.no/). [Maister's Graphics Adventures Blog](https://themaister.net/blog/).
+
+## 2021
+
+<a id="TheCodeCorsairJWE21" href="https://www.elopezr.com/the-rendering-of-jurassic-world-evolution/">The Rendering of Jurassic World: Evolution</a>. [The Code Corsair](https://www.elopezr.com/about/). [The Code Corsair Blog](https://www.elopezr.com/).<br>
+<a id="TheCodeCorsairMDE21" href="https://www.elopezr.com/the-rendering-of-mafia-definitive-edition/">The Rendering of Mafia: Definitive Edition</a>. [The Code Corsair](https://www.elopezr.com/about/). [The Code Corsair Blog](https://www.elopezr.com/).<br>
 
 ## People by Company
 
