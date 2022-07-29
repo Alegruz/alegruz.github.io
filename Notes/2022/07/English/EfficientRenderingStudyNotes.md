@@ -831,12 +831,15 @@ The smaller the better!<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
 ### Depth
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup>
 
 Use depth data to reconstruct position data. Provided by the depth buffer.
 
 Format Suggestion:
-24bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+* 24bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+* `D32` <sup>[Huseyin20](#Huseyin20)</sup>
+  * Reveresed-Z
+
 
 * In GBuffer, `G_Buffer.z = length(Input.PosInViewSpace);`
 * In VS, `out.vEyeToScreen = float3(Input.ScreenPos.x * ViewAspect, Input.ScreenPos.y, invTanHalfFOV);`
@@ -862,10 +865,10 @@ viewSpacePos.z = gbuffer_depth;
 
 ### Stencil
 
-<sup>[Kaplanyan10](#Kaplanyan10)</sup>
+<sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Huseyin20](#Huseyin20)</sup>
 
 Format Suggestion:
-* 8bpp
+* 8bpp<sup>[Huseyin20](#Huseyin20)</sup>
 
 Stencil to mark objects in lighting groups<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 * Portals / indoors
@@ -874,7 +877,7 @@ Stencil to mark objects in lighting groups<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
 ### Normal
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Huseyin20](#Huseyin20)</sup>
 
 Format Suggestions:
 * `R10G10B10A2_FLOAT`<sup>[Hargreaves04](#Hargreaves04)</sup>
@@ -882,6 +885,7 @@ Format Suggestions:
 * 24bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * Too quantized
   * Lighting is banded / of low quality
+* RGBA8_UNORM<sup>[Huseyin20](#Huseyin20)</sup>
 
 Considerations:
 * Model space vs Tangent space<sup>[Thibieroz04](#Thibieroz04)</sup>
@@ -922,10 +926,11 @@ float3 unpack_normal(float2 norm)
 
 ### Diffuse Albedo
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup>
 
 Format Suggestions:
-`R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup>
+`R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br>
+`RGBA8_SRGB`<sup>[Huseyin20](#Huseyin20)</sup>
 
 ### Etc.
 
@@ -933,8 +938,8 @@ Format Suggestions:
 * Emissive<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
 * Light Map<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Lee09](#Lee09)</sup>
 * Material ID<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup>
-* Roughness<sup>[Andersson09](#Andersson09)</sup>
-* AO<sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup>
+* Roughness<sup>[Andersson09](#Andersson09)</sup><sup>[Moradin19](#Moradin19)</sup>
+* AO<sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Moradin19](#Moradin19)</sup>
 * Glossiness<sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * 8bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * Non deferrable<sup>[Kaplanyan10](#Kaplanyan10)</sup>
@@ -942,8 +947,20 @@ Format Suggestions:
     * Specular is non-accumulative otherwise
 * Specular Power<sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup>
 * Motion Vector<sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
+  * Velocity<sup>[Moradin19](#Moradin19)</sup>
+  * Screen Space Velocity<sup>[Huseyin20](#Huseyin20)</sup>
+    * `RG16 FLOAT`
+* Velocity Mask<sup>[Moradin19](#Moradin19)</sup>
 * Shadow<sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup>
 * Specular Terms<sup>[Thibieroz11](#Thibieroz11)</sup>
+* Sky Mask<sup>[Moradin19](#Moradin19)</sup>
+* Vertex Normal<sup>[Moradin19](#Moradin19)</sup>
+* Metalness<sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup>
+  * `R8 UNORM`<sup>[Huseyin20](#Huseyin20)</sup>
+* Reflectance (f0)<sup>[Huseyin20](#Huseyin20)</sup>
+  * `R8 UNORM`
+* Smoothness<sup>[Huseyin20](#Huseyin20)</sup>
+  * `R8 UNORM`
 
 ## Examples
 
@@ -1756,6 +1773,14 @@ void main()
 ```
 <sup>[Olsson15](#Olsson15)</sup>
 
+Red Dead Redemption 2:<sup>[Huseyin20](#Huseyin20)</sup>
+* Global light pass
+  * Fullscreen quad
+* Local light pass
+  * Low-poly sphere shape for point light volumes
+  * Octahderon like shape for spotlight volumes
+  * Rendered back-to-front with additive blending
+
 ### Bandwidth Problem<sup>[Olsson15](#Olsson15)</sup>
 
 * New type of overdraw
@@ -1800,10 +1825,14 @@ for each pixel
 
 ### Pre-Tiled Shading
 
-Weaknesses:<sup>[Andersson11](#Andersson11)</sup>
-* Massive overdraw & ROP cost when having lots of big light sources
-* Expensive to have multiple per-pixel materials in light shaders
-* MSAA lighting can be slow (non-coherent, extra bandwidth)
+Advantages:
+* Precise per-pixel light culling<sup>[Zhdan16](#Zhdan16)</sup>
+* A lot of work is done outside of the shader
+Weaknesses:
+* Massive overdraw & ROP cost when having lots of big light sources<sup>[Andersson11](#Andersson11)</sup><sup>[Zhdan16](#Zhdan16)</sup>
+* Expensive to have multiple per-pixel materials in light shaders<sup>[Andersson11](#Andersson11)</sup>
+* MSAA lighting can be slow (non-coherent, extra bandwidth)<sup>[Andersson11](#Andersson11)</sup>
+* Lighting is likely to become bandwidth limited<sup>[Zhdan16](#Zhdan16)</sup>
 
 #### Full screen lights
 
@@ -2031,6 +2060,7 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
     * Only ALU cost, good future scaling
     * Could be useful for accumulating VPLs
   * Light accumulatino is done in register, at full floating point precision<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
+  * Lighting phase takes all visible lights in one go<sup>[Zhdan16](#Zhdan16)</sup>
 * Disadvantages:
   * Still tricky to afford many shadowed lights per pixel<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>, Makes dynamic shadows harder<sup>[Pesce14](#Pesce14)</sup>
     * No shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
@@ -2047,8 +2077,10 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
     * MSAA texture loads / UAV writing might be slower then standard PS
   * Can't output to MSAA texture<sup>[Andersson09](#Andersson09)</sup>
     * DX11 CS UAV limitation
+  * Less accurate culling with tile granularity<sup>[Zhdan16](#Zhdan16)</sup>
+  * Frustum-primitive tests are either too coarse or too slow<sup>[Zhdan16](#Zhdan16)</sup>
 * Challenges:
-  * Frustum primitive culling not accurate, creates false positives<sup>[Schulz14](#Schulz14)</sup>
+  * Frustum primitive culling not accurate, creates false positives<sup>[Schulz14](#Schulz14)</sup><sup>[Zhdan16](#Zhdan16)</sup>
     * Often considerably more pixels shaded than with stencil tested light volumes
   * Handling light resources (all resources need to be accessible from CS)<sup>[Schulz14](#Schulz14)</sup>
     * Shadow maps stored in large atlas
@@ -2233,6 +2265,221 @@ To facilitate look up from shaders, we must store the data structure in a suitab
 </tr>
 </tbody>
 </table>
+
+Red Dead Redemption 2:<sup>[Huseyin20](#Huseyin20)</sup>
+* Uses tile-based deferred rendering path for calculating the lighting of environment maps
+
+#### Z Prepass
+
+```c
+groupshared uint ldsZMin;
+groupshared uint ldsZMax;
+
+[numthreads(16, 16, 1)]
+void CalculateDepthBoundsCS(int32 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_GroupThreadID)
+{
+  uint localIdxFlattened = localIdx.x + localIdx.y * 16;
+
+  if (localIdxFlattened == 0)
+  {
+    ldsZMin = 0x7f7fffff; // FLT_MAX as a uint
+    ldsZMax = 0;
+  }
+
+  GroupMemoryBarrierWithGropuSync();
+
+  float depth = g_DepthTexture.Load(uint3(globalIdx.x, globalIdx.y, 0)).x;
+
+  uint z = asuint( ConvertProjDepthToView( depth ) ); // reinterpret as uint
+
+  if (depth != 0.0)
+  {
+    InterlockedMax( ldsZMax, z );
+    InterlockedMin( ldsZMin, z );
+  }
+
+  GroupMemoryBarrierWithGroupSync();
+
+  float maxZ = asfloat( ldsZMax );
+  float minZ = asfloat( ldsZMin );
+}
+```
+<sup>[Thomas15](#Thomas15)</sup>
+
+Parallel Reduction:<sup>[Thomas15](#Thomas15)</sup>
+* Atomics are useful but not efficient
+* Compute-friendly algorithm
+* Great material alrady available:
+  * Optimizing Parallel Reduction in CUDA. <sup>[Harris07](#Harris07)</sup>
+
+Algorthm:<sup>[Thomas15](#Thomas15)</sup>
+* for each time
+  * take a thread id, compare it with an another thread id's value (by some stride)
+  * take the min value of them
+
+```c
+depth[tid] = min(depth[tid], depth[tid + 8])
+
+depth[tid] = min(depth[tid], depth[tid + 4])
+
+depth[tid] = min(depth[tid], depth[tid + 2])
+
+depth[tid] = min(depth[tid], depth[tid + 1])
+```
+<sup>[Thomas15](#Thomas15)</sup>
+
+Implementation:<sup>[Thomas15](#Thomas15)</sup>
+* First pass reads 4 depth samples
+* Needs to be separate pass (thread group size would be half the size of the original per-pixel shader)
+* Write bounds to UAV
+  * Maybe useful for other things too
+
+```c
+groupshared uint ldsZMin[64];
+groupshared uint ldsZMax[64];
+
+[numthreads(8, 8, 1)]
+void CalculateDepthBoundsCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_GroupThreadID, uint3 groupIdx : SV_GroupID)
+{
+  uint2 sampleIdx = globalIdx.xy * 2;
+
+  float depth00 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x, sampleIdx.y, 0)).x;      float viewPosZ00 = ConvertProjDepthToView(depth00);
+  float depth01 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x, sampleIdx.y+1, 0)).x;    float viewPosZ01 = ConvertProjDepthToView(depth01);
+  float depth10 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x+1, sampleIdx.y, 0)).x;    float viewPosZ10 = ConvertProjDepthToView(depth10);
+  float depth11 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x+1, sampleIdx.y+1, 0)).x;  float viewPosZ11 = ConvertProjDepthToView(depth11);
+
+  float minZ00 = (depth00 != 0.f) ? viewPosZ00 : FLT_MAX; float maxZ00 = (depth00 != 0.f) ? viewPosZ00 : 0.0f;
+  float minZ10 = (depth01 != 0.f) ? viewPosZ10 : FLT_MAX; float maxZ10 = (depth01 != 0.f) ? viewPosZ10 : 0.0f;
+  float minZ01 = (depth10 != 0.f) ? viewPosZ01 : FLT_MAX; float maxZ01 = (depth10 != 0.f) ? viewPosZ01 : 0.0f;
+  float minZ11 = (depth11 != 0.f) ? viewPosZ11 : FLT_MAX; float maxZ11 = (depth11 != 0.f) ? viewPosZ11 : 0.0f;
+
+  uint threadNum = localIdx.x + localIdx.y * 8;
+
+  ldsZMin[threadNum] = min(minZ00, min(minZ01, min(minZ10, minZ11)));
+  ldsZMax[threadNum] = max(maxZ00, max(maxZ01, max(maxZ10, maxZ11)));
+
+  GroupMemoryBarrierWithGroupSync();
+
+  if (threadNum < 32)
+  {
+    ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 32]);  ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 32]);
+    ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 16]);  ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 16]);
+    ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 8]);   ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 8]);
+    ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 4]);   ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 4]);
+    ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 2]);   ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 2]);
+    ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 1]);   ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 1]);
+  }
+
+  GroupMemoryBarrierWithGroupSync();
+
+  if (threadNum == 0)
+  {
+    g_DepthBounds[groupIdx.xy] = float2(ldsZMin[0], ldsZMax[0]);
+  }
+}
+```
+<sup>[Thomas15](#Thomas15)</sup>
+
+#### Light Culling
+
+* Frustum-based culling:<sup>[Zhdan16](#Zhdan16)</sup>
+  * Sphere vs frustum planes are the most commonly used test
+  * In fact, it is a frustum-box test
+  * Extremely inaccurate with large spheres
+  * False positives!
+
+##### AABB
+
+* Using Arvo Intersection Test<sup>[Thomas15](#Thomas15)</sup>
+
+```c
+bool TestSphereVsAABB(float3 sphereCenter, float sphereRadius, float3 AABBCenter, float3 AABBHalfSize)
+{
+  float3 delta = max(0, abs(AABBCenter - sphereCenter) - AABBHalfSize);
+  float distSq = dot(delta, delta);
+  return distSq <= sphereRadius * sphereRadius;
+}
+```
+
+##### Rasterization
+
+* Rounded AABB?:<sup>[Zhdan16](#Zhdan16)</sup>
+  * Doesn't suit for spot lights
+  * Works badly for very long frustums
+  * Problematic for wide FOV
+* Average tile frustum angle is small:<sup>[Zhdan16](#Zhdan16)</sup>
+  * FOV = 100&deg;, Tile size = 16 &times; 16 pixels
+  * Angle = FOV &dot; (til_size / screen_height) = 0.8&deg; (at 1080p)
+* Frustum can be represented as a single ray at tile center<sup>[Zhdan16](#Zhdan16)</sup>
+  * Or 4 rays at tile corners
+    * Works better
+  * Replace frustum test with ray intersection test:
+    * Ray-sphere, ray-cone, &hellip;
+    * Compare tile min-max z with min-max among all intersections
+* Culling on compute sucks<sup>[Zhdan16](#Zhdan16)</sup>
+  * Total operations = X &times; Y &times; N
+  * X = tile grid width
+  * Y = tile grid height
+  * N = number of lights
+  * Reduce the order of enumeration
+    * Subdivide screen into 4 - 8 sub-screens
+    * Coarsely cull lights against sub-screen frustums
+    * Select corresponding sub-screen during culling phase
+* However, compute shader is still too slow<sup>[Zhdan16](#Zhdan16)</sup>
+* Light culling used graphics<sup>[Zhdan16](#Zhdan16)</sup>
+  * Use rasterizer to generate light fragments
+    * Empty tiles will be natively skipped
+  * Use depth test to account for occlusion
+    * Useless work for occluded tiles will be skipped
+  * Use primitive-ray intersection on PS for fine culling and light list updating
+* Idea Overview<sup>[Zhdan16](#Zhdan16)</sup>
+  * Culling phase tile &rarr; 1 pixel
+  * Light volume &rarr; proxy geometry
+  * Coarse XY-culling &rarr; rasterization
+  * Coarse Z-culling &rarr; depth test
+  * Precise culling &rarr; pixel shader
+* Break tiled shading into 3 phases:<sup>[Zhdan16](#Zhdan16)</sup>
+  * Reduction
+  * Culling
+  * Lighting
+
+New Culling Method:<sup>[Zhdan16](#Zhdan16)</sup>
+1. Camera frustum culling
+   * Cull lights against camera frustum
+   * Split visible lights into "outer" and "inner"
+   * Can be done in CPU 
+2. Depth buffers creation
+   * For each tile:
+     * Find and copy max depth for "outer" lights
+     * Find and copy min depth for "inner" lights
+   * Depth test is a key to high perforamance!
+     * Use [earlydepthstencil] in shader
+3. Rasterization & classification
+   * Render light geometry with depth test
+     * "outer" - max depth buffer
+       * Front faces with direct depth test
+     * "inner" - min depth buffer
+       * Back faces with inverted depth test
+   * Use PS for precise culling and per-tile light list creation
+* Common light types
+  * Light geometry can be replaced with proxy geometry
+  * Point light (omni)  
+    * Geosphere (2 subdivisions, octa-based)
+    * Close enough to sphere
+    * Low poly works well at low resolution
+    * Equilateral triangles can ease rasterizer's life
+  * Directional light (spot)
+    * Old CRT-TV
+      * Easy for parameterization
+        * From a searchlight
+        * To a hemisphere
+        * Plane part can be used to handle area lights
+* Advantages:<sup>[Zhdan16](#Zhdan16)</sup>
+  * No work for tiles without lights and for occluded lights
+  * Coarse culling is almost free
+  * Incredible speed up with small lights
+  * Complex proxy models can be used!
+  * Mathematically it is a branch-and-bound procedure
 
 #### Computer Shader Implementation
 
@@ -2522,6 +2769,10 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonH
 
 Granite:
 * Instead of frustums, more grid-like structure provided much simpler culling math<sup>[Arntzen20](#Arntzen20)</sup>
+
+Shadow of the Tomb Raider:<sup>[Moradin19](#Moradin19)</sup>
+* Light shapes are approximated with an icosahedron
+* All frustums used for cone lights are just boxes scaled differently on both ends
 
 ##### Sparse vs Dense Cluster Grid<sup>[Olsson15](#Olsson15)</sup>
 
@@ -3563,7 +3814,8 @@ EA. SIGGRAPH. 2011.
 ## 2007
 
 <a id="Koonce07" href="https://developer.nvidia.com/gpugems/gpugems3/part-iii-rendering/chapter-19-deferred-shading-tabula-rasa">Deferred Shading in Tabula Rasa</a>. [Rusty Koonce](https://www.linkedin.com/in/rusty-koonce-9654819/), [NCSoft Corporation](https://kr.ncsoft.com/en/index.do) / [Facebook](https://about.facebook.com/). [GPU Gems 3](https://developer.nvidia.com/gpugems/gpugems3/foreword).<br>
-<a id="Valient07" href="https://www.guerrilla-games.com/read/deferred-rendering-in-killzone-2">Deferred Rendering in Killzone 2</a>. [Michal Valient](https://www.linkedin.com/in/valient/), [Guerilla Games](https://www.guerrilla-games.com/) / [Epic Games](https://www.epicgames.com/site/en-US/home). Developer Conference 2007.
+<a id="Valient07" href="https://www.guerrilla-games.com/read/deferred-rendering-in-killzone-2">Deferred Rendering in Killzone 2</a>. [Michal Valient](https://www.linkedin.com/in/valient/), [Guerilla Games](https://www.guerrilla-games.com/) / [Epic Games](https://www.epicgames.com/site/en-US/home). Developer Conference 2007.<br>
+<a id="Harris07" href="https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf">Optimizing Parallel Reduction in CUDA</a>. [Mark Harris](https://www.linkedin.com/in/themarkharris/), [NVIDIA](https://www.nvidia.com/en-us/).
 
 ## 2008
 
@@ -3624,6 +3876,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="NeubeltPettineo14" href="https://www.gdcvault.com/play/1020162/Crafting-a-Next-Gen-Material">Crafting a Next-Gen Material Pipeline for The Order: 1886</a>. [David Neubelt](https://www.linkedin.com/in/coderdave/), [Ready at Dawn](http://www.readyatdawn.com/). [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
 <a id="Pesce14" href="http://c0de517e.blogspot.com/2014/09/notes-on-real-time-renderers.html">Notes on Real-Time Renderers</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 <a id="Schulz14" href="https://www.gdcvault.com/play/1020432/Moving-to-the-Next-Generation">Moving to the Next Generation—The Rendering Technology of Ryse</a>. Nicolas Schulz, [Crytek](https://www.crytek.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
+<a id="Engel14" href="http://diaryofagraphicsprogrammer.blogspot.com/2014/03/compute-shader-optimizations-for-amd.html">Compute Shader Optimizations for AMD GPUs: Parallel Reduction</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [Diary of a Graphics Programmer](http://diaryofagraphicsprogrammer.blogspot.com/).
 
 ## 2015
 
@@ -3631,21 +3884,28 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="OlssonBilleterSintorn15" href="https://efficientshading.com/2015/06/01/more-efficient-virtual-shadow-maps-for-many-lights/">More Efficient Virtual Shadow Maps for Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Erik Sintorn](https://www.chalmers.se/en/staff/Pages/erik-sintorn.aspx), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [IEEE Transactions on Visualization and Computer Graphics](https://www.computer.org/csdl/journal/tg).<br>
 <a id="Olsson15" href="https://efficientshading.com/wp-content/uploads/s2015_introduction.pdf">Introduction to Real-Time Shading with Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html)
 <a id="Pettineo15" href="http://advances.realtimerendering.com/s2015/index.html#_REFLECTION_SYSTEM_IN">Rendering the Alternate History of The Order: 1886</a>. [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [SIGGRAPH 2015: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2015/).<br>
+<a id="Thomas15" href="https://www.gdcvault.com/browse/gdc-15/play/1021763">Advancements in Tiled-Based Compute Rendering</a>. [Gareth Thomas](https://www.linkedin.com/in/gareth-thomas-032654b/), [AMD](https://www.amd.com/en). [GDC 2015](https://www.gdcvault.com/free/gdc-15/).
 
 ## 2016
 
 <a id="ElGarawany16" href="http://advances.realtimerendering.com/s2016/#_HIGH-QUALITY_TEMPORAL_SUPERSAMPLING">Deferred Lighting in Uncharted 4</a>. [Ramy El Garawany](https://www.linkedin.com/in/ramy-el-garawany-7a805820/), [Naughty Dog](https://www.naughtydog.com/) / [Google](https://careers.google.com/). [SIGGRAPH 2016: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2016/).
 <a id="ElMansouri16" href="https://youtu.be/RAy8UoO2blc">Rendering Tom Clancy’s Rainbow Six Siege</a>. [Jalal El Mansouri](https://www.linkedin.com/in/jalal-el-mansouri-60a73423/), [Ubisoft Montréal](https://montreal.ubisoft.com/en/) / [Haven Studios Inc.](https://www.havenstudios.com/en). [GDC 2016](https://www.gdcvault.com/free/gdc-16/)
 <a id="OrtegrenPersson16" href="https://github.com/kevinortegren/ClusteredShadingConservative">Clustered Shading: Assigning Lights Using Conservative Rasterization in DirectX 12</a>. [Kevin Örtegren](https://www.linkedin.com/in/kevinortegren/), [Avalanche Studios](https://avalanchestudios.com/) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Emil Persson](http://www.humus.name/), [Avalanche Studios](https://avalanchestudios.com/) / [Elemental Games](https://elemental.games/). [GPU Pro 7](http://gpupro.blogspot.com/2016/01/gpu-pro-7-table-of-content.html).
+<a id="Zhdan16" href="https://www.gdcvault.com/play/1023510/Advanced-Graphics-Techniques-Tutorial-Day">Tiled Shading: Light Culling—Reaching the Speed of Light</a>. [Dmitry Zhdan](https://dl.acm.org/profile/99659432320), [NVIDIA](https://www.nvidia.com/en-us/). [GDC 2016](https://www.gdcvault.com/free/gdc-16/).
 
 ## 2017
 
 <a id="Anagnostou17" href="https://interplayoflight.wordpress.com/2017/10/25/how-unreal-renders-a-frame/">How Unreal Renders a Frame</a>. [Kostas Anagnostou](https://interplayoflight.wordpress.com/), [Radiant Worlds](https://en.wikipedia.org/wiki/Rebellion_Warwick) / [Playground Games](https://playground-games.com/). [Interplay of Light Blog](https://interplayoflight.wordpress.com/)
 
+## 2019
+
+<a id="Moradin19" href="http://morad.in/2019/04/19/under-the-hood-of-shadow-of-the-tomb-raider/">Under the Hood of Shadow of the Tomb Raider</a>. [m0radin](http://morad.in/). [m0rad.in Blog](http://morad.in/).
+
 ## 2020
 
-<a id="Patry20" href="https://youtu.be/GOee6lcEbWg">Real-Time Samurai Cinema: Lighting, Atmosphere, and Tonemapping in Ghost of Tsushima</a>. [Jasmin Patry](https://www.glowybits.com/page/about/index.html), [Sucker Punch Productions](https://www.suckerpunch.com/). [SIGGRAPH 2021: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2021/).
-<a id="Arntzen20" href="https://themaister.net/blog/2020/01/10/clustered-shading-evolution-in-granite/">Clustered Shading Evolution in Granite</a>. [Hans-Kristian Arntzen](https://themaister.net/), [Arntzen Software AS](https://arntzen-software.no/). [Maister's Graphics Adventures Blog](https://themaister.net/blog/).
+<a id="Patry20" href="https://youtu.be/GOee6lcEbWg">Real-Time Samurai Cinema: Lighting, Atmosphere, and Tonemapping in Ghost of Tsushima</a>. [Jasmin Patry](https://www.glowybits.com/page/about/index.html), [Sucker Punch Productions](https://www.suckerpunch.com/). [SIGGRAPH 2021: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2021/).<br>
+<a id="Arntzen20" href="https://themaister.net/blog/2020/01/10/clustered-shading-evolution-in-granite/">Clustered Shading Evolution in Granite</a>. [Hans-Kristian Arntzen](https://themaister.net/), [Arntzen Software AS](https://arntzen-software.no/). [Maister's Graphics Adventures Blog](https://themaister.net/blog/).<br>
+<a id="Huseyin20" href="https://imgeself.github.io/posts/2020-06-19-graphics-study-rdr2/">Graphics Study: Red Dead Redemption 2</a>. Hüseyin, [Our Machinery](https://ourmachinery.com/). [imgeself Blog](https://imgeself.github.io/).
 
 ## 2021
 
