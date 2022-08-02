@@ -816,16 +816,22 @@ The smaller the better!<sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * Tons of vegetation &rarr; Deferred translucency
   * Multiplatform friendly
 
-* Advantages:
-  * Unified solution across all platforms<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
-  * Deferred Rendering for less BW/Memory than vanilla<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
-    * Good for MSAA + avoiding tiled rendering on Xbox360
-  * Tackle glossiness for transparent geometry on G-Buffer
-    * Alpha blended cases, e.g. Decals, Deferred Decals, Terrain Layers
-    * Can composite all such cases directly into G-Buffer
-    * Avoid need for multipass
-  * Deferred sub-surface scattering
-    * Visual + performance win, in particular for vegetation rendering
+G-Buffer encoding requirements:<sup>[Pesce15](#Pesce15)</sup>
+* Fast when implemented in a shader
+* As compact as possible
+* Makes sense under linear interpolation (hardware "blendable", for pixel-shader based decals)
+* As stable as possible, and secondarily as precise as possible
+
+Advantages:
+* Unified solution across all platforms<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+* Deferred Rendering for less BW/Memory than vanilla<sup>[SousaWenzelRaine13](#SousaWenzelRaine13)</sup>
+  * Good for MSAA + avoiding tiled rendering on Xbox360
+* Tackle glossiness for transparent geometry on G-Buffer
+  * Alpha blended cases, e.g. Decals, Deferred Decals, Terrain Layers
+  * Can composite all such cases directly into G-Buffer
+  * Avoid need for multipass
+* Deferred sub-surface scattering
+  * Visual + performance win, in particular for vegetation rendering
 
 ## What to Store?
 
@@ -916,6 +922,7 @@ float3 unpack_normal(float2 norm)
 }
 ```
 
+Crytek:
 * Because we are storing normalized normals, we are wasting 24bpp.<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 * Create a cube of 256<sup>3</sup> values, and find the quantized value with the minimal error for a ray. Bake this into a cubemap of results.<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 * Extract the most meaningful and unique part of this symmetric cubemap
@@ -923,6 +930,7 @@ float3 unpack_normal(float2 norm)
 * Look it up during G-Buffer generation
 * Scale the normal
 * Output the adjusted normal into G-Buffer
+* However, not "blendable"<sup>[Pesce15](#Pesce15)</sup>
 
 ### Diffuse Albedo
 
@@ -2743,6 +2751,99 @@ Deferred Algorithm:<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonH
 4. Assign lights to clusters
 5. Shade samples
 
+Advantages:
+* Flexibility<sup>[Persson15](#Persson15)</sup>
+  * Forward rendering compatible
+    * Custom materials or light models
+    * Transparency
+* Deferred rendering compatible<sup>[Persson15](#Persson15)</sup>
+  * Screen-space decals
+  * Performance
+* Simplicity<sup>[Persson15](#Persson15)</sup>
+  * Unified lighting solution
+  * Easier to implement than full blown Tiled Deferred / Tiled Forward
+* Performance<sup>[Persson15](#Persson15)</sup>
+  * Typically same or better than Tiled Deferred
+  * Better worst-case performance
+  * Depth discontinuities? "It just works"
+
+Avanlanche solution:<sup>[Persson15](#Persson15)</sup>
+* Only spatial clustering
+  * 64 &times; 64 pixels, 16 depth slices
+* CPU light assignment
+  * Compact memory structure easy
+* Implicit cluster bounds only
+  * Scene-independent
+  * Deferred pass could potentially use explicit
+* Exponential depth slicing
+  * Huge depth range! [0.1m ~ 50,000m]
+  * Default list
+    * [0.1, 0.23, 0.52, 1.2, 2.7, 6.0, 14, 31, 71, 161, 365, 828, 1880, 4270, 9696, 22018, 50000]
+  * Limit far to 500
+    * We have "distant lights" systems for light visualization beyond that
+    * [0.1, 0.17, 0.29, 0.49, 0.84, 1.43, 2.44, 4.15, 7.07, 12.0, 20.5, 35, 59, 101, 172, 293, 500]
+  * Special near 0.1 - 5.0 cluster
+    * Tweaked visually from player standing on flat ground
+    * [0.1, 5.0, 6.8, 9.2, 12.6, 17.1, 23.2, 31.5, 42.9, 58.3, 79.2, 108, 146, 199, 271, 368, 500]
+
+##### Data Structure
+
+* Cluster "pointers" in 3D texture<sup>[Persson15](#Persson15)</sup>
+  * R32G32_UINT
+    * R = Offset
+    * G = [PointLightCount, SpotLightCount]
+* Light index list in texture buffer<sup>[Persson15](#Persson15)</sup>
+  * R16_UINT
+  * Tightly packed
+* Light & shadow data in CB<sup>[Persson15](#Persson15)</sup>
+  * PointLight: 3 &times; float4
+  * SpotLight: 4 &times; float4
+
+```c
+int3 tex_coord = int3(In.Position.xy, 0); // Screen-space position ...
+float depth = Depth.Load(tex_coord);      // ... and depth
+
+int slice = int(max(log2(depth * ZParam.x + ZParam.y) * scale + bias, 0));  // Look up cluster
+int4 cluster_coord = int4(tex_coord >> 6, slice, 0);  // TILE_SIZE = 64
+
+uint2 light_data = LightLookup.Load(cluster_coord); // Fetch light list
+uint light_index = light_data.x;                    // Extract parameters
+const uint point_light_count = light_data.y & 0xFFFF;
+const uint spot_light_count  = light_data.y >> 16;
+
+for (uint pl = 0; pl < point_light_counter; ++pl) // Point lights
+{
+  uint index = LightIndices[light_index++].x;
+
+  float3 LightPos = PointLights[index].xyz;
+  float3 Color = PointLights[index + 1].rgb;
+  // Compute pointlight here ...
+}
+
+for (uint sl = 0; sl < spot_light_count; ++sl)    // Spot lights
+{
+  uint index = LightIndices[light_index++].x;
+
+  float3 LightPos = SpotLights[index].xyz;
+  float3 Color = SpotLights[index + 1].rgb;
+  // Compute spotlight here ...
+}
+```
+<sup>[Persson15](#Persson15)</sup>
+
+* Memory optimization<sup>[Persson15](#Persson15)</sup>
+  * Naive approach: Allocate theoretical max
+    * All clusters address all lights
+      * Not likely
+    * Might be several megabytes
+    * Most never used
+  * Semi-conservative approach
+    * Construct massive worst-case scenario
+      * Multiply by 2, or what makes you comfortable
+      * Still likely only a small fraction of theoretical max
+  * Assert at runtime that you never go over allocation
+    * Warn if you ever get close
+
 #### Cluster Assignment
 
 * Goal: compute an integer cluster key for a given view sample from the information available in the G-Buffer<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
@@ -2773,6 +2874,73 @@ Granite:
 Shadow of the Tomb Raider:<sup>[Moradin19](#Moradin19)</sup>
 * Light shapes are approximated with an icosahedron
 * All frustums used for cone lights are just boxes scaled differently on both ends
+
+Avalanche Studios:<sup>[Persson15](#Persson15)</sup>
+* Want to minimize false positives
+* Must be conservative
+  * But still tight
+  * Preferably exact
+    * But not too expensive
+    * Surprisingly hard!
+* 99% frustum culling code useless
+  * Made for view-frustum culling
+    * Large frustum vs. small sphere
+    * We need small frustum vs. large sphere
+  * Sphere vs. six planes won't do
+* Pointlight Culling:
+  * Iterative sphere refinement
+    * Loop over z, reduce sphere
+    * Loop over y, reduce sphere
+    * Loop over x, test against sphere
+    * Culls better than AABB
+      * Similar cost
+      * Typically culling 20-30%
+
+```c
+for (int z = z0; z <= z1; ++z)
+{
+  float4 z_light = light;
+  if (z != center_z)
+  {
+    const ZPlane& plane = (z < center_z) ? z_planes[z + 1] : -z_planes[z];
+    z_light = project_to_plane(z_light, plane);
+  }
+
+  for (int y = y0; y < y1; ++y)
+  {
+    float3 y_light = z_light;
+
+    if (y != center_y)
+    {
+      const YPlane& plane = (y < center_y) ? y_planes[y + 1] : -y_planes[y];
+      y_light = project_to_plane(y_light, plane);
+    }
+
+    int x = x0;
+    do
+    {
+      ++x;
+    } while (x < x1 && GetDistance(x_planes[x], y_light_pos) >= y_light_radius);
+
+    int xs = x1;
+    do
+    {
+      --xs;
+    } while (xs >= x && -GetDistance(x_planes[xs], y_light_pos) >=- y_light_radius);
+
+    for (--x; x <= xs; ++x)
+    {
+      light_lists.AddPointLight(base_cluster + x, light_index);
+    }
+  }
+}
+```
+
+* Spotlight Culling:
+  * Iterative plane narrowing
+    * Find sphere cluster bounds
+    * In each six directions, do plane-cone test and shrink
+  * Cone vs. bounding-sphere cull remaining "cube"
 
 ##### Sparse vs Dense Cluster Grid<sup>[Olsson15](#Olsson15)</sup>
 
@@ -2850,17 +3018,34 @@ The paper uses 10 bits, 4 bits for the actually depth data, and 6 bits for the o
 To the cluster ke we attach an additional 10 bits of meta-data, which identifies the sample's original position relative to its tile. We perfrom a tile-local sort of the cluster keys and the associated meta-data. The sort only considers the up-to 16 bits of the cluster key; the meta-data is used as a link back to the original sample after sorting. In each tile, we count the number of unique cluster keys. Using a prefix operation over the counts from each tile, we find the total number of unique cluster keys and assign each cluster a unique ID in the range [0...numClusters). We write the unique ID back to each pixel that is a member of the cluster. The unique ID also serves as an offset in
 memory to where the cluster’s data is stored.
 
-#### Conservative Rasterization<sup>[OrtegrenPersson16](#OrtegrenPersson16)</sup>
+#### Shadows
 
-* If any part of a primitive overlaps a pixel, that pixel is considered covered and is then rasterized
+* Needs all shadow buffers upfront<sup>[Persson15](#Persson15)</sup>
+  * One large atlas
+    * Variable size buffers
+    * Dynamically adjustable resolution
+* Lights are cheap, shadow maps are not<sup>[Persson15](#Persson15)</sup>
+  * Still need to be conservative about shadow casters
+* Decouple light and shadow buffers<sup>[Persson15](#Persson15)</sup>
+  * Similar lights can share shadow buffers
+  * Userful for car lights etc.
 
-Algorithm:
+#### Conservative Rasterization
+
+* If any part of a primitive overlaps a pixel, that pixel is considered covered and is then rasterized<sup>[OrtegrenPersson16](#OrtegrenPersson16)</sup>
+
+Algorithm:<sup>[OrtegrenPersson16](#OrtegrenPersson16)</sup>
 * For each light type:
   1. Shell pass
      * Find min / max depths in every tile for every light 
+     * Conservative Rasterization<sup>[Persson15](#Persson15)</sup>
   2. Fill pass 
      * Use the min / max depths and fill indices into the light linked list 
+     * Compute shader<sup>[Persson15](#Persson15)</sup>
   * When all light types have been processed, light assignment is complete, and the light linked list can be used when shading geometry
+* Lights as meshes<sup>[Persson15](#Persson15)</sup>
+  * Typically very low-res
+  * Can be LODed
 
 Light Shape Representation:
 * Meshes are created as unit shapes, where vertices are constrained to -1 to 1 in the x-, y-, and z-directions
@@ -2874,14 +3059,35 @@ Light Shape Representation:
   * All RTs have the same size and format and are set up in a `Texture2DArray` for each light type
   * Sizes of the RTs are the same as the x- and y-dimensions of the cluster structure (*tile dimension*)
 * Set `D3D12_CONSERVATIVE_RASTERIZATION_MODE_ON` flag when creating a PSO.
+* Vertex Shader
+  * Each light type has its own custom vertex shader for translating, rotating, and scaling the light mesh to fit the actual light
+  * `SV_InstanceID` is used to extract the position, scale, and other properties to transform each vertex to the correct location in world space
+  * Sent to GS containing the view-space position and its light ID
+  * Unit mesh<sup>[Persson15](#Persson15)</sup>
+  * One draw-call per light type<sup>[Persson15](#Persson15)</sup>
+* Geometry Shader
+  * Assigns array ID<sup>[Persson15](#Persson15)</sup>
+    * Can be done in VS now though
+* Pixel Shader
+  * Compute exact depth range<sup>[Persson15](#Persson15)</sup>
+* Texture Array, e.g. 24 &times; 16 &times; N, R8G8 format<sup>[Persson15](#Persson15)</sup>
+* Conservative Rasterization<sup>[Persson15](#Persson15)</sup>
+  * Touch all relevant tiles
+* Compute exact depth range within pixel<sup>[Persson15](#Persson15)</sup>
+  * Triangle fully covers pixel
+    * Compute min & max from depth gradient
+  * Pixel fully covers triangle
+    * Use min & max from vertices
+  * Partial coverage
+    * Compute min & max at intersections
+* MIN blending resolves overlap
+  * Output 1-G to G to accomplish MINMAX
 
-Vertex Shader:
-* Each light type has its own custom vertex shader for translating, rotating, and scaling the light mesh to fit the actual light
-* `SV_InstanceID` is used to extract the position, scale, and other properties to transform each vertex to the correct location in world space
-* Sent to GS containing the view-space position and its light ID
+##### Fill Pass
 
-Geometry Shader:
-* 
+* Compute shader<sup>[Persson15](#Persson15)</sup>
+  * 1 thread per tile per light
+  * Light linked-list
 
 ##### Source Code Analysis
 
@@ -2899,7 +3105,37 @@ Root Signature:
   * VS: `LAPointLight.vertex`
   * GS: `LA.geometry`
   * PS: `LAfront.pixel`
-* 
+
+#### Future Work
+
+* Clustering strategies<sup>[Persson15](#Persson15)</sup>
+  * Screen-space tiles, depth vs. distance
+  * View-space cascades
+  * World space
+    * Allows light evaluation outside of view-frustum (reflections etc.)
+  * Dynamic adjustments?
+* Shadows
+  * Culling clusters based on max-z in shadow buffer?
+* Light assignment
+  * Asynchronous compute
+
+#### Alternative Implementations
+
+* Alternative clustering scheme
+  * World-space, fixed grid clustering scheme<sup>[Persson15](#Persson15)</sup>
+* Alternative light list<sup>[Persson15](#Persson15)</sup>
+  * Bitfield of lights
+    * Single fetch
+    * Constant and low memory requirements
+  * Suitable with low to moderate light counts
+* Clustered lightmapping?<sup>[Persson15](#Persson15)</sup>
+  * LightMap stores light bitfield per texel
+  * Shadow fetched for enabled lights
+    * Dead space optimization?
+* Limited dynamic lighting support<sup>[Persson15](#Persson15)</sup>
+  * Turn lights on/off
+  * Vary light color, intensity, falloff
+  * Reduce radius
 
 ### Per-Pixel Linked List<sup>[Bezrati14](#Bezrati14)</sup>
 
@@ -3882,7 +4118,9 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 
 <a id="Bezrati15" href="https://www.taylorfrancis.com/chapters/edit/10.1201/b18805-16/1-real-time-lighting-via-light-linked-list-abdul-bezrati">Real-Time Lighting via Light Linked List</a>. [Abdul Bezrati](https://www.linkedin.com/in/abdulbezrati/), [Insomniac Games](https://insomniac.games/). [GPU Pro 6](http://gpupro.blogspot.com/2014/12/gpu-pro-6-table-of-contents.html).<br>
 <a id="OlssonBilleterSintorn15" href="https://efficientshading.com/2015/06/01/more-efficient-virtual-shadow-maps-for-many-lights/">More Efficient Virtual Shadow Maps for Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Markus Billeter](https://www.linkedin.com/in/markus-billeter-92b89a107/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Erik Sintorn](https://www.chalmers.se/en/staff/Pages/erik-sintorn.aspx), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [IEEE Transactions on Visualization and Computer Graphics](https://www.computer.org/csdl/journal/tg).<br>
-<a id="Olsson15" href="https://efficientshading.com/wp-content/uploads/s2015_introduction.pdf">Introduction to Real-Time Shading with Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html)
+<a id="Persson15" href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fefficientshading.com%2Fwp-content%2Fuploads%2Fs2015_practical.pptx&wdOrigin=BROWSELINK">Practical Clustered Shading</a>. [Emil Persson](http://www.humus.name/), [Avalanche Studios](https://avalanchestudios.com/) / [Elemental Games](https://elemental.games/). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html).<br>
+<a id="Pesce15" href="http://c0de517e.blogspot.com/2015/01/notes-on-g-buffer-normal-encodings.html">Notes on G-Buffer normal encodings</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
+<a id="Olsson15" href="https://efficientshading.com/wp-content/uploads/s2015_introduction.pdf">Introduction to Real-Time Shading with Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html).<br>
 <a id="Pettineo15" href="http://advances.realtimerendering.com/s2015/index.html#_REFLECTION_SYSTEM_IN">Rendering the Alternate History of The Order: 1886</a>. [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [SIGGRAPH 2015: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2015/).<br>
 <a id="Thomas15" href="https://www.gdcvault.com/browse/gdc-15/play/1021763">Advancements in Tiled-Based Compute Rendering</a>. [Gareth Thomas](https://www.linkedin.com/in/gareth-thomas-032654b/), [AMD](https://www.amd.com/en). [GDC 2015](https://www.gdcvault.com/free/gdc-15/).
 
