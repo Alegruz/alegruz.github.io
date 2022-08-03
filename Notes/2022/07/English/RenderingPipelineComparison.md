@@ -34,29 +34,567 @@
 
 ## Duration
 
-<sup>[KimBarrero11](#KimBarrero11)</sup>
+### Frame Duration
+
+![FrameDurationBarAll](/Images/DeferredShading/FrameDurationBarAll.png)
+
+![FrameDurationBarDeferred](/Images/DeferredShading/FrameDurationBarDeferred.png)
+
+![FrameDurationBarDeferredNoDefault](/Images/DeferredShading/FrameDurationBarDeferredNoDefault.png)
+
+![FrameDurationBarForward](/Images/DeferredShading/FrameDurationBarForward.png)
+
+![FrameDurationBarForwardNoDefault](/Images/DeferredShading/FrameDurationBarForwardNoDefault.png)
+
+### Light Phase Duration
+
+![LightPhaseDurationBarAll](/Images/DeferredShading/LightPhaseDurationBarAll.png)
+
+![LightPhaseDurationBarAllNoDefault](/Images/DeferredShading/LightPhaseDurationBarAllNoDefault.png)
+
+![LightPhaseDurationBarTiled](/Images/DeferredShading/LightPhaseDurationBarTiled.png)
+
+![LightPhaseDurationBarClustered](/Images/DeferredShading/LightPhaseDurationBarClustered.png)
+
+### Render Color Duration
+
+![RenderColorDurationBarAll](/Images/DeferredShading/RenderColorDurationBarAll.png)
+
+![RenderColorDurationBarDeferred](/Images/DeferredShading/RenderColorDurationBarDeferred.png)
+
+![RenderColorDurationBarDeferredNoDefault](/Images/DeferredShading/RenderColorDurationBarDeferredNoDefault.png)
+
+![RenderColorDurationBarForward](/Images/DeferredShading/RenderColorDurationBarForward.png)
+
+![RenderColorDurationBarForwardNoDefault](/Images/DeferredShading/RenderColorDurationBarForwardNoDefault.png)
+
+![RenderColorDurationBarTiled](/Images/DeferredShading/RenderColorDurationBarTiled.png)
+
+![RenderColorDurationBarTiledNoShading](/Images/DeferredShading/RenderColorDurationBarTiledNoShading.png)
+
+![RenderColorDurationBarClustered](/Images/DeferredShading/RenderColorDurationBarClustered.png)
+
+### Tile / Cluster Assignment Duration
+
+![TileClusterAssignmentDurationBarAll](/Images/DeferredShading/TileClusterAssignmentDurationBarAll.png)
+
+![TileClusterAssignmentDurationBarDeferred](/Images/DeferredShading/TileClusterAssignmentDurationBarDeferred.png)
+
+![TileClusterAssignmentDurationBarDeferredNoShading](/Images/DeferredShading/TileClusterAssignmentDurationBarDeferredNoShading.png)
+
+![TileClusterAssignmentDurationBarForward](/Images/DeferredShading/TileClusterAssignmentDurationBarForward.png)
+
+![TileClusterAssignmentDurationBarTiled](/Images/DeferredShading/TileClusterAssignmentDurationBarTiled.png)
+
+![TileClusterAssignmentDurationBarClustered](/Images/DeferredShading/TileClusterAssignmentDurationBarClustered.png)
+
+## Bandwidth
+
+### Frame
+
 <table>
     <thead>
         <tr>
-            <th rowspan="2">Pass</th>
-            <th colspan="5">Pipelines</th>
+            <th rowspan="3">Pipeline</th>
+            <th colspan="6">Frame</th>
+            <th colspan="6">Geometry Phase</th>
+            <th colspan="6">Lighting Phase</th>
+            <th colspan="6">Render Color</th>
+            <th colspan="6">Tile / Cluster Assignment</th>
         </tr>
         <tr>
-            <th>Forward+</th>
-            <th>Forward Clustered</th>
-            <th>Deferred Tiled Pixel Shader-Based</th>
-            <th>Deferred Tiled Compute-Based</th>
-            <th>Deferred Clustered</th>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+        </tr>
+        <tr>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td></td>
+            <td>Forward</td>
+            ; Frame
+            <td>16.333333</td>
+            <td>1</td>
+            <td>17.333333</td>
+            <td>17.666667</td>
+            <td>53.666667</td>
+            <td>13.666667</td>
+            ; Geometry Phase
+            <td colspan="6"> - </td>
+            ; Lighting Phase
+            <td colspan="6"> - </td>
+            ; Render Color
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0.666667</td>
+            <td>82.666667</td>
+            <td>3.333333</td>
+            ; Tile / Cluster Assignment
+            <td colspan="6"> - </td>
+        </tr>
+        <tr>
+            <td>Forward+</td>
+            ; Frame
+            <td>35.333333</td>
+            <td>2</td>
+            <td>37.333333</td>
+            <td>37.333333</td>
+            <td>24.333333</td>
+            <td>26.666667</td>
+            ; Geometry Phase
+            <td colspan="6"> - </td>
+            ; Lighting Phase
+            <td colspan="6"> - </td>
+            ; Render Color
+            <td>2</td>
+            <td>1</td>
+            <td>3</td>
+            <td>3.666667</td>
+            <td>89.333333</td>
+            <td>5</td>
+            ; Tile / Cluster Assignment
+            <td>1.333333</td>
+            <td>1</td>
+            <td>2.333333</td>
+            <td>3.333333</td>
+            <td>23.333333</td>
+            <td>12</td>
+        </tr>
+        <tr>
+            <td>Forward+ 2.5D Culling</td>
+            ; Frame
+            <td>35.666667</td>
+            <td>2</td>
+            <td>37.666667</td>
+            <td>37.666667</td>
+            <td>24.666667</td>
+            <td>26.666667</td>
+            ; Geometry Phase
+            <td colspan="6"> - </td>
+            ; Lighting Phase
+            <td colspan="6"> - </td>
+            ; Render Color
+            <td>2.333333</td>
+            <td>1</td>
+            <td>3.333333</td>
+            <td>4</td>
+            <td>92.666667</td>
+            <td>5.333333</td>
+            ; Tile / Cluster Assignment
+            <td>1.333333</td>
+            <td>1</td>
+            <td>2.333333</td>
+            <td>2.666667</td>
+            <td>26</td>
+            <td>11</td>
+        </tr>
+        <tr>
+            <td>Forward+ 2.5D, AABB-based Culling</td>
+            ; Frame
+            <td>38.666667</td>
+            <td>2</td>
+            <td>40.666667</td>
+            <td>41</td>
+            <td>18.666667</td>
+            <td>29</td>
+            ; Geometry Phase
+            <td colspan="6"> - </td>
+            ; Lighting Phase
+            <td colspan="6"> - </td>
+            ; Render Color
+            <td>3</td>
+            <td>2</td>
+            <td>5</td>
+            <td>5</td>
+            <td>91</td>
+            <td>7</td>
+            ; Tile / Cluster Assignment
+            <td>3.666667</td>
+            <td>2</td>
+            <td>5.666667</td>
+            <td>5.666667</td>
+            <td>41.666667</td>
+            <td>14</td>
+        </tr>
+        <tr>
+            <td>Forward Clustered</td>
+            ; Frame
+            <td>34</td>
+            <td>2</td>
+            <td>36</td>
+            <td>36.333333</td>
+            <td>23.333333</td>
+            <td>26</td>
+            ; Geometry Phase
+            <td colspan="6"> - </td>
+            ; Lighting Phase
+            <td colspan="6"> - </td>
+            ; Render Color
+            <td>2.666667</td>
+            <td>1</td>
+            <td>3.666667</td>
+            <td>4.666667</td>
+            <td>92.666667</td>
+            <td>6.333333</td>
+            ; Tile / Cluster Assignment
+            <td>0</td>
+            <td>4</td>
+            <td>4</td>
+            <td>5</td>
+            <td>43</td>
+            <td>18</td>
+        </tr>
+        <tr>
+            <td>Deferred</td>
+            ; Frame
+            <td>20</td>
+            <td>1</td>
+            <td>21</td>
+            <td>21</td>
+            <td>53</td>
+            <td>17</td>
+            ; Geometry Phase
+            <td>19.666667</td>
+            <td>21.333333</td>
+            <td>41</td>
+            <td>41.333333</td>
+            <td>59.666667</td>
+            <td>42.666667</td>
+            ; Lighting Phase
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>85</td>
+            <td>3.333333</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td colspan="6"> - </td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled</td>
+            ; Frame
+            <td>37</td>
+            <td>2</td>
+            <td>39</td>
+            <td>39</td>
+            <td>21</td>
+            <td>28</td>
+            ; Geometry Phase
+            <td>19.666667</td>
+            <td>21.666667</td>
+            <td>41.333333</td>
+            <td>42</td>
+            <td>60.333333</td>
+            <td>43</td>
+            ; Lighting Phase
+            <td>3</td>
+            <td>0</td>
+            <td>3</td>
+            <td>4</td>
+            <td>94.666667</td>
+            <td>4.666667</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>0</td>
+            <td>1</td>
+            <td>1</td>
+            <td>2</td>
+            <td>24</td>
+            <td>12</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D Culling</td>
+            ; Frame
+            <td>36.333333</td>
+            <td>2</td>
+            <td>38.333333</td>
+            <td>39.333333</td>
+            <td>20.333333</td>
+            <td>27.333333</td>
+            ; Geometry Phase
+            <td>19</td>
+            <td>21.666667</td>
+            <td>40.666667</td>
+            <td>41</td>
+            <td>60.333333</td>
+            <td>42.666667</td>
+            ; Lighting Phase
+            <td>3.333333</td>
+            <td>0</td>
+            <td>3.333333</td>
+            <td>4</td>
+            <td>94.333333</td>
+            <td>4.666667</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>0</td>
+            <td>1</td>
+            <td>1</td>
+            <td>2</td>
+            <td>26</td>
+            <td>11</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D, AABB-based Culling</td>
+            ; Frame
+            <td>39</td>
+            <td>2</td>
+            <td>41</td>
+            <td>41.666667</td>
+            <td>15.666667</td>
+            <td>29.666667</td>
+            ; Geometry Phase
+            <td>18.333333</td>
+            <td>21</td>
+            <td>39.333333</td>
+            <td>39.333333</td>
+            <td>58.666667</td>
+            <td>41.333333</td>
+            ; Lighting Phase
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>5</td>
+            <td>94.666667</td>
+            <td>5.333333</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>3</td>
+            <td>43</td>
+            <td>14</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE)</td>
+            ; Frame
+            <td>36.666667</td>
+            <td>2</td>
+            <td>38.666667</td>
+            <td>39</td>
+            <td>21</td>
+            <td>27.666667</td>
+            ; Geometry Phase
+            <td>18.666667</td>
+            <td>21.666667</td>
+            <td>40.333333</td>
+            <td>41</td>
+            <td>60.333333</td>
+            <td>42.666667</td>
+            ; Lighting Phase
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td>3</td>
+            <td>95.666667</td>
+            <td>4</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td>3</td>
+            <td>95.666667</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D Culling</td>
+            ; Frame
+            <td>36.333333</td>
+            <td>2</td>
+            <td>38.333333</td>
+            <td>39.333333</td>
+            <td>21.333333</td>
+            <td>27.333333</td>
+            ; Geometry Phase
+            <td>19</td>
+            <td>21.666667</td>
+            <td>40.666667</td>
+            <td>41.333333</td>
+            <td>60.333333</td>
+            <td>42.666667</td>
+            ; Lighting Phase
+            <td>2.333333</td>
+            <td>0</td>
+            <td>2.333333</td>
+            <td>3.333333</td>
+            <td>94.333333</td>
+            <td>4</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>2.333333</td>
+            <td>0</td>
+            <td>2.333333</td>
+            <td>3.333333</td>
+            <td>94.333333</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D, AABB-based Culling</td>
+            ; Frame
+            <td>39.666667</td>
+            <td>2</td>
+            <td>41.666667</td>
+            <td>42</td>
+            <td>16</td>
+            <td>29.666667</td>
+            ; Geometry Phase
+            <td>18.666667</td>
+            <td>21.666667</td>
+            <td>40.333333</td>
+            <td>41</td>
+            <td>60.666667</td>
+            <td>43</td>
+            ; Lighting Phase
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>5</td>
+            <td>93.333333</td>
+            <td>5</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>5</td>
+            <td>93.333333</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (Intel)</td>
+            ; Frame
+            <td>36.666667</td>
+            <td>2</td>
+            <td>38.666667</td>
+            <td>39.333333</td>
+            <td>21.333333</td>
+            <td>27.666667</td>
+            ; Geometry Phase
+            <td>18</td>
+            <td>21</td>
+            <td>39</td>
+            <td>39.666667</td>
+            <td>58.666667</td>
+            <td>41.666667</td>
+            ; Lighting Phase
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td>3</td>
+            <td>97</td>
+            <td>4</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td>3</td>
+            <td>97</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>Deferred Clustered</td>
+            ; Frame
+            <td>36</td>
+            <td>2</td>
+            <td>38</td>
+            <td>38.666667</td>
+            <td>20.666667</td>
+            <td>28</td>
+            ; Geometry Phase
+            <td>18</td>
+            <td>21</td>
+            <td>39</td>
+            <td>39.666667</td>
+            <td>58.666667</td>
+            <td>41.666667</td>
+            ; Lighting Phase
+            <td>3</td>
+            <td>0</td>
+            <td>3</td>
+            <td>4</td>
+            <td>97</td>
+            <td>5</td>
+            ; Render Color
+            <td colspan="6"> - </td>
+            ; Tile / Cluster Assignment
+            <td>0.333333</td>
+            <td>4</td>
+            <td>4.333333</td>
+            <td>5</td>
+            <td>42.333333</td>
+            <td>18</td>
         </tr>
     </tbody>
 </table>
 
-## Bandwidth
+### Geometry Phase
+
+### Light Phase
+
+### Render Color
+
+### Tile / Cluster Assignment
 
 ## Shadow Maps
 
@@ -64,21 +602,75 @@
 
 <sup>[Lauritzen10](#Lauritzen10)</sup>
 
-![LightScalability](/Images/DeferredShading/LightScalability.png)
+### Frame Duration
 
-![LightScalabilityTiled](/Images/DeferredShading/LightScalabilityTiled.png)
+![FrameDurationAll](/Images/DeferredShading/FrameDurationAll.png)
 
-![LightScalabilityTiledCulled](/Images/DeferredShading/LightScalabilityTiledCulled.png)
+![FrameDurationDeferred](/Images/DeferredShading/FrameDurationDeferred.png)
 
-![LightScalabilityClustered](/Images/DeferredShading/LightScalabilityClustered.png)
+![FrameDurationDeferredNoDefault](/Images/DeferredShading/FrameDurationDeferredNoDefault.png)
 
-![LightScalabilityShadow](/Images/DeferredShading/LightScalabilityShadow.png)
+![FrameDurationForward](/Images/DeferredShading/FrameDurationForward.png)
 
-![LightScalabilityTiledShadow](/Images/DeferredShading/LightScalabilityTiledShadow.png)
+![FrameDurationForwardNoDefault](/Images/DeferredShading/FrameDurationForwardNoDefault.png)
 
-![LightScalabilityTiledCulledShadow](/Images/DeferredShading/LightScalabilityTiledCulledShadow.png)
+![FrameDurationTiled](/Images/DeferredShading/FrameDurationTiled.png)
 
-![LightScalabilityClusteredShadow](/Images/DeferredShading/LightScalabilityClusteredShadow.png)
+![FrameDurationTiled2_5D](/Images/DeferredShading/FrameDurationTiled2_5D.png)
+
+![FrameDurationTiled2_5DAABB](/Images/DeferredShading/FrameDurationTiled2_5DAABB.png)
+
+![FrameDurationClustered](/Images/DeferredShading/FrameDurationClustered.png)
+
+### Light Phase Duration
+
+![LightPhaseDurationDeferred](/Images/DeferredShading/LightPhaseDurationDeferred.png)
+
+![LightPhaseDurationDeferredNoDefault](/Images/DeferredShading/LightPhaseDurationDeferredNoDefault.png)
+
+![LightPhaseDurationTiled](/Images/DeferredShading/LightPhaseDurationTiled.png)
+
+![LightPhaseDurationTiled2_5D](/Images/DeferredShading/LightPhaseDurationTiled2_5D.png)
+
+![LightPhaseDurationTiled2_5DAABB](/Images/DeferredShading/LightPhaseDurationTiled2_5DAABB.png)
+
+![LightPhaseDurationClustered](/Images/DeferredShading/LightPhaseDurationClustered.png)
+
+### Render Color Duration
+
+![RenderColorDurationAll](/Images/DeferredShading/RenderColorDurationAll.png)
+
+![RenderColorDurationDeferred](/Images/DeferredShading/RenderColorDurationDeferred.png)
+
+![RenderColorDurationDeferredNoDefault](/Images/DeferredShading/RenderColorDurationDeferredNoDefault.png)
+
+![RenderColorDurationForward](/Images/DeferredShading/RenderColorDurationForward.png)
+
+![RenderColorDurationForwardNoDefault](/Images/DeferredShading/RenderColorDurationForwardNoDefault.png)
+
+![RenderColorDurationTiled](/Images/DeferredShading/RenderColorDurationTiled.png)
+
+![RenderColorDurationTiled2_5D](/Images/DeferredShading/RenderColorDurationTiled2_5D.png)
+
+![RenderColorDurationTiled2_5DAABB](/Images/DeferredShading/RenderColorDurationTiled2_5DAABB.png)
+
+![RenderColorDurationClustered](/Images/DeferredShading/RenderColorDurationClustered.png)
+
+### Tile / Cluster Assignment Duration
+
+![TileClusterAssignmentDurationAll](/Images/DeferredShading/TileClusterAssignmentDurationAll.png)
+
+![TileClusterAssignmentDurationDeferred](/Images/DeferredShading/TileClusterAssignmentDurationDeferred.png)
+
+![TileClusterAssignmentDurationForward](/Images/DeferredShading/TileClusterAssignmentDurationForward.png)
+
+![TileClusterAssignmentDurationTiled](/Images/DeferredShading/TileClusterAssignmentDurationTiled.png)
+
+![TileClusterAssignmentDurationTiled2_5D](/Images/DeferredShading/TileClusterAssignmentDurationTiled2_5D.png)
+
+![TileClusterAssignmentDurationTiled2_5DAABB](/Images/DeferredShading/TileClusterAssignmentDurationTiled2_5DAABB.png)
+
+![TileClusterAssignmentDurationClustered](/Images/DeferredShading/TileClusterAssignmentDurationClustered.png)
 
 ## GBuffer: Fat Buffer vs Thin Buffer<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
