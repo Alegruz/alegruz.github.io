@@ -97,58 +97,14 @@
         <tr>
             <th rowspan="3">Pipeline</th>
             <th colspan="6">Frame</th>
-            <th colspan="6">Geometry Phase</th>
-            <th colspan="6">Lighting Phase</th>
-            <th colspan="6">Render Color</th>
-            <th colspan="6">Tile / Cluster Assignment</th>
         </tr>
         <tr>
             <th colspan="3">DRAM Read/Write Utilization</th>
             <th>DRAM Activity</th>
             <th>L1 Cache</th>
             <th>L2 Cache</th>
-            <th colspan="3">DRAM Read/Write Utilization</th>
-            <th>DRAM Activity</th>
-            <th>L1 Cache</th>
-            <th>L2 Cache</th>
-            <th colspan="3">DRAM Read/Write Utilization</th>
-            <th>DRAM Activity</th>
-            <th>L1 Cache</th>
-            <th>L2 Cache</th>
-            <th colspan="3">DRAM Read/Write Utilization</th>
-            <th>DRAM Activity</th>
-            <th>L1 Cache</th>
-            <th>L2 Cache</th>
-            <th colspan="3">DRAM Read/Write Utilization</th>
-            <th>DRAM Activity</th>
-            <th>L1 Cache</th>
-            <th>L2 Cache</th>
         </tr>
         <tr>
-            <th>Percentage utilization of DRAM reads</th>
-            <th>Percentage utilization of DRAM writes</th>
-            <th>Total DRAM Read/Write Utilization</th>
-            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
-            <th>Read/write utilization</th>
-            <th>Read/write utilization</th>
-            <th>Percentage utilization of DRAM reads</th>
-            <th>Percentage utilization of DRAM writes</th>
-            <th>Total DRAM Read/Write Utilization</th>
-            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
-            <th>Read/write utilization</th>
-            <th>Read/write utilization</th>
-            <th>Percentage utilization of DRAM reads</th>
-            <th>Percentage utilization of DRAM writes</th>
-            <th>Total DRAM Read/Write Utilization</th>
-            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
-            <th>Read/write utilization</th>
-            <th>Read/write utilization</th>
-            <th>Percentage utilization of DRAM reads</th>
-            <th>Percentage utilization of DRAM writes</th>
-            <th>Total DRAM Read/Write Utilization</th>
-            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
-            <th>Read/write utilization</th>
-            <th>Read/write utilization</th>
             <th>Percentage utilization of DRAM reads</th>
             <th>Percentage utilization of DRAM writes</th>
             <th>Total DRAM Read/Write Utilization</th>
@@ -160,292 +116,299 @@
     <tbody>
         <tr>
             <td>Forward</td>
-            ; Frame
             <td>16.333333</td>
             <td>1</td>
             <td>17.333333</td>
             <td>17.666667</td>
             <td>53.666667</td>
             <td>13.666667</td>
-            ; Geometry Phase
-            <td colspan="6"> - </td>
-            ; Lighting Phase
-            <td colspan="6"> - </td>
-            ; Render Color
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0.666667</td>
-            <td>82.666667</td>
-            <td>3.333333</td>
-            ; Tile / Cluster Assignment
-            <td colspan="6"> - </td>
         </tr>
         <tr>
             <td>Forward+</td>
-            ; Frame
             <td>35.333333</td>
             <td>2</td>
             <td>37.333333</td>
             <td>37.333333</td>
             <td>24.333333</td>
             <td>26.666667</td>
-            ; Geometry Phase
-            <td colspan="6"> - </td>
-            ; Lighting Phase
-            <td colspan="6"> - </td>
-            ; Render Color
-            <td>2</td>
-            <td>1</td>
-            <td>3</td>
-            <td>3.666667</td>
-            <td>89.333333</td>
-            <td>5</td>
-            ; Tile / Cluster Assignment
-            <td>1.333333</td>
-            <td>1</td>
-            <td>2.333333</td>
-            <td>3.333333</td>
-            <td>23.333333</td>
-            <td>12</td>
         </tr>
         <tr>
             <td>Forward+ 2.5D Culling</td>
-            ; Frame
             <td>35.666667</td>
             <td>2</td>
             <td>37.666667</td>
             <td>37.666667</td>
             <td>24.666667</td>
             <td>26.666667</td>
-            ; Geometry Phase
-            <td colspan="6"> - </td>
-            ; Lighting Phase
-            <td colspan="6"> - </td>
-            ; Render Color
-            <td>2.333333</td>
-            <td>1</td>
-            <td>3.333333</td>
-            <td>4</td>
-            <td>92.666667</td>
-            <td>5.333333</td>
-            ; Tile / Cluster Assignment
-            <td>1.333333</td>
-            <td>1</td>
-            <td>2.333333</td>
-            <td>2.666667</td>
-            <td>26</td>
-            <td>11</td>
         </tr>
         <tr>
             <td>Forward+ 2.5D, AABB-based Culling</td>
-            ; Frame
             <td>38.666667</td>
             <td>2</td>
             <td>40.666667</td>
             <td>41</td>
             <td>18.666667</td>
             <td>29</td>
-            ; Geometry Phase
-            <td colspan="6"> - </td>
-            ; Lighting Phase
-            <td colspan="6"> - </td>
-            ; Render Color
-            <td>3</td>
-            <td>2</td>
-            <td>5</td>
-            <td>5</td>
-            <td>91</td>
-            <td>7</td>
-            ; Tile / Cluster Assignment
-            <td>3.666667</td>
-            <td>2</td>
-            <td>5.666667</td>
-            <td>5.666667</td>
-            <td>41.666667</td>
-            <td>14</td>
         </tr>
         <tr>
             <td>Forward Clustered</td>
-            ; Frame
             <td>34</td>
             <td>2</td>
             <td>36</td>
             <td>36.333333</td>
             <td>23.333333</td>
             <td>26</td>
-            ; Geometry Phase
-            <td colspan="6"> - </td>
-            ; Lighting Phase
-            <td colspan="6"> - </td>
-            ; Render Color
-            <td>2.666667</td>
-            <td>1</td>
-            <td>3.666667</td>
-            <td>4.666667</td>
-            <td>92.666667</td>
-            <td>6.333333</td>
-            ; Tile / Cluster Assignment
-            <td>0</td>
-            <td>4</td>
-            <td>4</td>
-            <td>5</td>
-            <td>43</td>
-            <td>18</td>
         </tr>
         <tr>
             <td>Deferred</td>
-            ; Frame
             <td>20</td>
             <td>1</td>
             <td>21</td>
             <td>21</td>
             <td>53</td>
             <td>17</td>
-            ; Geometry Phase
-            <td>19.666667</td>
-            <td>21.333333</td>
-            <td>41</td>
-            <td>41.333333</td>
-            <td>59.666667</td>
-            <td>42.666667</td>
-            ; Lighting Phase
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>85</td>
-            <td>3.333333</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
-            <td colspan="6"> - </td>
         </tr>
         <tr>
             <td>Deferred Tiled</td>
-            ; Frame
             <td>37</td>
             <td>2</td>
             <td>39</td>
             <td>39</td>
             <td>21</td>
             <td>28</td>
-            ; Geometry Phase
-            <td>19.666667</td>
-            <td>21.666667</td>
-            <td>41.333333</td>
-            <td>42</td>
-            <td>60.333333</td>
-            <td>43</td>
-            ; Lighting Phase
-            <td>3</td>
-            <td>0</td>
-            <td>3</td>
-            <td>4</td>
-            <td>94.666667</td>
-            <td>4.666667</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
-            <td>0</td>
-            <td>1</td>
-            <td>1</td>
-            <td>2</td>
-            <td>24</td>
-            <td>12</td>
         </tr>
         <tr>
             <td>Deferred Tiled 2.5D Culling</td>
-            ; Frame
             <td>36.333333</td>
             <td>2</td>
             <td>38.333333</td>
             <td>39.333333</td>
             <td>20.333333</td>
             <td>27.333333</td>
-            ; Geometry Phase
-            <td>19</td>
-            <td>21.666667</td>
-            <td>40.666667</td>
-            <td>41</td>
-            <td>60.333333</td>
-            <td>42.666667</td>
-            ; Lighting Phase
-            <td>3.333333</td>
-            <td>0</td>
-            <td>3.333333</td>
-            <td>4</td>
-            <td>94.333333</td>
-            <td>4.666667</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
-            <td>0</td>
-            <td>1</td>
-            <td>1</td>
-            <td>2</td>
-            <td>26</td>
-            <td>11</td>
         </tr>
         <tr>
             <td>Deferred Tiled 2.5D, AABB-based Culling</td>
-            ; Frame
             <td>39</td>
             <td>2</td>
             <td>41</td>
             <td>41.666667</td>
             <td>15.666667</td>
             <td>29.666667</td>
-            ; Geometry Phase
-            <td>18.333333</td>
-            <td>21</td>
-            <td>39.333333</td>
-            <td>39.333333</td>
-            <td>58.666667</td>
-            <td>41.333333</td>
-            ; Lighting Phase
-            <td>4</td>
-            <td>1</td>
-            <td>5</td>
-            <td>5</td>
-            <td>94.666667</td>
-            <td>5.333333</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>3</td>
-            <td>43</td>
-            <td>14</td>
         </tr>
         <tr>
             <td>Deferred Tiled (DICE)</td>
-            ; Frame
             <td>36.666667</td>
             <td>2</td>
             <td>38.666667</td>
             <td>39</td>
             <td>21</td>
             <td>27.666667</td>
-            ; Geometry Phase
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D Culling</td>
+            <td>36.333333</td>
+            <td>2</td>
+            <td>38.333333</td>
+            <td>39.333333</td>
+            <td>21.333333</td>
+            <td>27.333333</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D, AABB-based Culling</td>
+            <td>39.666667</td>
+            <td>2</td>
+            <td>41.666667</td>
+            <td>42</td>
+            <td>16</td>
+            <td>29.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (Intel)</td>
+            <td>36.666667</td>
+            <td>2</td>
+            <td>38.666667</td>
+            <td>39.333333</td>
+            <td>21.333333</td>
+            <td>27.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Clustered</td>
+            <td>36</td>
+            <td>2</td>
+            <td>38</td>
+            <td>38.666667</td>
+            <td>20.666667</td>
+            <td>28</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="3">Pipeline</th>
+            <th colspan="6">Geometry Phase</th>
+        </tr>
+        <tr>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+        </tr>
+        <tr>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Deferred</td>
+            <td>19.666667</td>
+            <td>21.333333</td>
+            <td>41</td>
+            <td>41.333333</td>
+            <td>59.666667</td>
+            <td>42.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled</td>
+            <td>19.666667</td>
+            <td>21.666667</td>
+            <td>41.333333</td>
+            <td>42</td>
+            <td>60.333333</td>
+            <td>43</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D Culling</td>
+            <td>19</td>
+            <td>21.666667</td>
+            <td>40.666667</td>
+            <td>41</td>
+            <td>60.333333</td>
+            <td>42.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D, AABB-based Culling</td>
+            <td>18.333333</td>
+            <td>21</td>
+            <td>39.333333</td>
+            <td>39.333333</td>
+            <td>58.666667</td>
+            <td>41.333333</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE)</td>
             <td>18.666667</td>
             <td>21.666667</td>
             <td>40.333333</td>
             <td>41</td>
             <td>60.333333</td>
             <td>42.666667</td>
-            ; Lighting Phase
-            <td>2</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D Culling</td>
+            <td>19</td>
+            <td>21.666667</td>
+            <td>40.666667</td>
+            <td>41.333333</td>
+            <td>60.333333</td>
+            <td>42.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D, AABB-based Culling</td>
+            <td>18.666667</td>
+            <td>21.666667</td>
+            <td>40.333333</td>
+            <td>41</td>
+            <td>60.666667</td>
+            <td>43</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (Intel)</td>
+            <td>18</td>
+            <td>21</td>
+            <td>39</td>
+            <td>39.666667</td>
+            <td>58.666667</td>
+            <td>41.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Clustered</td>
+            <td>18</td>
+            <td>21</td>
+            <td>39</td>
+            <td>39.666667</td>
+            <td>58.666667</td>
+            <td>41.666667</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="3">Pipeline</th>
+            <th colspan="6">Lighting Phase</th>
+        </tr>
+        <tr>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+        </tr>
+        <tr>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Deferred</td>
             <td>0</td>
-            <td>2</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>85</td>
+            <td>3.333333</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled</td>
             <td>3</td>
-            <td>95.666667</td>
+            <td>0</td>
+            <td>3</td>
             <td>4</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
+            <td>94.666667</td>
+            <td>4.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D Culling</td>
+            <td>3.333333</td>
+            <td>0</td>
+            <td>3.333333</td>
+            <td>4</td>
+            <td>94.333333</td>
+            <td>4.666667</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D, AABB-based Culling</td>
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>5</td>
+            <td>94.666667</td>
+            <td>5.333333</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE)</td>
             <td>2</td>
             <td>0</td>
             <td>2</td>
@@ -455,30 +418,6 @@
         </tr>
         <tr>
             <td>Deferred Tiled (DICE) 2.5D Culling</td>
-            ; Frame
-            <td>36.333333</td>
-            <td>2</td>
-            <td>38.333333</td>
-            <td>39.333333</td>
-            <td>21.333333</td>
-            <td>27.333333</td>
-            ; Geometry Phase
-            <td>19</td>
-            <td>21.666667</td>
-            <td>40.666667</td>
-            <td>41.333333</td>
-            <td>60.333333</td>
-            <td>42.666667</td>
-            ; Lighting Phase
-            <td>2.333333</td>
-            <td>0</td>
-            <td>2.333333</td>
-            <td>3.333333</td>
-            <td>94.333333</td>
-            <td>4</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
             <td>2.333333</td>
             <td>0</td>
             <td>2.333333</td>
@@ -488,30 +427,6 @@
         </tr>
         <tr>
             <td>Deferred Tiled (DICE) 2.5D, AABB-based Culling</td>
-            ; Frame
-            <td>39.666667</td>
-            <td>2</td>
-            <td>41.666667</td>
-            <td>42</td>
-            <td>16</td>
-            <td>29.666667</td>
-            ; Geometry Phase
-            <td>18.666667</td>
-            <td>21.666667</td>
-            <td>40.333333</td>
-            <td>41</td>
-            <td>60.666667</td>
-            <td>43</td>
-            ; Lighting Phase
-            <td>4</td>
-            <td>1</td>
-            <td>5</td>
-            <td>5</td>
-            <td>93.333333</td>
-            <td>5</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
             <td>4</td>
             <td>1</td>
             <td>5</td>
@@ -521,30 +436,6 @@
         </tr>
         <tr>
             <td>Deferred Tiled (Intel)</td>
-            ; Frame
-            <td>36.666667</td>
-            <td>2</td>
-            <td>38.666667</td>
-            <td>39.333333</td>
-            <td>21.333333</td>
-            <td>27.666667</td>
-            ; Geometry Phase
-            <td>18</td>
-            <td>21</td>
-            <td>39</td>
-            <td>39.666667</td>
-            <td>58.666667</td>
-            <td>41.666667</td>
-            ; Lighting Phase
-            <td>2</td>
-            <td>0</td>
-            <td>2</td>
-            <td>3</td>
-            <td>97</td>
-            <td>4</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
             <td>2</td>
             <td>0</td>
             <td>2</td>
@@ -554,30 +445,209 @@
         </tr>
         <tr>
             <td>Deferred Clustered</td>
-            ; Frame
-            <td>36</td>
-            <td>2</td>
-            <td>38</td>
-            <td>38.666667</td>
-            <td>20.666667</td>
-            <td>28</td>
-            ; Geometry Phase
-            <td>18</td>
-            <td>21</td>
-            <td>39</td>
-            <td>39.666667</td>
-            <td>58.666667</td>
-            <td>41.666667</td>
-            ; Lighting Phase
             <td>3</td>
             <td>0</td>
             <td>3</td>
             <td>4</td>
             <td>97</td>
             <td>5</td>
-            ; Render Color
-            <td colspan="6"> - </td>
-            ; Tile / Cluster Assignment
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="3">Pipeline</th>
+            <th colspan="6">Render Color</th>
+        </tr>
+        <tr>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+        </tr>
+        <tr>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Forward</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0.666667</td>
+            <td>82.666667</td>
+            <td>3.333333</td>
+        </tr>
+        <tr>
+            <td>Forward+</td>
+            <td>2</td>
+            <td>1</td>
+            <td>3</td>
+            <td>3.666667</td>
+            <td>89.333333</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>Forward+ 2.5D Culling</td>
+            <td>2.333333</td>
+            <td>1</td>
+            <td>3.333333</td>
+            <td>4</td>
+            <td>92.666667</td>
+            <td>5.333333</td>
+        </tr>
+        <tr>
+            <td>Forward+ 2.5D, AABB-based Culling</td>
+            <td>3</td>
+            <td>2</td>
+            <td>5</td>
+            <td>5</td>
+            <td>91</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>Forward Clustered</td>
+            <td>2.666667</td>
+            <td>1</td>
+            <td>3.666667</td>
+            <td>4.666667</td>
+            <td>92.666667</td>
+            <td>6.333333</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="3">Pipeline</th>
+            <th colspan="6">Tile / Cluster Assignment</th>
+        </tr>
+        <tr>
+            <th colspan="3">DRAM Read/Write Utilization</th>
+            <th>DRAM Activity</th>
+            <th>L1 Cache</th>
+            <th>L2 Cache</th>
+        </tr>
+        <tr>
+            <th>Percentage utilization of DRAM reads</th>
+            <th>Percentage utilization of DRAM writes</th>
+            <th>Total DRAM Read/Write Utilization</th>
+            <th>Percentage of memory cycles that a read or write request to DRAM was active</th>
+            <th>Read/write utilization</th>
+            <th>Read/write utilization</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Forward+</td>
+            <td>1.333333</td>
+            <td>1</td>
+            <td>2.333333</td>
+            <td>3.333333</td>
+            <td>23.333333</td>
+            <td>12</td>
+        </tr>
+        <tr>
+            <td>Forward+ 2.5D Culling</td>
+            <td>1.333333</td>
+            <td>1</td>
+            <td>2.333333</td>
+            <td>2.666667</td>
+            <td>26</td>
+            <td>11</td>
+        </tr>
+        <tr>
+            <td>Forward+ 2.5D, AABB-based Culling</td>
+            <td>3.666667</td>
+            <td>2</td>
+            <td>5.666667</td>
+            <td>5.666667</td>
+            <td>41.666667</td>
+            <td>14</td>
+        </tr>
+        <tr>
+            <td>Forward Clustered</td>
+            <td>0</td>
+            <td>4</td>
+            <td>4</td>
+            <td>5</td>
+            <td>43</td>
+            <td>18</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled</td>
+            <td>0</td>
+            <td>1</td>
+            <td>1</td>
+            <td>2</td>
+            <td>24</td>
+            <td>12</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D Culling</td>
+            <td>0</td>
+            <td>1</td>
+            <td>1</td>
+            <td>2</td>
+            <td>26</td>
+            <td>11</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled 2.5D, AABB-based Culling</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>3</td>
+            <td>43</td>
+            <td>14</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE)</td>
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td>3</td>
+            <td>95.666667</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D Culling</td>
+            <td>2.333333</td>
+            <td>0</td>
+            <td>2.333333</td>
+            <td>3.333333</td>
+            <td>94.333333</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (DICE) 2.5D, AABB-based Culling</td>
+            <td>4</td>
+            <td>1</td>
+            <td>5</td>
+            <td>5</td>
+            <td>93.333333</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>Deferred Tiled (Intel)</td>
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td>3</td>
+            <td>97</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>Deferred Clustered</td>
             <td>0.333333</td>
             <td>4</td>
             <td>4.333333</td>
