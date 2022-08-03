@@ -837,7 +837,7 @@ Advantages:
 
 ### Depth
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup><sup>[Pesce20](#Pesce20)</sup>
 
 Use depth data to reconstruct position data. Provided by the depth buffer.
 
@@ -871,7 +871,7 @@ viewSpacePos.z = gbuffer_depth;
 
 ### Stencil
 
-<sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Huseyin20](#Huseyin20)</sup>
+<sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[Huseyin20](#Huseyin20)</sup><sup>[Pesce20](#Pesce20)</sup>
 
 Format Suggestion:
 * 8bpp<sup>[Huseyin20](#Huseyin20)</sup>
@@ -883,10 +883,11 @@ Stencil to mark objects in lighting groups<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
 ### Normal
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Huseyin20](#Huseyin20)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Placeres06](#Placeres06)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Huseyin20](#Huseyin20)</sup><sup>[Pesce20](#Pesce20)</sup>
 
 Format Suggestions:
-* `R10G10B10A2_FLOAT`<sup>[Hargreaves04](#Hargreaves04)</sup>
+* `R10G10B10A2_FLOAT`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Pesce20](#Pesce20)</sup>
+  * 2-bit alpha reserved to mark hair<sup>[Pesce20](#Pesce20)</sup>
 * `U10V10W10A2`<sup>[Thibieroz04](#Thibieroz04)</sup>, `U8V8W8Q8`<sup>[Thibieroz04](#Thibieroz04)</sup>
 * 24bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * Too quantized
@@ -932,21 +933,42 @@ Crytek:
 * Output the adjusted normal into G-Buffer
 * However, not "blendable"<sup>[Pesce15](#Pesce15)</sup>
 
+#### Baseline: XYZ
+
+* Store all three components of the normal<sup>[Pranckevicius09](#Pranckevicius09)</sup>
+
+```c
+// Encoding
+half4 encode(half3 n, float3 view)
+{
+  return half4(n.xyz * 0.5 + 0.5, 0);
+}
+
+// Decoding
+half3 decode(half4 enc, float3 view)
+{
+  return enc.xyz * 2.0 - 1.0;
+}
+```
+
 ### Diffuse Albedo
 
-<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup>
+<sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup><sup>[Pesce20](#Pesce20)</sup>
 
 Format Suggestions:
-`R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br>
-`RGBA8_SRGB`<sup>[Huseyin20](#Huseyin20)</sup>
+* `R8G8B8A8`<sup>[Hargreaves04](#Hargreaves04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><br>
+* `RGBA8_SRGB`<sup>[Huseyin20](#Huseyin20)</sup>
+* `R10G10B10A2`<sup>[Pesce20](#Pesce20)</sup>
 
 ### Etc.
 
 * Specular / Exponent Map<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
-* Emissive<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
+* Emissive<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Pesce20](#Pesce20)</sup>
+  * `R8`<sup>[Pesce20](#Pesce20)</sup>
 * Light Map<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Lee09](#Lee09)</sup>
 * Material ID<sup>[Calver03](#Calver03)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup>
-* Roughness<sup>[Andersson09](#Andersson09)</sup><sup>[Moradin19](#Moradin19)</sup>
+* Roughness<sup>[Andersson09](#Andersson09)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Pesce20](#Pesce20)</sup>
+  * R8<sup>[Pesce20](#Pesce20)</sup>
 * AO<sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Moradin19](#Moradin19)</sup>
 * Glossiness<sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup>
   * 8bpp<sup>[Kaplanyan10](#Kaplanyan10)</sup>
@@ -963,12 +985,14 @@ Format Suggestions:
 * Specular Terms<sup>[Thibieroz11](#Thibieroz11)</sup>
 * Sky Mask<sup>[Moradin19](#Moradin19)</sup>
 * Vertex Normal<sup>[Moradin19](#Moradin19)</sup>
-* Metalness<sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup>
-  * `R8 UNORM`<sup>[Huseyin20](#Huseyin20)</sup>
+* Metalness<sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup><sup>[Pesce20](#Pesce20)</sup>
+  * `R8 UNORM`<sup>[Huseyin20](#Huseyin20) `R8`</sup><sup>[Pesce20](#Pesce20)</sup>
 * Reflectance (f0)<sup>[Huseyin20](#Huseyin20)</sup>
-  * `R8 UNORM`
+  * `R8 UNORM`<sup>[Huseyin20](#Huseyin20)</sup>
 * Smoothness<sup>[Huseyin20](#Huseyin20)</sup>
   * `R8 UNORM`
+* Translucency<sup>[Pesce20](#Pesce20)</sup>
+  * `R8`
 
 ## Examples
 
@@ -1289,21 +1313,21 @@ S.T.A.L.E.R: Clear Skies:
 <tr>
 <td>DS</td>
 <td colspan="3" style="background-color:rgba(127, 127, 127, 0.5); color:white">Depth D24</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">AmbID, Decals S8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">AmbID, Decals S8</td>
 </tr>
 <tr>
 <td>RT 0</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Gloss, Z Sign B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Translucency A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Translucency A8</td>
 </tr>
 <tr>
 <td>RT 1</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.Y R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.Cb, .Cr G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Specular Y B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Per-Project A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Per-Project A8</td>
 </tr>
 </tbody>
 </table>
@@ -1340,19 +1364,19 @@ S.T.A.L.E.R: Clear Skies:
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.R R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.G G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Diffuse Albedo.B B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">AO A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">AO A8</td>
 </tr>
 <tr>
 <td>RT 1</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X * (Biased Specular Smoothness) R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y * (Biased Specular Smoothness) G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z * (Biased Specular Smoothness) B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Material ID A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Material ID A8</td>
 </tr>
 <tr>
 <td>DS</td>
 <td colspan="3" style="background-color:rgba(127, 127, 127, 0.5); color:white">Depth D24</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Stencil S8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Stencil S8</td>
 </tr>
 </tbody>
 </table>
@@ -1375,21 +1399,21 @@ S.T.A.L.E.R: Clear Skies:
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.R R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.G G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Diffuse Albedo.B B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Shadow Refr A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Shadow Refr A8</td>
 </tr>
 <tr>
 <td>RT 1</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.&alpha; R16</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.&beta; G16</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Vertex Normal.&alpha; B16</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Vertex Normal.&beta; A16</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Vertex Normal.&beta; A16</td>
 </tr>
 <tr>
 <td>RT 2</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Sun Shadow R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">AO G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Spec Occl B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Gloss A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Gloss A8</td>
 </tr>
 <tr>
 <td>RT 3</td>
@@ -1399,13 +1423,14 @@ S.T.A.L.E.R: Clear Skies:
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Ambient Diffuse.R R16F</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Ambient Diffuse.G G16F</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Ambient Diffuse.B B16F</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Amb Atten A16F</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Amb Atten A16F</td>
 </tr>
+<tr>
 <td>RT 5</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Emissive.R R16F</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Emissive.G G16F</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Emissive.B B16F</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Alpha A16F</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Alpha A16F</td>
 </tr>
 <tr>
 <td>D32f</td>
@@ -1413,7 +1438,7 @@ S.T.A.L.E.R: Clear Skies:
 </tr>
 <tr>
 <td>S8</td>
-<td colspan="4" style="background-color:rgba(255, 255, 255, 0.5); color:white">Stencil S8</td>
+<td colspan="4" style="background-color:rgba(255, 255, 255, 0.5); color:black">Stencil S8</td>
 </tr>
 </tbody>
 </table>
@@ -1436,19 +1461,19 @@ S.T.A.L.E.R: Clear Skies:
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Normal.X R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Normal.Y G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Normal.Z B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Translucency Luminance / Prebaked AO Term A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Translucency Luminance / Prebaked AO Term A8</td>
 </tr>
 <tr>
 <td>RT 1</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Diffuse Albedo.R R8</td>
 <td style="background-color:rgba(0, 255, 0, 0.5); color:white">Diffuse Albedo.G G8</td>
 <td style="background-color:rgba(0, 0, 255, 0.5); color:white">Diffuse Albedo.B B8</td>
-<td style="background-color:rgba(255, 255, 255, 0.5); color:white">Subsurface Scatering Profile A8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Subsurface Scatering Profile A8</td>
 </tr>
 <tr>
 <td>RT 2</td>
 <td style="background-color:rgba(255, 0, 0, 0.5); color:white">Roughness R8</td>
-<td colspan="3"style="background-color:rgba(127, 255, 255, 0.5); color:white">Specular YCbCr / Transmittance CbCr GBA8</td>
+<td colspan="3"style="background-color:rgba(127, 255, 255, 0.5); color:black">Specular YCbCr / Transmittance CbCr GBA8</td>
 </tr>
 </tbody>
 </table>
@@ -1590,6 +1615,36 @@ S.T.A.L.E.R: Clear Skies:
 </tr>
 </tbody>
 </table>
+
+### Example 15: Digital Combat Simulator<sup>[Poulet21](#Poulet21)</sup>
+
+* Five `R8G8_UNORM` layers with MSAA activated
+  1. Normal using a basic encoding scheme
+     * Store X and Y components and reconstructing the Z
+  2. Albedo is stored across three channels encoded using YUV
+     * First channel of the second layer contains the Y
+  3. First and second channel stores the U and V
+  4. Roughness in the first channel, metalness in the second channel
+  5. Precomputed AO provided by texture in the first channel
+* Normal encoding example from SSAO:
+
+```asm
+ld_ms(texture2dmsarray)(float,float,float,float) r1.zw, r5.xyww, GBufferMap.zwxy, l(0)
+ld_ms(texture2dmsarray)(float,float,float,float) r0.w, r5.xyzw, GBufferMap.yzwx, l(0)
+mad r1.zw, r1.zzzw, l(0.0000, 0.0000, 2.0000, 2.0000), l(0.0000, 0.0000, -1.0000, -1.0000)
+add r5.x, r1.w, r1.z
+add r5.z, -r1.w, r1.z
+mul r5.xz, r5.xxzx, l(0.5000, 0.0000, 0.5000, 0.0000)
+add r1.z, abs(r5.z), abs(r5.x)
+add r5.y, r1.z, l(-1.0000)
+dp3 r1.z, r5.xyzx, r5.xyzx
+rsq r1.z, r1.z
+mul r5.xyz, r1.zzzz, r5.xyzx
+ge r0.w, l(0.5000), r0.w
+movc r5.w, r0.w, r5.y, -r5.y
+```
+
+
 
 # Overview
 
@@ -4025,6 +4080,18 @@ EA. SIGGRAPH. 2011.
 
 <sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup>
 
+## Deferred vs Forward+
+
+* Deferred<sup>[Pesce20](#Pesce20)</sup>
+  * Frostbite
+  * Guerrilla's Decima
+  * Call of Duty BO3/4/CW
+  * Red Dead Redemption 2
+  * Naughty Dog's Uncharted/TLOU
+* Forward+<sup>[Pesce20](#Pesce20)</sup>
+  * Doom
+  * Call of Duty: Modern Warfare / Warzone
+
 ---
 
 # References
@@ -4068,7 +4135,8 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="LobanchikovGruen09" href="https://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fdeveloper.amd.com%2Fwordpress%2Fmedia%2F2012%2F10%2F01GDC09AD3DDStalkerClearSky210309.ppt&wdOrigin=BROWSELINK">GSC Game World’s S.T.A.L.K.E.R: Clear Sky—A Showcase for Direct3D 10.0/1</a>. [Igor A. Lobanchikov](https://www.linkedin.com/in/igorlobanchikov/), [GSC Game World](https://www.gsc-game.com/) / Retired. [Holger Gruen](https://www.linkedin.com/in/holger-gruen-b456791/), [AMD](https://www.amd.com/en). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
 <a id="Swoboda09" href="https://slideplayer.com/slide/1511906/">Deferred Lighting and Post Processing on PLAYSTATION 3</a>. [Matt Swoboda](https://www.linkedin.com/in/matt-swoboda-b820872/), [Sony Computer Entertainment](https://www.sie.com/en/index.html) / [Notch](https://www.notch.one/). [GDC 2009](https://www.gdcvault.com/free/gdc-09/).<br>
 <a id="Thibieroz09" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1764]%20[ShaderX7%202009]%20Deferred%20Shading%20with%20Multisampling%20Anti-Aliasing%20in%20DirectX%2010.pdf">Deferred Shading with Multisampling Anti-Aliasing in DirectX 10</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [AMD](https://www.amd.com/en). [GDC 2009](https://www.gdcvault.com/free/gdc-09/). [ShaderX7](http://www.shaderx7.com/).<br>
-<a id="Trebilco09" href="https://github.com/dtrebilco/lightindexed-deferredrender/blob/master/LightIndexedDeferredLighting1.1.pdf">Light-Indexed Deferred Rendering</a>. [Damian Trebilco](https://www.linkedin.com/in/damian-trebilco-93a95213/), [THQ](https://www.thqnordic.com/) / [Situ Systems](https://situsystems.com/). [ShaderX7](http://www.shaderx7.com/).
+<a id="Trebilco09" href="https://github.com/dtrebilco/lightindexed-deferredrender/blob/master/LightIndexedDeferredLighting1.1.pdf">Light-Indexed Deferred Rendering</a>. [Damian Trebilco](https://www.linkedin.com/in/damian-trebilco-93a95213/), [THQ](https://www.thqnordic.com/) / [Situ Systems](https://situsystems.com/). [ShaderX7](http://www.shaderx7.com/).<br>
+<a id="Pranckevicius09" href="https://aras-p.info/texts/CompactNormalStorage.html">Compact Normal Storage for small G-Buffers</a>. [Aras Pranckevičius](https://aras-p.info/), [Unity Technologies](https://unity.com/) / Freelancer. [Blog](https://aras-p.info/).
 
 ## 2010
 
@@ -4143,12 +4211,14 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 
 <a id="Patry20" href="https://youtu.be/GOee6lcEbWg">Real-Time Samurai Cinema: Lighting, Atmosphere, and Tonemapping in Ghost of Tsushima</a>. [Jasmin Patry](https://www.glowybits.com/page/about/index.html), [Sucker Punch Productions](https://www.suckerpunch.com/). [SIGGRAPH 2021: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2021/).<br>
 <a id="Arntzen20" href="https://themaister.net/blog/2020/01/10/clustered-shading-evolution-in-granite/">Clustered Shading Evolution in Granite</a>. [Hans-Kristian Arntzen](https://themaister.net/), [Arntzen Software AS](https://arntzen-software.no/). [Maister's Graphics Adventures Blog](https://themaister.net/blog/).<br>
-<a id="Huseyin20" href="https://imgeself.github.io/posts/2020-06-19-graphics-study-rdr2/">Graphics Study: Red Dead Redemption 2</a>. Hüseyin, [Our Machinery](https://ourmachinery.com/). [imgeself Blog](https://imgeself.github.io/).
+<a id="Huseyin20" href="https://imgeself.github.io/posts/2020-06-19-graphics-study-rdr2/">Graphics Study: Red Dead Redemption 2</a>. [Hüseyin](https://twitter.com/imgeself), [Our Machinery](https://ourmachinery.com/). [imgeself Blog](https://imgeself.github.io/).
+<a id="Pesce20" href="http://c0de517e.blogspot.com/2020/12/hallucinations-re-rendering-of.html">Hallucinations re: the rendering of Cyberpunk 2077</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 
 ## 2021
 
 <a id="TheCodeCorsairJWE21" href="https://www.elopezr.com/the-rendering-of-jurassic-world-evolution/">The Rendering of Jurassic World: Evolution</a>. [The Code Corsair](https://www.elopezr.com/about/). [The Code Corsair Blog](https://www.elopezr.com/).<br>
 <a id="TheCodeCorsairMDE21" href="https://www.elopezr.com/the-rendering-of-mafia-definitive-edition/">The Rendering of Mafia: Definitive Edition</a>. [The Code Corsair](https://www.elopezr.com/about/). [The Code Corsair Blog](https://www.elopezr.com/).<br>
+<a id="Poulet21" href="https://blog.thomaspoulet.fr/dcs-frame/">Digital combat simulator: frame analysis</a>. [Thomas Poulet](https://blog.thomaspoulet.fr/), [Ubisoft Berlin](https://berlin.ubisoft.com/en/) / [Huawei](https://www.huawei.com/en/). [Blog](https://blog.thomaspoulet.fr/).<br>
 
 ## People by Company
 
