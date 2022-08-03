@@ -243,6 +243,8 @@
     </tbody>
 </table>
 
+### Geometry Phase
+
 <table>
     <thead>
         <tr>
@@ -348,6 +350,8 @@
         </tr>
     </tbody>
 </table>
+
+### Light Phase
 
 <table>
     <thead>
@@ -455,6 +459,8 @@
     </tbody>
 </table>
 
+### Render Color
+
 <table>
     <thead>
         <tr>
@@ -524,6 +530,8 @@
         </tr>
     </tbody>
 </table>
+
+### Tile / Cluster Assignment
 
 <table>
     <thead>
@@ -658,13 +666,6 @@
     </tbody>
 </table>
 
-### Geometry Phase
-
-### Light Phase
-
-### Render Color
-
-### Tile / Cluster Assignment
 
 ## Shadow Maps
 
