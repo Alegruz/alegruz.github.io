@@ -951,6 +951,44 @@ half3 decode(half4 enc, float3 view)
 }
 ```
 
+#### Octahdral Normal Vectors<sup>[CigolleDonowEvangelakosMaraMcGuireMeyer14](#CigolleDonowEvangelakosMaraMcGuireMeyer14)</sup>
+
+Map the sphere to an octahedron, project down into the z = 0 plane, and the reflect the -z-hemisphere over the appropriate diagonal.
+
+```c
+// float3 to oct
+
+// returns ±1
+float2 signNotZero(float2 v)
+{
+  return float2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
+}
+
+// assume normalized input. output is on [-1, 1] for each component
+float2 float3ToOct(float2 v)
+{
+  // project the sphere onto the octahedron, and then onto the xy plane
+  float2 p = v.xy * (1.0 / (abs(v.x) + abs(v.y) + abs(v.z)));
+
+  // reflect the folds of the lower hemisphere over the diagonals
+  return (v.z <= 0.0) ? ((1.0 - abs(p.yx)) * signNotZero(p)) : p;
+}
+```
+
+```c
+// oct to float3
+float3 octToFloat3(float2 e)
+{
+  float3 v = float3(e.xy, 1.0 - abs(e.x) - abs(e.y));
+  if (v.z < 0)
+  {
+    v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
+  }
+
+  return normalize(v);
+}
+```
+
 ### Diffuse Albedo
 
 <sup>[Calver03](#Calver03)</sup><sup>[Hargreaves04](#Hargreaves04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[Thibieroz04](#Thibieroz04)</sup><sup>[Andersson09](#Andersson09)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Lee09](#Lee09)</sup><sup>[LobanchikovGruen09](#LobanchikovGruen09)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup><sup>[Moradin19](#Moradin19)</sup><sup>[Huseyin20](#Huseyin20)</sup><sup>[Pesce20](#Pesce20)</sup>
@@ -4180,7 +4218,8 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="NeubeltPettineo14" href="https://www.gdcvault.com/play/1020162/Crafting-a-Next-Gen-Material">Crafting a Next-Gen Material Pipeline for The Order: 1886</a>. [David Neubelt](https://www.linkedin.com/in/coderdave/), [Ready at Dawn](http://www.readyatdawn.com/). [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
 <a id="Pesce14" href="http://c0de517e.blogspot.com/2014/09/notes-on-real-time-renderers.html">Notes on Real-Time Renderers</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 <a id="Schulz14" href="https://www.gdcvault.com/play/1020432/Moving-to-the-Next-Generation">Moving to the Next Generation—The Rendering Technology of Ryse</a>. Nicolas Schulz, [Crytek](https://www.crytek.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
-<a id="Engel14" href="http://diaryofagraphicsprogrammer.blogspot.com/2014/03/compute-shader-optimizations-for-amd.html">Compute Shader Optimizations for AMD GPUs: Parallel Reduction</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [Diary of a Graphics Programmer](http://diaryofagraphicsprogrammer.blogspot.com/).
+<a id="Engel14" href="http://diaryofagraphicsprogrammer.blogspot.com/2014/03/compute-shader-optimizations-for-amd.html">Compute Shader Optimizations for AMD GPUs: Parallel Reduction</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [Diary of a Graphics Programmer](http://diaryofagraphicsprogrammer.blogspot.com/).<br>
+<a id="CigolleDonowEvangelakosMaraMcGuireMeyer14" href="https://jcgt.org/published/0003/02/01/">Survey of Efficient Representations for Independent Unit Vectors</a>. [Zina H. Cigolle](https://www.linkedin.com/in/zina-cigolle/), [Williams College](https://www.williams.edu/) / [Stripe](https://stripe.com/). [Sam Donow](https://www.linkedin.com/in/sam-donow-b242b844/), [Williams College](https://www.williams.edu/) / [Hudson River Trading](https://www.hudsonrivertrading.com/). [Daniel Evangelakos](https://www.linkedin.com/in/devangelakos/), [Williams College](https://www.williams.edu/) / [Olive](https://oliveai.com/). [Michael Mara](https://www.linkedin.com/in/michael-mara-54344272/), [Williams College](https://www.williams.edu/) / [Luminary Cloud](https://www.luminarycloud.com/#1). [Morgan McGuire](https://casual-effects.com/), [Williams College](https://www.williams.edu/) / [Roblox](https://www.roblox.com/). [Quirin Meyer](https://www.linkedin.com/in/quirinmeyer/), [Elektrobit](https://www.elektrobit.com/) / [Hochschule Coburg](https://www.coburg-university.de/about-us/departments/department-of-electrical-engineering-and-computer-science/prof-dr-quirin-meyer.html). [JCGT](https://jcgt.org/).
 
 ## 2015
 
