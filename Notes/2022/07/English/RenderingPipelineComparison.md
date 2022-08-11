@@ -748,6 +748,22 @@
 
 ### Normal Encoding<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
+#### Frame Duration
+
+![NormalCompressionFrameDurationNoDefault](/Images/DeferredShading/NormalCompressionFrameDurationNoDefault.png)
+
+#### Render Color Duration
+
+![NormalCompressionRenderColorDurationNoDefault](/Images/DeferredShading/NormalCompressionRenderColorDurationNoDefault.png)
+
+#### Geometry Phase Duration
+
+![NormalCompressionGeometryPhaseDurationNoDefault](/Images/DeferredShading/NormalCompressionGeometryPhaseDurationNoDefault.png)
+
+#### Lighting Phase Duration
+
+![NormalCompressionLightingPhaseDurationNoDefault](/Images/DeferredShading/NormalCompressionLightingPhaseDurationNoDefault.png)
+
 ## False Positive Rate
 
 # Forward+
@@ -1334,6 +1350,52 @@
     </tbody>
 </table>
 
+# Optimization
+
+1. Locate the bottleneck of the pipeline
+2. Optimize that stage
+
+Pipelines to optimize:
+
+1. Forward+
+2. Forward Clustered
+3. Deferred Tiled
+4. Deferred Clustered
+5. Deferred Thin G-Buffer Tiled
+6. Deferred Thin G-Buffer Clustered
+
+## Locating the Bottleneck
+
+* Finding bottlenecks
+  * Set up several tests where each test decreases the amount of work a particular stage performs
+    * If one of these test causes the frames per second the increase, the bottleneck stage has been found.
+
+### Multiplatform GPU High-Level Optimization Guidelines<sup>[SousaKasyanSchulz12](#SousaKasyanSchulz12)</sup>
+
+1. Generalize and always optimize for the worst case scenario
+   1. Discover the biggest bottlenecks and address them by tackling the biggest time consumer. This means avoiding partial optimizations.
+      * Ex) Crysis 1: If the camera was static, then motion blur was disabled. If the camera was moving fast, then motion blur was enabled. This kind of bad optimization strategy resulted in big performance peaks and an inconsistent frame rate. 
+   2. Once done, repeat *ad nauseam*!
+2. Don't repeat work or do unnecessary work. For example:
+   1. Don't down-sample full-screen color targets or depth targets multiple times for different postprocessing functinos
+   2. Minimize the number of memory transfers, render target clears, and any redundant full-screen passes
+   3. Such repeated or redundant work adds up very quickly
+      * Ex) A full-screen pass a 720 p costs ca. 0.25 ms on the Xbox 360 and ca. 0.4 ms on PS3. It is very easy to spend many milliseconds in a wasteful manner. 
+   4. Batch as much as possible in a single pass
+3. Take advantage of interframe coherency. Amortize costs across frames:
+   1. This can provide a significant gain if done carefully, talking performance peaks and multi-GPU systems into account
+   2. Distribute costs evenly
+      * Ex) If the HUD updates every nth frame, then every n + 1-th frame update some similar-costing render technique
+   3. For screen-space ambient occlusion(SSAO) and the like, the cost can be distributed across frames
+4. In the end, the key words for the most cases are: "share, share, share." Share as many computations and as much bandwidth as is reasonably possible in a single pass.
+
+### Multiplatform Optimization: Best Practice<sup>[SousaKasyanSchulz12](#SousaKasyanSchulz12)</sup>
+
+* Timers that showed where the GPU costs were located
+  * Shadows, lighting, post processes
+* Visualization tools
+  * Lighting, scene overdraw visualization
+
 ---
 
 # References
@@ -1344,6 +1406,7 @@
 <a id="Lauritzen10" href="https://www.intel.com/content/www/us/en/developer/articles/technical/deferred-rendering-for-current-and-future-rendering-pipelines.html">Deferred Rendering for Current and Future Rendering Pipelines</a>. [Andrew Lauritzen](https://dl.acm.org/profile/81310499387), [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). SIGGRAPH 2010: Beyond Programmable Shader Course.<br>
 <a id="KimBarrero11" href="https://blog.popekim.com/en/2011/11/15/slides-rendering-tech-of-space-marine.html">Rendering Tech of Space Marine</a>. [Pope Kim](https://blog.popekim.com/en/), [Relic Entertainment](https://www.relic.com/) / [POCU](https://pocu.academy/ko). [Daniel Barrero](https://www.linkedin.com/in/danielbarrero/), [Relic Entertainment](https://www.relic.com/). [KGC 2011](https://www.khronos.org/events/korea-games-conference-2011).<br>
 <a id="OlssonAssarsson11" href="https://efficientshading.com/2011/01/01/tiled-shading/">Tiled Shading</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx)  / [Epic Games](https://www.epicgames.com/site/en-US/home). [Ulf Assarsson](http://www.cse.chalmers.se/~uffe/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx). [Journal of Graphics, GPU, and Game Tools](https://www.tandfonline.com/doi/abs/10.1080/2151237X.2011.632611?tab=permissions&scroll=top).<br>
+<a id="SousaKasyanSchulz12" href="https://www.taylorfrancis.com/chapters/edit/10.1201/b11642-13/cryengine-3-three-years-work-review-tiago-sousa-nickolay-kasyan-nicolas-schulz">CryENGINE 3: Three Years of Work in Review</a>. [Tiago Sousa](https://www.linkedin.com/in/tsousa/), [Crytek](https://www.crytek.com/) / [id Software](https://www.idsoftware.com/). [Nickolay Kasyan](https://www.linkedin.com/in/nikolaskasyan/), [Crytek](https://www.crytek.com/) / [AMD](https://www.amd.com/en). Nicolas Schulz, [Crytek](https://www.crytek.com/). [GPU Pro 3](http://gpupro.blogspot.com/2012/11/gpu-pro-3-table-of-content.html?q=gpu+pro+3).
 
 ---
 

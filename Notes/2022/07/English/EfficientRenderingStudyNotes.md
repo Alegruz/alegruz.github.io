@@ -701,14 +701,14 @@ A: Combine conventional rendering techniques with the advantages of image space 
   * Lots of small lights ~ one big light<sup>[HargreavesHarris04](#HargreavesHarris04)</sup><sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
     * Forward can do it too!<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
   * Reduces CPU usage<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
-  * Lighting costs are independent of scene complexity<sup>[Koonce07](#Koonce07)</sup>, Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
+  * Lighting costs are independent of scene complexity<sup>[Koonce07](#Koonce07)</sup><sup>[Stewart15](#Stewart15)</sup>, Adding more layers of effects generally results in a linear, fixed cost per frame for additional full-screen post-processing passes regardless of the number of models on screen<sup>[FilionMcNaughton08](#FilionMcNaughton08)</sup><sup>[EngelShaderX709](#EngelShaderX709)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Kaplanyan10](#Kaplanyan10)</sup><sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>
   * No additional render passes on geometry for lighting, resulting in fewer draw calls and fewer state changes required to render the scene<sup>[Koonce07](#Koonce07)</sup><sup>[EngelSiggraph09](#EngelSiggraph09)</sup><sup>[Thibieroz11](#Thibieroz11)</sup>, Less draw calls, less shader permutations, one or few lighting shaders that can be hand-optimized well<sup>[Pesce14](#Pesce14)</sup><sup>[Schulz14](#Schulz14)</sup>
   * Material shaders do not perform lighting, freeing up instructions for additional geometry processing<sup>[Koonce07](#Koonce07)</sup>
   * Simpler shaders<sup>[Valient07](#Valient07)</sup>
   * More complex materials can be implemented<sup>[Lee09](#Lee09)</sup>
   * Not all buffers need to be updated with matching data, e.g., decal tricks
   * Faster lighting<sup>[KnightRitchieParrish11](#KnightRitchieParrish11)</sup>
-  * Decouples texturing from lighting<sup>[Pesce14](#Pesce14)</sup>
+  * Decouples texturing from lighting<sup>[Pesce14](#Pesce14)</sup><sup>[Stewart15](#Stewart15)</sup>
   * Potentially can be faster on complex shaders<sup>[Pesce14](#Pesce14)</sup>
   * Allows volumetric or multipass decals (and special effects) on the G-Buffer (without computing the lighting twice)<sup>[Pesce14](#Pesce14)</sup>
   * Allows full-screen material passes like analytic geometric specular antialiasing (pre-filtering), which really works only done on the G-Buffer<sup>[Pesce14](#Pesce14)</sup>
@@ -1682,7 +1682,52 @@ ge r0.w, l(0.5000), r0.w
 movc r5.w, r0.w, r5.y, -r5.y
 ```
 
+### Example 16: Unity<sup>[LagardeGolubev18](#LagardeGolubev18)</sup>
 
+<table>
+<thead>
+<tr>
+<td>MRTs</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">R</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">G</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">B</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">A</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT 0 (sRGB)</td>
+<td style="background-color:rgba(255, 0, 0, 0.5); color:white">BaseColor.R R8</td>
+<td style="background-color:rgba(0, 255, 0, 0.5); color:white">BaseColor.G G8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">BaseColor.B B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Specular Occlusion A8</td>
+</tr>
+<tr>
+<td>RT 1</td>
+<td colspan="3" style="background-color:rgba(127, 127, 127, 0.5); color:white">Normal.xy (Octahedral 12/12) RGB8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Perceptual Smoothness A8</td>
+</tr>
+<tr>
+<td>RT 2</td>
+<td colspan="3" style="background-color:rgba(127, 127, 127, 0.5); color:white">Material Data RGB8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">FeaturesMask(3) / Material Data A8</td>
+</tr>
+<tr>
+<td>RT 3</td>
+<td colspan="4" style="background-color:rgba(255, 255, 255, 0.5); color:black">Static diffuse lighting R11G11B10F</td>
+</tr>
+<tr>
+<td>RT 4 (Optional)</td>
+<td colspan="2" style="background-color:rgba(255, 255, 0, 0.5); color:white">Extra specular occlusion data RG8</td>
+<td style="background-color:rgba(0, 0, 255, 0.5); color:white">Ambient Occlusion B8</td>
+<td style="background-color:rgba(255, 255, 255, 0.5); color:black">Light Layering Mask</td>
+</tr>
+<tr>
+<td>RT 5 (Optional)</td>
+<td colspan="4" style="background-color:rgba(255, 255, 255, 0.5); color:white">4 Shadow Masks RGBA8</td>
+</tr>
+</tbody>
+</table>
 
 # Overview
 
@@ -1690,6 +1735,34 @@ movc r5.w, r0.w, r5.y, -r5.y
 * Render to a "fat" framebuffer format, using MRT to store data<sup>[Hargreaves04](#Hargreaves04)</sup>
   * Drawback of fat-format encoding is the reading speed<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
 * Apply lighting as a 2D postprocess, using these buffers as input<sup>[Hargreaves04](#Hargreaves04)</sup>
+
+## Example Passes
+
+### Example 1: Unity<sup>[LagardeGolubev18](#LagardeGolubev18)</sup>
+
+Opaque Material Render Pass
+
+1. Depth Prepass 
+2. GBuffer
+   * Tag stencil for regular lighting or split lighting 
+3. Render Shadow
+   * Async Light list generation + Light/Material classification
+   * Async SSAO (Use Normal buffer)
+   * Async SSR (Use Normal buffer) 
+4. Deferred directional cascade shadow
+   * (Use Normal buffer for normal shadow bias) 
+5. Tile deferred lighting
+   * Indirect dispatch for each shader variants
+     * Read stencil
+       * No lighting: skip forward material and sky
+       * Regular lighting: output lighting
+       * Split lighting: separate diffuse and specular
+6. Forward Opaque
+   * (Optional) Output BaseColor + Diffusion Profile
+   * (Optional) Output + Tag stencil for split lighting 
+7. SS Subsurface Scattering 
+   * Test stencil for split lighting
+   * Combine lighting 
 
 ## Geometry Phase
 
@@ -1881,6 +1954,44 @@ Red Dead Redemption 2:<sup>[Huseyin20](#Huseyin20)</sup>
   * Low-poly sphere shape for point light volumes
   * Octahderon like shape for spotlight volumes
   * Rendered back-to-front with additive blending
+
+Plus(+) Methods: Algorithm Steps:<sup>[Drobot17](#Drobot17)</sup>
+* List of rendering entities
+* Spatial acceleration structure with culled entity lists
+* Execution algorithm per sampling point
+  * Traverse acceleration structure
+  * Iterate over existing entities
+* Aka Tiled / Clustered Forward+ / Deferred+
+
+Lighting Optimizations:<sup>[LagardeGolubev18](#LagardeGolubev18)</sup>
+* Focus on removing false positives
+  * Ex: narrow shadow casting spot lights
+* False positives are more expensive in lighting pass
+  * Light culling execute async during shadow rendering
+    * List building work is absorbed by leveraging asynchronous compute
+  * Deferred lighting pass is not running async
+  * Final lighting shader has higher loop complexity and greater register pressure
+  * Move cost where it can be hidden
+  * High register pressure in lighting pass
+* Hierarchical approach:
+  1. Find screen-space AABB for each visible light
+  2. Big tile 64 &times; 64 prepass
+     * Coarse intersection test 
+  3. Build Tile or Cluster Light list
+     * Narrow intersection test
+     * Tile:
+       * Based on Fine Prune Tile Lighting (FPTL)
+       * Build FTPL light list for tile 16 &times; 16
+         * Fine pruning: test if any depth pixel is in volume
+         * Aggressive removal of false positives
+         * One light list per tile. Allows attribute to be read into scalar registers
+     * Cluster:
+       * 32 &times; 32 with 64 clusters
+       * Use geometric series for cluster position and size
+       * Half of cluster (32) consumes between near and max per tile depth
+         * Good resolution in visible range
+         * Permit queries behind max per tile depth
+           * Particles, volume, FX
 
 ### Bandwidth Problem<sup>[Olsson15](#Olsson15)</sup>
 
@@ -2167,8 +2278,8 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
     * No shadow map reuse<sup>[Olsson15](#Olsson15)</sup>
   * Complex light shader<sup>[Olsson15](#Olsson15)</sup>
   * View dependence<sup>[Olsson15](#Olsson15)</sup>
-    * 2D light assignment
-    * Depth discontinuities
+    * 2D light assignment<sup>[Olsson15](#Olsson15)</sup>
+    * Depth discontinuities<sup>[Olsson15](#Olsson15)</sup><sup>[Drobot17](#Drobot17)</sup>
   * ~~Requires DX 11 HW<sup>[Andersson09](#Andersson09)</sup>~~
     * ~~CS 4.0 / 4.1 difficult due to atomics & scattered `groupshared` writes~~
   * Culling overhead for small light sources<sup>[Andersson09](#Andersson09)</sup>
@@ -2370,6 +2481,26 @@ To facilitate look up from shaders, we must store the data structure in a suitab
 Red Dead Redemption 2:<sup>[Huseyin20](#Huseyin20)</sup>
 * Uses tile-based deferred rendering path for calculating the lighting of environment maps
 
+Basic tiled culling:<sup>[Stewart15](#Stewart15)</sup>
+
+```
+Input: light list, scene depth
+Output: per-tile list of intersecting lights
+
+calculate depth bounds for the tile;
+calculate frustum planes for the tile;
+
+for i ← thread_index to num_lights do
+  current_light ← light_list[i];
+  test intersection against tile bounding volume;
+  if intersection then
+    thread-safe increment of list counter;
+    write light index to per-tile list;
+  end
+  i ← i + num_threads_per_tile;
+end
+```
+
 #### Z Prepass
 
 ```c
@@ -2481,6 +2612,62 @@ void CalculateDepthBoundsCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localId
 ```
 <sup>[Thomas15](#Thomas15)</sup>
 
+Depth bounds calculation:<sup>[Stewart15](#Stewart15)</sup>
+
+```c
+Texture2D<float> g_SceneDepthBuffer;
+
+// Thread Group Shared Memory (aka local data share, or LDS)
+groupshared uint ldsZMin;
+groupshared uint ldsZMax;
+
+// Convert a depth value from postprojection space
+// into view space
+float ConvertProjDepthToView(float z)
+{
+  return (1.f / (z * g_mProjectionInv._34 + g_mProjecitonInv._44));
+}
+
+#define TILE_RES (16)
+[numthreads(TILE_RES, TILE_RES, 1)]
+void CullLightsCS(uint3 globalIdx : SV_DispatchThreadID,
+                  uint3 localIdx  : SV_GroupThreadID,
+                  uint3 groupIdx  : SV_GroupID)
+{
+  float depth = g_SceneDepthBuffer.Load(uint3(globalIdx.x, globalIdx.y, 0)).x;
+  float viewPosZ = ConvertProjDepthToView(depth);
+  uint z = asuint(viewPosZ);
+
+  uint threadNum = localIdx.x + localIdx.y * TILE_RES;
+
+  // There is no way to initialize shared memory at compile time, so thread zero does it at runtime
+  if (threadNum == 0)
+  {
+    ldsZMin = 0x7f7fffff; // FLT_MAX as a uint
+    ldsZMax = 0;
+  }
+  GroupMemoryBarrierWithGroupSync();
+
+  // Parts of the depth buffer that were never written
+  // (e.g., the sky) will be zero (the companion code uses
+  // inverted 32-bit float depth for better precision).
+  if (depth != 0.f)
+  {
+    // Calculate the minimum and maximum depth for this tile
+    // to form the front and back of the frustum
+    InterlockedMin(ldsZMin, z);
+    InterlockedMax(ldsZMax, z);
+  }
+  GroupMemoryBarrierWithGroupSync();
+
+  float minZ = asfloat(ldsZMin);
+  float maxZ = asfloat(ldsZMax);
+
+  // Frustum plane  and intersection code goes here
+  ...
+}
+```
+
 #### Light Culling
 
 * Frustum-based culling:<sup>[Zhdan16](#Zhdan16)</sup>
@@ -2488,6 +2675,117 @@ void CalculateDepthBoundsCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localId
   * In fact, it is a frustum-box test
   * Extremely inaccurate with large spheres
   * False positives!
+
+Frustum planes calculation:<sup>[Stewart15](#Stewart15)</sup>
+
+```c
+// Plane equation from three points, simplified
+// for the case where the first position is the origin.
+// N is normalized so that the plane equation can
+// be used to compute signed distance
+float4 CreatePlaneEquation(float3 Q, float3 R)
+{
+  // N = normalize(cross(Q-P, R-P))
+  // except we know P is the origin
+  float3 N = normalize(cross(Q, R))
+  // D = -(N dot P), except we know P is the origin
+  return float4(N, 0);
+}
+
+// Convert a point from postprojectino space into view space
+float3 ConvertProjToView(float4 p)
+{
+  p = mul(p, g_mProjectionInv);
+  return (p/p.w).xyz;
+}
+
+void CullLightsCS(uint3 globalIdx : SV_DispatchThreadID,
+                  uint3 localIdx  : SV_GroupThreadID,
+                  uint3 groupIdx  : SV_GroupID)
+{
+  // Depth bounds code goes here
+  ...
+  float4 frustumEqn[4];
+  { // Construct frustum planes for this tile
+    uint pxm = TILE_RES * groupIdx.x;
+    uint pym = TILE_RES * groupIdx.y;
+    uint pxp = TILE_RES * (groupIdx.x + 1);
+    uint pyp = TILE_RES * (groupIdx.y + 1);
+    uint width = TILE_RES * GetNumTilesX();
+    uint height = TILE_RES * GetNumTilesY();
+
+    // Four corners of the tile, clockwise from top-left
+    float3 p[4];
+    p[0] = ConvertProjToView(float4(pxm / (float) width * 2.f - 1.f, (height - pym) / (float) height * 2.f - 1.f, 1.f, 1.f));
+    p[1] = ConvertProjToView(float4(pxp / (float) width * 2.f - 1.f, (height - pym) / (float) height * 2.f - 1.f, 1.f, 1.f));
+    p[2] = ConvertProjToView(float4(pxp / (float) width * 2.f - 1.f, (height - pyp) / (float) height * 2.f - 1.f, 1.f, 1.f));
+    p[3] = ConvertProjToView(float4(pxm / (float) width * 2.f - 1.f, (height - pyp) / (float) height * 2.f - 1.f, 1.f, 1.f));
+
+    // Create plane equations for the four sides, with
+    // the positive half-space outside the frustum
+    for (uint i = 0; i < 4; ++i)
+    {
+      frustumEqn[i] = CreatePlaneEquation(p[i], p[(i + 1) & 3]);
+    }
+  }
+
+  // Intersection code goes here
+  ...
+}
+```
+
+Intersection testing:<sup>[Stewart15](#Stewart15)</sup>
+
+```c
+Buffer<float4> g_LightBufferCenterAndRadius;
+
+#define MAX_NUM_LIGHTS_PER_TILE (256)
+groupshared uint ldsLightIdxCounter;
+groupshared uint ldsLightIdx[MAX_NUM_LIGHTS_PER_TILE];
+
+// Point-plane distance, simplified for the case where
+// the plane passes through the origin
+float GetSignedDistnaceFromPlane(float3 p, float4 eqn)
+{
+  // dot(eqn.xyz, p) + eqn.w, except we know eqn.w is zero
+  return dot(eqn.xyz, p);
+}
+
+#define NUM_THREADS (TILE_RES * TILE_RES)
+void CullLightsCS(...)
+{
+  // Depth bounds and frustum planes code goes here
+  ...
+  if (threadNum = 0)
+  {
+    ldsLightIdxCounter = 0;
+  }
+
+  // Loop over the lights and do a
+  // sphere versus frustum intersection test
+  for (uint i = threadNum; i < g_uNumLights; i += NUM_THREADS)
+  {
+    float4 p = g_LightBufferCenterAndRadius[i];
+    float r = p.w;
+    float3 c = mul(float4(p.xyz, 1), g_mView).xyz;
+
+    // Test if sphere is intersecting or inside frustum
+    if ((GetSignedDistanceFromPlane(c, frustumEqn[0]) < r) && 
+        (GetSignedDistanceFromPlane(c, frustumEqn[1]) < r) && 
+        (GetSignedDistanceFromPlane(c, frustumEqn[2]) < r) && 
+        (GetSignedDistanceFromPlane(c, frustumEqn[3]) < r) && 
+        (-c.z + minZ < r) && (c.z - maxZ < r))
+    {
+      // Do a thread-safe increment of the list counter
+      // and put the index of this light into the list
+      uint dstIdx = 0;
+      InterlockedAdd(ldsLightIdxCounter, 1, dstIdx);
+      ldsLightIdx[dstIdx] = i;
+    }
+  }
+  GroupMemoryBarrierWithGroupSync();
+}
+```
 
 ##### AABB
 
@@ -2777,9 +3075,146 @@ float3 specularLight = <span class="hljs-number">0</span>;<br><br>for (uint ligh
 
 #### Optimizations
 
+* Be cache friendly<sup>[Stewart15](#Stewart15)</sup>
+* Choose a suboptimal tile size<sup>[Stewart15](#Stewart15)</sup>
+
 ##### Depth range optimization<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 
 Compute min and max Z value for each tile. This requires access to the z buffer.
+
+##### Half Z Method<sup>[Stewart15](#Stewart15)</sup>
+
+```c
+// Test if sphere is intersecting or inside frustum
+if ((GetSignedDistanceFromPlane(c, frustumEqn[0]) < r) && 
+    (GetSignedDistanceFromPlane(c, frustumEqn[1]) < r) && 
+    (GetSignedDistanceFromPlane(c, frustumEqn[2]) < r) && 
+    (GetSignedDistanceFromPlane(c, frustumEqn[3]) < r) && 
+    (-c.z + minZ < r) && (c.z - maxZ < r))
+{
+  if (-c.z + minZ < r && c.z - halfZ < r)
+  {
+    // Do a thread-safe increment of the list counter
+    // and put the index of this light into the list
+    uint dstIdx = 0;
+    InterlockedAdd(ldsLightIdxCounterA, 1, dstIdx);
+    ldsLightIdxA[dstIdx] = i;
+  }
+  if (-c.z + halfZ < r && c.z - maxZ < r)
+  {
+    // Do a thread-safe increment of the list counter
+    // and put the index of this light into the list
+    uint dstIdx = 0;
+    InterlockedAdd(ldsLightIdxCounterB, 1, dstIdx);
+    ldsLightIdxB[dstIdx] = i;
+  }
+}
+```
+
+##### Parallel Reduction<sup>[Stewart15](#Stewart15)</sup>
+
+```c
+Texture2D<float> g_SceneDepthBuffer;
+RWTexture2D<float4> g_DepthBounds;
+
+#define TILE_RES (16)
+#define NUM_THREADS_1D (TILE_RES / 2)
+#define NUM_THREADS (NUM_THREADS_1D * NUM_THREADS_1D)
+
+// Thread Group Shared Memory (aka local data share, or LDS)
+groupshared float ldsZMin[NUM_THREADS];
+groupshared float ldsZMax[NUM_THREADS];
+
+// Convert a depth value from postprojection space
+// into view space
+float ConvertProjDepthToView(float z)
+{
+  return (1.f / (z * g_mProjectionInv._34 + g_mProjectionInv._44));
+}
+
+[numthreads(NUM_THREADS_1D, NUM_THREADS_1D, 1)]
+viud DepthBoundsCS( uint3 globalIdx : SV_DispatchThreadID,
+                    uint3 localIdx  : SV_GroupThreadID,
+                    uint3 groupIdx  : SV_GroupID)
+{
+  uint2 sampleIdx = globalIdx.xy * 2;
+
+  // Load four depth samples
+  float depth00 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x,     sampleIdx.y,     0)).x;
+  float depth01 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x,     sampleIdx.y + 1, 0)).x;
+  float depth10 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x + 1, sampleIdx.y,     0)).x;
+  float depth11 = g_SceneDepthBuffer.Load(uint3(sampleIdx.x + 1, sampleIdx.y + 1, 0)).x;
+
+  float viewPosZ00 = ConvertProjDepthToView(depth00);
+  float viewPosZ01 = ConvertProjDepthToView(depth01);
+  float viewPosZ10 = ConvertProjDepthToView(depth10);
+  float viewPosZ11 = ConvertProjDepthToView(depth11);
+
+  uint threadNum = localIdx.x + localIdx.y * NUM_THREADS_1D;
+
+  // Use parallel reduction to calculate the depth bounds
+  {
+    // Parts of the depth buffer that were never written
+    // (e.g., the sky) will be zero (the companion code uses
+    // inverted 32-bit float depth for better precision)
+    float minZ00 = (depth00 != 0.f) ? viewPosZ00 : FLT_MAX;
+    float minZ01 = (depth01 != 0.f) ? viewPosZ01 : FLT_MAX;
+    float minZ10 = (depth10 != 0.f) ? viewPosZ10 : FLT_MAX;
+    float minZ11 = (depth11 != 0.f) ? viewPosZ11 : FLT_MAX;
+
+    float maxZ00 = (depth00 != 0.f) ? viewPosZ00 : 0.0f;
+    float maxZ01 = (depth01 != 0.f) ? viewPosZ01 : 0.0f;
+    float maxZ10 = (depth10 != 0.f) ? viewPosZ10 : 0.0f;
+    float maxZ11 = (depth11 != 0.f) ? viewPosZ11 : 0.0f;
+
+    // Initialize shared memory
+    ldsZMin[threadNum] = min(minZ00, min(minZ01, min(minZ10, minZ11)));
+    ldsZMax[threadNum] = max(maxZ00, max(maxZ01, max(maxZ10, maxZ11)));
+    GroupMemoryBarrierWithGroupSync();
+
+    // Minimum and maximum using parallel reduction, with the 
+    // loop manually unrolled for 8x8 thread groups (64 threads
+    // per thread group)
+    if (threadNum < 32)
+    {
+      ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 32]);
+      ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 32]);
+      ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 16]);
+      ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 16]);
+      ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 8]);
+      ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 8]);
+      ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 4]);
+      ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 4]);
+      ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 2]);
+      ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 2]);
+      ldsZMin[threadNum] = min(ldsZMin[threadNum], ldsZMin[threadNum + 1]);
+      ldsZMax[threadNum] = max(ldsZMax[threadNum], ldsZMax[threadNum + 1]);
+    }
+  }
+  GroupMemoryBarrierWithGroupSync();
+
+  float minZ = ldsZMin[0];
+  float maxZ = ldsZMax[0];
+  float halfZ = 0.5f * (minZ + maxZ);
+
+  // Calculate a second set of depth values: the maximum
+  // on the near side of Half Z and the minimum on the far
+  // side of Half Z
+  {
+    // See the companion code for details
+    ...
+  }
+
+  // The first thread writes to the depth bounds texture
+  if (threadNum == 0)
+  {
+    float maxZ2 = ldsZMax[0];
+    float minZ2 = ldsZMin[0];
+
+    g_DepthBounds[groupIdx.xy] = float4(minZ, maxZ2, minZ2, maxZ);
+  }
+}
+```
 
 ### Light Pre-Pass Renderer
 
@@ -4229,6 +4664,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="Pesce15" href="http://c0de517e.blogspot.com/2015/01/notes-on-g-buffer-normal-encodings.html">Notes on G-Buffer normal encodings</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 <a id="Olsson15" href="https://efficientshading.com/wp-content/uploads/s2015_introduction.pdf">Introduction to Real-Time Shading with Many Lights</a>. [Ola Olsson](https://efficientshading.com/), [Chalmers University of Technology](https://www.chalmers.se/en/Pages/default.aspx) / [Epic Games](https://www.epicgames.com/site/en-US/home). [SIGGRAPH 2015: Real-Time Many-Light Management and Shadows with Clustered Shading Course](http://s2015.siggraph.org/attendees/courses/sessions/real-time-many-light-management-and-shadows-clustered-shading.html).<br>
 <a id="Pettineo15" href="http://advances.realtimerendering.com/s2015/index.html#_REFLECTION_SYSTEM_IN">Rendering the Alternate History of The Order: 1886</a>. [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [SIGGRAPH 2015: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2015/).<br>
+<a id="Stewart15" href="https://www.taylorfrancis.com/chapters/edit/10.1201/9781351052108-15/compute-based-tiled-culling-jason-stewart">Compute-Based Tiled Culling</a>. [Jason Stewart](https://www.linkedin.com/in/jasonestewart/), [AMD](https://www.amd.com/en). [GPU Pro 6](http://gpupro.blogspot.com/2014/12/gpu-pro-6-table-of-contents.html).<br>
 <a id="Thomas15" href="https://www.gdcvault.com/browse/gdc-15/play/1021763">Advancements in Tiled-Based Compute Rendering</a>. [Gareth Thomas](https://www.linkedin.com/in/gareth-thomas-032654b/), [AMD](https://www.amd.com/en). [GDC 2015](https://www.gdcvault.com/free/gdc-15/).
 
 ## 2016
@@ -4240,7 +4676,13 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 
 ## 2017
 
-<a id="Anagnostou17" href="https://interplayoflight.wordpress.com/2017/10/25/how-unreal-renders-a-frame/">How Unreal Renders a Frame</a>. [Kostas Anagnostou](https://interplayoflight.wordpress.com/), [Radiant Worlds](https://en.wikipedia.org/wiki/Rebellion_Warwick) / [Playground Games](https://playground-games.com/). [Interplay of Light Blog](https://interplayoflight.wordpress.com/)
+<a id="Anagnostou17" href="https://interplayoflight.wordpress.com/2017/10/25/how-unreal-renders-a-frame/">How Unreal Renders a Frame</a>. [Kostas Anagnostou](https://interplayoflight.wordpress.com/), [Radiant Worlds](https://en.wikipedia.org/wiki/Rebellion_Warwick) / [Playground Games](https://playground-games.com/). [Interplay of Light Blog](https://interplayoflight.wordpress.com/).<br>
+<a id="Drobot17" href="http://advances.realtimerendering.com/s2017/#_TESSELLATION_IN_CALL">Improved Culling for Tiled and Clustered Rendering</a>. [Michal Drobot](https://www.linkedin.com/in/michal-drobot/), [Infinity Ward](https://www.infinityward.com/). [SIGGRAPH 2017: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2017/).<br>
+<a id="Wronski17" href="https://bartwronski.com/2017/04/13/cull-that-cone/">Cull That Cone! Improved Cone/Spotlight Visibility Tests for Tiled and Clustered Lighting</a>. [Bartłomiej Wroński](https://bartwronski.com/), [Santa Monica Studio](https://www.playstation.com/en-us/) / [NVIDIA](https://www.nvidia.com/en-us/). [Bart Wronski Blog](https://bartwronski.com/).<br>
+
+## 2018
+
+<a id="LagardeGolubev18" href="https://advances.realtimerendering.com/s2018/#_9hypxp9ajqi">The Road Toward Unified Rendering with Unity's High Definition Render Pipeline</a>. [Sébastien Lagarde](https://seblagarde.wordpress.com/), [Unity Technologies](https://unity.com/). [Evgenii Golubev](https://zero-radiance.github.io/), [Unity Technologies](https://unity.com/). [SIGGRAPH 2018: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2018/).<br>
 
 ## 2019
 
