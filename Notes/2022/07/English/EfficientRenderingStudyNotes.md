@@ -20,7 +20,7 @@ Characteristics:
   * MSAA and related techniques through hardware features (much less memory storage is required)<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup><sup>[Olsson15](#Olsson15)</sup>
   * Fastest in its baseline case (single light per pixel, "simple" shaders or even baked lighting)<sup>[Pesce14](#Pesce14)</sup>
     * Doesn't have a "constant" up-front investment, you pay as you go (more lights, more textures&hellip;)
-  * Least memory necessary (least bandwidth, at least in theory). Makes MSAA possible<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup><sup>[Olsson15](#Olsson15)</sup>
+  * Least memory necessary (least bandwidth, at least in theory). Makes MSAA possible<sup>[Pesce14](#Pesce14)</sup><sup>[Olsson15](#Olsson15)</sup>
     * Single frame buffer<sup>[Olsson15](#Olsson15)</sup>
   * Easy to integrate with shadowmaps (can render them one-at-atime, or almost)<sup>[Pesce14](#Pesce14)</sup>
   * No extra pass over geometry<sup>[Pesce14](#Pesce14)</sup>
@@ -4571,11 +4571,11 @@ EA. SIGGRAPH. 2011.
 
 ## 2003
 
-<a id="Calver03" href="https://www.beyond3d.com/content/articles/19/1">Photo-realistic Deferred Lighting</a>. [Dean Calver](https://www.linkedin.com/in/deanoc/), [Climax](https://www.climaxstudios.com/) / [Snapshot Games](https://www.snapshotgames.com/). [Beyond3D](https://www.beyond3d.com/).
+<a id="Calver03" href="https://www.beyond3d.com/content/articles/19/1">Photo-realistic Deferred Lighting</a>. [Dean Calver](https://www.linkedin.com/in/deanoc/), [Climax](https://www.climaxstudios.com/) / [Snapshot Games](https://www.snapshotgames.com/). [Beyond3D](https://www.beyond3d.com/).<br>
 
 ## 2004
 
-<a id="Hargreaves04" href="https://my.eng.utah.edu/~cs5600/slides/Wk%209%20D3DTutorial_DeferredShading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/) / [Microsoft](https://www.microsoft.com/ko-kr/). [GDC 2004](https://www.gdcvault.com/free/gdc-04/)<BR>
+<a id="Hargreaves04" href="https://my.eng.utah.edu/~cs5600/slides/Wk%209%20D3DTutorial_DeferredShading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/) / [Microsoft](https://www.microsoft.com/ko-kr/). [GDC 2004](https://www.gdcvault.com/free/gdc-04/)<br>
 <a id="HargreavesHarris04" href="http://download.nvidia.com/developer/presentations/2004/6800_Leagues/6800_Leagues_Deferred_Shading.pdf">Deferred Shading</a>. [Shawn Hargreaves](https://shawnhargreaves.com/), [Climax](https://www.climaxstudios.com/) / [Microsoft](https://www.microsoft.com/ko-kr/). [Mark Harris](https://www.linkedin.com/in/themarkharris/), [NVIDIA](https://www.nvidia.com/en-us/). NVIDIA Developers Conference 2004.<br>
 <a id="Thibieroz04" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[1762]%20[ShaderX2%202004]%20Deferred%20Shading%20with%20Multiple%20Render%20Targets.pdf">Deferred Shading with Multiple Render Targets</a>. [Nicolas Thibieroz](https://www.linkedin.com/in/nicolas-thibieroz-a4353739/), [PowerVR Technologies](https://www.imaginationtech.com/products/gpu/) / [AMD](https://www.amd.com/en). [ShaderX2](http://www.shaderx2.com/).
 
@@ -4596,7 +4596,7 @@ EA. SIGGRAPH. 2011.
 ## 2008
 
 <a id="BalestraEngstad08" href="https://www.gdcvault.com/play/325/The-Technology-of-UNCHARTED-DRAKE">The Technology of Uncharted: Drake's Fortune</a>. [Christophe Balestra](https://www.linkedin.com/in/christophe-balestra-37bb41/), [Naughty Dog](https://www.naughtydog.com/) / Retired. [Pål-Kristian Engstad](https://www.linkedin.com/in/p%C3%A5l-kristian-engstad-08a22a1/), [Naughty Dog](https://www.naughtydog.com/) / [Apple](https://www.apple.com/). [GDC 2008](https://www.gdcvault.com/free/gdc-08/).<br>
-<a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">StarCraft II: Effects & Techniques</a>. [Dominic Filion](https://www.linkedin.com/in/%E2%80%8Edominic-filion-guay-258202/), [Blizzard Entertainment](https://www.blizzard.com/en-us/) / [Snap Inc.](https://www.snap.com/en-US). [Rob McNaughton](https://www.linkedin.com/in/rob-mcnaughton-4872453/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [SIGGRAPH 2008: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/)
+<a id="FilionMcNaughton08" href="https://developer.amd.com/wordpress/media/2013/01/Chapter05-Filion-StarCraftII.pdf">StarCraft II: Effects & Techniques</a>. [Dominic Filion](https://www.linkedin.com/in/%E2%80%8Edominic-filion-guay-258202/), [Blizzard Entertainment](https://www.blizzard.com/en-us/) / [Snap Inc.](https://www.snap.com/en-US). [Rob McNaughton](https://www.linkedin.com/in/rob-mcnaughton-4872453/), [Blizzard Entertainment](https://www.blizzard.com/en-us/). [SIGGRAPH 2008: Advances in Real-Time Rendering in 3D Graphics and Games Course](https://advances.realtimerendering.com/).<br>
 
 ## 2009
 
@@ -4614,7 +4614,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 ## 2010
 
 <a id="Kaplanyan10" href="http://advances.realtimerendering.com/s2010/Kaplanyan-CryEngine3%28SIGGRAPH%202010%20Advanced%20RealTime%20Rendering%20Course%29.pdf">CryENGINE 3: Reaching the Speed of Light</a>. [Anton Kaplanyan](https://kaplanyan.com/), [Crytek](https://www.crytek.com/) / [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). [SIGGRAPH 2010: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2010/index.html).<br>
-<a id="Lauritzen10" href="https://www.intel.com/content/www/us/en/developer/articles/technical/deferred-rendering-for-current-and-future-rendering-pipelines.html">Deferred Rendering for Current and Future Rendering Pipelines</a>. [Andrew Lauritzen](https://dl.acm.org/profile/81310499387), [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). SIGGRAPH 2010: Beyond Programmable Shader Course.
+<a id="Lauritzen10" href="https://www.intel.com/content/www/us/en/developer/articles/technical/deferred-rendering-for-current-and-future-rendering-pipelines.html">Deferred Rendering for Current and Future Rendering Pipelines</a>. [Andrew Lauritzen](https://dl.acm.org/profile/81310499387), [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). SIGGRAPH 2010: Beyond Programmable Shader Course.<br>
 
 ## 2011
 
@@ -4672,7 +4672,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="ElGarawany16" href="http://advances.realtimerendering.com/s2016/#_HIGH-QUALITY_TEMPORAL_SUPERSAMPLING">Deferred Lighting in Uncharted 4</a>. [Ramy El Garawany](https://www.linkedin.com/in/ramy-el-garawany-7a805820/), [Naughty Dog](https://www.naughtydog.com/) / [Google](https://careers.google.com/). [SIGGRAPH 2016: Advances in Real-Time Rendering in Games Course](http://advances.realtimerendering.com/s2016/).
 <a id="ElMansouri16" href="https://youtu.be/RAy8UoO2blc">Rendering Tom Clancy’s Rainbow Six Siege</a>. [Jalal El Mansouri](https://www.linkedin.com/in/jalal-el-mansouri-60a73423/), [Ubisoft Montréal](https://montreal.ubisoft.com/en/) / [Haven Studios Inc.](https://www.havenstudios.com/en). [GDC 2016](https://www.gdcvault.com/free/gdc-16/)
 <a id="OrtegrenPersson16" href="https://github.com/kevinortegren/ClusteredShadingConservative">Clustered Shading: Assigning Lights Using Conservative Rasterization in DirectX 12</a>. [Kevin Örtegren](https://www.linkedin.com/in/kevinortegren/), [Avalanche Studios](https://avalanchestudios.com/) / [Epic Games](https://www.epicgames.com/site/en-US/home). [Emil Persson](http://www.humus.name/), [Avalanche Studios](https://avalanchestudios.com/) / [Elemental Games](https://elemental.games/). [GPU Pro 7](http://gpupro.blogspot.com/2016/01/gpu-pro-7-table-of-content.html).
-<a id="Zhdan16" href="https://www.gdcvault.com/play/1023510/Advanced-Graphics-Techniques-Tutorial-Day">Tiled Shading: Light Culling—Reaching the Speed of Light</a>. [Dmitry Zhdan](https://dl.acm.org/profile/99659432320), [NVIDIA](https://www.nvidia.com/en-us/). [GDC 2016](https://www.gdcvault.com/free/gdc-16/).
+<a id="Zhdan16" href="https://www.gdcvault.com/play/1023510/Advanced-Graphics-Techniques-Tutorial-Day">Tiled Shading: Light Culling—Reaching the Speed of Light</a>. [Dmitry Zhdan](https://dl.acm.org/profile/99659432320), [NVIDIA](https://www.nvidia.com/en-us/). [GDC 2016](https://www.gdcvault.com/free/gdc-16/).<br>
 
 ## 2017
 

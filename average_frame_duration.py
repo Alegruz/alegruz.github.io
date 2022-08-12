@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 names = [
-    "Default",
+    # "Default",
     "T",
     "T\n2.5D",  
     "T\n2.5D AABB", 
@@ -61,7 +61,7 @@ values = [
     ]
 
 tg_values = [
-    9.292886,   # TG
+    # 9.292886,   # TG
     2.876752,   # TG T 
     2.883240,   # TG T 2.5D
     2.276072,   # TG T 2.5D AABB
@@ -72,7 +72,7 @@ tg_values = [
     3.420807    # TG C
     ]
 tg_no_encoding_values = [
-    9.292886,   # TG
+    # 9.292886,   # TG
     2.985492,   # TG T 
     2.984555,   # TG T 2.5D
     2.027208,   # TG T 2.5D AABB
@@ -83,7 +83,7 @@ tg_no_encoding_values = [
     3.265196    # TG C
     ]
 tg_baseline_values = [
-    9.363991,   # TG
+    # 9.363991,   # TG
     2.974672,   # TG T 
     2.983588,   # TG T 2.5D
     1.996060,   # TG T 2.5D AABB
@@ -94,7 +94,7 @@ tg_baseline_values = [
     3.277768    # TG C
     ]
 tg_z_reconstruction_values = [
-    9.362995,   # TG
+    # 9.362995,   # TG
     2.975459,   # TG T 
     2.986767,   # TG T 2.5D
     2.370028,   # TG T 2.5D AABB
@@ -105,7 +105,7 @@ tg_z_reconstruction_values = [
     3.536016    # TG C
     ]
 tg_spherical_coordinates_values = [
-    9.339837,   # TG
+    # 9.339837,   # TG
     2.973836,   # TG T 
     2.978215,   # TG T 2.5D
     2.360536,   # TG T 2.5D AABB
@@ -116,7 +116,7 @@ tg_spherical_coordinates_values = [
     3.513613    # TG C
     ]
 tg_spheremap_transform_lambert_values = [
-    9.345337,   # TG
+    # 9.345337,   # TG
     2.977019,   # TG T 
     2.982011,   # TG T 2.5D
     2.356364,   # TG T 2.5D AABB
@@ -127,7 +127,7 @@ tg_spheremap_transform_lambert_values = [
     3.525274    # TG C
     ]
 tg_spheremap_transform_cryengine3_values = [
-    9.341648,   # TG
+    # 9.341648,   # TG
     2.971684,   # TG T 
     2.973739,   # TG T 2.5D
     2.309112,   # TG T 2.5D AABB
@@ -138,7 +138,7 @@ tg_spheremap_transform_cryengine3_values = [
     3.486052    # TG C
     ]
 tg_octahedron_values = [
-    9.338022,   # TG
+    # 9.338022,   # TG
     2.969710,   # TG T 
     2.978812,   # TG T 2.5D
     2.338976,   # TG T 2.5D AABB
@@ -189,7 +189,6 @@ tg_octahedron_values = [
 #plt.bar(names, values)
 # plt.plot(names, values, label="Killzone")
 # plt.plot(names, tg_values, label="Thin GBuffer")
-plt.plot(names, tg_values, label="Octahedral Encoding")
 plt.plot(names, tg_no_encoding_values, label="No Encoding")
 plt.plot(names, tg_baseline_values, label="Baseline")
 plt.plot(names, tg_z_reconstruction_values, label="Z Reconstruction")
@@ -197,6 +196,7 @@ plt.plot(names, tg_spherical_coordinates_values, label="Spherical Coordinates")
 plt.plot(names, tg_spheremap_transform_lambert_values, label="Spheremap Transform Lambert Azimuthal Equal Area Projection")
 plt.plot(names, tg_spheremap_transform_cryengine3_values, label="Spheremap Transform CryEngine 3")
 plt.plot(names, tg_octahedron_values, label="Octahedron Normal")
+plt.plot(names, tg_values, label="Octahedral Encoding")
 plt.legend()
 plt.xlabel("Pipelines")
 plt.ylabel("Average Frame Duration")
