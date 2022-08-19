@@ -132,7 +132,6 @@ DirectX 9
 
 ### Memory Allocation
 
-* Tricks of the Windows Game Programming Gurus, 2nd Ed. Chapter 11: Algorithms, Data Structures, Memory Management, and Multithreading. 2003.
 * Cross-Platform Game Programming. Chapter 3: Memory. 2005.
 * Game Programming Gems 1. Chapter 1.7: Resource and Memory Management. 2000.
 * Game Programming Gems 1. Chapter 1.9: Frame-Based Memory Allocation. 2000.
