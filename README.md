@@ -21,6 +21,8 @@ Game Development Studies with Books
     * July
         * [Efficient Rendering Study Notes](/Notes/2022/07/English/EfficientRenderingStudyNotes.md/)
         * [Rendering Pipeline Comparison](/Notes/2022/07/English/RenderingPipelineComparison.md/)
+    * September
+        * [ReSTIR for Production](Notes/2022/09/English/ReSTIRforProduction.md)
 
 ## Korean Contents
 * 2021
@@ -42,6 +44,8 @@ Game Development Studies with Books
         * [지형에 일관된 식물상과 동물상 저작하기 소스 코드 분석](Notes/2022/04/Korean/AuthoringConsistentLandscapesWithFloraAndFaunaSourceCodeAnalysis.md)
     * 6월
         * [게임공학 공부 노트](Notes/2022/06/Korean/GameEngineeringStudiesNote.md)
+    * 9월
+        * [실무에서의 ReSTIR](Notes/2022/09/English/ReSTIRforProduction.md)
 
 ## Mentoring
 
