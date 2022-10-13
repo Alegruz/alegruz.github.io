@@ -45,7 +45,7 @@ Game Development Studies with Books
     * 6월
         * [게임공학 공부 노트](Notes/2022/06/Korean/GameEngineeringStudiesNote.md)
     * 9월
-        * [실무에서의 ReSTIR](Notes/2022/09/English/ReSTIRforProduction.md)
+        * [실무에서의 ReSTIR](Notes/2022/09/Korean/ReSTIRforProduction.md)
 
 ## Mentoring
 

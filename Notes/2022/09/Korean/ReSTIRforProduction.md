@@ -214,9 +214,11 @@ MIS가 각 항의 선형 결합으로부터 샘플링을 했다면, RIS는 이 �
 
 위의 식처럼 p를 구하면 완벽한 IS가 될 것이지만, 그러려면 애초의 적분이 필요하니까...
 
-근데 반대로 생각해서, 저걸 근사를 해보려고 시도할 수도 있다. 즉, 저 적분을 한 번 근사해보자는 것이다.
+근데 완벽한 p를 구한다는 발상을 반대로 생각해서, 애초에 완벽한 p를 근사를 해보려고 시도할 수도 있다. 즉, 저 적분을 한 번 근사해보자는 것이다.
 
 즉, 현실적으로 f에 대해서 샘플링하기가 힘드니까, 일단 f를 샘플링의 대상이 아니라, 우리가 구할 target 함수 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)로 다르게 바라보자는 것이다. (이때 이 target 함수는 PDF처럼 normalized 된 상태가 아닐 것이다!)
+
+![ResampledImportanceSamplingNormalizationApproximation](/Images/RestirForGameGi/ResampledImportanceSamplingNormalizationApproximation.png)
 
 그렇다면 이제 이 target을 근사할 새로운 source PDF p가 생긴다. 즉, 적당히 최적이면서 구하기 쉬운 source 분포 p로부터 한 개 이상(M ≥ 1)의 후보 샘플들(x = {x<sub>1</sub>, &hellip;, x<sub>M</sub>})을 우선 뽑는 것이다. 이제 여기서 임의의 z 번째 샘플 하나를 다음 이산 확률로 뽑는다:
 
@@ -225,6 +227,46 @@ MIS가 각 항의 선형 결합으로부터 샘플링을 했다면, RIS는 이 �
 이때 가중치 w는 다음과 같다:
 
 ![ResampledImportanceSamplingCandidateWeight](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
+
+이렇게 되면 자연스럽게 구하려는 식을 다시 쓸 수 있게 된다:
+
+![ResampledImportanceSamplingMonteCarloIntegration](/Images/RestirForGameGi/ResampledImportanceSamplingMonteCarloIntegration.png)
+
+여기서 N 개의 샘플이 아니라, 하나의 샘플만을 다루게 된다면 식을 다음과 같이 정리할 수 있다:
+
+![ResampledImportanceSamplingSingleSampleMonteCarloIntegration](/Images/RestirForGameGi/ResampledImportanceSamplingSingleSampleMonteCarloIntegration.png)
+
+이렇게 되면 마치 y 라는 샘플을 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 뽑은 것처럼 속여서 사용할 수 있게 된다. 뒤에 있는 괄호 안에 있는 내용은 "아, 이게 보면 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 분포에서 뽑은 것처럼 보이긴 하는데, 사실은 p에서 온거고, 이걸로 근사를 하려고 했던거에요~"라고 알려주는 거다.
+
+RIS는 M, N ≥ 1이고, f가 0이 아닐 때 p와 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수기만 하면 무편향성을 띤다.
+
+RIS 알고리듬:
+
+```
+void ResampledImportanceSampling(float& outSample, float& outWeightSum, size_t numCandidates, const Pixel& pixel)
+{
+  float* samples = reinterpret_cast<float*>(::malloc(numCandidates * sizeof(float)));
+  float* weights = reinterpret_cast<float*>(::malloc(numCandidates * sizeof(float)));
+  ::memset(samples, 0, numCandidates * sizeof(float));
+  ::memset(weights, 0, numCandidates * sizeof(float));
+  float weightSum = 0.0f;
+
+  for (size_t i = 0; i < numCandidates; ++i)
+  {
+    samples[i] = GenerateSample(SourcePdf);
+    weights[i] = TargetPdf(samples[i]) / SourcePdf(samples[i]);
+    weightSum += weights[i];
+  }
+
+  // Select from candidates w
+  // Compute normalized CDF C from weights
+  // draw random index z ∈ [0, M) using C to sample ∝ w_z
+  size_t z = GenerateSample(C);
+
+  outSample = samples[z];
+  outWeightSum = weightSum;
+}
+```
 
 ### 참고문헌
 
@@ -276,6 +318,11 @@ p{\left(z \mid \textbf{x} \right )} = \frac{\textrm{w}{\left(x_{z} \right )}}{\s
 
 ```
 p{\left(x_{i} \right )} = \frac{f{\left(x \right )}}{\int{f{\left(x \right )}dx}}
+```
+
+```
+p{\left(x_{i} \right )} = \frac{\hat{p}{\left(x \right )}}{\int{\hat{p}{\left(x \right )}dx}} \approx
+\frac{\hat{p}{\left(x \right )}}{\frac{1}{M}\sum^{M}_{j=1}{\frac{\hat{p}{\left(x_{j} \right )}}{p{\left(x_{j} \right )}}}}
 ```
 
 ```
