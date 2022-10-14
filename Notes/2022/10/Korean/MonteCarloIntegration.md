@@ -385,6 +385,17 @@ n<sub>f</sub>는 p<sub>f</sub> 분포에서 뽑은 표본의 수, n<sub>g</sub>�
 
 Veach에 의하면 경험적으로 &beta; = 2일 때 제일 잘 된다고 한다.
 
+# 7. 실험
+
+f(x) = cos(&pi; x / 2) + 2 이고, p가 항등 분포일 때:
+
+![Experiment00](/Images/MonteCarloIntegration/Experiment00.png)
+
+```
+Integral: 10.6366
+Uniform Distribution: 11.841182631234615
+```
+
 # Latex
 
 ```
