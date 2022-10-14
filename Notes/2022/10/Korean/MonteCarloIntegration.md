@@ -417,7 +417,24 @@ F_{N} = \frac{1}{N}\sum^{N}_{i=1}{\frac{f{\left(x_{i} \right )}}{p{\left(x_{i} \
 ```
 
 ```
-{\frac{{\left(x_{1} - x_{0} \right )}{\left(y_{1} - y_{0} \right )}{\left(z_{1} - z_{0} \right )}}{N}}{\sum_{i}{f{\left(X_{i} \right )}}}
+{
+    \frac
+    {
+        {\left(x_{1} - x_{0} \right )}
+        {\left(y_{1} - y_{0} \right )}
+        {\left(z_{1} - z_{0} \right )}
+    }
+    {N}
+}
+{
+    \sum_{i}
+    {
+        f
+        {
+            \left(X_{i} \right )
+        }
+    }
+}
 ```
 
 ```
