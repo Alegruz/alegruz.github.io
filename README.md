@@ -46,6 +46,9 @@ Game Development Studies with Books
         * [게임공학 공부 노트](Notes/2022/06/Korean/GameEngineeringStudiesNote.md)
     * 9월
         * [실무에서의 ReSTIR](Notes/2022/09/Korean/ReSTIRforProduction.md)
+    * 10월
+        * [몬테 카를로 적분법](/Notes/2022/10/Korean/MonteCarloIntegration.md)
+        * [전역 조명을 위한 중요도 재표집](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)
 
 ## Mentoring
 
