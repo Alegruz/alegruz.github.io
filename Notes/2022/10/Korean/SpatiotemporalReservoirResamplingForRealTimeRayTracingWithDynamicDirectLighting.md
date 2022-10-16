@@ -65,7 +65,7 @@ MIS 대신 사용할 수 있는 방법에는 몇몇 항의 곱에 *근사하게*
 
 예를 들어, 우리가 구해야하는 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 표집을 하려고 보니, 실질적으로 그게 불가능하다면, 이 PDF에 근사할 수 있도록 source PDF p를 구하는 것임.
 
-즉, 적당히 최적인 PDF p에서 z 개의 표본을 우선 뽑는다. 이 z 개의 표본을 갖는 집합에서 확률 p(z | **x**)에 따라 한 표본을 또다시 뽑는 것이다. 이때의 표본 집합의 모든 z 개의 표본은 각각 가중치를 갖는데, 이 가중치에 비례하여 확률을 부여한다. 이때 한 표본을 뽑을 때, target PDF에 근사하게 표본을 뽑아야 하므로 가중치에 target PDF의 정보를 추가한다:
+즉, 적당히 최적인 PDF p에서 z 개의 표본을 우선 뽑는다. 이 z 개의 표본을 갖는 집합에서 확률 p(z \| **x**)에 따라 한 표본을 또다시 뽑는 것이다. 이때의 표본 집합의 모든 z 개의 표본은 각각 가중치를 갖는데, 이 가중치에 비례하여 확률을 부여한다. 이때 한 표본을 뽑을 때, target PDF에 근사하게 표본을 뽑아야 하므로 가중치에 target PDF의 정보를 추가한다:
 
 ![ResampledImportanceSamplingCandidateProbability](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
 
@@ -89,14 +89,11 @@ RIS를 여러 표본에 대해 반복하고 평균을 내게 되면 N개 표본 
 
 RIS 알고리듬은 다음과 같다:
 
-
-> ### 알고리듬 1: RIS
-> 입력: M, q: 픽셀 q에 대해 생성할 후보 표본의 수 M(M ≥ 1)
-> 출력: 표본 y와 RIS 가중치의 합 ![SumOfRisWeights](/Images/ReStir/SumOfRisWeights.png)
-> 
-
-```
- 1  // 후보군 x = {x_1, ..., x_M} 생성
+<blockquote>
+  <h3 id="알고리듬-1-ris">알고리듬 1: RIS</h3>
+  <p>입력: M, q: 픽셀 q에 대해 생성할 후보 표본의 수 M(M ≥ 1)
+출력: 표본 y와 RIS 가중치의 합 <img src="/Images/ReStir/SumOfRisWeights.png" alt="SumOfRisWeights"></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  // 후보군 x = {x_1, ..., x_M} 생성
  2  x ← 0
  3  w ← 0
  4  w_sum ← 0
@@ -111,7 +108,8 @@ RIS 알고리듬은 다음과 같다:
 13  C를 활용하여 w_z에 비례하여 무작위로 인덱스 z ∈ [0, M) 뽑기
 14  y ← x[z]
 15  return y, w_sum
-```
+</code></pre></div></div>
+</blockquote>
 
 **RIS와 MIS 섞기**
 
@@ -141,24 +139,28 @@ RIS 알고리듬은 다음과 같다:
 
 이를 통해 불변량이 유지된다.
 
-> ### 알고리듬 2: WRS
-
-```
- 1  class Reservoir
+<blockquote>
+  <h3 id="알고리듬-2-wrs">알고리듬 2: WRS</h3>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  class Reservoir
  2      y ← 0       // 출력 표본
  3      w_sum ← 0   // 가중치합
  4      M ← 0       // 지금까지 처리한 표본의 수
  5      function update(x_i, w_i)
  6          w_sum ← w_sum + w_i
  7          M ← M + 1
- 8          if rand() < (w_i / w_sum) then
+ 8          if rand() &lt; (w_i / w_sum) then
  9              y ← x_i
 10  function reservoirSampling(S)
 11      Reservoir r
 12      for i ← 1 to M do
 13          r.update(S[i], weight(S[i]))
 14      return r
-```
+</code></pre></div></div>
+</blockquote>
+
+# 3. 시공간 재사용과 함께 RIS 스트리밍하기
+
+RIS와 WRS가 ReSTIR 알고리듬의 기본임.
 
 # Latex
 
