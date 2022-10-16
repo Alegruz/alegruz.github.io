@@ -49,6 +49,7 @@ Game Development Studies with Books
     * 10월
         * [몬테 카를로 적분법](/Notes/2022/10/Korean/MonteCarloIntegration.md)
         * [전역 조명을 위한 중요도 재표집](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)
+        * [ReSTIR 논문 정리](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)
 
 ## Mentoring
 
