@@ -160,7 +160,99 @@ RIS 알고리듬은 다음과 같다:
 
 # 3. 시공간 재사용과 함께 RIS 스트리밍하기
 
-RIS와 WRS가 ReSTIR 알고리듬의 기본임.
+RIS와 WRS가 ReSTIR 알고리듬의 기본임. 이 둘을 바탕으로 알고리듬과 자료구조를 간단하게 유지하면서도 스트리밍을 통해 무작위로 후보를 처리할 수 있게 해줌. 이를 통해 WRS의 속성에 의해 *시공간 재표집spatiotemporal resampling*을 통해 이웃 픽셀과 이전 프레임의 후보를 효율적으로 재사용하고 합칠 수 있는 방법을 소개함.
+
+다만, 너무 순진하게 이웃 픽셀의 표본들이 서로 다른 BRDF에서 왔다는 점과 표면의 orientation이 서로 다르다는 점을 고려 안 하고 시공간 재표집을 하게되면 편향성이 생길 것임. 이러면 기하적으로 불연속적인 구간에서 에너지 손실이 발생하게 됨.
+
+## 3.1. 저장소 표집으로 RIS 스트리밍하기
+
+WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸는 건 쉬움. 그냥 저장소를 연속적으로 생성된 후보 x<sub>i</sub>와 이에 대응하는 가중치에 따라 갱신해주면 됨.
+
+> ### 알고리듬 3: WRS를 활용한 RIS 스트리밍
+
+```
+ 1  foreach 픽셀 q ∈ Image do
+ 2      Image[q] ← shadePixel(RIS(q), q)
+ 3  function RIS(q)
+ 4      Reservoir r
+ 5      for i ← 1 to M do
+ 6          generate x_i ~ p
+ 7          r.update(x_i, phat_q(x_i) / p(x_i))
+ 8      r.W = (1 / (phat_q(r.y))) * ((1 / r.M) * r.w_sum) // 단일 표본 RIS 추정량
+ 9      return r
+10  function shadePixel(Reservoir r, q)
+11      return f_q(r.y) * r.W
+```
+
+우선 광원의 표면에서 균등하게 표본을 생성한 다음, 그림자가 져있지 않은 경로의 contribution ![TargetDistribution](/Images/ReStir/TargetDistribution.png)를 target 분포로 삼아 살아남은 N 개의 RIS 표본에 대해서 그림자 광선만을 추적해줌. M의 개수에 따라 얼마나 잘 렌더링이 되는지를 확인해본 결과, M이 증가할 수록 RIS가 제일 렌더링이 잘 됨. 위의 알고리듬은 공간 복잡도 자체는 상수지만, 시간 복잡도 자체는 O(M)임.
+
+## 3.2. 시공간 재사용
+
+위에서 언급한 방법은 각 픽셀 q에서 독립적으로 후보를 생성하고, 이를 target PDF ![TargetPdfForPixelQ](/Images/ReStir/TargetPdfForPixelQ.png)에 따라 재표집을 해준 것임. 참고로, 이웃의 픽셀 간에는 상당한 상관관계가 존재함. 예를 들어 그림자가 지지 않은 조명(![TargetDistribution](/Images/ReStir/TargetDistribution.png))을 사용할 경우, 공간적으로 보면 당연히 근처 픽셀들의 geometry 항이나 BSDF 항은 비슷하지 않겠음? 이 상관관계를 처리하는 가장 순진한 방법은 픽셀마다 후보군과 가중치를 생성하고, 두번째 단계에서 자기 픽셀과 이웃의 픽셀을 합쳐서 *재사용reuse*을 해주는 것임. 가중치 연산은 첫번째 단계에서 처리가 될테니까 이웃 후보군을 재사용하는게 같은 수의 후보군을 새롭게 생성하는 것보다 더 효율적임.
+
+근데 이건 실제로 불가능함. 재사용할 후보마다 *저장*을 해야되니까. 이걸 피할 수 있는 방법으로는 저장소 표집의 중요한 속성을 활용하면 됨. 즉, 입력 스트림에 접근할 필요도 없이 여러 저장소를 합칠 수 있다는 점임.
+
+저장소는 보통 현재 선택한 표본 y와 현재까지 처리한 표본들의 가중치의 합 w<sub>sum</sub>이라는 상태를 가짐. 두 저장소를 합치려면 각 저장소의 y를 마치 w<sub>sum</sub>의 가중치를 갖는 새 표본으로 간주하고 이걸 새 저장소의 입력으로 넣어주면 됨. 수학적으로 보면 두 저장소의 입력 스트림을 합쳐서 저장소 표집을 해준 거랑 똑같음. 시간 복잡도도 *상수*인데다가, 그 어느 스트림에도 후보를 저장해줄 필요도 없음. 그냥 처리할 저장소의 현재 상태만 갖다 쓰면 됨.
+
+> ### 알고리듬 4: 여러 저장소 스트림 합치기
+> 입력: 합칠 저장소 r<sub>i</sub>
+> 출력: r<sub>1</sub>, &hellip;, r<sub>k</sub>의 입력 스트림을 이어 붙인 것과 같은 합쳐진 저장소
+> 
+
+```
+1   function combineReservoirs(q, r_1, r_2, ..., r_k)
+2       Reservoir s
+3       foreach r ∈ {r_1, ..., r_k} do
+4           s.update(r.y, phat_q(r.y) * r.W * r.M)
+5       s.M ← r_1.M + r_2.M + ... + r_k.M
+6       s.W = (1 / (phat_q(s.y))) * ((1 / (s.M)) * s.w_sum) // 단일 표본 RIS 추정량
+7       return s
+```
+
+보면 알겠지만 O(k)의 시간 복잡도를 가짐. 이웃 픽셀 q'의 표본이 서로 다른 target 분포 ![NeighboringPixelTargetPdf](/Images/ReStir/NeighboringPixelTargetPdf.png)를 갖고 있다는 점을 잊으면 안 됨. 그러므로 표본을 ![NeighboringTargetPdfFactor](/Images/ReStir/NeighboringTargetPdfFactor.png)로 다시 작성해주어 현재 픽셀에 비해 이웃 쪽이 over/undersample 되었는지 여부를 처리해주어야 함. 결론적으로 얻게 된 식은 ![ResultingTerm](/Images/ReStir/ResultingTerm.png) 인데, 알고리듬 3에서의 이미 구한 값으로 치환해주면 ![ResultTermSuccinct](/Images/ReStir/ResultTermSuccinct.png)로 표현해줄 수 있음.
+
+**공간 재표집Spatial Reuse**
+
+우선 알고리듬 3의 `RIS(q)` 함수를 통해 모든 픽셀 q마다 M 개의 후보를 생성해주어 프레임 버퍼에 각 저장소를 저장해줌. 두번째 단계로는 각 픽셀이 k 개의 이웃 픽셀을 선택하고, 이웃 픽셀들의 저장소와 자기 저장소를 알고리듬 4를 이용해서 합쳐줌. 각 픽셀마다 시간 복잡도는 O(k + M)이지만, 결국 k · M 개의 후보를 얻게 됨. 게다가 이전 재사용 단계의 결과를 입력으로 활용해서 공간 재사용을 *반복*해줄 수도 있음. 즉, n 번 반복을 하게되면 O(nk + M)의 복잡도를 갖겠지만, 픽셀 당 k<sup>n</sup>M 개의 후보를 얻을 수 있음.
+
+**시간 재표집Temporal Reuse**
+
+실시간이면 당연히 프레임이 존재할 것. 그럼 직전 프레임에서 후보를 뽑아서 재사용해줄 수도 있음. 프레임을 렌더링한 다음에 각 픽셀의 최종 저장소를 다음 프레임에서 재사용할 수 있게 저장해두고, 이제 렌더링할 다음 프레임에서는 단순히 직전 프레임 뿐만 아니라 지금까지 렌더링한 *모든* 직전 프레임의 저장소에서의 후보를 뽑아서 쓸 수 있어 이미지 퀄리티가 훨씬 좋아짐.
+
+**가시성 재사용Visibility Reuse**
+
+솔직히 후보의 개수는 무한대로 늘어날 순 있지만, 그럼에도 아예 노이즈가 없을 순 없음. M이 무한대로 가면서 표본의 분포가 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근은 하겠지만, 애초에 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 자체가 피적분함수 f를 완벽하게 표집하는게 아님. 실무에선 보통 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 그림자가 지지 않은 경로의 contribution으로 설정되기 때문에 M이 커질 수록 가시성에 의해 발생하는 노이즈가 생기게 됨. 특히 큰 장면에서는 더욱 그럴 것임. 이걸 해결하기 위해선 *가시성 재사용*을 진행함. 시공간 재사용하기 전에 우선 각 픽셀의 저장소의 표본 y의 가시성을 확인함. 만약 y가 가려져 있다면 해당 저장소는 버림. 즉, 가려져 있는 표본들은 이웃을 확인하지 않음. 만약 지역적으로 가시성이 일관된 상태라면, 공간 재사용을 한 최종 표본은 가려지지 않은 상태일 것임.
+
+> ### 알고리듬 5: 시공간 재사용을 적용한 RIS 알고리듬
+> 입력: 직전 프레임의 저장소를 갖는 이미지 크기 버퍼
+> 출력: 현재 프레임의 저장소
+
+
+```
+ 1  function reservoirReuse(prevFrameReservoirs)
+ 2    reservoirs ← new Array[ImageSize]
+ 3    // 초기 후보군 생성
+ 4    foreach 픽셀 q ∈ Image do
+ 5      reservoirs[q] ← RIS(q)  // 알고리듬 3
+ 6    // 초기 후보들의 가시성 확인
+ 7    foreach 픽셀 q ∈ Image do
+ 8      if shadowed(reservoirs[q].y) then
+ 9        reservoirs[q].W ← 0
+10    // 시간 재사용
+11    foreach 픽셀 q ∈ Image do
+12      q' ← pickTemporalNeighbor(q)
+13    reservoirs[q] ← combineReservoirs(q, reservoirs[q], prevFrameReservoirs[q'])  // 알고리듬 4
+14    // 공간 재사용
+15    for iteration i ← 1 to n do
+16      foreach 픽셀 q ∈ Image do
+17        Q ← pickSpatialNeighbors(q)
+18        R ← {reservoirs[q'] | q' ∈ Q}
+19        reservoirs[q] ← combineReservoirs(q.reservoirs[q], R)
+20    // 픽셀 색 연산
+21    foreach 픽셀 q ∈ Image do
+22      Image[q] ← shadePixel(reservoirs[q], q) // 알고리듬 3
+23    return reservoirs
+```
 
 # Latex
 
@@ -227,4 +319,29 @@ ReservoirReplacementProbability
 XiRemainingInReservoirProbability
 ```
 \frac{\textrm{w}{\left(x_{i} \right )}}{\sum^{m}_{j=1}{\textrm{w}{\left(x_{j} \right )}}}\left(1 -  \frac{\textrm{w}{\left(x_{m + i} \right )}}{\sum^{m + 1}_{j=1}{\textrm{w}{\left(x_{j} \right )}}}\right ) = \frac{\textrm{w}{\left(x_{i} \right )}}{\sum^{m + 1}_{j=1}{\textrm{w}{\left(x_{j} \right )}}}
+```
+
+TargetDistribution
+```
+\hat{p}{\left(x \right )} = \rho{\left(x \right )}L_e{\left(x \right )}G{\left(x \right )}
+```
+
+NeighboringPixelTargetPdf
+```
+\hat{p}_{q'}
+```
+
+NeighboringTargetPdfFactor
+```
+\frac{\hat{p}_{q}{\left(r.y \right )}}{\hat{p}_{q'}{\left(r.y\right)}}
+```
+
+ResultingTerm
+```
+\frac{\hat{p}_{q}{\left(r.y \right )}}{\hat{p}_{q'}{\left(r.y\right)}} \cdot r.\textrm{w}_{\textrm{sum}}
+```
+
+ResultTermSuccinct
+```
+\hat{p}_{q}{\left(r.y \right )} \cdot r.W \cdot r.M
 ```
