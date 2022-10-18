@@ -91,7 +91,7 @@ RIS 알고리듬은 다음과 같다:
 
 <blockquote>
   <h3 id="알고리듬-1-ris">알고리듬 1: RIS</h3>
-  <p>입력: M, q: 픽셀 q에 대해 생성할 후보 표본의 수 M(M ≥ 1)
+  <p>입력: M, q: 픽셀 q에 대해 생성할 후보 표본의 수 M(M ≥ 1)<br>
 출력: 표본 y와 RIS 가중치의 합 <img src="/Images/ReStir/SumOfRisWeights.png" alt="SumOfRisWeights"></p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  // 후보군 x = {x_1, ..., x_M} 생성
  2  x ← 0
@@ -168,10 +168,9 @@ RIS와 WRS가 ReSTIR 알고리듬의 기본임. 이 둘을 바탕으로 알고�
 
 WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸는 건 쉬움. 그냥 저장소를 연속적으로 생성된 후보 x<sub>i</sub>와 이에 대응하는 가중치에 따라 갱신해주면 됨.
 
-> ### 알고리듬 3: WRS를 활용한 RIS 스트리밍
-
-```
- 1  foreach 픽셀 q ∈ Image do
+<blockquote>
+  <h3 id="알고리듬-3-wrs를-활용한-ris-스트리밍">알고리듬 3: WRS를 활용한 RIS 스트리밍</h3>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  foreach 픽셀 q ∈ Image do
  2      Image[q] ← shadePixel(RIS(q), q)
  3  function RIS(q)
  4      Reservoir r
@@ -182,7 +181,8 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
  9      return r
 10  function shadePixel(Reservoir r, q)
 11      return f_q(r.y) * r.W
-```
+</code></pre></div></div>
+</blockquote>
 
 우선 광원의 표면에서 균등하게 표본을 생성한 다음, 그림자가 져있지 않은 경로의 contribution ![TargetDistribution](/Images/ReStir/TargetDistribution.png)를 target 분포로 삼아 살아남은 N 개의 RIS 표본에 대해서 그림자 광선만을 추적해줌. M의 개수에 따라 얼마나 잘 렌더링이 되는지를 확인해본 결과, M이 증가할 수록 RIS가 제일 렌더링이 잘 됨. 위의 알고리듬은 공간 복잡도 자체는 상수지만, 시간 복잡도 자체는 O(M)임.
 
@@ -194,10 +194,19 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 
 저장소는 보통 현재 선택한 표본 y와 현재까지 처리한 표본들의 가중치의 합 w<sub>sum</sub>이라는 상태를 가짐. 두 저장소를 합치려면 각 저장소의 y를 마치 w<sub>sum</sub>의 가중치를 갖는 새 표본으로 간주하고 이걸 새 저장소의 입력으로 넣어주면 됨. 수학적으로 보면 두 저장소의 입력 스트림을 합쳐서 저장소 표집을 해준 거랑 똑같음. 시간 복잡도도 *상수*인데다가, 그 어느 스트림에도 후보를 저장해줄 필요도 없음. 그냥 처리할 저장소의 현재 상태만 갖다 쓰면 됨.
 
-> ### 알고리듬 4: 여러 저장소 스트림 합치기
-> 입력: 합칠 저장소 r<sub>i</sub>
-> 출력: r<sub>1</sub>, &hellip;, r<sub>k</sub>의 입력 스트림을 이어 붙인 것과 같은 합쳐진 저장소
-> 
+<blockquote>
+  <h3 id="알고리듬-4-여러-저장소-스트림-합치기">알고리듬 4: 여러 저장소 스트림 합치기</h3>
+  <p>입력: 합칠 저장소 r<sub>i</sub><br>
+출력: r<sub>1</sub>, …, r<sub>k</sub>의 입력 스트림을 이어 붙인 것과 같은 합쳐진 저장소</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1   function combineReservoirs(q, r_1, r_2, ..., r_k)
+2       Reservoir s
+3       foreach r ∈ {r_1, ..., r_k} do
+4           s.update(r.y, phat_q(r.y) * r.W * r.M)
+5       s.M ← r_1.M + r_2.M + ... + r_k.M
+6       s.W = (1 / (phat_q(s.y))) * ((1 / (s.M)) * s.w_sum) // 단일 표본 RIS 추정량
+7       return s
+</code></pre></div></div>
+</blockquote>
 
 ```
 1   function combineReservoirs(q, r_1, r_2, ..., r_k)
@@ -223,9 +232,35 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 
 솔직히 후보의 개수는 무한대로 늘어날 순 있지만, 그럼에도 아예 노이즈가 없을 순 없음. M이 무한대로 가면서 표본의 분포가 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근은 하겠지만, 애초에 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 자체가 피적분함수 f를 완벽하게 표집하는게 아님. 실무에선 보통 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 그림자가 지지 않은 경로의 contribution으로 설정되기 때문에 M이 커질 수록 가시성에 의해 발생하는 노이즈가 생기게 됨. 특히 큰 장면에서는 더욱 그럴 것임. 이걸 해결하기 위해선 *가시성 재사용*을 진행함. 시공간 재사용하기 전에 우선 각 픽셀의 저장소의 표본 y의 가시성을 확인함. 만약 y가 가려져 있다면 해당 저장소는 버림. 즉, 가려져 있는 표본들은 이웃을 확인하지 않음. 만약 지역적으로 가시성이 일관된 상태라면, 공간 재사용을 한 최종 표본은 가려지지 않은 상태일 것임.
 
-> ### 알고리듬 5: 시공간 재사용을 적용한 RIS 알고리듬
-> 입력: 직전 프레임의 저장소를 갖는 이미지 크기 버퍼
-> 출력: 현재 프레임의 저장소
+<blockquote>
+  <h3 id="알고리듬-5-시공간-재사용을-적용한-ris-알고리듬">알고리듬 5: 시공간 재사용을 적용한 RIS 알고리듬</h3>
+  <p>입력: 직전 프레임의 저장소를 갖는 이미지 크기 버퍼<br>
+출력: 현재 프레임의 저장소</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  function reservoirReuse(prevFrameReservoirs)
+ 2    reservoirs ← new Array[ImageSize]
+ 3    // 초기 후보군 생성
+ 4    foreach 픽셀 q ∈ Image do
+ 5      reservoirs[q] ← RIS(q)  // 알고리듬 3
+ 6    // 초기 후보들의 가시성 확인
+ 7    foreach 픽셀 q ∈ Image do
+ 8      if shadowed(reservoirs[q].y) then
+ 9        reservoirs[q].W ← 0
+10    // 시간 재사용
+11    foreach 픽셀 q ∈ Image do
+12      q' ← pickTemporalNeighbor(q)
+13    reservoirs[q] ← combineReservoirs(q, reservoirs[q], prevFrameReservoirs[q'])  // 알고리듬 4
+14    // 공간 재사용
+15    for iteration i ← 1 to n do
+16      foreach 픽셀 q ∈ Image do
+17        Q ← pickSpatialNeighbors(q)
+18        R ← {reservoirs[q'] | q' ∈ Q}
+19        reservoirs[q] ← combineReservoirs(q.reservoirs[q], R)
+20    // 픽셀 색 연산
+21    foreach 픽셀 q ∈ Image do
+22      Image[q] ← shadePixel(reservoirs[q], q) // 알고리듬 3
+23    return reservoirs
+</code></pre></div></div>
+</blockquote>
 
 
 ```
