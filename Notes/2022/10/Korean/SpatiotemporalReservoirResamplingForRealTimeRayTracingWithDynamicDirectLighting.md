@@ -34,7 +34,7 @@
 
 # 2. 이론적 배경
 
-어떤 점 y에서 직접광에 의해 방향 ![DirectionOmega](/Images/ReStir/DirectionOmega.png)로 반사된 radiance L은 모든 광원 표면 A에 대한 적분으로 구할 수 있다:
+어떤 점 y에서 직접광에 의해 방향 ![DirectionOmega](/Images/ReStir/DirectionOmega.png)로 반사된 radiance L은 모든 광원 표면 A에 대한 적분으로 구할 수 있음:
 
 ![ReflectedRadianceL](/Images/ReStir/ReflectedRadianceL.png)
 
@@ -65,29 +65,29 @@ MIS 대신 사용할 수 있는 방법에는 몇몇 항의 곱에 *근사하게*
 
 예를 들어, 우리가 구해야하는 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 표집을 하려고 보니, 실질적으로 그게 불가능하다면, 이 PDF에 근사할 수 있도록 source PDF p를 구하는 것임.
 
-즉, 적당히 최적인 PDF p에서 z 개의 표본을 우선 뽑는다. 이 z 개의 표본을 갖는 집합에서 확률 p(z \| **x**)에 따라 한 표본을 또다시 뽑는 것이다. 이때의 표본 집합의 모든 z 개의 표본은 각각 가중치를 갖는데, 이 가중치에 비례하여 확률을 부여한다. 이때 한 표본을 뽑을 때, target PDF에 근사하게 표본을 뽑아야 하므로 가중치에 target PDF의 정보를 추가한다:
+즉, 적당히 최적인 PDF p에서 z 개의 표본을 우선 뽑아보고, 이 집합에서 확률 p(z \| **x**)에 따라 한 표본을 또다시 뽑는 것임. 이때의 표본 집합의 모든 z 개의 표본은 각각 가중치를 갖는데, 이 가중치에 비례하여 확률을 부여함. 이때 한 표본을 뽑을 때, target PDF에 근사하게 표본을 뽑아야 하므로 가중치에 target PDF의 정보를 추가함:
 
 ![ResampledImportanceSamplingCandidateProbability](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
 
 ![ResampledImportanceSamplingCandidateWeight](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
 
-이런 방법을 사용하여 최종적으로 샘플 y ≡ x<sub>z</sub>를 뽑게 된다.
+이런 방법을 사용하여 최종적으로 샘플 y ≡ x<sub>z</sub>를 뽑게 됨.
 
-이때 단일 표본 RIS 추정량은 다음과 같다:
+이때 단일 표본 RIS 추정량은 다음과 같음:
 
 ![SingleSampleRisEstimator](/Images/ReStir/SingleSampleRisEstimator.png)
 
-즉, 추정량은 마치 y가 p가 아니라 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 온 것으로 착각하게 되고, 괄호 안의 항을 통해 실제로는 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 근사하고 있음을 알 수 있다.
+즉, 추정량은 마치 y가 p가 아니라 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 온 것으로 착각하게 되고, 괄호 안의 항을 통해 실제로는 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 근사하고 있음을 알 수 있음.
 
-RIS를 여러 표본에 대해 반복하고 평균을 내게 되면 N개 표본 RIS 추정량을 얻을 수 있다:
+RIS를 여러 표본에 대해 반복하고 평균을 내게 되면 N개 표본 RIS 추정량을 얻을 수 있음:
 
 ![NSampleRisEstimator](/Images/ReStir/NSampleRisEstimator.png)
 
-이 논문에서는 단일 표본을 가정하고 진행한다.
+이 논문에서는 단일 표본을 가정하고 진행함.
 
-일반적으로 각 픽셀 q는 고유한 피적분함수 f<sub>q</sub>와 이에 대응하는 target PDF ![TargetPdfForPixelQ](/Images/ReStir/TargetPdfForPixelQ.png)를 가질 것이다.
+일반적으로 각 픽셀 q는 고유한 피적분함수 f<sub>q</sub>와 이에 대응하는 target PDF ![TargetPdfForPixelQ](/Images/ReStir/TargetPdfForPixelQ.png)를 가질 것임.
 
-RIS 알고리듬은 다음과 같다:
+RIS 알고리듬은 다음과 같음:
 
 <blockquote>
   <h3 id="알고리듬-1-ris">알고리듬 1: RIS</h3>
@@ -113,31 +113,31 @@ RIS 알고리듬은 다음과 같다:
 
 **RIS와 MIS 섞기**
 
-위에서는 source PDF p가 하나라고 가정했지만, MIS에서 그랬듯, 여러 이미 잘 되는 표집 기술들이 존재함. 어차피 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수일 때 p가 양수이기만 하면 M → ∞일 수록 y의 분포는 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근하지만, source PDF p의 생김새는 y의 PDF가 얼마나 잘 되느냐와 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 얼마나 빠르게 수렴하느냐를 결정하기도 함. 실제로 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 두 함수의 곱(예를 들면 lighting × BSDF)이라고 하면, y의 PDF가 얼마나 잘 되느냐는 source PDF가 어떤 함수(lighting? 아니면 BSDF?)에서 왔느냐에 따라 다르다.
+위에서는 source PDF p가 하나라고 가정했지만, MIS에서 그랬듯, 여러 이미 잘 되는 표집 기술들이 존재함. 어차피 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수일 때 p가 양수이기만 하면 M → ∞일 수록 y의 분포는 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근하지만, source PDF p의 생김새는 y의 PDF가 얼마나 잘 되느냐와 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 얼마나 빠르게 수렴하느냐를 결정하기도 함. 실제로 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 두 함수의 곱(예를 들면 lighting × BSDF)이라고 하면, y의 PDF가 얼마나 잘 되느냐는 source PDF가 어떤 함수(lighting? 아니면 BSDF?)에서 왔느냐에 따라 다름.
 
-다행히도 RIS 내부적으로 MIS를 사용하여 분산 줄이기를 해줄 수 있다. MIS를 통해 후보군 명단을 뽑은 다음, 여기서 구한 MIS(혼합) PDF를 source PDF로 사용하여 남은 RIS를 처리해주면 된다.
+다행히도 RIS 내부적으로 MIS를 사용하여 분산 줄이기를 해줄 수 있음. MIS를 통해 후보군 명단을 뽑은 다음, 여기서 구한 MIS(혼합) PDF를 source PDF로 사용하여 남은 RIS를 처리해주면 됨.
 
-근데 MIS의 복잡도는 사용하는 기술의 개수에 따라 제곱에 비례하여 증가한다.
+근데 MIS의 복잡도는 사용하는 기술의 개수에 따라 제곱에 비례하여 증가함.
 
-여기서는 후보의 개수를 늘리는 방법으로 시공간 재사용을 해준다. 이때 시간적으로나 공간적으로나 각각 다른 source PDF와 피적분함수 영역을 사용한다.
+여기서는 후보의 개수를 늘리는 방법으로 시공간 재사용을 해줌. 이때 시간적으로나 공간적으로나 각각 다른 source PDF와 피적분함수 영역을 사용함.
 
 ## 2.2. 가중치 저장소 표집
 
-가중치 저장소 표집Weighted reservoir sampling (WRS)이란 어떤 연속된, 지속적으로 들어오는 데이터 스트림stream {x<sub>1</sub>, &hellip; x<sub>M</sub>}에 대해서 N 개의 원소를 무작위로 표집하는 알고리듬의 한 종류이다. RIS에서처럼 각 원소에는 가중치 w(x<sub>i</sub>)가 있으며, 이 가중치에 따른 확률로 x<sub>i</sub>를 선택하게 된다:
+가중치 저장소 표집Weighted reservoir sampling (WRS)이란 어떤 연속된, 지속적으로 들어오는 데이터 스트림stream {x<sub>1</sub>, &hellip; x<sub>M</sub>}에 대해서 N 개의 원소를 무작위로 표집하는 알고리듬의 한 종류임. RIS에서처럼 각 원소에는 가중치 w(x<sub>i</sub>)가 있으며, 이 가중치에 따른 확률로 x<sub>i</sub>를 선택하게 됨:
 
 ![WrsWeightsProbability](/Images/ReStir/WrsWeightsProbability.png)
 
-저장소 표집은 원소마다 딱 한 번만 처리하며, 메모리엔 오로지 N 개의 원소만 있을 수 있다. 스트림의 크기 M은 사전에 몰라도 된다.
+저장소 표집은 원소마다 딱 한 번만 처리하며, 메모리엔 오로지 N 개의 원소만 있을 수 있다. 스트림의 크기 M은 사전에 몰라도 됨.
 
-보통 저장소 표집 알고리듬은 원소 x<sub>i</sub>가 출력 집합에 여러 번 등장할 수 있는지 여부로 분류하곤 한다. 즉, 표본을 고를 때, 대체할 표본이 *있*냐 *없*냐를 보는 것이다. 몬테 카를로의 경우 x<sub>i</sub>를 독립적으로 고를 것이기 때문에 대체할 표본이 *있*는 WRS를 다룰 것이다.
+보통 저장소 표집 알고리듬은 원소 x<sub>i</sub>가 출력 집합에 여러 번 등장할 수 있는지 여부로 분류하곤 함. 즉, 표본을 고를 때, 대체할 표본이 *있*냐 *없*냐를 보는 것. 몬테 카를로의 경우 x<sub>i</sub>를 독립적으로 고를 것이기 때문에 대체할 표본이 *있*는 WRS를 다룰 것임.
 
-저장소 표집은 입력 스트림의 원소를 들어온 순서대로 처리하며, N 개의 표본을 저장할 수 있는 *저장소reservoir*에 표본을 저장한다. 스트림의 어느 시점에서나 저장소 표집은, 저장소의 표본들이 목표하는 분포(현재까지 처리한 모든 원소에 대해서)로부터 뽑히도록하는 불변량을 유지한다. 스트림이 끝나면 저장소를 반환한다. 이 논문에서는 N = 1, 즉 저장소에 표본이 딱 하나 밖에 없는 경우만 다루도록 한다.
+저장소 표집은 입력 스트림의 원소를 들어온 순서대로 처리하며, N 개의 표본을 저장할 수 있는 *저장소reservoir*에 표본을 저장함. 스트림의 어느 시점에서나 저장소 표집은, 저장소의 표본들이 목표하는 분포(현재까지 처리한 모든 원소에 대해서)로부터 뽑히도록하는 불변량을 유지함. 스트림이 끝나면 저장소를 반환함. 이 논문에서는 N = 1, 즉 저장소에 표본이 딱 하나 밖에 없는 경우만 다룸.
 
-스트림에 새 원소가 들어오면, 불변량을 유지하기 위해 저장소를 갱신해줘야 한다. 즉, m 개의 표본을 처리한 이후에 표본 x<sub>i</sub>가 ![WrsWeightsProbability](/Images/ReStir/WrsWeightsProbability.png)의 확률로 저장소에 등장한다는 것이다. 갱신 규칙에 의해 ![ReservoirReplacementProbability](/Images/ReStir/ReservoirReplacementProbability.png)의 확률로 저장소에 있는 x<sub>i</sub>를 다음 표본 x<sub>m + 1</sub>으로 교체한다. 이를 통해 x<sub>m + 1</sub>가 원하는 빈도에 따라 저장소에 등장할 수 있도록 해준다. 즉, 임의의 이전 표본 x<sub>i</sub>가 저장소에 있을 확률은 다음과 같다:
+스트림에 새 원소가 들어오면, 불변량을 유지하기 위해 저장소를 갱신해줘야 함. 즉, m 개의 표본을 처리한 이후에 표본 x<sub>i</sub>가 ![WrsWeightsProbability](/Images/ReStir/WrsWeightsProbability.png)의 확률로 저장소에 등장한다는 것. 갱신 규칙에 의해 ![ReservoirReplacementProbability](/Images/ReStir/ReservoirReplacementProbability.png)의 확률로 저장소에 있는 x<sub>i</sub>를 다음 표본 x<sub>m + 1</sub>으로 교체한다. 이를 통해 x<sub>m + 1</sub>가 원하는 빈도에 따라 저장소에 등장할 수 있도록 해줌. 즉, 임의의 이전 표본 x<sub>i</sub>가 저장소에 있을 확률은 다음과 같음:
 
 ![XiRemainingInReservoirProbability](/Images/ReStir/XiRemainingInReservoirProbability.png)
 
-이를 통해 불변량이 유지된다.
+이를 통해 불변량이 유지됨.
 
 <blockquote>
   <h3 id="알고리듬-2-wrs">알고리듬 2: WRS</h3>
@@ -322,10 +322,10 @@ p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된
 
 즉, 두 가지를 알 수 있음:
 
-1. target 함수가 0이 아닐 때, 모든 후보 PDF가 0이 아니라면 |Z(y)| = M임
+1. target 함수가 0이 아닐 때, 모든 후보 PDF가 0이 아니라면 \|Z(y)\| = M임
 2. RIS 가중치가 곧 RIS PDF의 역수의 무편향 추정량이 됨
 
-만약 PDF가 피적분함수의 어떤 영역에서 0이라면 |Z(y)|/M < 1이므로 PDF의 역수는 언제나 과소추정될 것임. 즉, 기대값이 실제 적분값보다 더욱 어두워지는 쪽으로 편향이 발생함.
+만약 PDF가 피적분함수의 어떤 영역에서 0이라면 \|Z(y)\|/M < 1이므로 PDF의 역수는 언제나 과소추정될 것임. 즉, 기대값이 실제 적분값보다 더욱 어두워지는 쪽으로 편향이 발생함.
 
 ## 4.3. 무편향 RIS
 
@@ -365,24 +365,24 @@ RIS 가중치를 수정해주면 편향성을 없앨 수 있음. 1/M을 곱하�
 
 다음은 무편향 저장소 혼합(균등 가중치 사용) 의사 코드임:
 
-> ### 알고리듬 6: 다중 저장소 무편향 혼합
-> 입력: 저장소 r<sub>i</sub>와 해당 저장소의 출신 픽셀 q<sub>i</sub>
-> 출력: 입력 저장소의 무편향 혼합
-
-```
- 1  function combineReservoirsUnbiased(q, r_1, r_2, …, r_k, q_1, …, q_k)
+<blockquote>
+  <h3 id="알고리듬-6-다중-저장소-무편향-혼합">알고리듬 6: 다중 저장소 무편향 혼합</h3>
+  <p>입력: 저장소 r<sub>i</sub>와 해당 저장소의 출신 픽셀 q<sub>i</sub><br>
+출력: 입력 저장소의 무편향 혼합</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  function combineReservoirsUnbiased(q, r_1, r_2, …, r_k, q_1, …, q_k)
  2    Reservoir s
  3    foreach r ∈ {r_1, …, r_k} do
  4      s.update(r.y, phat_q(r.y) · r.W · r.M)
  5    s.M ← r_1.M + r_2.M + … + r_k.M
  6    Z ← 0
  7    foreach q_i ∈ {q_1, …, q_k} do
- 8      if phat_q_i(s.y) > 0 then
+ 8      if phat_q_i(s.y) &gt; 0 then
  9        Z ← Z + r_i.M
 10    m ← 1/Z
 11    s.W = (1/(phat_q(s.y))) · (m · s.w_sum) // 무편향 가중치 W(x, z)
 12    return s
-```
+</code></pre></div></div>
+</blockquote>
 
 MIS 버전은 마찬가지로 하면 됨.
 
