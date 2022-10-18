@@ -589,13 +589,39 @@ Z{\left(y \right )} = \left \{ i \mid 1 \leq i \leq M \wedge p_{i}{\left(y \righ
 
 TotalPdfOfAnOutputSampleY
 ```
-p{\left(y\right)} = \sum_{i \in Z{\left(y \right )}} \underbrace{{\int \cdots \int}}_{M - 1 \textrm{ times}}{p{\left(\textbf{x}^{i\rightarrow y}, i\right)}\underbrace{\textrm{d}x_{1}\cdots\textrm{d}x_{M}}_{M - 1 \textrm{ times}}}
+p{\left(y\right)} = 
+\sum_{i \in Z{\left(y \right )}} 
+\underbrace
+{
+  {
+    \int \cdots \int
+  }
+}_{M - 1 \textrm{ times}}{p{\left(\textbf{x}^{i\rightarrow y}, i\right)}\underbrace{\textrm{d}x_{1}\cdots\textrm{d}x_{M}}_{M - 1 \textrm{ times}}}
 ```
 
 ExpectationOfRisWeight
 ```
-E_{x_{z} = y}\left [ W{\left(\textbf{x}, z \right )} \right ] = \sum_{i \in Z{\left(y \right )}} 
-\frac{{\int \cdots \int}{W{\left(\textbf{x}^{i\rightarrow y}, i\right)}p{\left(\textbf{x}^{i\rightarrow y}, i\right)}\textrm{d}x_{1}\cdots\textrm{d}x_{M}}}{p{\left(y \right )}}
+E_{x_{z} = y}\left [ W{\left(\textbf{x}, z \right )} \right ] = 
+\sum_{i \in Z{\left(y \right )}} 
+\frac
+{
+  {
+    \int \cdots \int
+  }
+  {
+    W
+    {
+      \left(\textbf{x}^{i\rightarrow y}, i\right)
+    }
+    p
+    {
+      \left(\textbf{x}^{i\rightarrow y}, i\right)
+    }
+    \textrm{d}x_{1} \cdots \textrm{d}x_{M}
+    }
+  }
+  {p{\left(y \right )}
+}
 ```
 
 SimplifiedExpectationOfRisWeight
