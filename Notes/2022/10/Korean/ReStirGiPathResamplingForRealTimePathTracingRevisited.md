@@ -252,6 +252,12 @@ ReSTIR으로 간접광 표집하려면 우선 간접광에 contribute하는 방�
 </div>
 <div style="clear: both;"></div>
 
-여기서 x<sub>1</sub><sup>q</sup>와 x<sub>2</sub><sup>q</sup>는 재사용 경로의 첫째와 둘째 정점, x<sub>1</sub><sup>r</sup>은 가시점, &Phi;<sub>2</sub><sup>q</sup>와 &Phi;<sub>1</sub><sup>q</sup>
+여기서 x<sub>1</sub><sup>q</sup>와 x<sub>2</sub><sup>q</sup>는 재사용 경로의 첫째와 둘째 정점, x<sub>1</sub><sup>r</sup>은 가시점, &Phi;<sub>2</sub><sup>q</sup>와 &Phi;<sub>1</sub><sup>q</sup>는 각각 벡터 x<sub>1</sub><sup>q</sup> - x<sub>2</sub><sup>q</sup>와 x<sub>1</sub><sup>r</sup> - x<sub>2</sub><sup>q</sup>가 x<sub>2</sub><sup>q</sup>에서의 법선과 이루는 각도를 의미함.
 
-> ###
+![Figure6](/Images/ReStirGi/Figure6.jpeg)
+
+> ### 알고리듬 4: 공간 재사용
+
+```
+ 1:
+```
