@@ -20,21 +20,26 @@
   * [블로그 정리본](/Notes/2022/10/Korean/ReStirGiPathResamplingForRealTimePathTracingRevisited.md)
 * [Rearchitecturing Spatiotemporal Resampling for Production](https://research.nvidia.com/publication/2021-07_rearchitecting-spatiotemporal-resampling-production). Chris Wyman, Alexey Panteleev. HPG. 2021.07.06.
   * 일명 RTXDI 논문
+  * [블로그 정리본](/Notes/2022/10/Korean/RearchitecturingSpatiotemporalResamplingForProduction.md)
 * [Rendering Many Lights with Grid-Based Reservoirs](https://link.springer.com/chapter/10.1007/978-1-4842-7185-8_23). 2021.08.04.
   * 일명 ReGIR 논문
+  * [블로그 정리본](/Notes/2022/10/Korean/RenderingManyLightsWithGridBasedReservoirs.md)
 * [ReSTIR Meets Surfel Lighting Breakdown](https://gist.github.com/h3r2tic/ba39300c2b2ca4d9ca5f6ff22350a037). 2021.11.23.
 * [Fast Volume Rendering with Spatiotemporal Reservoir Resampling](https://dqlin.xyz/pubs/2021-sa-VOR/). Daqi Lin, Chris Wyman, Cem Yuksel. ACM ToG. SIGGRAPH Asia. 2021.11.30.
   * 일명 Volumetric ReSTIR 논문
+  * [블로그 정리본](/Notes/2022/10/Korean/FastVolumeRenderingWithSpatiotemporalReservoirSampling.md)
 * [Dynamic Diffuse Global Illumination Resampling](https://arxiv.org/abs/2108.05263). Zander Majercik, Thomas Müller, Alexander Keller, Derek Nowrouzezahrai, Morgan McGuire. CGF. EGSR. 2021. 12.06.
   * 일명 DDGI ReSTIR 논문
 * [World-Space Spatiotemporal Reservoir Reuse for Ray-Traced Global Illumination](https://dl.acm.org/doi/10.1145/3478512.3488613). Guillaume Boissé. SIGGRAPH Asia. 2021.12.14.
   * 일명 WS ReSTIR 논문
+  * [블로그 정리본](/Notes/2022/10/Korean/WorldSpaceSpatiotemporalReservoirReuseForRayTracedGlobalIllumination.md)
 * [How to add thousands of lights to your renderer and not die in the process](http://www.zyanidelab.com/how-to-add-thousands-of-lights-to-your-renderer/). 2022.03.13.
 * [ReSTIR GI for Specular Bounces](http://www.zyanidelab.com/restir-gi-for-specular-bounces/). 2022.04.12.
 * [ReSTIR El-Cheapo](http://www.zyanidelab.com/restir-el-cheapo/). 2022.05.04.
 * [GI Overview](https://github.com/EmbarkStudios/kajiya/blob/main/docs/gi-overview.md). 2022.06.04.
 * [Generalized Resampled Importance Sampling Foundations of ReSTIR](https://graphics.cs.utah.edu/research/projects/gris/). Daqi Lin, Markus Kettunen, Benedikt Bitterli, Jacopo Pantaleoni, Cem Yuksel, Chris Wyman. ACM ToG. SIGGRAPH. 2022.07.24.
   * 일명 GRIS 혹은 ReSTIR PT 논문
+  * [블로그 정리본](/Notes/2022/10/Korean/GeneralizedResampledImportanceSamplingFoundationsOfReStir.md)
 
 ### 초록
 

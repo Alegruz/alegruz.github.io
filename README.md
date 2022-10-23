@@ -51,6 +51,11 @@ Game Development Studies with Books
         * [전역 조명을 위한 중요도 재표집](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)
         * [ReSTIR 논문 정리](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)
         * [ReSTIR GI 논문 재정리](/Notes/2022/10/Korean/ReStirGiPathResamplingForRealTimePathTracingRevisited.md)
+        * [RTXDI 논문 정리](/Notes/2022/10/Korean/RearchitecturingSpatiotemporalResamplingForProduction.md)
+        * [ReGIR 정리](/Notes/2022/10/Korean/RenderingManyLightsWithGridBasedReservoirs.md)
+        * [Volumetric ReSTIR 논문 정리](/Notes/2022/10/Korean/FastVolumeRenderingWithSpatiotemporalReservoirSampling.md)
+        * [WS ReSTIR 논문 정리](/Notes/2022/10/Korean/WorldSpaceSpatiotemporalReservoirReuseForRayTracedGlobalIllumination.md)
+        * [GRIS 논문 정리](/Notes/2022/10/Korean/GeneralizedResampledImportanceSamplingFoundationsOfReStir.md)
 
 ## Mentoring
 

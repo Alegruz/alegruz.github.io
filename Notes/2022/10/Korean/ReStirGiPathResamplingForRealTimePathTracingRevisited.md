@@ -1,6 +1,12 @@
 # ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집 (revisited) (2022.10.20)
 [Home](/README.md)
 
+* [Yaobin Ouyang](https://developer.nvidia.com/blog/author/yaobinouyang/), NVIDIA.
+* [Shiqiu Liu](http://behindthepixels.io/), NVIDIA.
+* [Markus Kettunen](https://research.nvidia.com/person/markus-kettunen), NVIDIA.
+* [Matt Pharr](https://pharr.org/matt/), NVIDIA.
+* [Jacop Pantaleoni](https://www.linkedin.com/in/jpantaleoni/), NVIDIA.
+
 # 초록
 
 요즘에 GPU로 광선 추적을 가속화할 수 있긴 하지만, 그래도 실시간으론 겨우 몇 개의 광선 밖에 추적을 못 함. 그렇기 때문에 디노이저가 아무리 좋아도 문제가 발생할 수 밖에 없음. 최근 [ReSTIR 알고리듬](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)이 잘 되긴 하는데, 간접광 전용 알고리듬도 필요함.
