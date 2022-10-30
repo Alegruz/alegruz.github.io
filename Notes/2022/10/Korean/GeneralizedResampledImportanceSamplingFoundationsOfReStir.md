@@ -126,19 +126,73 @@ ReSTIR이나 RIS도 마찬가지지만, 경로의 표본은 반드시 같은(공
 
 알고리듬적으로 보자면 입력 표본 X<sub>i</sub>에서 한 표본 Y = X<sub>s</sub>를 확률 ![SelectionProbability](/Images/Gris/SelectionProbability.png)에 따라서 뽑는 것임. 이때 w<sub>i</sub>는 재표집 가중치임. 이전 연구에서는 w<sub>i</sub>를 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(X<sub>i</sub>)/p(X<sub>i</sub>)로 두었었음. 여기서 가중치는 상대적인 값임. 즉, 가중치에 어떤 값을 곱하더라도 선택할 확률에는 영향이 없을 것이라는 뜻임:
 
-![TalbotEtAlResamplingWeightWi](/Images/Gris/TalbotEtAlResamplingWeightWi.png)
-
-![TalbotEtAlUnbiasedContributionWeightWi](/Images/Gris/TalbotEtAlUnbiasedContributionWeightWi.png)
+<div id="eq_1">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:40%; text-align:center;"><img src="/Images/Gris/TalbotEtAlResamplingWeightWi.png" alt="TalbotEtAlResamplingWeightWi"/></p>
+ <p style="float: left; width:40%; text-align:center;"><img src="/Images/Gris/TalbotEtAlUnbiasedContributionWeightWi.png" alt="TalbotEtAlUnbiasedContributionWeightWi"/></p>
+ <p style="float: left; width:10%; text-align:right;">(1)</p>
+</div>
+<div style="clear: both;"></div>
 
 즉, 위와 같이 표기적 일관성을 위해 표기할 수 있음. 선택한 표본 Y의 PDF 자체는 다루기 힘들더라도, 그 Y의 *무편향 contribution 가중치*
 
-![UnbiasedContributionWeightOfSelectedSampleY](/Images/Gris/UnbiasedContributionWeightOfSelectedSampleY.png)
+<div id="eq_2">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/UnbiasedContributionWeightOfSelectedSampleY.png" alt="UnbiasedContributionWeightOfSelectedSampleY"/></p>
+ <p style="float: left; width:10%; text-align:right;">(2)</p>
+</div>
+<div style="clear: both;"></div>
 
 를 1/p<sub>Y</sub>(Y) 대신 사용할 수 있을 것임. f > 0일 때 p<sub>Y</sub> > 0일 것이라 가정한다면, 즉 f ⊂ supp Y일 때,
 
-![ExpectedValueOfIntegralF](/Images/Gris/ExpectedValueOfIntegralF.png)
+<div id="eq_3">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ExpectedValueOfIntegralF.png" alt="ExpectedValueOfIntegralF"/></p>
+ <p style="float: left; width:10%; text-align:right;">(3)</p>
+</div>
+<div style="clear: both;"></div>
 
 적절한 조건 하에서는 p<sub>Y</sub>가 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)에 수렴하며, 몬테 카를로 분산 Var[f(Y)W<sub>Y</sub>]는 점근적으로 Y가 *정확하게* ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)의 분포를 가질 때의 분산에 근사함. ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)를 f에 비례하도록 선택해야 추정량 f(Y)W<sub>Y</sub>가 점근적으로 분산이 0이 됨을 보장할 수 있음.
+
+## 3.2. 서로 다르게 분포된 표본
+
+만약 표본 X<sub>i</sub>가 서로 다른 PDF p<sub>i</sub>를 갖는다면, 더 복잡해짐. 이러면 *재표집 MISresampling MIS*라는게 필요해져서 가중치 m<sub>i</sub>라는 것을 도입하게 됨. 가중치 m<sub>i</sub>는 m<sub>i</sub> ≥ 0이며, ![TargetFunction](/Images/ReStirGi/TargetFunction.png)의 support에 있는 모든 x에 대해서
+
+<div id="eq_4">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ResamplingMisWeightsSum.png" alt="ResamplingMisWeightsSum"/></p>
+ <p style="float: left; width:10%; text-align:right;">(4)</p>
+</div>
+<div style="clear: both;"></div>
+
+를 만족함. Talbot은 Veach의 균형 휴리스틱과 유사한 가중치를 제시했음:
+
+<div id="eq_5">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/TalbotResamplingMisWeightMi.png" alt="TalbotResamplingMisWeightMi"/></p>
+ <p style="float: left; width:10%; text-align:right;">(5)</p>
+</div>
+<div style="clear: both;"></div>
+
+알고리듬적으로 보면 w<sub>i</sub>의 1/M 항을 이 MIS 가중치로 변화해주면 됨:
+
+<div id="eq_6">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:40%; text-align:center;"><img src="/Images/Gris/TalbotResamplingWeightWi.png" alt="TalbotResamplingWeightWi"/></p>
+ <p style="float: left; width:40%; text-align:center;"><img src="/Images/Gris/TalbotUnbiasedContributionWeightWi.png" alt="TalbotUnbiasedContributionWeightWi"/></p>
+ <p style="float: left; width:10%; text-align:right;">(6)</p>
+</div>
+<div style="clear: both;"></div>
+
+이때 최소한 한 PDF p<sub>i</sub>가 각 x ∈ supp ![TargetFunction](/Images/ReStirGi/TargetFunction.png)를 커버한다고 하면, [3번 식](#eq_3)은 이 새로운 w<sub>i</sub>를 바탕으로 [2번 식](#eq_2)의 W<sub>Y</sub>를 갖게 됨. 수렴 조건은 [3.1절](#31-항등-분포-표본)보다는 더 필요하지만 어쨋든 도달 가능함.
+
+## 3.3. 왜 재표집을 일반화해야 하는가?
+
+초기에 RIS 쓸 때는 대충 BSDF 중요도 표집할 때나 써서 f에 값싸게 근사하는 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)를 구해서 여러 값싼 후보들을 생성해서 수렴의 속도를 가속화시키곤 했음.
+
+ReSTIR는 픽셀 간의 표본을 *재사용*해서 여러 적분을 동시다발적으로 추정하는 비용을 줄였음. 이런 목표 아래에선 기존 표본을 재사용하는게 새 표본 만드는 것보다 더 싸다면 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)가 f보다 간단할 필요가 없음. 게다가 재사용한 표본의 PDF가 목표 피적분함수를 더 잘 근사하면 효율성도 얻음. RIS를 반복적으로 사용하기에 ![TargetFunction](/Images/ReStirGi/TargetFunction.png) = f을 써도, 특히 경로가 복잡할 수록 나름 합리적인 선택임.
+
+Talbot의 RIS 이론은 공유된 영역 &Omega;에서 독립적인 표본 X<sub>i</sub>를 가정하는데, ReSTIR는 이 가정을 확대해버렸기 때문에 수렴을 한다는 이론적인 보장이 *하나도* 없음. 사실 알고리듬 자체에도 뭔가 문제가 안 될 것처럼 보이는 수정사항들을 주었는데, 이 때문에 상관관계에 있는 재사용이 잘못된 결과로의 수렴을 야기할 수도 있음.
 
 # Latex
 
@@ -170,4 +224,16 @@ ExpectedValueOfIntegralF
 
 ```
 \int_{\Omega}{f{\left(x \right )}}\textrm{d}y = \textrm{E}\left [ f{\left(Y \right )} W_{Y}\right ]
+```
+
+ResamplingMisWeightsSum
+
+```
+\sum_{i=1}^{M}{m_{i}{\left(x \right )}} = 1
+```
+
+TalbotResamplingMisWeightMi
+
+```
+m_{i}{\left(x \right )} = \frac{p_{i}{\left(x \right )}}{\sum_{j=1}^{M}{p_{j}{\left(x \right )}}}
 ```
