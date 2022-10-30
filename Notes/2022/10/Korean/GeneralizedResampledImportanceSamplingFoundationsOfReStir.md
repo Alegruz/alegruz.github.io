@@ -156,7 +156,7 @@ ReSTIR이나 RIS도 마찬가지지만, 경로의 표본은 반드시 같은(공
 
 ## 3.2. 서로 다르게 분포된 표본
 
-만약 표본 X<sub>i</sub>가 서로 다른 PDF p<sub>i</sub>를 갖는다면, 더 복잡해짐. 이러면 *재표집 MISresampling MIS*라는게 필요해져서 가중치 m<sub>i</sub>라는 것을 도입하게 됨. 가중치 m<sub>i</sub>는 m<sub>i</sub> ≥ 0이며, ![TargetFunction](/Images/ReStirGi/TargetFunction.png)의 support에 있는 모든 x에 대해서
+만약 표본 X<sub>i</sub>가 서로 다른 PDF p<sub>i</sub>를 갖는다면, 더 복잡해짐. 이러면 *재표집 MISresampling MIS*라는게 필요해져서 가중치 m<sub>i</sub>라는 것을 도입하게 됨. 가중치 m<sub>i</sub>는 m<sub>i</sub> ≥ 0이며, ![TargetFunction](/Images/ReStirGi/TargetFunction.png)의 지지집합support에 있는 모든 x에 대해서
 
 <div id="eq_4">
  <p style="float: left; width:10%; text-align:left;"></p>
@@ -219,6 +219,73 @@ Talbot의 RIS 이론은 공유된 영역 &Omega;에서 독립적인 표본 X<sub
 
 출력 Y의 무편향 contribution 가중치 W<sub>Y</sub>는 [2번 식](#eq_2)으로 얻을 수 있음. 이때 제약 조건은 다음과 같음: Var[f(Y)W<sub>Y</sub>]가 Var[f(Y)/![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)(Y)]에 점근한다고 보장할 수 있을 때, p<sub>Y</sub>가 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)에 수렴해야 함. 이러면 ![TargetPdf](/Images/ReStirGi/TargetPdf.png) ∝ f일 때 한 개의 Y에 대해서 분산이 0인 적분으로 점근할 수 있음.
 
+## 4.2. GRIS를 통한 무편향 적분
+
+우선 영역 &Omega;에 대해서 함수 f에 대한 무편향 적분을 도출할 것임. 이때 임의의 재표집 가중치 w<sub>i</sub>를 사용한다고 가정할 것임.
+
+다음과 같이 무편향 contribution 가중치 W<sub>i</sub>을 정의할 수 있음:
+
+> ### 정의 4.1.
+> 확률 변수 X ∈ &Omega;에 대한 *무편향 contribution 가중치* W ∈ R는 모든 적분 가능한 함수 f : &Omega; → R에 대하여 아래를 만족하는 임의의 실수 확률 변수 W이다:<br>
+
+<div id="eq_8">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/UnbiasedContributionWeightCondition.png" alt="UnbiasedContributionWeightCondition"/></p>
+ <p style="float: left; width:10%; text-align:right;">(8)</p>
+</div>
+<div style="clear: both;"></div>
+
+f(X)W은 몬테 카를로 적분의 f(X)/p(X)를 일반화한 것임. 만약 p가 다루기 쉬운 값이라면 W = 1/p(X)를 쓰면 됨. 만약 다루기 쉽지 않다면 RIS로 X를 뽑듯이 가중치를 갖고 무편향 적분을 해줄 수 있음. 적분은 자연스레 p > 0인 곳으로 한정됨. 즉, supp(X)임.
+
+무편향 contribution 가중치는 자연스럽게 주변부 PDF의 역수를 대체하게 됨. 사실, 이 주변부 PDF 역수를 무편향하게 추정하게 됨.
+
+<div id="eq_9">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ReciprocalOfTheMarginalPdf.png" alt="ReciprocalOfTheMarginalPdf"/></p>
+ <p style="float: left; width:10%; text-align:right;">(9)</p>
+</div>
+<div style="clear: both;"></div>
+
+우연이 아니라, 걍 같은 거임. 주변부 PDF의 역수의 모든 무편향 추정량([9번 식](#eq_9))은 무편향 contribution 가중치([8번 식](#eq_8))이 되며, 그 반대도 성립함.
+
+RIS에서는 w<sub>i</sub>에 비례하여 X<sub>i</sub>를 재표집해주었음. 이렇게 선택한 표본 X<sub>s</sub>이 f의 적분의 무편향 추정량을 가져다 주도록 하는 contribution을 표현해주어야 함. 이러려면 우선 각 표본 X<sub>i</sub>에 자신의 contribution을 의미하는, 대응하는 *기여도 함수contribution function* g<sub>i</sub> : &Omega;<sub>i</sub> → R를 지정해주고, s = i번 인덱스를 갖는 표본을 선택했을 때 이 함수의 값을 구해줘야 함.
+
+우선 g<sub>s</sub>(X<sub>s</sub>)W<sub>s</sub>를 RIS로 s번 인덱스를 선택할 확률로 나눈 것의 기대값을 확인해봄. i번 인덱스를 선택할 PMF(확률질량함수)는 ![SelectionPmf](/Images/Gris/SelectionPmf.png)가 됨. 이때 몇 가지만 주의하면:
+
+<div id="eq_10">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ExpectationOfGsWsDividedByTheRisSelectionProbabilityOfIndexS.png" alt="ExpectationOfGsWsDividedByTheRisSelectionProbabilityOfIndexS"/></p>
+ <p style="float: left; width:10%; text-align:right;">(10)</p>
+</div>
+<div style="clear: both;"></div>
+
+첫단계에서는 기대값을 가능한 경우들의 합으로 확장을 한 것이고, 두번째 단계에서는 무편향 기여 가중치의 정의를 활용하여 기대값의 합을 적분의 합으로 변환시켜준 것임. RIS는 자연스레 확률 변수의 PDF 값이 0인 영역은 무시할 것이므로 적분을 X<sub>i</sub>의 지지집합으로 제한해줌. 이 결과에 따라 남은 적분의 합을 원하는 f의 적분으로 변환해줄 수 있음. 이를 위해선 g<sub>i</sub>를 잘 선택해주면 됨.
+
+우항이 f의 적분으로 되도록 g<sub>i</sub>를 고르게 되면 선택 표본 Y = X<sub>s</sub>의 무편향 기여도를 구할 수 있게 됨. X<sub>i</sub>가 전부 같은 영역 &Omega;와 같은 지지집합 S에서 왔으며, 이 S에서 모든 w<sub>i</sub>가 양수라는 특수한 경우에서는 모든 i에 대하여 g<sub>i</sub> = (1/M) f으로 두어 기본 RIS를 구할 수 있음:
+
+<div id="eq_11">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/BasicRisRecovery.png" alt="BasicRisRecovery"/></p>
+ <p style="float: left; width:10%; text-align:right;">(11)</p>
+</div>
+<div style="clear: both;"></div>
+
+[8번 식](#eq_8)과 비교해보면 이 특수한 경우에서의 기대값은 E[f(Y)W<sub>Y</sub>]을 띠는데, 이때
+
+<div id="eq_12">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/UnbiasedContributionWeightForBasicRis
+.png" alt="UnbiasedContributionWeightForBasicRis
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(12)</p>
+</div>
+<div style="clear: both;"></div>
+
+으로 두었을 것임. 즉, W<sub>Y</sub>는 Y의 무편향 기여도 가중치가 됨. 즉, E[f(Y)W<sub>Y</sub>]는 Y의 지지집합에 대하여 임의의 함수 f를 적분한 값임.
+
+*Degenerate의 경우*<br>
+만약 모든 w<sub>i</sub>가 0이라면 아무런 표본도 선택할 수 없으며, 기여도는 0이 됨. 직관적으로 보면 기여도가 0인 null 표본 Y<sub>∅</sub>를 표집 및 적분 영역 밖에서 갖고 온다고 생각할 수 있음(즉, ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(Y<sub>∅</sub>) = f(Y<sub>∅</sub>) = 0). W<sub>Y<sub>∅</sub></sub>의 값은 이러면 의미가 없어지므로 0으로 둘 수 있음.
+
 # Latex
 
 TalbotResamplingWeightWi
@@ -261,4 +328,42 @@ TalbotResamplingMisWeightMi
 
 ```
 m_{i}{\left(x \right )} = \frac{p_{i}{\left(x \right )}}{\sum_{j=1}^{M}{p_{j}{\left(x \right )}}}
+```
+
+UnbiasedContributionWeightCondition
+
+```
+\textrm{E}{\left[f{\left(X \right )}W \right ]} = \int_{\textrm{supp}{\left(X \right )}}{f{\left(x \right )}}\textrm{d}x
+```
+
+ReciprocalOfTheMarginalPdf
+
+```
+\textrm{E}{\left[W \mid X \right ]} = \frac{1}{p_{X}{\left(X \right )}}
+```
+
+SelectionPmf
+
+```
+p_{s}{\left(i \right )} = \frac{w_{i}}{\sum_{j=1}^{M}{w_{j}}}
+```
+
+ExpectationOfGsWsDividedByTheRisSelectionProbabilityOfIndexS
+
+```
+\textrm{E}{\left[\frac{g_{s}{\left(X_{s} \right )}W_{s}}{p_{s}{\left(s \right )}} \right ]} = \textrm{E}{\left[\sum_{i=1}^{M}g_{i}{\left(X_{i}\right)}\frac{\not{p_{s}{\left(i \right )}}}{\not{p_{s}{\left(i \right )}}}W_{i} \right ]} = \\
+= \sum_{i=1}^{M}{\int_{\textrm{supp}{\left(X_{i} \right )}}{g_{i}{\left(x_{i} \right )}}\textrm{d}x_{i}}
+```
+
+BasicRisRecovery
+
+```
+\textrm{E}{\left[ \frac{1}{M}f{\left(Y \right )\frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}}W_{s}} \right ]}
+= \int_{\textrm{supp}{\left(Y \right )}}{f{\left(x \right )}}\textrm{d}x
+```
+
+UnbiasedContributionWeightForBasicRis
+
+```
+W_{Y} = \frac{1}{M}\frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}}W_{s}
 ```
