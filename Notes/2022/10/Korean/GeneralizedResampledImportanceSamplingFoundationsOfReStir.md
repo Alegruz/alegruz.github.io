@@ -124,7 +124,21 @@ ReSTIR이나 RIS도 마찬가지지만, 경로의 표본은 반드시 같은(공
 
 좀 더 구체적으로 설명하자면, 음수가 아닌 목표 함수 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)를 정의하고, Y를 뽑을 때, 입력 표본의 개수 M이 증가할 수록 구해진 PDF p<sub>Y</sub>가 정규화된 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)를 좀 더 잘 근사하도록 해주는 것임. 즉, p<sub>Y</sub>가 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png) = ![TargetFunction](/Images/ReStirGi/TargetFunction.png) / \|\|![TargetFunction](/Images/ReStirGi/TargetFunction.png)\|\|를 근사하는 것임.
 
-알고리듬적으로 보자면 입력 표본 X<sub>i</sub>에서 한 표본 Y = X<sub>s</sub>를 확률 Pr[s=i] = w<sub>i</sub>/∑<sub>j=1</sub><sup>M</sup>w<sub>j</sub>에 따라서 뽑는 것임. 이때 w<sub>i</sub>는 재표집 가중치임. 이전 연구에서는 w<sub>i</sub>를 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(X<sub>i</sub>)/p(X<sub>i</sub>)로 두었었음.
+알고리듬적으로 보자면 입력 표본 X<sub>i</sub>에서 한 표본 Y = X<sub>s</sub>를 확률 ![SelectionProbability](/Images/Gris/SelectionProbability.png)에 따라서 뽑는 것임. 이때 w<sub>i</sub>는 재표집 가중치임. 이전 연구에서는 w<sub>i</sub>를 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(X<sub>i</sub>)/p(X<sub>i</sub>)로 두었었음. 여기서 가중치는 상대적인 값임. 즉, 가중치에 어떤 값을 곱하더라도 선택할 확률에는 영향이 없을 것이라는 뜻임:
+
+![TalbotEtAlResamplingWeightWi](/Images/Gris/TalbotEtAlResamplingWeightWi.png)
+
+![TalbotEtAlUnbiasedContributionWeightWi](/Images/Gris/TalbotEtAlUnbiasedContributionWeightWi.png)
+
+즉, 위와 같이 표기적 일관성을 위해 표기할 수 있음. 선택한 표본 Y의 PDF 자체는 다루기 힘들더라도, 그 Y의 *무편향 contribution 가중치*
+
+![UnbiasedContributionWeightOfSelectedSampleY](/Images/Gris/UnbiasedContributionWeightOfSelectedSampleY.png)
+
+를 1/p<sub>Y</sub>(Y) 대신 사용할 수 있을 것임. f > 0일 때 p<sub>Y</sub> > 0일 것이라 가정한다면, 즉 f ⊂ supp Y일 때,
+
+![ExpectedValueOfIntegralF](/Images/Gris/ExpectedValueOfIntegralF.png)
+
+적절한 조건 하에서는 p<sub>Y</sub>가 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)에 수렴하며, 몬테 카를로 분산 Var[f(Y)W<sub>Y</sub>]는 점근적으로 Y가 *정확하게* ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)의 분포를 가질 때의 분산에 근사함. ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)를 f에 비례하도록 선택해야 추정량 f(Y)W<sub>Y</sub>가 점근적으로 분산이 0이 됨을 보장할 수 있음.
 
 # Latex
 
@@ -138,4 +152,22 @@ ResamplingWeightWi
 
 ```
 w_{i} = m_{i}{\left(T_{i}{\left(X_{i} \right )} \right )}\hat{p}{\left(T_{i}{\left(X_{i} \right )} \right )}W_{i}\left | \frac{\delta{T_{i}}}{\delta{X_{i}}} \right |
+```
+
+TalbotEtAlUnbiasedContributionWeightWi
+
+```
+W_{i} = \frac{1}{p{\left(X_{i} \right )}}
+```
+
+UnbiasedContributionWeightOfSelectedSampleY
+
+```
+W_{Y} = \frac{1}{\hat{p}{\left(Y \right )}}\sum_{i=1}^{M}{w_{i}}
+```
+
+ExpectedValueOfIntegralF
+
+```
+\int_{\Omega}{f{\left(x \right )}}\textrm{d}y = \textrm{E}\left [ f{\left(Y \right )} W_{Y}\right ]
 ```
