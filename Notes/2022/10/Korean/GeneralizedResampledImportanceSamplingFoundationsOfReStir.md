@@ -61,3 +61,81 @@ Contributions:
 * 7절: 픽셀 간 경로 재사용을 위한 shift 매핑을 설계하고, 효율성을 개선하기 위한 몇 가지 새로운 shift 수정사항을 제시함.
 * 8절: ReSTIR PT 구현을 다룸.
 * 9절: 결과 및 실험 검증을 보임.
+
+# 2. 배경
+
+요즘 그래픽스 연구의 핵심은 표집, 중요도 표집, 표본 재사용임.
+
+표 1: 표기법 정리
+
+|변수|내용|
+|----|----|
+|x, y|함수의 일반적인 입력|
+|![PathX](/Images/Gris/PathX.png), **x**<sub>i</sub>|경로와 경로 위의 한 점|
+|&Omega;<sub>i</sub>|표본이 그려진 영역|
+|&Omega;|함수 f의 적분 영역|
+|X<sub>i</sub>|RIS의 입력 표본. 보통 수열임 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>|
+|Y|RIS로 선택한 표본 Y. (가장 단순한 경우 Y = X<sub>s</sub>, 일반적인 경우 Y = T<sub>s</sub>(X<sub>s</sub>))
+|M, N|RIS의 입력 표본 수와 출력 표본 수|
+|p<sub>X</sub>(·)|어떤 위치의 확률 변수 X의 확률 밀도|
+|p(·)|확률 변수가 명확한 경우에서 위를 간단하게 표기한 것|
+|![UnnormalizedTargetDistributionP](/Images/Gris/UnnormalizedTargetDistributionP.png)|정규화하지 않은 *목표* 분포 (*목표*: Y ∝ ![TargetFunction](/Images/ReStirGi/TargetFunction.png)가 되도록 하기)|
+|![NormalizedTargetPdfP](/Images/Gris/NormalizedTargetPdfP.png)|정규화 목표 PDF (즉, ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png) = ![TargetFunction](/Images/ReStirGi/TargetFunction.png) / \|\|![TargetFunction](/Images/ReStirGi/TargetFunction.png)\|\|)|
+|f(·)|적분할 함수 (예시. path contribution 함수)|
+|g<sub>i</sub>(·)|&Omega;의 영역에서 f를 적분할 때 X<sub>i</sub> ∈ &Omega;<sub>i</sub>가 기여하는 정도를 의미하는 contribution function|
+|W<sub>i</sub>|*무편향 contribution 가중치*; PDF의 역수를 추정함|
+|w<sub>i</sub>|*재표집 가중치*; RIS는 w<sub>i</sub>/∑w<sub>j</sub>에 따라 한 X<sub>i</sub>를 선택함|
+|c<sub>i</sub>|*contribution MIS 가중치*; 기존 연구들의 MIS 가중치|
+|m<sub>i</sub>|이 논문의 새로운 *재표집 MIS 가중치*|
+|T<sub>i</sub>(·)|shift 매핑; 표본을 영역 &Omega;<sub>i</sub>에서 &Omega;으로 매핑해줌|
+|![JacobianOfShiftMappingTi](/Images/Gris/JacobianOfShiftMappingTi.png)|매핑 T<sub>i</sub>의 야코비 행렬식|
+|![PHatFromI](/Images/Gris/PHatFromI.png)|"i에서 온 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)". ![TargetFunction](/Images/ReStirGi/TargetFunction.png)가 &Omega;<sub>i</sub>로의 shift 맵을 포함하도록 일반화함|
+|C|수렴 증명할 때 유계로 쓰일 여러 상수들|
+|R, \|R\|| 표준canonical 표본과 그 숫자|
+
+# 2.1. 재표집 알고리듬
+
+이 논문은 *sampling importance resampling*(SIR)에 기반한 재표집 방법을 일반화함. SIR은 독립항등표본의 한 집합 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>에서 재표집 가중치 w<sub>i</sub> = ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(X<sub>i</sub>)/p(X<sub>i</sub>)에 비례하여 한 번 더 표집을 한, 좀 더 잘 분포된 표본 (Y<sub>i</sub>)<sub>i=1</sub><sup>N</sup>을 얻는 과정임. 이때 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(x)은 원하는 (아마 정규화되있지 않은) 목표 분포임. M이 커질 수록 표본 Y<sub>i</sub>의 분포는 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png) = ![TargetFunction](/Images/ReStirGi/TargetFunction.png) / \|\|![TargetFunction](/Images/ReStirGi/TargetFunction.png)\|\|에 수렴함.
+
+**[*RIS*](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)<br>**
+몬테 카를로 방법에서 SIR을 썻을 때 좀 더 제대로 정규화를 해주는 방법을 제시함.
+
+**저장소 표집RS**<br>
+단일 패스 스트림에서 입력 집합 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>가 들어왔을 때 무작위로 한 표본을 뽑음. *저장소*는 선택한 표본, 현재 스트림의 길이 M, 가중치 w<sub>i</sub>의 총합을 저장함. 새롭게 스트림에 X<sub>i</sub>가 들어오면, 선택한 표본을 확률 w<sub>i</sub> / ∑<sub>j≤i</sub>w<sub>j</sub>에 따라 교체함.
+
+[**ReSTIR**](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)<br>
+연쇄된 저장소 재표집으로 픽셀과 프레임 간의 표본을 공유함.
+
+**Shift 매핑**<br>
+ReSTIR이나 RIS도 마찬가지지만, 경로의 표본은 반드시 같은(공유된) 영역에서 와야 함. 그렇기에 서로 다른 영역에서 적분하는 경우를 처리해야함. 이 경우 서로 다른 영역에서의 경로를 매핑해줘야하는 shift 매핑 방법으로 해결함.
+
+# 3. RIS 리뷰
+
+|RIS 알고리듬|Talbot et al. 2005<br>항등 분포 표본|Talbot 2005<br>서로 다르게 분포된 표본|GRIS<br>상관관계 & 서로 다른 source 영역|
+|---|---|---|---|
+|(1) M 개의 후보 표본 (X<sub>1</sub>, &hellip;, X<sub>M</sub>) 생성|같은 영역에서 표집: 같은 PDF p, X<sub>i</sub> ∈ &Omega;|같은 영역에서의 표본: 다른 PDF p, X<sub>i</sub> ∈ &Omega;|임의의 영역에서의 표본: 다루기 힘든intractable PDF p<sub>i</sub>도 ㄱㅊ, X<sub>i</sub> ∈ &Omega;<sub>i</sub>|
+|(2) *무편향 contribution 가중치* W<sub>i</sub> 구하기|W<sub>i</sub> = 1/p(X<sub>i</sub>)|W<sub>i</sub> = 1/p<sub>i</sub>(X<sub>i</sub>)|W<sub>i</sub>는 반드시 1/p<sub>i</sub>(X<sub>i</sub>)를 무편향적이게 추정해야함|
+|(3) *재표집 가중치* w<sub>i</sub> 구하기|![TalbotEtAlResamplingWeightWi](/Images/Gris/TalbotEtAlResamplingWeightWi.png)|![TalbotResamplingWeightWi](/Images/Gris/TalbotResamplingWeightWi.png)|![ResamplingWeightWi](/Images/Gris/ResamplingWeightWi.png)|
+|(4) w<sub>i</sub>에 비례하여 s를 선택하여 영역 &Omega;에 있는 출력 Y 선택|단순히 Y = X<sub>s</sub>|단순히 Y = X<sub>s</sub>|&Omega;<sub>i</sub>에서 &Omega;로 매핑된 출력 표본 Y = T<sub>s</sub>(X<sub>s</sub>)|
+
+## 3.1. 항등 분포 표본
+
+기본적인 RIS에서는 어떤 영역 &Omega;로부터 이미 알고 있는 PDF p에서 뽑은 연속된 표본 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>이 독립항등분포(i.i.d.)를 이루는 경우를 입력으로 받음. 어쨋든 목표는 이 연속된 표본에서 어떤 확률에 따라 Y를 뽑는데, 이 확률이 이루는 분포, 즉 PDF p<sub>Y</sub>가 영역 &Omega;에서 f를 적분할 때 좀 더 나은 중요도 표집기가 되도록 해주는 것임.
+
+좀 더 구체적으로 설명하자면, 음수가 아닌 목표 함수 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)를 정의하고, Y를 뽑을 때, 입력 표본의 개수 M이 증가할 수록 구해진 PDF p<sub>Y</sub>가 정규화된 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)를 좀 더 잘 근사하도록 해주는 것임. 즉, p<sub>Y</sub>가 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png) = ![TargetFunction](/Images/ReStirGi/TargetFunction.png) / \|\|![TargetFunction](/Images/ReStirGi/TargetFunction.png)\|\|를 근사하는 것임.
+
+알고리듬적으로 보자면 입력 표본 X<sub>i</sub>에서 한 표본 Y = X<sub>s</sub>를 확률 Pr[s=i] = w<sub>i</sub>/∑<sub>j=1</sub><sup>M</sup>w<sub>j</sub>에 따라서 뽑는 것임. 이때 w<sub>i</sub>는 재표집 가중치임. 이전 연구에서는 w<sub>i</sub>를 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(X<sub>i</sub>)/p(X<sub>i</sub>)로 두었었음.
+
+# Latex
+
+TalbotResamplingWeightWi
+
+```
+w_{i} = m_{i}{\left(X_{i} \right )}\hat{p}{\left(X_{i} \right )}W_{i}
+```
+
+ResamplingWeightWi
+
+```
+w_{i} = m_{i}{\left(T_{i}{\left(X_{i} \right )} \right )}\hat{p}{\left(T_{i}{\left(X_{i} \right )} \right )}W_{i}\left | \frac{\delta{T_{i}}}{\delta{X_{i}}} \right |
+```
