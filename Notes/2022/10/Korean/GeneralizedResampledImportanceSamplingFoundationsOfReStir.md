@@ -200,6 +200,25 @@ Talbot의 RIS 이론은 공유된 영역 &Omega;에서 독립적인 표본 X<sub
 
 전통적인 RIS에서는 한 영역에서 독립된 표본을 뽑았다면, 이 논문에서는 서로 다른 영역 &Omega;<sub>i</sub>에서 온, 서로 상관관계가 있을 수도 있는 입력 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>도 가능함. GRIS는 여기서 표본 X<sub>s</sub>를 선택하고, 이걸 *shift 매핑* Y = T<sub>s</sub>(X<sub>s</sub>)을 통해 f의 영역 &Omega;로 매핑해줌. 이러면 Y의 PDF는 목표 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)(즉, 정규화된 ![TargetFunction](/Images/ReStirGi/TargetFunction.png))에 다가감.
 
+## 4.1. 개요
+
+결국 입력 표본 X<sub>i</sub>가 서로 다른 영역 &Omega;<sub>i</sub>에서 올 것이고, 서로 독립적이지 않을 수도 있으며, 적분할 때 1/p<sub>i</sub>(X<sub>i</sub>)을 대체할 무편향 contribution 가중치 W<sub>i</sub> ∈ R와 짝을 짓게 될 것임. 이러면 전에 재표집한 입력이 가능해짐. 재표집한 입력 X<sub>i</sub>의 PDF p<sub>i</sub>가 쉽게 다룰 수 있는 함수가 아니더라도, 그 가중치 W<sub>i</sub>는 쉽게 다룰 수 있음([2번 식](#eq_2)).
+
+영역 &Omega;에 대해서 f를 적분하도록 표본을 재사용하려면 우선 표본 X<sub>s</sub> ∈ &Omega;<sub>s</sub>들을 shift 매핑 T<sub>s</sub>: &Omega;<sub>s</sub> → &Omega;으로 &Omega;로 매핑해줘야함. 이러면 PDF를 PDF 변환 규칙에 따라 수정해주기에 shift 맵의 야코비 행렬식 \|&delta;T<sub>i</sub>/&delta;x\|를 구해야함.
+
+알고리듬적으로 보자면 이러면 RIS의 여러 측면이 수정됨. 우선 표본을 공통된 영역 &Omega;로 변환 시켜 줘야하니 재표집 가중치에는 shift 맵 T<sub>i</sub>와 그 행렬식이 추가 되어야 함:
+
+<div id="eq_7">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ResamplingWeightWi.png" alt="ResamplingWeightWi"/></p>
+ <p style="float: left; width:10%; text-align:right;">(7)</p>
+</div>
+<div style="clear: both;"></div>
+
+여기서 p<sub>i</sub>가 굳이 다루기 쉬울 필요는 없음. 그냥 W<sub>i</sub> = 1/p<sub>i</sub>(X<sub>i</sub>) 쓰면 됨. 물론, 수치적 contribution 가중치 W<sub>i</sub>를 써도 됨. 이때 이 수치적 contribution 가중치는 예를 들면 직전 RIS 단계에서 가져올 수도 있음([2번 식](#eq_2)). 이제 선택한 표본을 적분할 때(혹은 더 재표집할 때) 쓰기 전에 반드시 적절한 영역으로 shift를 해줘야 하므로, 출력 표본은 Y = T<sub>s</sub>(X<sub>s</sub>)가 됨.
+
+출력 Y의 무편향 contribution 가중치 W<sub>Y</sub>는 [2번 식](#eq_2)으로 얻을 수 있음. 이때 제약 조건은 다음과 같음: Var[f(Y)W<sub>Y</sub>]가 Var[f(Y)/![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)(Y)]에 점근한다고 보장할 수 있을 때, p<sub>Y</sub>가 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)에 수렴해야 함. 이러면 ![TargetPdf](/Images/ReStirGi/TargetPdf.png) ∝ f일 때 한 개의 Y에 대해서 분산이 0인 적분으로 점근할 수 있음.
+
 # Latex
 
 TalbotResamplingWeightWi
