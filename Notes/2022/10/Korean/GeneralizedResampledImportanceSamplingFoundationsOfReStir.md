@@ -194,6 +194,12 @@ ReSTIR는 픽셀 간의 표본을 *재사용*해서 여러 적분을 동시다�
 
 Talbot의 RIS 이론은 공유된 영역 &Omega;에서 독립적인 표본 X<sub>i</sub>를 가정하는데, ReSTIR는 이 가정을 확대해버렸기 때문에 수렴을 한다는 이론적인 보장이 *하나도* 없음. 사실 알고리듬 자체에도 뭔가 문제가 안 될 것처럼 보이는 수정사항들을 주었는데, 이 때문에 상관관계에 있는 재사용이 잘못된 결과로의 수렴을 야기할 수도 있음.
 
+# 4. 일반 RIS
+
+이 논문의 일반 RIS(GRIS)는 서로 다른 영역의 표본을 매핑할 수 있게 해주고, 무편향성과 수렴 조건들이 무엇인지 명시해줌.
+
+전통적인 RIS에서는 한 영역에서 독립된 표본을 뽑았다면, 이 논문에서는 서로 다른 영역 &Omega;<sub>i</sub>에서 온, 서로 상관관계가 있을 수도 있는 입력 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>도 가능함. GRIS는 여기서 표본 X<sub>s</sub>를 선택하고, 이걸 *shift 매핑* Y = T<sub>s</sub>(X<sub>s</sub>)을 통해 f의 영역 &Omega;로 매핑해줌. 이러면 Y의 PDF는 목표 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)(즉, 정규화된 ![TargetFunction](/Images/ReStirGi/TargetFunction.png))에 다가감.
+
 # Latex
 
 TalbotResamplingWeightWi
