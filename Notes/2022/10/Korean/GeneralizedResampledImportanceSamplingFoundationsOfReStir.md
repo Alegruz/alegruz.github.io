@@ -225,15 +225,16 @@ Talbot의 RIS 이론은 공유된 영역 &Omega;에서 독립적인 표본 X<sub
 
 다음과 같이 무편향 contribution 가중치 W<sub>i</sub>을 정의할 수 있음:
 
-> ### 정의 4.1.
-> 확률 변수 X ∈ &Omega;에 대한 *무편향 contribution 가중치* W ∈ R는 모든 적분 가능한 함수 f : &Omega; → R에 대하여 아래를 만족하는 임의의 실수 확률 변수 W이다:<br>
-
-<div id="eq_8">
+<blockquote id="def_4_1">
+  <h3 id="정의-41">정의 4.1.</h3>
+  <p>확률 변수 X ∈ Ω에 대한 <em>무편향 contribution 가중치</em> W ∈ R는 모든 적분 가능한 함수 f : Ω → R에 대하여 아래를 만족하는 임의의 실수 확률 변수 W이다:<br></p>
+  <div id="eq_8">
  <p style="float: left; width:10%; text-align:left;"></p>
  <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/UnbiasedContributionWeightCondition.png" alt="UnbiasedContributionWeightCondition"/></p>
  <p style="float: left; width:10%; text-align:right;">(8)</p>
 </div>
 <div style="clear: both;"></div>
+</blockquote>
 
 f(X)W은 몬테 카를로 적분의 f(X)/p(X)를 일반화한 것임. 만약 p가 다루기 쉬운 값이라면 W = 1/p(X)를 쓰면 됨. 만약 다루기 쉽지 않다면 RIS로 X를 뽑듯이 가중치를 갖고 무편향 적분을 해줄 수 있음. 적분은 자연스레 p > 0인 곳으로 한정됨. 즉, supp(X)임.
 
@@ -285,6 +286,150 @@ RIS에서는 w<sub>i</sub>에 비례하여 X<sub>i</sub>를 재표집해주었�
 
 *Degenerate의 경우*<br>
 만약 모든 w<sub>i</sub>가 0이라면 아무런 표본도 선택할 수 없으며, 기여도는 0이 됨. 직관적으로 보면 기여도가 0인 null 표본 Y<sub>∅</sub>를 표집 및 적분 영역 밖에서 갖고 온다고 생각할 수 있음(즉, ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(Y<sub>∅</sub>) = f(Y<sub>∅</sub>) = 0). W<sub>Y<sub>∅</sub></sub>의 값은 이러면 의미가 없어지므로 0으로 둘 수 있음.
+
+## 4.3. Shift 매핑
+
+GRIS에서는 표본 X<sub>i</sub>가 임의의 영역 &Omega;<sub>i</sub>에서 올 수도 있으므로 이 표본 X<sub>i</sub> ∈ &Omega;<sub>i</sub>에 대하여 함수 f : &Omega; → R을 적분하려면 [10번 식](#eq_10)의 우항을 함수 f의 적분으로 변환해줘야 함. 이러면 X<sub>i</sub>를 &Omega;<sub>i</sub>에서 &Omega;로 매핑해주어 결과에서 f를 쓸 수 있게 해주도록 g<sub>i</sub>를 골라줘야함.
+
+&Omega;<sub>i</sub>에서 &Omega;로 매핑해준다는 것은 적분 변수가 변한다는 것을 의미하므로 반드시 전단사 함수여야함. 복잡한 영역 간의 매핑은 구하기 어려우므로 &Omega;<sub>i</sub>의 부분집합을, &Omega; 안에 있는 &Omega;<sub>i</sub>의 부분집합의 이미지로의 전단사 함수를 사용함. 기존 연구에 따르면 이런 전단사 함수를 *shift 매핑shift mapping* T<sub>i</sub>라 부르며, 각 영역 &Omega;<sub>i</sub>당 하나가 존재함.
+
+<blockquote id="def_4_2">
+  <h3 id="정의-42">정의 4.2.</h3>
+  <p>영역 Ω<sub>i</sub>에서 Ω로의 <em>shift 매핑</em> T<sub>i</sub>는 부분집합 D(T<sub>i</sub>) ⊂ Ω<sub>i</sub>에서 부분집합의 이미지 I(T<sub>i</sub>) ⊂ Ω로의 전단사 함수임.<br></p>
+</blockquote>
+
+직관적으로 보면 다음과 같은 기여도 함수를 골라야할 것임:
+
+<div id="eq_13">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/IntuitiveShiftMappingContributionFunction
+.png" alt="IntuitiveShiftMappingContributionFunction
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(13)</p>
+</div>
+<div style="clear: both;"></div>
+
+여기서 y<sub>i</sub>는 T<sub>i</sub>(x)를 의미하고, c<sub>i</sub> : &Omega; → R은 *기여도 MIS* 가중치로, y ∈ &Omega;일 때 ![Unity](/Images/Gris/Unity.png)의 임의의 분할을 의미하고, ![JacobianOfShiftMappingTi](/Images/Gris/JacobianOfShiftMappingTi.png)는 x ↦ y<sub>i</sub>의 야코비 행렬식을 의미함. 원칙상으로 보면
+
+<div id="eq_14">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/InPrinciple
+.png" alt="InPrinciple
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(14)</p>
+</div>
+<div style="clear: both;"></div>
+
+가 되지만, 세부사항을 놓치면 안됨. 예를 들어 [13번 식](#eq_13)은 x &notin; D(T<sub>i</sub>)에 대해서 정의 되어있지 않기 때문임. 이 경우 x &notin; D(T<sub>i</sub>)일 때 g<sub>i</sub>(x) = 0으로 정의하고, 기여도 MIS를 갱신하여 이를 보상해줌.
+
+여기서 가중치 w<sub>i</sub>를 목표 함수 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)와 유관한 임의의 음수가 아닌 확률 변수로 가정함: w<sub>i</sub> > 0 iff X<sub>i</sub> &in; D(T<sub>i</sub>) 이고 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(Y<sub>i</sub>) > 0. 그러므로 Y<sub>i</sub> = T<sub>i</sub>(X<sub>i</sub>)가 존재하고 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)의 지지집합에 있을 때 필수적으로 w<sub>i</sub> > 0이어야 함. 아닐 경우 X<sub>i</sub>를 고르는 경우를 방지하기 위해 w<sub>i</sub> = 0으로 둠. 나중엔 이 조건을 조금 완화시켜줄 것임.
+
+이 가정 하에 보면 각 가능한 Y는 반드시 supp ![TargetPdf](/Images/ReStirGi/TargetPdf.png)에 있어야 하며, 양의 PDF를 갖는 하나 이상의 X<sub>i</sub>(즉, X<sub>i</sub> &in; supp X<sub>i</sub>)에 의해 Y = T<sub>i</sub>(X<sub>i</sub>)으로 표집 가능해야 하며, 그 반대의 경우도 성립해야함. 수학적으로 표현하자면:
+
+<div id="eq_15">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ShiftMappingAssumptions
+.png" alt="ShiftMappingAssumptions
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(15)</p>
+</div>
+<div style="clear: both;"></div>
+
+즉, supp Y ⊂ supp ![TargetPdf](/Images/ReStirGi/TargetPdf.png)이라는 의미이기도 함. 나중에 supp ![TargetPdf](/Images/ReStirGi/TargetPdf.png) ⊂ supp Y라고 가정을 할텐데, 이 경우 supp Y = supp ![TargetPdf](/Images/ReStirGi/TargetPdf.png)임을 의미함.
+
+[10번 식](#eq_10)의 좌항에 위의 g<sub>i</sub>를 x &notin; D(T<sub>i</sub>)일 경우 g<sub>i</sub>(x) = 0라는 조건을 추가하여 넣어주면, 다음과 같은 등식을 얻을 수 있음:
+
+<div id="eq_16">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ShiftMappingEquality
+.png" alt="ShiftMappingEquality
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(16)</p>
+</div>
+<div style="clear: both;"></div>
+
+여기서 W<sub>s</sub>는 X<sub>s</sub>의 무편향 기여도 가중치임.
+
+이걸 만족하기 위해서는 모든 y &in; supp Y에 대해서 기여도 MIS 가중치 c<sub>i</sub>는 다음 조건을 만족해야 함:
+
+<div id="eq_17">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ConstraintOfContributionMisWeightsCi
+.png" alt="ConstraintOfContributionMisWeightsCi
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(17)</p>
+</div>
+<div style="clear: both;"></div>
+
+이를 해석하자면, 여러 &Omega;<sub>i</sub>에서 왔을 수도 있는 모든 실현 가능한 y는 반드시 총 한 번만 처리가 되어야 함이라는 뜻임. 위의 시그마 연산은 오로지 y가 PDF가 0이 아닐 때 y = T<sub>i</sub>(x<sub>i</sub>)가 될 수 있는 경우에 대해서 영역 &Omega;<sub>i</sub>에 대해서만 처리하겠다는 것임. 원칙상 음수값인 c<sub>i</sub>도 작동은 하겠지만, 나중에 다루겠지만 c<sub>i</sub> ≥ 0이어야만 GRIS를 여러 단계로 연쇄할 수 있음.
+
+[16번 식](#eq_16)의 기대값은 영역 &Omega;에 대해서 적분 가능한 임의의 함수 f E[f(Y)W<sub>Y</sub>]의 형태를 띠고, 우항은 [8번 식](#eq_8)의 무편향 기여도 가중치의 정의에 따라 f가 Y의 지지집합에 대해서 적분을 하는 것임. 그러므로:
+
+<div id="eq_18">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/UnbiasedContributionWeightWy
+.png" alt="UnbiasedContributionWeightWy
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(18)</p>
+</div>
+<div style="clear: both;"></div>
+
+W<sub>Y</sub>가 1/p<sub>Y</sub>(Y)의 무편향적인 추정량일 때, f(Y)W<sub>Y</sub>는 Y의 지지집합에 대하여 f를 적분한 값을 무편향적으로 추정함.
+
+> 즉, 이를 통해 언제 GRIS가 임의의 함수 f를 적분할 수 있는지를 알 수 있음: 확률 변수 X<sub>i</sub>의 지지집합(T<sub>i</sub>로 &Omega;로 매핑한 것)이 f의 지지집합을 같이 커버할 때임.
+
+이 조건은 하나의 표집 영역을, 예를 들어 &Omega;<sub>1</sub>을 f의 영역으로 고르고 항등 shift T<sub>1</sub>(x) = x을 &Omega;<sub>1</sub>에 적용하고, 피적분함수 f를 위해 설계한 중요도 표집기에서 X<sub>1</sub>을 생성하면 자연스럽게 만족이 됨(즉, f(x<sub>1</sub>) > 0일 때마다 p(x<sub>1</sub>) > 0가 되도록). 이런 표본을 *표준canonical*이라고 부름. p<sub>X<sub>1</sub></sub>가 뭔지 알고 있으니 무편향 기여도 가중치 W<sub>1</sub> = 1/p<sub>X<sub>1</sub></sub>(X<sub>1</sub>)을 쓰면 됨.
+
+나중에 보이겠지만, ReSTIR 표집기들은 귀납적으로 이 사실에 기반하여 생성할 수 있음.
+
+*제한 조건 완화하기*<br>
+
+Y<sub>i</sub> = T<sub>i</sub>(X<sub>i</sub>)에 대해서 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(Y<sub>i</sub>) > 0일 때 w<sub>i</sub> > 0이어야 한다는 조건은 c<sub>i</sub>(Y<sub>i</sub>) = 0이거나 W<sub>i</sub>일 때, 즉 기대값이 변하지 않을 때 w<sub>i</sub> = 0가 될 수 있도록 해주어 완화시킬 수 있음. [17번 식](#eq_17)의 유효성이 supp ![TargetPdf](/Images/ReStirGi/TargetPdf.png) ∩ ∪<sub>i</sub>T<sub>i</sub>(supp X<sub>i</sub>)에서 반드시 명시적으로 보장되어야 [15번 식](#eq_15)이 가능해짐.
+
+## 4.4. 점근 완전 중요도 표집
+
+GRIS의 목표는 Talbot의 RIS처럼 원하는 분포를 따르는 표본을 표집하는 것임. 출력 표본 Y의 주변부 확률 분포 p<sub>Y</sub>가 입력 표본 수가 무한대로 발산할 때 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png)에 수렴해야함.
+
+이는 다음 재표집 가중치를 사용할 경우 만족함:
+
+<div id="eq_19">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/ResamplingWeights
+.png" alt="ResamplingWeights
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(19)</p>
+</div>
+<div style="clear: both;"></div>
+
+위에서 m<sub>i</sub>는 재표집 MIS 가중치이고 W<sub>i</sub>는 무편향 기여도 가중치임. w<sub>i</sub>를 정규화한 것이 재표집 확률이어야 하므로 w<sub>i</sub>는 반드시 음수가 아니어야 함. 즉, 그러므로 m<sub>i</sub>와 W<sub>i</sub>도 음수가 아니어야 하며, 앞으로는 그렇다고 가정하겠음.
+
+![TargetPdf](/Images/ReStirGi/TargetPdf.png)의 지지집합 밖에서는 ![TargetPdf](/Images/ReStirGi/TargetPdf.png) = 0이므로 가중치 w<sub>i</sub>는 0일 것임. m<sub>i</sub>의 조건도 c<sub>i</sub>이랑 비슷함. supp Y의 모든 y에 대해서:
+
+<div id="eq_20">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/RequirementsForMi
+.png" alt="RequirementsForMi
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(20)</p>
+</div>
+<div style="clear: both;"></div>
+
+게다가 m<sub>i</sub> ≥ 0이어야 함. 여기서 합은 오로지 양의 PDF를 생성하는 y를 생성하는 인덱스들만 고려함. 무편향 적분에서는 m<sub>i</sub>가 c<sub>i</sub>에 의해 생성된 합의 일부분을 무효화하지 않도록 c<sub>i</sub>(y) &ne; 0일 때 m<sub>i</sub>(y) > 0이어야 함.
+
+[19번 식](#eq_19)의 w<sub>i</sub>를 [18번 식](#eq_18)에 대입하게 되면 새 표본 Y에 대한 무편향 기여도 가중치를 얻을 수 있게 됨:
+
+<div id="eq_21">
+ <p style="float: left; width:10%; text-align:left;"></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/Images/Gris/UnbiasedContributionWeight
+.png" alt="UnbiasedContributionWeight
+"/></p>
+ <p style="float: left; width:10%; text-align:right;">(21)</p>
+</div>
+<div style="clear: both;"></div>
+
+c<sub>i</sub>(y) &ne; 0일 때 m<sub>i</sub>(y) > 0이어야 한다는 조건에 의해 자연스레 0에 의한 나눗셈 문제를 해결할 수 있음. 이제 m<sub>i</sub> = c<sub>i</sub>가 되도록 선택하는 것이 가장 이상적임을 증명하여 다음 조건을 만족하도록 함.
+
+
 
 # Latex
 
@@ -366,4 +511,67 @@ UnbiasedContributionWeightForBasicRis
 
 ```
 W_{Y} = \frac{1}{M}\frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}}W_{s}
+```
+
+IntuitiveShiftMappingContributionFunction
+
+```
+g_{i}{\left(x \right )} = c_{i}{\left(y_{i} \right )}f{\left(y_{i} \right )}\left | \frac{\delta{T_{i}}}{\delta{x}} \right |
+```
+
+Unity
+
+```
+\sum_{i=1}^{M}{c_{i}{\left(y \right )}} = 1
+```
+
+InPrinciple
+
+```
+\sum_{i=1}^{M}{\int_{\Omega_{i}}{g_{i}{\left(x \right )}\textrm{d}x}} = \int_{\Omega}{f{\left(x \right )}}\textrm{d}x
+```
+
+ShiftMappingAssumptions
+
+```
+\textrm{supp }{Y} = \textrm{supp }{\hat{p}} \cap \bigcup_{i=1}^{M}{T_{i}{\left(\textrm{supp }{X_{i}} \right )}}
+```
+
+ShiftMappingEquality
+
+```
+\textrm{E}{\left[c_{s}{\left(Y \right )}f{\left(Y \right )}\left | \frac{\delta{T_{s}}}{\delta{X_{s}}} \right |\frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}}W_{s} \right ]} 
+= \int_{\textrm{supp}{\left(Y \right )}}{f{\left(x \right )}}\textrm{d}x
+```
+
+ConstraintOfContributionMisWeightsCi
+
+```
+\underset{y \in T_{i}{\left(\textrm{supp }{X_{i}} \right )}}{\sum_{i=1}^{M}{c_{i}{\left(y \right )}}} = 1
+```
+
+UnbiasedContributionWeightWy
+
+```
+W_{Y} = c_{s}{\left(Y\right)}\left(W_{s}\left | \frac{\delta{T_{s}}}{\delta{X_{s}}} \right |\right)\left [ \frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}} \right ]
+```
+
+ResamplingWeights
+
+```
+w_{i} = \left\{\begin{matrix}
+m_{i}{\left(X_{i} \right )}\hat{p}{\left(T_{i}{\left(X_{i} \right )} \right )}W_{i}\cdot\left | \frac{\delta{T_{i}}}{\delta{X_{i}}} \right |, & \textrm{if } X_{i} \in D{\left(T_{i} \right )},\\ 0, & \textrm{otherwise}
+\end{matrix}\right.
+```
+
+RequirementsForMi
+
+```
+\underset{y \in T_{i}{\left(\textrm{supp }{X_{i}} \right )}}{\underbrace{\sum_{i=1}^{M}}}{m_{i}{\left(y \right )}} = 1
+```
+
+UnbiasedContributionWeight
+
+```
+W_{Y} = \left [ \frac{c_{s}{\left(Y\right)}}{m_{s}{\left(Y \right )}} \right ] \frac{1}{\hat{p}{\left(Y \right )}}\sum_{j=1}^{M}{w_{j}}
 ```
