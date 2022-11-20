@@ -83,7 +83,7 @@ Benedikt Bitterli, Chris Wyman, Matt Pharr, Peter Shirley, Aaron Lefohn, and Woj
 </p>
 <p id="chao1982">
 M. T. Chao. 1982. A general purpose unequal probability sampling plan. Biometrika. Volume 69, Issue 3. (Dec. 1982), Pages 653–656. <a href="https://doi.org/10.1093/biomet/69.3.653">https://doi.org/10.1093/biomet/69.3.653</a>
-</id>
+</p>
 <p id="halenetal2021">
 Henrik Halen, Andreas Brinck, Kyle Hayward, and Xiangshun Bei. 2021. Global Illumination Based on Surfels. In SIGGRAPH Courses; Advances in Real-Time Rendering
 </p>
