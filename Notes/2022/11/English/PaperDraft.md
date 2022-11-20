@@ -79,43 +79,43 @@ Generalized RIS (GRIS) provides theoretical framework for ReSTIR by addressing i
 # References
 
 <p id="bitterlietal2020">
-Benedikt Bitterli, Chris Wyman, Matt Pharr, Peter Shirley, Aaron Lefohn, and Wojciech Jarosz. 2020. Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting. ACM Trans. Graph. 39, 4, Article 148 (August 2020), 17 pages. [https://doi.org/10.1145/3386569.3392481](https://doi.org/10.1145/3386569.3392481)
+Benedikt Bitterli, Chris Wyman, Matt Pharr, Peter Shirley, Aaron Lefohn, and Wojciech Jarosz. 2020. Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting. ACM Trans. Graph. 39, 4, Article 148 (August 2020), 17 pages. <a href="https://doi.org/10.1145/3386569.3392481">https://doi.org/10.1145/3386569.3392481</a>
 </p>
 <p id="chao1982">
-M. T. Chao. 1982. A general purpose unequal probability sampling plan. Biometrika. Volume 69, Issue 3. (Dec. 1982), Pages 653–656. [https://doi.org/10.1093/biomet/69.3.653](https://doi.org/10.1093/biomet/69.3.653)
+M. T. Chao. 1982. A general purpose unequal probability sampling plan. Biometrika. Volume 69, Issue 3. (Dec. 1982), Pages 653–656. <a href="https://doi.org/10.1093/biomet/69.3.653">https://doi.org/10.1093/biomet/69.3.653</a>
 </id>
 <p id="halenetal2021">
 Henrik Halen, Andreas Brinck, Kyle Hayward, and Xiangshun Bei. 2021. Global Illumination Based on Surfels. In SIGGRAPH Courses; Advances in Real-Time Rendering
 </p>
 <p id="kajiya2005">
-James T. Kajiya. 1986. The rendering equation. SIGGRAPH Comput. Graph. 20, 4 (Aug. 1986), 143–150. [https://doi.org/10.1145/15886.15902](https://doi.org/10.1145/15886.15902)
+James T. Kajiya. 1986. The rendering equation. SIGGRAPH Comput. Graph. 20, 4 (Aug. 1986), 143–150. <a href="https://doi.org/10.1145/15886.15902">https://doi.org/10.1145/15886.15902</a>
 </p>
 <p id="kilgariffetal2018">
-Emmett Kilgariff, Henry Moreton, Nick Stam, and Brandon Bell. 2018. NVIDIA Turing Architecture In-Depth. [https://developer.nvidia.com/blog/nvidia-turing-architecture-in-depth/](https://developer.nvidia.com/blog/nvidia-turing-architecture-in-depth/). [Online; accessed 20-November-2022]
+Emmett Kilgariff, Henry Moreton, Nick Stam, and Brandon Bell. 2018. NVIDIA Turing Architecture In-Depth. <a href="https://developer.nvidia.com/blog/nvidia-turing-architecture-in-depth/">https://developer.nvidia.com/blog/nvidia-turing-architecture-in-depth/</a>. [Online; accessed 20-November-2022]
 </p>
 <p id="linetal2021">
-Daqi Lin, Chris Wyman, and Cem Yuksel. 2021. Fast volume rendering with spatiotemporal reservoir resampling. ACM Trans. Graph. 40, 6, Article 279 (December 2021), 18 pages. [https://doi.org/10.1145/3478513.3480499](https://doi.org/10.1145/3478513.3480499)
+Daqi Lin, Chris Wyman, and Cem Yuksel. 2021. Fast volume rendering with spatiotemporal reservoir resampling. ACM Trans. Graph. 40, 6, Article 279 (December 2021), 18 pages. <a href="https://doi.org/10.1145/3478513.3480499">https://doi.org/10.1145/3478513.3480499</a>
 </p>
 <p id="linandkettunenetal2022">
-Daqi Lin, Markus Kettunen, Benedikt Bitterli, Jacopo Pantaleoni, Cem Yuksel, and Chris Wyman. 2022. Generalized resampled importance sampling: foundations of ReSTIR. ACM Trans. Graph. 41, 4, Article 75 (July 2022), 23 pages. [https://doi.org/10.1145/3528223.3530158](https://doi.org/10.1145/3528223.3530158)
+Daqi Lin, Markus Kettunen, Benedikt Bitterli, Jacopo Pantaleoni, Cem Yuksel, and Chris Wyman. 2022. Generalized resampled importance sampling: foundations of ReSTIR. ACM Trans. Graph. 41, 4, Article 75 (July 2022), 23 pages. <a href="https://doi.org/10.1145/3528223.3530158">https://doi.org/10.1145/3528223.3530158</a>
 </p>
 <p id="pharrjakobandhumphreys2016">
-Matt Pharr, Wenzel Jakob, Greg Humphreys. 2016. Physically Based Rendering: From Theory to Practice, 3rd ed. Morgan Kaufmann, 2016. [http://www.pbr-book.org/](http://www.pbr-book.org/)
+Matt Pharr, Wenzel Jakob, Greg Humphreys. 2016. Physically Based Rendering: From Theory to Practice, 3rd ed. Morgan Kaufmann, 2016. <a href="http://www.pbr-book.org/">http://www.pbr-book.org/</a>
 </p>
 <p id="ouyangetal2021">
-Yaobin Ouyang, Shiqiu Liu, Markus Kettunen, Matt Pharr, and Jacopo Pantaleoni. 2021. ReSTIR GI: Path Resampling for Real-Time Path Tracing. Computer Graphics Forum 40, 8 (2021), 17–29. [https://doi.org/10.1111/cgf.14378](https://doi.org/10.1111/cgf.14378)
+Yaobin Ouyang, Shiqiu Liu, Markus Kettunen, Matt Pharr, and Jacopo Pantaleoni. 2021. ReSTIR GI: Path Resampling for Real-Time Path Tracing. Computer Graphics Forum 40, 8 (2021), 17–29. <a href="https://doi.org/10.1111/cgf.14378">https://doi.org/10.1111/cgf.14378</a>
 </p>
 <p id="schiedetal2018">
-Christoph Schied, Christoph Peters, and Carsten Dachsbacher. 2018. Gradient Estimation for Real-time Adaptive Temporal Filtering. Proc. ACM Comput. Graph. Interact. Tech. 1, 2, Article 24 (August 2018), 16 pages. [https://doi.org/10.1145/3233301](https://doi.org/10.1145/3233301)
+Christoph Schied, Christoph Peters, and Carsten Dachsbacher. 2018. Gradient Estimation for Real-time Adaptive Temporal Filtering. Proc. ACM Comput. Graph. Interact. Tech. 1, 2, Article 24 (August 2018), 16 pages. <a href="https://doi.org/10.1145/3233301">https://doi.org/10.1145/3233301</a>
 </p>
 <p id="talbot2005">
-Justin F. Talbot. 2005. Importance Resampling for Global Illumination. Masters Thesis. Brigham Young University. [https://scholarsarchive.byu.edu/etd/663](https://scholarsarchive.byu.edu/etd/663)
+Justin F. Talbot. 2005. Importance Resampling for Global Illumination. Masters Thesis. Brigham Young University. <a href="https://scholarsarchive.byu.edu/etd/663">https://scholarsarchive.byu.edu/etd/663</a>
 </p>
 <p id="vitter1985">
-Jeffrey S. Vitter. 1985. Random sampling with a reservoir. ACM Trans. Math. Softw. 11, 1 (March 1985), 37–57. [https://doi.org/10.1145/3147.3165](https://doi.org/10.1145/3147.3165)
+Jeffrey S. Vitter. 1985. Random sampling with a reservoir. ACM Trans. Math. Softw. 11, 1 (March 1985), 37–57. <a href="https://doi.org/10.1145/3147.3165">https://doi.org/10.1145/3147.3165</a>
 </p>
 <p id="wymanandpanteleev2021">
-Chris Wyman and Alexey Panteleev. 2022. Rearchitecting spatiotemporal resampling for production. In Proceedings of the Conference on High-Performance Graphics (HPG '21). Eurographics Association, Goslar, DEU, 23–41. [https://doi.org/10.2312/hpg.20211281](https://doi.org/10.2312/hpg.20211281)
+Chris Wyman and Alexey Panteleev. 2022. Rearchitecting spatiotemporal resampling for production. In Proceedings of the Conference on High-Performance Graphics (HPG '21). Eurographics Association, Goslar, DEU, 23–41. <a href="https://doi.org/10.2312/hpg.20211281">https://doi.org/10.2312/hpg.20211281</a>
 </p>
 
 # Latex
