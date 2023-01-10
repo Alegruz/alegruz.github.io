@@ -56,6 +56,9 @@ Game Development Studies with Books
         * [Volumetric ReSTIR 논문 정리](/Notes/2022/10/Korean/FastVolumeRenderingWithSpatiotemporalReservoirSampling.md)
         * [WS ReSTIR 논문 정리](/Notes/2022/10/Korean/WorldSpaceSpatiotemporalReservoirReuseForRayTracedGlobalIllumination.md)
         * [GRIS 논문 정리](/Notes/2022/10/Korean/GeneralizedResampledImportanceSamplingFoundationsOfReStir.md)
+* 2023
+    * 1월
+        * [Direct3D 12 이해하기](/Notes/2023/01/Korean/UnderstandingDirect3D12.md)
 
 ## Mentoring
 
