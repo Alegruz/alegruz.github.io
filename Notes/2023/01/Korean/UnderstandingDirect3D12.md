@@ -208,9 +208,33 @@ if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(pDxgiInfoQueue.GetAddressOf
 
 ### 드라이버 타입 결정
 
-Direct3D 12에서는 따로 드라이버를 `D3D_DRIVER_TYPE`의 배열로 만들어서 생성하지 않고, DXGI 어댑터를 직접 찾은 다음 device 생성할 때 입력변수로 전달해줘야 함. 즉, DXGI 어댑터를 먼저 만들어야 하므로, DXGI factory가 필요함!!
+Direct3D 12에서는 따로 드라이버를 `D3D_DRIVER_TYPE`의 배열로 만들어서 생성하지 않고, DXGI 어댑터만 직접 찾은 다음 device 생성할 때 입력변수로 전달해줘야 함. 즉, DXGI 어댑터를 먼저 만들어야 하므로, DXGI factory가 필요함!!
 
-아까 위에서 만약 DXGI 디버깅 인터페이스를 얻으려고 했다면
+Direct3D 11에서는 swap chain을 만들기 위해서 factory가 필요했었음. Factory를 얻기 위해서는 우선 device를 통해 DXGI device를 얻고, 다음과 같이 어댑터와 factory를 얻었었음:
+
+```cpp
+// Obtain DXGI factory from device (since we used nullptr for pAdapter above)
+ComPtr<IDXGIFactory1> dxgiFactory;
+{
+    ComPtr<IDXGIDevice> dxgiDevice;
+    hr = m_d3dDevice.As(&dxgiDevice);
+    if (SUCCEEDED(hr))
+    {
+        ComPtr<IDXGIAdapter> adapter;
+        hr = dxgiDevice->GetAdapter(&adapter);
+        if (SUCCEEDED(hr))
+        {
+            hr = adapter->GetParent(IID_PPV_ARGS(&dxgiFactory));
+        }
+    }
+}
+if (FAILED(hr))
+{
+    return hr;
+}
+```
+
+Direct3D 12의 경우 아까 위에서 만약 DXGI 디버깅 인터페이스를 얻으려고 했다면
 
 ```cpp
 ComPtr<IDXGIFactory6> pDxgiFactory;
@@ -426,9 +450,67 @@ if (SUCCEEDED(hr))
 
 ## Swap Chain 생성
 
-Win32 어플리케이션 기준으로는 `CreateSwapChainForHwnd`로 보통 swap chain을 만들 것임. 이때 Direct3D 12에서는 이 함수의 첫번째 매개변수는 direct command queue임. 즉, command queue를 먼저 만들어줘야함.
+Direct3D 11의 경우 다음과 같이 만들었었음:
+
+```cpp
+// Create swap chain
+ComPtr<IDXGIFactory2> dxgiFactory2;
+hr = dxgiFactory.As(&dxgiFactory2);
+if (SUCCEEDED(hr))
+{
+    // DirectX 11.1 or later
+    hr = m_d3dDevice.As(&m_d3dDevice1);
+    if (SUCCEEDED(hr))
+    {
+        m_immediateContext.As(&m_immediateContext1);
+    }
+
+    DXGI_SWAP_CHAIN_DESC1 sd =
+    {
+        .Width = uWidth,
+        .Height = uHeight,
+        .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+        .SampleDesc = {.Count = 1u, .Quality = 0u },
+        .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+        .BufferCount = 1u
+    };
+
+    hr = dxgiFactory2->CreateSwapChainForHwnd(m_d3dDevice.Get(), hWnd, &sd, nullptr, nullptr, m_swapChain1.GetAddressOf());
+    if (SUCCEEDED(hr))
+    {
+        hr = m_swapChain1.As(&m_swapChain);
+    }
+}
+else
+{
+    // DirectX 11.0 systems
+    DXGI_SWAP_CHAIN_DESC sd =
+    {
+        .BufferDesc = {.Width = uWidth, .Height = uHeight, .RefreshRate = {.Numerator = 60, .Denominator = 1 }, .Format = DXGI_FORMAT_R8G8B8A8_UNORM },
+        .SampleDesc = {.Count = 1, .Quality = 0 },
+        .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+        .BufferCount = 1u,
+        .OutputWindow = hWnd,
+        .Windowed = TRUE
+    };
+
+    hr = dxgiFactory->CreateSwapChain(m_d3dDevice.Get(), &sd, m_swapChain.GetAddressOf());
+}
+```
+
+Direct3D 12에서도 마찬가지인데, Win32 어플리케이션 기준으로는 `CreateSwapChainForHwnd`로 swap chain을 만드는 것을 권장함.
+
+차이점으로는 Direct3D 12에서는 swap chain을 만드는 함수들의 첫번째 매개변수가 device가 아니라 direct command queue라는 것임. 즉, command queue를 먼저 만들어줘야함.
 
 ### Command Queue 생성
+
+Direct3D 11에서는 실제 런타임과 드라이버 간의 동기화를 알아서 잘 처리해줬다면, Direct3D 12에서는 command queue로 이 일을 직접 처리해줘야함. 이때의 장점:
+
+* 더 나은 병렬성 - 백그라운드에서는 비디오 디코딩과 같은 업무 시키고, 포그라운드에서는 또 다른 일 시키는 식으로 여러 큐를 둘 수 있음.
+* 비동기 + 우선순위 낮은 GPU 업무 - Command queue 모델을 통해 동시에 우선순위가 낮은 GPU 업무를 해줄 수 있고, 한 GPU 스레드가 동기화하지 않은 다른 스레드의 결과를 블로킹 없이 소비할 수 있도록 해줌.
+* 우선순위 높은 compute 업무 - 3D 렌더링 도중에 우선순위가 높은 compute 업무 조금을 해야할 때가 있음.
+
+Command queue는 `ID3D12Device::CreateCommandQueue`로 만드는데, 이때 만들 command queue의 유형을 알려줘야함. Command queue의 유형이라는 것은 이 큐에 집어 넣을 command list의 유형을 의미함. 참고로 번들을 직접 command queue에 넣어줄 순 없고 direct command list에 넣어준 다음에 command queue에 넣어줘야함.
 
 ```cpp
 D3D12_COMMAND_QUEUE_DESC queueDesc =
@@ -546,6 +628,83 @@ if (FAILED(hr))
 }
 ```
 
+## Render Target 생성
+
+Direct3D 11에서는 swap chain으로부터 백 버퍼를 받아와 RTV를 만들어 주었고, 간단한 2D 텍스처를 생성해주어 DSV 또한 만들어 주었음:
+
+```cpp
+// Create a render target view
+ComPtr<ID3D11Texture2D> pBackBuffer;
+hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+if (FAILED(hr))
+{
+    return hr;
+}
+
+hr = m_d3dDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, m_renderTargetView.GetAddressOf());
+if (FAILED(hr))
+{
+    return hr;
+}
+
+// Create depth stencil texture
+D3D11_TEXTURE2D_DESC descDepth =
+{
+    .Width = uWidth,
+    .Height = uHeight,
+    .MipLevels = 1u,
+    .ArraySize = 1u,
+    .Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+    .SampleDesc = {.Count = 1u, .Quality = 0u },
+    .Usage = D3D11_USAGE_DEFAULT,
+    .BindFlags = D3D11_BIND_DEPTH_STENCIL,
+    .CPUAccessFlags = 0u,
+    .MiscFlags = 0u
+};
+hr = m_d3dDevice->CreateTexture2D(&descDepth, nullptr, m_depthStencil.GetAddressOf());
+if (FAILED(hr))
+{
+    return hr;
+}
+
+// Create the depth stencil view
+D3D11_DEPTH_STENCIL_VIEW_DESC descDSV =
+{
+    .Format = descDepth.Format,
+    .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D,
+    .Texture2D = {.MipSlice = 0 }
+};
+hr = m_d3dDevice->CreateDepthStencilView(m_depthStencil.Get(), &descDSV, m_depthStencilView.GetAddressOf());
+if (FAILED(hr))
+{
+    return hr;
+}
+```
+
+나중에 렌더링할 땐 위에서 얻은 RTV와 DSV를 RT에 셋팅만 해주면 끝이었음:
+
+```cpp
+m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+```
+
+Direct3D 12에서는 이렇게 단순하게 되지 않음. 이런 셰이더 자원들(텍스처, constant table, 이미지, 버퍼 등등)은 나중에 `VSSetConstantBuffers`나 `PSSetShaderResources` 등으로 단순히 연결하는 방식이 아님. 대신 descriptor라는 중계인을 통해 참조가 되는 방식임. Descriptor란 한 자원에 대한 정보를 갖는 작은 객체라고 생각하면 됨.
+
+어차피 우리가 자원 하나만 사용할리는 없잖음? 그래서 이런 descriptor들이 모인 걸 descriptor table이라 부름. 여기에 필요한 CBV, UAV, SRV, 샘플러 다 갖다 넣는 것임.
+
+나중에 graphics / compute 파이프라인에서는 이 자원들을 descriptor table의 인덱스를 통해 접근하게 됨.
+
+근데 Direct3D 12에서 자료 구조가 있다면 자동으로 뭐다? **직접 메모리 관리를 해줘야 한다!!** Descriptor table은 descriptor heap이라는 곳에 보관해야하는데, 자연스레 하나 이상의 프레임에서 사용할 모든 descriptor들을 포함하게 될 것임. 모든 자원들은 결국 유저 모드 heap에 저장됨.
+
+여기에 또 등장하는 개념이 바로 루트 시그니처. 셰이더 입장에서는 자원이 필요한데, Direct3D 11에서처럼 직접 받는게 아니라 descriptor table을 보고 찾으라고 함. 그러면 일종의 규칙 같은 것이 필요하게 됨. Descriptor table의 몇 번 몇 번 자원이 필요하단 식으로. 이걸 해결하는 것이 루트 시그니처임. 루트 시그니처는 다음 정보를 갖고 있음:
+
+* Descriptor heap 안의 descriptor table에 대한 인덱스. 여기에서 사전 정의된 descriptor table의 레이아웃을 볼 수 있음
+* Constant. 사용자가 정의한 constant (루트 상수라 부름)를 귀찮게 따로 descriptor이나 table 쓰지 않고 바로 셰이더에 직접 바인딩할 수 있음.
+* 루트 시그니처 자체에 존재하는 draw마다 바뀌는 매우 적은 수의 descriptor들 (CBV들처럼). 이를 통해 굳이 이걸 descriptor heap에 넣지 않고도 쓸 수 있게 해줌.
+
+즉, 루트 시그니처는 draw마다 수정되는 소수의 데이터에 대해 적절하게 성능 최적화를 할 수 있게 해줌.
+
+이러한 바인딩을 통해 메모리 관리, 객체 수명 관리, 상태 추적, 메모리 동기화와 같은 작업과는 분리되게, 독립적이게 해줌. 이러한 바인딩은 애초에 오버헤드가 적고 가장 자주 호출되는 API에 대하여 최적화 되도록 설계됨.
+
 ## Command list 생성
 
 Command list는 크게 네 가지 타입이 있음.
@@ -591,6 +750,8 @@ for (UINT uThreadIdx = 0; uThreadIdx < NUM_THREADS; ++uThreadIdx)
 Command allocator는 크기가 커질 수는 있어도 줄어들지는 않음. 그러므로 이걸로 할당자 풀을 만들거나 재사용을 하여 최대한의 효율을 내는 것이 좋음. 한 순간에 한 목록만 기록 한다는 가정 하에 한 할당자에서 여러 목록을 기록할 수 있음.
 
 간단한 할당자 풀을 만든다고 하면 적당히 command list 개수 * 최대 프레임 latency 개의 할당자를 두는 것임. 좀 더 고급지게 만들면 한 스레드에서 여러 목록을 재사용하는 할당자를 두는 것임. 이때는 기록 중인 목록 수 * 최대 프레임 latency 개의 할당자를 두면 됨.
+
+예를 들어 간단한 풀을 만든다면 기록할 목록이 6개고, 최대 3 개의 프레임을 따로 만들 수 있다면 18-20 개 정도의 할당자를 사용하면 되는 것이고, 좀 더 고급진 풀을 만드는 경우 6개의 목록이 A 스레드에 2개, B 스레드에 2개, C 스레드에 1개, D 스레드에 1개씩 나눠서 처리한다면 12-14개 정도의 할당자를 사용하면 됨.
 
 Fence를 활용하여 어떤 할당자가 재사용 가능한지 알 수 있음.
 
