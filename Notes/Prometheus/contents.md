@@ -1,226 +1,615 @@
-1. What is Game Programming Really Like?
-   1. The Good
-      1. The Job
-      2. The Gamers
-      3. Your Coworkers
-      4. The Tools - Software Development Kits (SDKs)
-      5. The Hardware
-      6. The Platforms
-      7. The Show
-   2. The Hard Work
-      1. Game Programming Is Freaking Hard
-      2. Bits and Pieces
-      3. That's Not a Bug - That's a Feature
-      4. The Tools
-   3. The Dark Side
-      1. Hitting a Moving Target
-      2. Crunch Mode (and Crunch Meals)
-      3. Bah Humbug
-      4. Operating System Hell
-      5. Fluid Nature of Employment
-   4. It's All Worth It, Right?
-2. What's in a Game?
-   1. Game Architecture
-   2. Applying the Game Architecture
-   3. Application Layer
-      1. Reading Input
-      2. File Systems and Resource Caching
-      3. Managing Memory
-      4. Initialization, the Main Loop, and Shutdown
-      5. Other Application Layer Code
-   4. Game Logic
-      1. Game State and Data Structures
-      2. Physics and Collision
-      3. Events
-      4. Process Manager
-      5. Command Interpreter
-   5. Game View for the Human Player
-      1. Graphics Display
-      2. Audio
-      3. User Interface Presentation
-      4. Process Manager
-      5. Options
-      6. Multiplayer Games
-   6. Game Views for AI Agents
-   7. Networked Game Architecture
-      1. Remote Game View
-      2. Remote Game Logic
-   8. Do I Have to Use DirectX?
-      1. Design Philosophy of DirectX
-      2. Direct3D or Vulkan (orig: Direct3D or OpenGL)
-      3. XSound2 or What? (orig: DirectSount or What?)
-      4. GameInput or Roll Your Own (orig: DirectInput or Roll Your Own)
-   9.  Other Bits and Pieces
-3. Coding Tidbits and Style that Saved Me
-   1. General Coding Styles
-      1. Bracing
-      2. Consistency
-   2. Smart Code Design Practices
-      1. Avoiding Hidden Code and Nontrivial Operations
-      2. Class Hierarchies: Keep Them Flat
-      3. Inheritance Versus Composition
-      4. Virtual Functions Gone Bad
-      5. User Interface Classes
-      6. Consider Using Factories
-      7. Encapsulate Components that Change
-      8. Use Streams to Initialize Objects
-   3. Smart Pointers and Naked Pointers
-      1. Reference Counting
-      2. C++'s `shared_ptr`
-   4. Using Memory Correctly
-      1. Understanding the Different Kinds of Memory
-      2. Optimizing Memory Access
-      3. Memory Alignment
-      4. Virtual Memory
-      5. Writing Your Own Memory Manager
-   5. Grab Bag of Useful Stuff
-      1. An Excellent Random Number Generator
-      2. Pseudo-Random Traversal of a Set
-      3. Memory Pools
-   6. Developing the Style that's Right for You
-4. Building Your Game
-   1. A Little Motivation
-   2. Creating a Project
-      1. Build Configurations
-      2. Create a Bullet-Proof Directory Structure
-      3. Where to Put Your Game Engine and Tools
-      4. Setting Visual Studio Build Options
-      5. Multiplatform Projects
-   3. Source Code Repositories and Version Control
-      1. A Little History-Visual SourceSafe from Microsoft
-      2. Subversion and TortoiseSVN
-      3. Perforce by Perforce Software
-      4. AlienBrain from Avid
-      5. Using Source Control Branches
-   4. Building the Game: A Black Art?
-      1. Automate Your Builds
-      2. The Build Machine
-      3. Automated Build Scripts
-   5. Creating Build Scripts
-      1. Normal Build
-      2. Milestone Build
-   6. Multiple Projects and Shared Code
-   7. Some Parting Advice
-5. Game Initialization and Shutdown
-   1. Initialization 101
-   2. Some C++ Initialization Pitfalls
-   3. The Game's Application Layer
-      1. `WinMain`: The Windows Entry Point
-      2. The Application Layer: `GameCodeApp`
-      3. `InitInstance()`: Checking System Resources
-      4. Checking for Multiple Instances of Your Game
-      5. Checking Hard Drive Space
-      6. Checking Memory
-      7. Calculating CPU Speed
-      8. Do You Have a Dirtbag on Your Hands?
-      9. Initialize Your Resource Cache
-      10. Loading Text Strings
-      11. Your Script Manager and the Events System
-      12. Initialize DirectX and Create Your Window
-      13. Create Your Game Logic and Game View
-      14. Set Your Save Game Directory
-      15. Preload Selected Resources from the Cache
-   4.  Sticking the Landing: A Nice Clean Exit
-      1.  How Do I Get Out of Here?
-      2.  Forcing Modal Dialog Boxes to Close
-      3.  Shutting Down the Game
-      4.  What About Consoles?
-   5.  Getting In and Getting Out
-6.  Game Actors and Component Architecture
-    1.  A First Attempt at Building Game Actors
-    2.  Component Architecture
-    3.  Creating Actors and Components
-    4.  Defining Actors and Components
-    5.  Storing and Accessing Actors
-    6.  Putting It All Together
-    7.  Data Sharing
-        1.  Direct Access
-        2.  Events
-        3.  The Best of Both Worlds
-7.  Controlling the Main Loop
-    1.  Organizing the Main Loop
-        1.  Hard-Coded Updates
-        2.  Multithreaded Main Loops
-        3.  A Hybrid Technique
-        4.  A Simple Cooperative Multitasker
-        5.  Very Simple Process Example: `DelayProcess`
-        6.  Mor Uses of `Process` Derivatives
-    2.  Playing Nicely with the OS
-    3.  Using the DirectX 12 Framework
-        1.  Rendering and Presenting the Display
-        2.  Your Callback Functions for Updating and Rendering
-    4.  Can I Make a Game Yet?
-8.  Loading and Caching Game Data
-    1.  Game Resources: Formats and Storage Requirements
-        1.  3D Object Meshes and Environments
-        2.  Animation Data
-        3.  Map/Level Data
-        4.  Texture Data
-        5.  Bitmap Color Depth
-        6.  Sound and Music Data
-        7.  Video and Prerendered Cinematics
-    2.  Resources Files
-        1.  Packaging Resources into a Single File
-        2.  Other Benefits of Packaging Resources
-        3.  Data Compression and Performance
-        4.  zlib: Open Source Compression
-    3.  The Resource Cache
-        1.  `IResourceFile` Interface
-        2.  `ResHandle`: Tracking Loaded Resources
-        3.  `IResourceLoader`: Interface and the `DefaultResourceLoader`
-        4.  `ResCache`: A Simple Resource Cache
-        5.  Caching Resources into DirectX et al.
-        6.  World Design and Cache Prediction
-    4.  I'm Out of Cache
-9.  Programming Input Devices
-    1.  Getting the Device State
-    2.  Using XInput or DirectInput
-    3.  A Few Safety Tips
-    4.  Working with Two-Axis Controls
-        1.  Capturing the Mouse on Desktops
-        2.  Making a Mouse Drag Work
-    5.  Working with a Game Controller
-        1.  Dead Zones
-        2.  Normalizing Input
-        3.  One Stick, Two Stick, Red Stick, Blue Stick
-    6.  Working with the Keyboard
-        1.  Mike's Keyboard Snooper
-        2.  `GetAsyncKeyState()` and Other Evils
-        3.  Handling the Alt Key Under Windows
-    7.  What, No Dance Pad?
-10. User Interface Programming
-    1.  DirectX's Text Helper and Dialog Resource Manager
-    2.  The Human's Game View
-    3.  A WASD Movement Controller
-    4.  Screen Elements
-    5.  A Custom `MessageBox` Dialog
-    6.  Modal Dialog Boxes
-    7.  Controls
-    8.  Control Identification
-    9.  Hit Testing and Focus Order
-    10. Control State
-    11. More Control Properties
-        1.  Hot Keys
-        2.  Tooltips
-        3.  Context-Sensitive Help
-        4.  Dragging
-        5.  Sounds and Animation
-    12. Some Final User Interface Tips
-11. Game Event Management
-    1.  Game Events
-        1.  Events and Event Data
-        2.  The Event Listener Delegates
-        3.  The Event Manager
-        4.  Example: Bringing It All Together
-    2.  What Game Events Are Important?
-    3.  Distinguishing Events from Processes
+1. What is Game Programming Really Like? (GCC4e)
+   1. The Good (GCC4e)
+      1. The Job (GCC4e)
+      2. The Gamers (GCC4e)
+      3. Your Coworkers (GCC4e)
+      4. The Tools - Software Development Kits (SDKs) (GCC4e)
+      5. The Hardware (GCC4e)
+      6. The Platforms (GCC4e)
+      7. The Show (GCC4e)
+   2. The Hard Work (GCC4e)
+      1. Game Programming Is Freaking Hard (GCC4e)
+      2. Bits and Pieces (GCC4e)
+      3. That's Not a Bug - That's a Feature (GCC4e)
+      4. The Tools (GCC4e)
+   3. The Dark Side (GCC4e)
+      1. Hitting a Moving Target (GCC4e)
+      2. Crunch Mode (and Crunch Meals) (GCC4e)
+      3. Bah Humbug (GCC4e)
+      4. Operating System Hell (GCC4e)
+      5. Fluid Nature of Employment (GCC4e)
+   4. It's All Worth It, Right? (GCC4e)
+2. What's in a Game? (GCC4e)
+   1. Game Architecture (GCC4e)
+      1. The Components of a Game (TotWGPG2e)
+   2. Applying the Game Architecture (GCC4e)
+   3. Application Layer (GCC4e)
+      1. Reading Input (GCC4e)
+      2. File Systems and Resource Caching (GCC4e)
+      3. Managing Memory (GCC4e)
+      4. Initialization, the Main Loop, and Shutdown (GCC4e)
+         1. The Game Loop (GPAaT)
+      5. Other Application Layer Code (GCC4e)
+   4. Game Logic (GCC4e)
+      1. Game State and Data Structures (GCC4e)
+      2. Physics and Collision (GCC4e)
+         1. Playing God: Basic Physics Modeling (TotWGPG2e)
+            1. Fundamental Laws of Physics (TotWGPG2e)
+            2. The Physics of Linear Momentum: Conservation and Transfer (TotWGPG2e)
+            3. Modeling Gravity Effects (TotWGPG2e)
+            4. The Evil Head of Friction (TotWGPG2e)
+            5. Basic Ad Hoc Collision Response (TotWGPG2e)
+            6. Real 2D Object-to-Object Collision Response (Advanced) (TotWGPG2e)
+            7. Resolving the n-t Coordinate System (TotWGPG2e)
+            8. Simple Kinematics (TotWGPG2e)
+            9. Particle Systems (TotWGPG2e)
+            10. Playing God: Constructing Physics Models for Games (TotWGPG2e)
+         2. Physics (GPAaT)
+            1. Planes, Rays, and Line Segments (GPAaT)
+            2. Collision Geometry (GPAaT)
+            3. Collision Detection (GPAaT)
+            4. Physics-Based Movement (GPAaT)
+            5. Physics Middleware (GPAaT)
+      3. Events (GCC4e)
+      4. Process Manager (GCC4e)
+      5. Command Interpreter (GCC4e)
+   5. Game View for the Human Player (GCC4e)
+      1. Graphics Display (GCC4e)
+      2. Audio (GCC4e)
+      3. User Interface Presentation (GCC4e)
+      4. Process Manager (GCC4e)
+      5. Options (GCC4e)
+      6. Multiplayer Games (GCC4e)
+   6. Game Views for AI Agents (GCC4e)
+   7. Networked Game Architecture (GCC4e)
+      1. Remote Game View (GCC4e)
+      2. Remote Game Logic (GCC4e)
+   8. Do I Have to Use DirectX? (GCC4e)
+      1. Design Philosophy of DirectX (GCC4e)
+      2. Direct3D or Vulkan (orig: Direct3D or OpenGL) (GCC4e)
+      3. XSound2 or What? (orig: DirectSount or What?) (GCC4e)
+      4. GameInput or Roll Your Own (orig: DirectInput or Roll Your Own) (GCC4e)
+   9.  Other Bits and Pieces (GCC4e)
+3. Coding Tidbits and Style that Saved Me (GCC4e)
+   1. General Coding Styles (GCC4e)
+      1. Bracing (GCC4e)
+      2. Consistency (GCC4e)
+   2. Smart Code Design Practices (GCC4e)
+      1. Avoiding Hidden Code and Nontrivial Operations (GCC4e)
+      2. Class Hierarchies: Keep Them Flat (GCC4e)
+      3. Inheritance Versus Composition (GCC4e)
+      4. Virtual Functions Gone Bad (GCC4e)
+      5. User Interface Classes (GCC4e)
+      6. Consider Using Factories (GCC4e)
+      7. Encapsulate Components that Change (GCC4e)
+      8. Use Streams to Initialize Objects (GCC4e)
+   3. Smart Pointers and Naked Pointers (GCC4e)
+      1. Reference Counting (GCC4e)
+      2. C++'s `shared_ptr` (GCC4e)
+   4. Memory
+      1. Using Memory Correctly (GCC4e)
+         1. Understanding the Different Kinds of Memory (GCC4e)
+         2. Optimizing Memory Access (GCC4e)
+         3. Memory Alignment (GCC4e)
+         4. Virtual Memory (GCC4e)
+         5. Writing Your Own Memory Manager (GCC4e)
+      2. Memory (CPGP)
+         1. The Specification (CPGP)
+         2. Simple Memory (CPGP)
+            1. The Issues-Datatypes (CPGP)
+            2. The Issues-A Safety File (CPGP)
+            3. The Issues-The Report (CPGP)
+         3. Our Own Memory Manager-Design (CPGP)
+         4. Hardware Properties (CPGP)
+            1. Endian (CPGP)
+            2. Alignment (CPGP)
+            3. Access (CPGP)
+         5. Software Properties (CPGP)
+            1. Fragmentation (CPGP)
+            2. The Standard Library (CPGP)
+         6. Our Own Memory Manager-Implementation (CPGP)
+            1. Conceptual Design (CPGP)
+            2. Allocating Memory (CPGP)
+            3. Garbage Collection (CPGP)
+            4. Releasing Memory (CPGP)
+         7. Debugging Memory (CPGP)
+            1. Profiling Memory Usage (CPGP)
+            2. Allocation Wrappers (CPGP)
+         8. High-Level Memory Usage (CPGP)
+            1. Application Memory Usage (CPGP)
+            2. Using Allocation Within Subsystems (CPGP)
+            3. Global versus Game (CPGP)
+         9. Other Guidelines (CPGP)
+            1.  The Stack (CPGP)
+            2.  Local Variables (CPGP)
+            3.  Intelligent Buffer Usage (CPGP)
+            4.  Minimize Dynamic Memory (CPGP)
+   5. Grab Bag of Useful Stuff (GCC4e)
+      1. An Excellent Random Number Generator (GCC4e)
+      2. Pseudo-Random Traversal of a Set (GCC4e)
+      3. Memory Pools (GCC4e)
+   6. Developing the Style that's Right for You (GCC4e)
+4. Building Your Game (GCC4e)
+   1. A Little Motivation (GCC4e)
+   2. Creating a Project (GCC4e)
+      1. Build Configurations (GCC4e)
+      2. Create a Bullet-Proof Directory Structure (GCC4e)
+      3. Where to Put Your Game Engine and Tools (GCC4e)
+      4. Setting Visual Studio Build Options (GCC4e)
+      5. Multiplatform Projects (GCC4e)
+   3. Source Code Repositories and Version Control (GCC4e)
+      1. A Little History-Visual SourceSafe from Microsoft (GCC4e)
+      2. Subversion and TortoiseSVN (GCC4e)
+      3. Perforce by Perforce Software (GCC4e)
+      4. AlienBrain from Avid (GCC4e)
+      5. Using Source Control Branches (GCC4e)
+   4. Building the Game: A Black Art? (GCC4e)
+      1. Automate Your Builds (GCC4e)
+      2. The Build Machine (GCC4e)
+      3. Automated Build Scripts (GCC4e)
+   5. Creating Build Scripts (GCC4e)
+      1. Normal Build (GCC4e)
+      2. Milestone Build (GCC4e)
+   6. Multiple Projects and Shared Code (GCC4e)
+   7. Some Parting Advice (GCC4e)
+5. Game Initialization and Shutdown (GCC4e)
+   1. Initialization 101 (GCC4e)
+   2. Some C++ Initialization Pitfalls (GCC4e)
+   3. The Game's Application Layer (GCC4e)
+      1. `WinMain`: The Windows Entry Point (GCC4e)
+         1. The Windows Programming Model (TotWGPG2e)
+            1. The Genesis of Windows (TotWGPG2e)
+            2. Multitasking and Multithreading (TotWGPG2e)
+      2. The Application Layer: `GameCodeApp` (GCC4e)
+      3. `InitInstance()`: Checking System Resources (GCC4e)
+         1. Getting Information (TotWGPG2e)
+      4. Checking for Multiple Instances of Your Game (GCC4e)
+      5. Checking Hard Drive Space (GCC4e)
+      6. Checking Memory (GCC4e)
+      7. Calculating CPU Speed (GCC4e)
+      8. Do You Have a Dirtbag on Your Hands? (GCC4e)
+      9.  Initialize Your Resource Cache (GCC4e)
+         1.  Using Resources (TotWGPG2e)
+      10. Loading Text Strings (GCC4e)
+      11. Your Script Manager and the Events System (GCC4e)
+          1.  The Event Handler (TotWGPG2e)
+          2.  Handling Important Events3.  Sending Messages Yourself
+      12. Initialize DirectX and Create Your Window (GCC4e)
+          1.  The World's Simplest Windows Program (TotWGPG2e)
+          2.  Real-World Windows Applications (Without Puck) (TotWGPG2e)
+          3.  The Windows Class (TotWGPG2e)
+          4.  Registering the Windows Class (TotWGPG2e)
+          5.  Creating the Window (TotWGPG2e)
+          6.  Opening More Windows (TotWGPG2e)
+          7.  Working with Menus (TotWGPG2e)
+          8.  Introduction to GDI (Graphics Device Interface) (TotWGPG2e)
+          9.  DirectX Fundamentals and the Dreaded COM (TotWGPG2e)
+          10. First Contact: Direct3D 12 (TotWGPG2e)
+          11. Advanced Direct3D 12 and Bitmapped Graphics (TotWGPG2e)
+          12. Vector Rasterization and 2D Transformations (TotWGPG2e)
+      13. Create Your Game Logic and Game View (GCC4e)
+      14. Set Your Save Game Directory (GCC4e)
+      15. Preload Selected Resources from the Cache (GCC4e)
+      16. Win32
+          1. Timing is Everything (TotWGPG2e)
+   4.  Sticking the Landing: A Nice Clean Exit (GCC4e)
+      1.  How Do I Get Out of Here? (GCC4e)
+      2.  Forcing Modal Dialog Boxes to Close (GCC4e)
+      3.  Shutting Down the Game (GCC4e)
+      4.  What About Consoles? (GCC4e)
+   5.  Getting In and Getting Out (GCC4e)
+   6.  The Game Console (TotWGPG2e)
+6.  Game Actors and Component Architecture (GCC4e)
+    1.  A First Attempt at Building Game Actors (GCC4e)
+    2.  Component Architecture (GCC4e)
+    3.  Creating Actors and Components (GCC4e)
+    4.  Defining Actors and Components (GCC4e)
+    5.  Storing and Accessing Actors (GCC4e)
+    6.  Putting It All Together (GCC4e)
+    7.  Data Sharing (GCC4e)
+        1.  Direct Access (GCC4e)
+        2.  Events (GCC4e)
+        3.  The Best of Both Worlds (GCC4e)
+    8.  Game Objects (GPAaT)
+7.  Controlling the Main Loop (GCC4e)
+    1.  Organizing the Main Loop (GCC4e)
+        1.  Hard-Coded Updates (GCC4e)
+        2.  Multithreaded Main Loops (GCC4e)
+        3.  A Hybrid Technique (GCC4e)
+        4.  A Simple Cooperative Multitasker (GCC4e)
+        5.  Very Simple Process Example: `DelayProcess` (GCC4e)
+        6.  Mor Uses of `Process` Derivatives (GCC4e)
+    2.  Making a Real-Time Event Loop (TotWGPG2e)
+    3.  Playing Nicely with the OS (GCC4e)
+    4.  Using the DirectX 12 Framework (GCC4e)
+        1.  Advanced GDI Graphics (TotWGPG2e)
+        2.  Points, Lines, Polygons, and Circles (TotWGPG2e)
+        3.  More on Text and Fonts (TotWGPG2e)
+        4.  Rendering and Presenting the Display (GCC4e)
+        5.  Your Callback Functions for Updating and Rendering (GCC4e)
+    5.  Can I Make a Game Yet? (GCC4e)
+    6.  Time and Games (GPAaT)
+8.  Loading and Caching Game Data (GCC4e)
+    1.  Storage
+        1.  Game Resources: Formats and Storage Requirements (GCC4e)
+            1.  3D Object Meshes and Environments (GCC4e)
+            2.  Animation Data (GCC4e)
+            3.  Map/Level Data (GCC4e)
+            4.  Texture Data (GCC4e)
+            5.  Bitmap Color Depth (GCC4e)
+            6.  Sound and Music Data (GCC4e)
+            7.  Video and Prerendered Cinematics (GCC4e)
+        2.  Storage (CPGP)
+            1.  The Four Corners of Storage (CPGP)
+            2.  The Problems (CPGP)
+            3.  The Data Conversion Process (CPGP)
+                1.  Serialization (CPGP)
+                2.  Endian Issues (CPGP)
+                3.  Extensibility and Future-Proofing (CPGP)
+                4.  Introducing Platform-Specific Data (CPGP)
+                5.  Introducing Platform-Specific Resources (CPGP)
+                6.  Serializing Class Hierarchies (CPGP)
+                7.  Object Creation (CPGP)
+                8.  Interdependent Objects (CPGP)
+                9.  Patching Pointers (CPGP)
+            4.  Designing a Filesystem (CPGP)
+                1.  Disc Size (CPGP)
+                2.  Layout (CPGP)
+            5.  Filesystem Implementation (CPGP)
+                1.  Filesystem Devices (CPGP)
+                2.  File Handling (CPGP)
+                3.  Filesystem Shortcuts (CPGP)
+                4.  Filesystem Additions (CPGP)
+            6.  Handling Physical Devices (CPGP)
+                1.  Asynchronous Loading (CPGP)
+                2.  Synchronous Loading (CPGP)
+                3.  Block Sizes and Caching (CPGP)
+                4.  The General Case (CPGP)
+            7.  Creating Back Doors (CPGP)
+                1.  Going Around the Problem (CPGP)
+                2.  Knowing the Device (CPGP)
+                3.  A ZIP Warning (CPGP)
+    2.  Resources Files (GCC4e)
+        1.  Packaging Resources into a Single File (GCC4e)
+        2.  Other Benefits of Packaging Resources (GCC4e)
+        3.  Data Compression and Performance (GCC4e)
+        4.  zlib: Open Source Compression (GCC4e)
+    3.  The Resource Cache (GCC4e)
+        1.  `IResourceFile` Interface (GCC4e)
+        2.  `ResHandle`: Tracking Loaded Resources (GCC4e)
+        3.  `IResourceLoader`: Interface and the `DefaultResourceLoader` (GCC4e)
+        4.  `ResCache`: A Simple Resource Cache (GCC4e)
+        5.  Caching Resources into DirectX et al. (GCC4e)
+        6.  World Design and Cache Prediction (GCC4e)
+    4.  I'm Out of Cache (GCC4e)
+9.  Programming Input Devices (GCC4e)
+    1.  Playing with Controls (TotWGPG2e)
+    2.  Getting the Device State (GCC4e)
+    3.  Using XInput or DirectInput (GCC4e)
+        1.  Uplinking with XInput/DirectInput and Force Feedback (TotWGPG2e)
+    4.  A Few Safety Tips (GCC4e)
+    5.  Working with Two-Axis Controls (GCC4e)
+        1.  Capturing the Mouse on Desktops (GCC4e)
+        2.  Making a Mouse Drag Work (GCC4e)
+    6.  Working with a Game Controller (GCC4e)
+        1.  Dead Zones (GCC4e)
+        2.  Normalizing Input (GCC4e)
+        3.  One Stick, Two Stick, Red Stick, Blue Stick (GCC4e)
+    7.  Working with the Keyboard (GCC4e)
+        1.  Mike's Keyboard Snooper (GCC4e)
+        2.  `GetAsyncKeyState()` and Other Evils (GCC4e)
+        3.  Handling the Alt Key Under Windows (GCC4e)
+    8.  What, No Dance Pad? (GCC4e)
+    9.  Input (GPAaT)
+        1.  Input Devices (GPAaT)
+        2.  Event-Based Input Systems (GPAaT)
+        3.  Mobile Input (GPAaT)
+10. User Interface
+    1.  User Interface Programming (GCC4e)
+        1.  DirectX's Text Helper and Dialog Resource Manager (GCC4e)
+        2.  The Human's Game View (GCC4e)
+        3.  A WASD Movement Controller (GCC4e)
+        4.  Screen Elements (GCC4e)
+        5.  A Custom `MessageBox` Dialog (GCC4e)
+        6.  Modal Dialog Boxes (GCC4e)
+        7.  Controls (GCC4e)
+        8.  Control Identification (GCC4e)
+        9.  Hit Testing and Focus Order (GCC4e)
+        10. Control State (GCC4e)
+        11. More Control Properties (GCC4e)
+            1.  Hot Keys (GCC4e)
+            2.  Tooltips (GCC4e)
+            3.  Context-Sensitive Help (GCC4e)
+            4.  Dragging (GCC4e)
+            5.  Sounds and Animation (GCC4e)
+        12. Some Final User Interface Tips (GCC4e)
+    2.  User Interfaces (GPAaT)
+        1.  Menu Systems (GPAaT)
+        2.  HUD Elements (GPAaT)
+        3.  Other UI Considerations (GPAaT)
+11. Game Event Management (GCC4e)
+    1.  Game Events (GCC4e)
+        1.  Events and Event Data (GCC4e)
+        2.  The Event Listener Delegates (GCC4e)
+        3.  The Event Manager (GCC4e)
+        4.  Example: Bringing It All Together (GCC4e)
+    2.  What Game Events Are Important? (GCC4e)
+    3.  Distinguishing Events from Processes (GCC4e)
 12. Game Audio
-    1.  How Sound Works
-        1.  Digital Recording and Reproduction
-        2.  Sound Files
-        3.  A Quick Word About Threads and Synchronization
-    2.  Game Sound System Architecture
-        1.  Sound Resources and Handles
-        2.  `IAudioBuffer` Interface and `AudioBuffer` Class
-        3.  `IAudio` Interface and `Audio` Class
-        4.  XAudio2 Implementations (orig: DirectSound Implementations)
+    1.  Game Audio (GCC4e)
+        1.  How Sound Works (GCC4e)
+            1.  Digital Recording and Reproduction (GCC4e)
+            2.  Sound Files (GCC4e)
+            3.  A Quick Word About Threads and Synchronization (GCC4e)
+        2.  Game Sound System Architecture (GCC4e)
+            1.  Sound Resources and Handles (GCC4e)
+            2.  `IAudioBuffer` Interface and `AudioBuffer` Class (GCC4e)
+            3.  `IAudio` Interface and `Audio` Class (GCC4e)
+            4.  XAudio2 Implementations (orig: DirectSound Implementations) (GCC4e)
+                1.  Sounding Off with XAudio2 and XACT3 (TotWGPG2e)
+    2.  Sound (GPAaT)
+        1.  Basic Sound (GPAaT)
+        2.  3D Sound (GPAaT)
+        3.  Digital Signal Processing (GPAaT)
+        4.  Other Sound Topics (GPAaT)
+    3.  The Audio System (CPGP)
+        1.  High-Level Parameters (CPGP)
+        2.  Playing Music (CPGP)
+            1.  CD Audio (CPGP)
+            2.  MP3 and Ogg Vorbis (CPGP)
+            3.  MIDI (CPGP)
+            4.  Customized Formats (CPGP)
+        3.  Playing Sounds (CPGP)
+            1.  Raw Data (CPGP)
+            2.  Compressed Data (CPGP)
+            3.  Metadata (CPGP)
+            4.  Looped Sounds (CPGP)
+        4.  Resourcing Data (CPGP)
+            1.  In Memory (CPGP)
+            2.  From a Stream (CPGP)
+            3.  Asynchronous Loading (CPGP)
+        5.  Mixer Control (CPGP)
+            1.  UDE (CPGP)
+            2.  The Gameplay Mixer (CPGP)
+            3.  The Technology Mixer (CPGP)
+            4.  The User Mixer (CPGP)
+        6.  Video Playback Interaction (CPGP)
+13. Hardcore Game Programming (TotWGPG2e)
+    1.  Algorithms, Data Structures, Memory Management, and Multithreading (TotWGPG2e)
+        1.  Data Structures (TotWGPG2e)
+        2.  Algorithmic Analysis (TotWGPG2e)
+        3.  Recursion (TotWGPG2e)
+        4.  Trees (TotWGPG2e)
+        5.  Optimization Theory (TotWGPG2e)
+        6.  Making Demos (TotWGPG2e)
+        7.  Strategies for Saving the Game (TotWGPG2e)
+        8.  Implementing Multiple Players (TotWGPG2e)
+        9.  Multithreaded Programming Techniques (TotWGPG2e)
+    2.  The Text Generation
+        1.  What Is a Text Game? (TotWGPG2e)
+        2.  How Do Text Games Work? (TotWGPG2e)
+        3.  Getting Input from the Outside World (TotWGPG2e)
+        4.  Language Analysis and Parsing (TotWGPG2e)
+        5.  Putting All the Pieces Together (TotWGPG2e)
+        6.  Implementing Sight, Sound, and Smell (TotWGPG2e)
+        7.  Making It Real-Time (TotWGPG2e)
+        8.  Error Handling (TotWGPG2e)
+        9.  Creeping Around with Shadow Land (TotWGPG2e)
+        10. The Language of Shadow Land (TotWGPG2e)
+        11. Building and Playing Shadow Land (TotWGPG2e)
+14. Sample GAme
+    1.  Putting It All Together: You Got Game! (TotWGPG2e)
+        1.  The Initial Design (TotWGPG2e)
+        2.  The Tools Used to Write the Game (TotWGPG2e)
+        3.  The Game Universe: Scrolling in Space (TotWGPG2e)
+        4.  The Player's Ship (TotWGPG2e)
+        5.  The Asteroid Field (TotWGPG2e)
+        6.  The Enemies (TotWGPG2e)
+        7.  The Power-Ups (TotWGPG2e)
+        8.  The HUDs (TotWGPG2e)
+        9.  The Particle System (TotWGPG2e)
+        10. Playing the Game (TotWGPG2e)
+        11. Compiling (TotWGPG2e)
+    2.  Sample Game: Side-Scroller for iOS (GPAaT)
+    3.  Sample Game: Tower Defense for PC/Mac (GPAaT)
+15. Graphics
+    1.  2D Graphics (GPAaT)
+        1.  2D Rendering Foundations (GPAaT)
+        2.  Sprites (GPAaT)
+        3.  Scrolling (GPAaT)
+        4.  Tile Maps (GPAaT)
+    2.  3D Graphics (GPAaT)
+        1.  Basics (GPAaT)
+        2.  Coordinate Spaces (GPAaT)
+        3.  Lighting and Shading (GPAaT)
+        4.  Visibility (GPAaT)
+        5.  World Transform, Revisited (GPAaT)
+    3.  The Graphics Engine (CPGP)
+        1.  History (CPGP)
+            1.  Common Code (CPGP)
+        2.  Techniques (CPGP)
+            1.  Static Texture Changes (CPGP)
+            2.  Dynamic Texture Changes (CPGP)
+            3.  Translucent Textures (CPGP)
+            4.  State Changes (CPGP)
+            5.  Mode Changes (CPGP)
+            6.  Special Cases (CPGP)
+        3.  Resourcing the Data (CPGP)
+            1.  Textures (CPGP)
+            2.  Meshes (CPGP)
+        4.  Engine Features (CPGP)
+            1.  Camera (CPGP)
+            2.  Viewports (CPGP)
+            3.  Lights (CPGP)
+            4.  The Scene (CPGP)
+            5.  Abstracted Features (CPGP)
+            6.  Texture Handling
+            7.  Meshes (CPGP)
+            8.  Sprites (CPGP)
+            9.  Fonts and 2D Overlays (CPGP)
+        5.  Abstracting Special Effects
+            1.  Engine Effects (CPGP)
+            2.  Game Effects (CPGP)
+            3.  Special Effects (CPGP)
+        6.  Graphics on Television (CPGP)
+            1.  Text (CPGP)
+            2.  Constrasting Colors (CPGP)
+            3.  Image Sizes (CPGP)
+            4.  Balancing Colors (CPGP)
+            5.  Physical Testing (CPGP)
+16. Math
+    1.  Linear Algebra for Games (GPAaT)
+        1.  Vectors (GPAaT)
+        2.  Matrics (GPAaT)
+17. Cameras (GPAaT)
+    1.  Types of Cameras (GPAaT)
+    2.  Perspective Projections (GPAaT)
+    3.  Camera Implementations (GPAaT)
+    4.  Camera Support Algorithms (GPAaT)
+18. AI
+    1.  Making Silicon Think with Artificial Intelligence (TotWGPG2e)
+        1.  Artificial Intelligence Primer (TotWGPG2e)
+        2.  Deterministic AI Algorithms (TotWGPG2e)
+        3.  Patterns and Basic Control Scripting (TotWGPG2e)
+        4.  Modeling Behavioral State Systems (TotWGPG2e)
+        5.  Modeling Memory and Learning with Software (TotWGPG2e)
+        6.  Planning and Decision Trees (TotWGPG2e)
+        7.  Pathfinding (TotWGPG2e) (GPAaT)
+        8.  Advanced AI Scripting (TotWGPG2e)
+        9.  Artificial Neural Networks (TotWGPG2e)
+        10. Genetic Algorithms (TotWGPG2e)
+        11. Fuzzy Logic (TotWGPG2e)
+        12. Building Real AI for Games (TotWGPG2e)
+    2.  Artificial Intelligence (GPAaT)
+        1.  "Real" AI versus Game AI (GPAaT)
+        2.  State-Based Behaviors (GPAaT)
+        3.  Strategy and Planning (GPAaT)
+19. Scripting Languages and Data Formats (GPAaT)
+    1.  Scripting Lanaguages (GPAaT)
+    2.  Implementing a Scripting Language (GPAaT)
+    3.  Data Formats (GPAaT)
+    4.  Case Study: UI Mods in World of Warcraft (GPAaT)
+20. Network
+    1.  Networked Games (GPAaT)
+        1.  Protocols (GPAaT)
+        2.  Network Topology (GPAaT)
+        3.  Cheating (GPAaT)
+    2.  Network Programming (CPGP)
+        1.  Packet Programming (CPGP)
+        2.  Networking Background (CPGP)
+        3.  The Physical Network (CPGP)
+            1.  The Conceptual Network Driver (CPGP)
+        4.  The Null Network (CPGP)
+            1.  Network Latency (CPGP)
+            2.  Dropped Packets (CPGP)
+            3.  The Two Modes (CPGP)
+        5.  Cross-Network Programming (CPGP)
+21. Design Pattern (GPP)
+    1.  Design Patterns Revisited (GPP)
+        1.  Command (GPP)
+        2.  Flyweight (GPP)
+        3.  Observer (GPP)
+        4.  Prototype (GPP)
+        5.  Singleton (GPP)
+        6.  State (GPP)
+    2.  Sequencing Patterns (GPP)
+        1.  Double Buffer (GPP)
+        2.  Game Loop (GPP)
+        3.  Update Method (GPP)
+    3.  Behavioral Patterns (GPP)
+        1.  Bytecode (GPP)
+        2.  Subclass Sandbox (GPP)
+        3.  Type Object (GPP)
+    4.  Decoupling Patterns (GPP)
+        1.  Component (GPP)
+        2.  Event Queue (GPP)
+        3.  Service Locator (GPP)
+    5.  Optimization Patterns (GPP)
+        1.  Data Locality (GPP)
+        2.  Dirty Flag (GPP)
+        3.  Object Pool (GPP)
+        4.  Spatial Partition (GPP)
+22. Cross-Platform
+    1.  Top Ten Tips (CPGP)
+        1. The CPU (CPGP)
+           1. The CPU (CPGP)
+              1. Time Resolution (CPGP)
+              2. Processor Yield (CPGP)
+              3. Programming the Clock (CPGP)
+              4. Programming Timers (CPGP)
+              5. Programming Profilers (CPGP)
+           2. Time Slicing (CPGP)
+           3. CPU Scalability (CPGP)
+              1. Lowest Common Denominator (CPGP)
+              2. Scale Back (CPGP)
+              3. Level of Detail (LOD) (CPGP)
+              4. Extra Burn (CPGP)
+           4. Parallel Processing (CPGP)
+              1. Parallel Determination (CPGP)
+              2. Parallel Distribution (CPGP)
+              3. Parallel Implementation (CPGP)
+              4. Task Scheduling (CPGP)
+           5. Avoiding the Whole Problem (CPGP)
+23. Debugging (CPGP)
+    1.  Basic Requirements (CPGP)
+    2.  Debugging Methods (CPGP)
+        1.  Coding Style (CPGP)
+        2.  Debugging Methodologies (CPGP)
+    3.  Implementing Debugging Code (CPGP)
+        1.  Trace Messages (CPGP)
+        2.  Trace Levels (CPGP)
+        3.  Handling Errors (CPGP)
+        4.  Assertions (CPGP)
+        5.  Memory (CPGP)
+    4.  Output Targets (CPGP)
+        1.  Time Delay (CPGP)
+        2.  Flushes (CPGP)
+        3.  Sending to Host (CPGP)
+        4.  Bugs in the Compiler (CPGP)
+        5.  Bugs in the Debugging Code (CPGP)
+        6.  Reproduction Bugs (CPGP)
+        7.  Hardware Problems (CPGP)
+        8.  Screen (CPGP)
+        9.  Second Sight (CPGP)
+        10. File (CPGP)
+        11. Serial Port (CPGP)
+    5.  Making Data Reable (CPGP)
+        1.  Multithreaded Output (CPGP)
+    6.  Maintaining Consistency (CPGP)
+        1.  Isolating System Calls (CPGP)
+        2.  Tabulating Trigonometry (CPGP)
+        3.  Random Numbers (CPGP)
+        4.  Code Checking (CPGP)
+24. System I/O (CPGP)
+    1.  Abstracting Basics (CPGP)
+    2.  The Null Driver (CPGP)
+        1.  Prepared Singleton (CPGP)
+        2.  Double Chance Functions (CPGP)
+    3.  Input Devices (CPGP)
+        1.  General Implementation (CPGP)
+        2.  Input Logging (CPGP)
+        3.  Gameplay Abstractions (CPGP)
+        4.  The Bottom Line (CPGP)
+25. The Bits We Forget About (CPGP)
+    1.  The Development Process (CPGP)
+        1.  The Environment (CPGP)
+        2.  Source Code (CPGP)
+    2.  Presentation Issues (CPGP)
+        1.  PAL and NTSC (CPGP)
+        2.  Frontend Screens
+        3.  Foreign Language Versions (CPGP)
+    3.  Operating System Considerations (CPGP)
+        1.  The Size of `size_t` (CPGP)
+        2.  Code Overlays (CPGP)
+        3.  Initializing the OS (CPGP)
+    4.  Handling Technical Requirements (CPGP)
+        1.  Title Screens (CPGP)
+        2.  Attract Mode (CPGP)
+        3.  Reset Buttons (CPGP)
+        4.  Memory Cards (CPGP)
+        5.  Disc Covers (CPGP)
+    5.  Artifacts of Code (CPGP)
+        1.  The Consequence of STL (CPGP)
+        2.  Exceptions (CPGP)
+        3.  Game Configuration (CPGP)
+        4.  Hacking It (CPGP)

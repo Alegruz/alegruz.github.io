@@ -61,6 +61,8 @@ Game Development Studies with Books
 * 2023
     * 1월
         * [Direct3D 12 이해하기](/Notes/2023/01/Korean/UnderstandingDirect3D12.md)
+    * 2월
+        * [C/C++ 어플리케이션](/Notes/2023/02/Korean/CCppApplications.md)
 
 ## Mentoring
 
