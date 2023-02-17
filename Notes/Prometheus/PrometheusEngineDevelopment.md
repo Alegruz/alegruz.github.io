@@ -84,3 +84,9 @@ Linux 개발은 Linux 플랫폼에서 진행할 것 같다. 마찬가지로 wsl�
 ### 1.1.6. 왜 개발하는가?
 
 재미 있기 때문이다 ^_^
+
+# 2. Win32
+
+Win32 API를 사용하기 위해서는 우선 Visual Studio가 설치 되어있어야 한다. 이 글에서는 Visual Studio 2022를 사용한다. 설치할 때 반드시 **Desktop development with C++** 옵션을 선택하여 설치하도록 하자.
+
+설치가 끝났다면 Visual Studio로 새 프로젝트를 생성할 때 Windows Desktop Wizard 혹은 Windows Desktop Application 프로젝트를 통해 빈 Win32 프로젝트를 만들 수 있다.
