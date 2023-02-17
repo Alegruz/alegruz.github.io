@@ -63,6 +63,8 @@ Game Development Studies with Books
         * [Direct3D 12 이해하기](/Notes/2023/01/Korean/UnderstandingDirect3D12.md)
     * 2월
         * [C/C++ 어플리케이션](/Notes/2023/02/Korean/CCppApplications.md)
+        * [Win32 창](/Notes/2023/02/Korean/Window.md)
+        * [게임 루프](/Notes/2023/02/Korean/Loops.md)
 
 ## Mentoring
 
