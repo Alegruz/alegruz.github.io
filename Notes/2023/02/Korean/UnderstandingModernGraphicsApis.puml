@@ -1,0 +1,30 @@
+@startuml PreviousApi
+participant CPU
+participant GPU
+
+== Frame N ==
+note over CPU : application frame N
+note over GPU : GPU frame N-1
+== Frame N + 1 ==
+@enduml
+
+@startuml ModernApi
+participant CPU
+participant GPU
+
+== Frame 0 ==
+
+activate CPU
+CPU --> CPU : perform application task
+CPU --> GPU ++ : request to render
+note left of CPU
+    CPU idle time
+end note
+GPU --> CPU --
+note right of GPU
+    GPU idle time
+end note
+deactivate CPU
+
+== Frame 1 ==
+@enduml

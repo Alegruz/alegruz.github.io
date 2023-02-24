@@ -65,6 +65,7 @@ Game Development Studies with Books
         * [C/C++ 어플리케이션](/Notes/2023/02/Korean/CCppApplications.md)
         * [Win32 창](/Notes/2023/02/Korean/Window.md)
         * [게임 루프](/Notes/2023/02/Korean/Loops.md)
+        * [요즘 그래픽스 API 이해하기](/Notes/2023/02/Korean/UnderstandingModernGraphicsApis.md)
 
 ## Mentoring
 
