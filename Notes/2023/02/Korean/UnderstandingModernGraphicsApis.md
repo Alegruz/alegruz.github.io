@@ -70,9 +70,11 @@ Vulkan에 의하면 개발하는 어플리케이션이 CPU가 더 오래 걸리�
 
 이 글에서 Vulkan 공부는 이걸 안드로이드와 리눅스 환경에서 사용하겠다는 가정 하에 진행된다. 그러나 Vulkan을 알아둔다면 이와 비슷한 API를 사용하는 Nintendo Switch(NVN)나 PlayStation 5(GNM, GNMX)와 같은 콘솔에서의 개발도 가능해진다.
 
+### 초기화
+
 Vulkan을 사용하기 위해서는 **반드시** 어플리케이션 단에서 초기화 단계가 선행 되어야 한다. 초기화 단계는 Vulkan 명령어 로딩과 `VkInstance` 개체 생성 두 가지가 있다.
 
-### 명령어 함수 포인터
+#### 명령어 함수 포인터
 
 모든 Vulkan의 명령어들이 라이브러리로 정적 링킹된 것은 아니기 때문에 가끔은 함수의 이름을 바탕으로 해당 함수의 포인터를 얻어와야할 때가 있다. 이때 사용하는 함수가 [`vkGetInstanceProcAddr`](https://registry.khronos.org/vulkan/specs/1.3/html/vkspec.html#vkGetInstanceProcAddr)이다.
 
@@ -84,11 +86,9 @@ PFN_vkVoidFunction vkGetInstanceProcAddr(
     );
 ```
 
-지금 받아오려는 게 Vulkan의 전역 함수가 아니라면 `instance`는 반드시 유효해야 한다.
+지금 받아오려는 게 Vulkan의 전역 함수가 아니라면 `instance`는 반드시 유효해야 한다. 이걸 사용하는 이유는 Vulkan 버전, 확장 등에 따라 이 함수를 통해 함수 포인터를 받아와야만 사용할 수 있는 경우가 있기 때문이다. 또한 이를 통해 결과가 `nullptr`면 해당 Vulkan 버전 혹은 확장이 지원하지 않는다는 뜻이므로, 이를 활용해 버전 체크 등을 해줄 수 있다.
 
-지금은 그냥 그렇구나~ 수준으로 이해하고 넘어가도록 하자. 초보자에겐 거의 쓸 일이 없다.
-
-### Instance
+#### Instance
 
 Vulkan에서는 모든 상태를 전역이 아닌 어플리케이션 단위로 저장한다. 어플리케이션 단위로 저장할 상태들은 `VkInstance` 개체에 속해있다. 이 개체를 통해서 Vulkan 라이브러리도 초기화하고 Vulkan 구현부에 정보를 전달해줄 수 있다. 
 
@@ -138,7 +138,7 @@ typedef struct VkInstanceCreateInfo {
 
 **`pNext`**는 이 구조체의 확장이 있다면, 걔가 어디 있냐는 걸 물어보는 건데, 여기서는 확장까지 다룰 생각이 없으니 `nullptr`를 주면 된다. 앞으로 Vulkan의 구조체를 볼 때마다 이 `sType`과 `pNext` 멤버 변수를 자주 보게 될 것이다. `pNext`가 확장에 쓰일 수 있는 이유는 Vulkan에서는 기존 스펙을 확장할 때 linked list 형식으로 확장하기 때문이다. `sType`이라는 건 Vulkan loader, 계층과 구현부가 참고하는 값으로, `pNext` 같은 걸 통해서 linked list를 순회할 때, 해당 구조체가 어떤 구조체인지 식별할 때 사용하는 식별자라고 생각하면 된다.
 
-**`flags`**는 [`VkInstanceCreateFlags`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkInstanceCreateFlags)의 조합으로, 이 instance 개체의 성격을 정해줄 수 있다. 근데 여기서 설정할 수 있는 flag는 아래 코드에 있는 [`VkInstanceCreateFlagBits::VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkInstanceCreateFlagBits) 딱 하나 밖에 없다. 근데 여기선 알 필요 없고, 그냥 0 주면 된다.
+**`flags`**는 [`VkInstanceCreateFlags`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkInstanceCreateFlags)의 조합으로, 이 instance 개체의 성격을 정해줄 수 있다. 근데 여기서 설정할 수 있는 flag는 아래 코드에 있는 [`VkInstanceCreateFlagBits::VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkInstanceCreateFlagBits) 딱 하나, 심지어 `VK_KHR_portability_enumeration` 확장을 적용해야 쓸 수 있는 놈 밖에 없다. 근데 여기선 알 필요 없고, 그냥 0 주면 된다.
 
 ```cpp
 // Provided by VK_VERSION_1_0
@@ -176,7 +176,7 @@ VkApplicationInfo applicationInfo =
 
 정말로 말 그대로 어플리케이션 이름이 뭐고, 버전이 뭐고, 엔진이 있다면 엔진 이름이 뭐고, 버전이 뭐고, Vulkan API 버전이 몇이고 등을 전달할 수 있다. 만약 버전 1.0보다 높은 버전을 사용하려는데, 디바이스가 해당 버전을 지원하지 않는다면 `vkCreateInstance`를 호출하면 `VK_ERROR_INCOMPATIBLE_DRIVER`를 반환하게 된다.
 
-> 물론 1.0 버전에서도 `VK_ERROR_INCOMPATIBLE_DRIVER` 오류가 발생할 수 있기 때문에 `vkCreateInstance` 호출을 해주기 전에 반드시 미리 Vulkan의 버전을 확장해주도록 하자. 만약 위에서 언급했던 함수 포인터를 활용해서 버전을 확인할 수 있다. 만약 `vkGetInstanceProcAddr`에 [`vkEnumerateInstanceVersion`](https://registry.khronos.org/vulkan/specs/1.3/html/vkspec.html#vkEnumerateInstanceVersion)을 넣었을 때 결과가 `nullptr`이라면 1.0 버전이라는 것이고, 그렇지 않다면 `vkEnumerateInstanceVersion` 함수를 통해 실제 버전을 확인해주면 된다.
+> 물론 1.0 버전에서도 `VK_ERROR_INCOMPATIBLE_DRIVER` 오류가 발생할 수 있기 때문에 `vkCreateInstance` 호출을 해주기 전에 반드시 미리 Vulkan의 버전을 확장해주도록 하자. 만약 위에서 언급했던 함수 포인터를 활용해서 버전을 확인할 수 있다. 만약 `vkGetInstanceProcAddr`에 [`vkEnumerateInstanceVersion`](https://registry.khronos.org/vulkan/specs/1.3/html/vkspec.html#vkEnumerateInstanceVersion)을 넣었을 때 결과가 `nullptr`이라면 1.0 버전이라는 것이고, 그렇지 않다면 `vkEnumerateInstanceVersion` 함수를 통해 실제 버전을 확인해주면 된다. 이 함수는 위에서 이미 다루었었다.
 >```cpp
 >VkResult vr = VK_SUCCESS;
 >UINT uVersion = VK_API_VERSION_1_0;
@@ -194,7 +194,9 @@ VkApplicationInfo applicationInfo =
 >1
 >LOGF(log::eVerbosity::Debug, L"Vulkan Version: %u.%u.%u", VK_VERSION_MAJOR(uVersion), VK_VERSION_MINOR(uVersion), VK_VERSION_PATCH(uVersion));
 >```
-
+> 참고로 만약 `apiVersion`은 1.2버전으로 주긴 했는데, instance가 1.1 버전까지 지원한다고 하자. 이때 instance가 사용할 실제 물리적인 장치가 1.0까지 지원한다면, instance나 장치나 둘 다 1.0까지 사용할 수 있다. 만약 1.1까지 지원한다면 아무런 문제 없이 instance와 장치 둘 다 1.1까지 사용할 수 있다. 만약 장치가 1.2까지 지원이 가능한, 좀 더 최신 장치였다면 장치 자체는 1.2 버전까지 사용할 수 있다.
+>
+> 만약 `apiVersion`도 1.1 버전이었다면 1.2 버전까지 지원하는 장치는 1.2 버전에 해당하는 기능을 쓸 수 없게 된다.
 
 **`enabledLayerCount`**라는 변수를 이해하려면 Vulkan의 계층이라는 개념을 먼저 이해해야 한다. Vulkan에서 계층이라는 것은 기존 Vulkan 시스템을 확장할 수 있는 추가적인 성분, 게임으로 치면 DLC와 같은 존재라고 생각하면 된다. 계층은 이미 존재하는 Vulkan의 함수를 자기 입맛대로 바꿀 수도 있다. 가장 대표적으로 자주 사용하게 될 계층은 바로 디버깅용 계층이다.
 
@@ -237,9 +239,11 @@ VkResult vkEnumerateInstanceLayerProperties(
 
 만약 여러분이 사용하려던 계층이 실제 사용할 수 없다면? 사용하려고 뒤져보니까 없는 계층이라면? 이런 상황에서 `vkCreateInstance`를 호출하여 instance를 생성하려고 하면 `VK_ERROR_LAYER_NOT_PRESENT`라는 값을 반환하게 된다.
 
-**`enabledExtensionCount`**는 활성화할 확장이 몇 개인지라는 뜻인데, 확장이라는 건 현재 공식 스펙에는 없지만, 추가적으로 기능이 필요할 때 사용할 수 있는 것이다. 즉, Vulkan 내부적으로 뭔가 추가적인 함수나 클래스 같은 게 필요하고, 해당 기능을 갖는 확장이 존재한다면, 그걸 instance를 생성할 때 넣어주면 사용이 가능하다는 것이다.
+**`enabledExtensionCount`**는 활성화할 확장이 몇 개인지라는 뜻인데, 확장이라는 건 현재 공식 스펙에는 없지만, 추가적으로 기능이 필요할 때 사용할 수 있는 것이다. 즉, Vulkan 내부적으로 뭔가 추가적인 함수나 클래스 같은 게 필요하고, 해당 기능을 갖는 확장이 존재한다면, 그걸 instance를 생성할 때 넣어주면 사용이 가능하다는 것이다. 대표적인 확장 중에 하나가 바로 레이 트레이싱 기능을 지원하는 `VK_KHR_accleration_structure`, `VK_KHR_ray_tracing_pipeline` 등의 확장들이다.
 
 확장도 마찬가지로 현재 어떤 확장을 쓸 수 있고 없는지를 판단해야 한다. 확장은 크게 instance용 확장과 장치용 확장으로 나뉜다. 간단히 말하자면 instance용 확장은 `VkInstance`에 대한 확장이라는 뜻이고, 장치용 확장은 `VkDevice`에 대한 확장이라는 뜻이다. 여기서 장치라는 것은 GPU 장치를 의미한다. 만약 우리가 현재 instance 혹은 Vulkan을 사용할 장치에서 사용 가능한 확장이 무엇이 있을지 확인하고 싶다면, 계층에서 해줬던 것과 비슷하게 [`vkEnumerateInstanceExtensionProperties`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkEnumerateInstanceExtensionProperties) 혹은 [`vkEnumerateDeviceExtensionProperties`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkEnumerateDeviceExtensionProperties) 함수를 통해 알아보면 된다.
+
+참고로 쓰지 않을 것이라면 확장은 사용하지 않는 것이 낫다. 단순히 "언젠간 쓰지 않을까?"라는 생각으로 확장을 여러 개 쌓아 두고 전부 활성화하고 있다간 성능을 상당히 좀먹을 것이다.
 
 ```cpp
 // Provided by VK_VERSION_1_0
@@ -427,30 +431,431 @@ typedef struct VkDebugUtilsMessengerCreateInfoEXT {
 } VkDebugUtilsMessengerCreateInfoEXT;
 ```
 
-이름을 봐서 알겠지만 결국 콜백이라는 것은 콜백 함수가 필요하다. 일단은 그냥 그렇구나 하고 넘어가면 된다. 지금 당장은 중요하지 않다. 혹시나 궁금한 분들을 위해 예시로만 남겨두겠다:
-
-* [vkCreateDebugReportCallbackEXT](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkCreateDebugReportCallbackEXT)
-* 
+이름에 `EXT`를 붙은 걸 통해 눈치 챘겠지만, 확장이 필요한 기능들이다. 그렇기에 빡세게는 안 다룰 것이다. 또한 이름을 통해 콜백 함수가 필요하는 걸 눈치 챌 수 있다. 일단은 그냥 그렇구나 하고 넘어가면 된다. 지금 당장은 중요하지 않다. 혹시나 궁금한 분들을 위해 예시로만 남겨두겠다:
 
 ```cpp
-// Provided by VK_EXT_debug_report
-VkResult vkCreateDebugReportCallbackEXT(
-    VkInstance                                  instance,
-    const VkDebugReportCallbackCreateInfoEXT*   pCreateInfo,
-    const VkAllocationCallbacks*                pAllocator,
-    VkDebugReportCallbackEXT*                   pCallback
-    );
+// Debug callback
+VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* pUserData
+);
+...
 
 VkResult vr = VK_SUCCESS;
 VkInstance instance;
+
 ...
-VkDebugReportCallbackCreateInfoEXT debugReportCallbackCreateInfo =
+
+VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreationInfo =
 {
-    .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
+    // must be VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
+    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
     .pNext = nullptr,
-    .flags 
-    .pfnCallback
-    .pUserData = nullptr
+    // must be 0
+    .flags = 0x0,
+    // a bitmask of VkDebugUtilsMessageSeverityFlagBitsEXT specifying which severity of event(s) will cause this callback to be called
+    .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+    // a bitmask of VkDebugUtilsMessageTypeFlagBitsEXT specifying which type of event(s) will cause this callback to be called
+    .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+    // the application callback function to call
+    .pfnUserCallback = DebugCallback,
+    // user data to be passed to the callback
+    .pUserData = nullptr // Optional
 };
-vr = vkCreateDebugReportCallbackEXT(instance, );
+
+...
+
+VkInstanceCreateInfo instanceCreateInfo =
+{
+    // Type of the structure. must be VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO.
+    .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+#ifdef _DEBUG
+    // a pointer to a structure extending this structure
+    .pNext = &debugUtilsMessengerCreationInfo,
+#else
+    ...
+};
+
+vr = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
+
+...
 ```
+
+생성을 했으면 부술 줄도 알아야 한다:
+
+```cpp
+// Provided by VK_VERSION_1_0
+void vkDestroyInstance(
+    VkInstance instance,
+    const VkAllocationCallbacks* pAllocator
+    );
+
+```
+
+간단하다. 소멸할 instance와 해당 instance를 할당해준 놈을 불러오면 된다. 만약 할당해준 놈이 없으면 `nullptr`를 넣어주는 것이다.
+
+어차피 이 글의 수준에서는 사실상 한 개의 instance만을 다루므로 사실상 전역 context의 역할을 수행한다고 보면 된다.
+
+### Device와 Queue
+
+Instance 다음으로 생성해야 하는 것은 바로 ***Device***와 ***Queue*** 개체이다. Direct3D 11을 알고 있다면, instance는 ID3D11Device, device는 ID3D11ImmediateContext 느낌이라고 이해할 수 있다. 사실상 디버그나 초기화 같은 걸 제외하면 전부 device를 통해서 명령이 이루어지기 때문이다. 여기서 device라는 것은 단순히 실제 컴퓨터에 박혀있는 물리적은 GPU 장치 말고도 개념적인 구분으로서의 논리적 device도 존재한다.
+
+물리 장치라는 건 보통 현재 호스트가 사용할 수 있는 하나의 완전한 Vulkan의 (instance 수준의 기능을 제외한)구현부를 의미한다. 즉, 그래픽 카드라고 보면 된다. 논리 장치라는 것은 그 구현부의 한 instance로, 다른 논리 장치와는 독립적인 자기만의 상태와 자원을 갖는다.
+
+#### 물리 장치
+
+어차피 이제 instance를 생성했으니 loader를 통해 Vulkan을 지원하는 물리 장치가 얼마나 있는지, 각 장치의 능력을 알 수 있다. 물론 어플리케이션에서까지 이걸 알려면 Vulkan API에 물어봐서 파악해야 한다. 이때 이 정보를 Vulkan에선 `VkPhysicalDevice`라는 핸들로 제공한다. 일반적인 게이밍 PC 등에서는 전용 그래픽 카드 하나만 있으니 `VkPhysicalDevice`도 하나만 보일 것이다. 이땐 딱히 어떤 그래픽 카드를 사용할지 고민할 필요가 없지만, 노트북과 같이 내장 그래픽 카드와 외장 그래픽 카드라는 구분이 존재하는 경우에는 좀 달라진다. 이 경우에는 둘 중에 하나를 고르든, 사용자가 고르게 만들든 해서 하나를 선택해야 한다.
+
+![PhysicalDevice](https://vulkan.lunarg.com/doc/view/1.3.239.0/windows/tutorial/images/PhysicalDevices.png)
+
+위의 그림처럼 물리 장치들은 instance에 종속되어 있다. 즉, instance를 소멸하면 자동으로 물리 장치들도 소멸되므로 수명 주기를 고려할 필요가 없다.
+
+일단 시스템에 설치된 물리 장치들이 얼마나 있는지 [`vkEnumeratePhysicalDevices`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkEnumeratePhysicalDevices) 함수를 통해 알아보도록 하자:
+
+```cpp
+// Provided by VK_VERSION_1_0
+VkResult vkEnumeratePhysicalDevices(
+    VkInstance                                  instance,
+    uint32_t*                                   pPhysicalDeviceCount,
+    VkPhysicalDevice*                           pPhysicalDevices
+    );
+```
+
+이제 enumerate이라는 표현이 들어간 함수는 대충 어떻게 사용할지 감이 올 것이다.
+
+만약 어떤 개체가 필요할 때, 해당 개체가 얼마나 존재하는지를 알아본다고 한다면:
+
+1. 우선 개체가 몇 개가 있는지 알아보기 위해 개수 매개변수에 정수 하나 주고, 개체 목록 매개변수엔 `nullptr`를 준다
+2. API가 현재 개체가 몇 개가 있는지 다 세어 개수를 반환해준다.
+3. 어플리케이션이 반환 받은 개수만큼 실제 개체 목록을 만든다.
+4. 어플리케이션이 다시 함수를 호출하고, 이번에는 개체 목록을 제대로 포인터로 넘겨준다.
+
+이제는 익숙한 패턴이 될 것이다.
+
+```cpp
+VkResult vr = VK_SUCCESS;
+
+uint32_t uDeviceCount = 0;
+vr = vkEnumeratePhysicalDevices(m_Instance, &uDeviceCount, nullptr);
+if (vr != VK_SUCCESS)
+{
+    LOGVR(log::eVerbosity::Error, vr);
+    if (uDeviceCount == 0)
+    {
+        LOG(log::eVerbosity::Error, L"failed to find GPUs with Vulkan support!");
+    }
+
+    return vr;
+}
+
+std::vector<VkPhysicalDevice> devices(uDeviceCount);
+vr = vkEnumeratePhysicalDevices(m_Instance, &uDeviceCount, devices.data());
+if (vr != VK_SUCCESS)
+{
+    LOGVR(log::eVerbosity::Error, vr);
+    return vr;
+}
+```
+
+`VkPhysicalDevice`는 그래픽 카드일 수도 있고, SoC 위의 GPU 코어일 수도 있고... 여러 다양한 가능성이 있기 때문에 신중히 보고 골라야 한다. 그렇다면 얻은 이 장치들의 정보를 어떻게 알 수 있을까? 바로 [`vkGetPhysicalDeviceProperties`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkGetPhysicalDeviceProperties) 함수를 통해 `VkPhysicalDeviceProperties` 구조체를 구해야 한다.
+
+
+```cpp
+// Provided by VK_VERSION_1_0
+void vkGetPhysicalDeviceProperties(
+    VkPhysicalDevice                            physicalDevice,
+    VkPhysicalDeviceProperties*                 pProperties
+    );
+
+// Provided by VK_VERSION_1_0
+typedef struct VkPhysicalDeviceProperties {
+    uint32_t                            apiVersion;
+    uint32_t                            driverVersion;
+    uint32_t                            vendorID;
+    uint32_t                            deviceID;
+    VkPhysicalDeviceType                deviceType;
+    char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+    uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
+    VkPhysicalDeviceLimits              limits;
+    VkPhysicalDeviceSparseProperties    sparseProperties;
+} VkPhysicalDeviceProperties;
+
+uint32 uAvailableDeviceCount = 0;
+for (const VkPhysicalDevice& device : devices)
+{
+    VkPhysicalDeviceProperties deviceProperties = {};
+    vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+    LOGFA(log::eVerbosity::Debug, "Available physical devices[%u]: %s", uAvailableDeviceCount, deviceProperties.deviceName);
+    uAvailableDeviceCount++;
+}
+
+// example:
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 525 :	Available physical devices[0]: NVIDIA GeForce RTX 3060 Laptop GPU
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 525 :	Available physical devices[1]: Intel(R) Iris(R) Xe Graphics
+```
+
+> 만약 device의 `apiVersion`이 현재 instance의 버전보다 높다면, 해당 버전의 기능을 사용해서는 안된다!!
+
+물리 장치의 각 속성을 간단하게나마 이해해보자:
+
+* `apiVersion`은 물리 장치가 지원하는 Vulkan 버전을 의미한다.
+* `driverVersion`은 드라이버의 버전을 의미한다.
+* `vendorID`는 물리 장치를 공급한 회사를 의미한다.
+* `deviceID`는 실제 회사가 공급한 물리 장치를 의미한다.
+* `deviceType`은 [`VkPhysicalDeviceType`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkPhysicalDeviceType) 구조체로, 이 장치가 내장 그래픽 카드인지, 외장 그래픽 카드인지 등의 유형을 의미한다.
+* `deviceName`은 해당 장치의 이름을 의미한다.
+* `pipelineCacheUUID`는 장치의 UUID를 의미한다.
+* `limits`는 [`VkPhysicalDeviceLimits`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkPhysicalDeviceLimits) 구조체로, 물리 장치의 물리적인 [한계](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#limits)를 의미한다.
+* `sparseProperties`는 [`VkPhysicalDeviceSparseProperties`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkPhysicalDeviceSparseProperties) 구조체로 물리 장치의 여러 sparse 관련된 속성을 갖고 있다.
+
+예시 결과:
+```cpp
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 525:	Available physical devices[0] : NVIDIA GeForce RTX 3060 Laptop GPU
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 526:		API Version : 1.3.224
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 527:		Driver Version : 2214985728
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 528:		Vendor ID : 4318
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 543:		Device Type : Discrete GPU
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 560:		Pipeline Cache UUID : 1060432756
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 525:	Available physical devices[1] : Intel(R) Iris(R) Xe Graphics
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 526:		API Version : 1.2.205
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 527:		Driver Version : 1656415
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 528:		Vendor ID : 32902
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 538:		Device Type : Integrated GPU
+// Prometheus\Engine\Rendering\RendererVulkan.cpp/selectPhysicalDevice line: 560:		Pipeline Cache UUID : 1060432756
+```
+
+솔직히 그냥 Vulkan을 해보는 데에 의의가 있다면 대충 첫번째로 나오는 물리 장치를 메인으로 사용할 물리 장치로 선택하면 되긴 한다. 근데 좀 더 구체적으로 어떤 물리 장치를 선택할까를 고민하려면 좀 더 세부적인 내용을 파고 들어야 한다.
+
+우리가 물리 장치가 실제로 필요한 이유는 나중에 물리 장치보고 일을 시키려고 하기 때문이다. 우리가 물리 장치에 일을 시키려고 할 때 보면 언제나 시키는 순간에 그 일을 바로 수행할 수는 없을 것이다. 우리의 명령이 "이 닦고, 씻고, 옷 갈아 입기"라고 해보자. 우리가 이 닦으라는 명령을 내리면 물리 장치는 이를 닦을 것이다. 그 다음에 우리가 바로 씻으라고 해봤자 물리 장치 입장에서는 이 닦느라 바쁘니 바로 씻을 수는 없을 것이다. 적어도 이는 다 닦아야지. 이렇듯이 뭔가 명령어를 줄 때는 들어온 순서대로 처리할 수 있기 위해 일종의 큐가 존재한다.
+
+![PhysicalDeviceQueueFamilyProperties.png](https://vulkan.lunarg.com/doc/view/1.3.239.0/windows/tutorial/images/PhysicalDeviceQueueFamilyProperties.png)
+
+Vulkan에서는 큐가 여러 계열로 나뉜다. 이걸 family라고 칭하는데, 이에 대한 정보는 [`VkQueueFamilyProperties`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkQueueFamilyProperties)라는 구조체에 있으며, [vkGetPhysicalDeviceQueueFamilyProperties](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkGetPhysicalDeviceQueueFamilyProperties) 함수를 통해 알아올 수 있다.
+
+![Device2QueueFamilies](https://vulkan.lunarg.com/doc/view/1.3.239.0/windows/tutorial/images/Device2QueueFamilies.png)
+
+위의 예시처럼 하나의 flag만 셋팅된 큐 family를 여러 개 갖는 물리 장치도 존재하지만, 내장 그래픽 카드와 같이 간단한 그래픽 카드의 경우엔 여러 flag가 동시에 셋팅되어 있는 하나의 큐 family만을 갖고 있는 경우도 있다.
+
+![Device1QueueFamilies](https://vulkan.lunarg.com/doc/view/1.3.239.0/windows/tutorial/images/Device1QueueFamilies.png)
+
+```cpp
+// Provided by VK_VERSION_1_0
+void vkGetPhysicalDeviceQueueFamilyProperties(
+    VkPhysicalDevice                            physicalDevice,
+    uint32_t*                                   pQueueFamilyPropertyCount,
+    VkQueueFamilyProperties*                    pQueueFamilyProperties
+    );
+
+// Provided by VK_VERSION_1_0
+typedef struct VkQueueFamilyProperties {
+    VkQueueFlags    queueFlags;
+    uint32_t        queueCount;
+    uint32_t        timestampValidBits;
+    VkExtent3D      minImageTransferGranularity;
+} VkQueueFamilyProperties;
+```
+
+일단 우리는 현재로서는 간단하게 렌더링 작업만 수행을 할 것이므로, 해당 명령을 넣어줄 수 있는 큐가 필요하다. 이렇듯 어떤 큐의 유형을 파악하려면 [`queueFlags`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkQueueFlags)에서 원하는 명령을 넣어줄 수 있는지 여부를 비트 체크해주면 된다. 각 비트는 [`VkQueueFlagBits`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkQueueFlagBits)에서 확인할 수 있다. 렌더링의 경우 `VK_QUEUE_GRAPHICS_BIT`를 사용한다.
+
+#### 논리 장치
+
+이제 물리 장치를 구했으니, 이 물리 장치가 작동하는 그래픽 드라이버, 즉 논리 장치를 찾아야 한다. 이것이 바로 [`VkDevice`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkDevice) 개체이다. 이제는 그래픽 카드와 소통할 땐 이 드라이버를 통해서 소통하면 된다. 이제부터는 디버깅이나 초기화와 같은 명령어를 제외하고는 거의 전부 `VkDevice`를 통해서 이루어져야 한다. 논리 장치는 다음 다섯 가지의 일을 한다고 보면 된다:
+
+1. [큐](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#queues)의 생성
+2. 여러 [동기화](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#synchronization) 구조체의 생성 및 추적
+3. [메모리 할당, 해제, 관리](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#memory), [자원 생성](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#resources)
+4. [명령 버퍼](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#commandbuffers)와 명령 버퍼 풀의 생성 및 소멸
+5. 그래픽스 상태([파이프라인](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#pipelines), [자원 Descriptor](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#descriptorsets))의 생성, 소멸, 관리.
+
+참고로 여러 물리 장치가 존재할 때 각각의 논리 장치를 구해서 직접 여러 그래픽 카드를 동시에 제어해주고, 서로 데이터도 공유하게 할 수도 있다. 예를 들어 가장 사양이 좋은 메인 그래픽 카드의 논리 장치를 실제 렌더링 작업에 사용을 하고, 나머지 잉여 내장 그래픽 카드의 논리 장치로 물리 계산이라든가의 작업을 시키는 것이다.
+
+물론 반대로 여러 물리 장치가 하나의 논리 장치를 사용할 수도 있다. 단, 이 경우엔 이 물리 장치들은 같은 장치 집합에 속해 있어야 한다. 장치 집합이란 물리 장치 간에 서로의 메모리에 접근할 수 있으며, 이 집합에 속한 모든 물리 장치들에서 실행할 수 있는 명렁 버퍼를 기록할 수 있는 물리 장치의 집합을 의미한다. 물리 장치 집합이 뭐가 있는지를 [`vkEnumeratePhysicalDeviceGroups`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkEnumeratePhysicalDeviceGroups) 함수를 통해 알아 본 다음, [`VkDeviceGroupDeviceCreateInfo`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkDeviceGroupDeviceCreateInfo) 구조체를 통해 이 집합이 사용할 수 있는 논리 장치를 생성해주면 된다.
+
+```cpp
+// Provided by VK_VERSION_1_1
+VkResult vkEnumeratePhysicalDeviceGroups(
+    VkInstance                                  instance,
+    uint32_t*                                   pPhysicalDeviceGroupCount,
+    VkPhysicalDeviceGroupProperties*            pPhysicalDeviceGroupProperties
+    );
+
+// Provided by VK_KHR_device_group_creation
+VkResult vkEnumeratePhysicalDeviceGroupsKHR(
+    VkInstance                                  instance,
+    uint32_t*                                   pPhysicalDeviceGroupCount,
+    VkPhysicalDeviceGroupProperties*            pPhysicalDeviceGroupProperties
+    );
+```
+
+위의 두 함수는 동일한 함수이다.
+
+이제 논리 장치를 [`vkCreateDevice`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkCreateDevice) 함수를 통해 생성해보도록 하자:
+
+```cpp
+// Provided by VK_VERSION_1_0
+VkResult vkCreateDevice(
+    VkPhysicalDevice                            physicalDevice,
+    const VkDeviceCreateInfo*                   pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkDevice*                                   pDevice
+    );
+```
+
+당연히 첫번째 매개변수 `physicalDevice`는 이 논리 장치가 사용하는 물리 장치를 의미하는 것이고, `pDevice`는 논리 장치를 의미한다. 그렇다면 남은 것은 바로 `pCreateInfo` 매개변수로, [`VkDeviceCreateInfo`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkDeviceCreateInfo) 구조체를 채워서 넣어주어야 한다.
+
+```cpp
+// Provided by VK_VERSION_1_0
+typedef struct VkDeviceCreateInfo {
+    VkStructureType                    sType;
+    const void*                        pNext;
+    VkDeviceCreateFlags                flags;
+    uint32_t                           queueCreateInfoCount;
+    const VkDeviceQueueCreateInfo*     pQueueCreateInfos;
+    uint32_t                           enabledLayerCount;
+    const char* const*                 ppEnabledLayerNames;
+    uint32_t                           enabledExtensionCount;
+    const char* const*                 ppEnabledExtensionNames;
+    const VkPhysicalDeviceFeatures*    pEnabledFeatures;
+} VkDeviceCreateInfo;
+```
+
+여기서 `sType`은 `VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO`이고, `queueCreateInfoCount`는 이 논리 장치가 사용할 큐의 개수를 의미하고, `pQueueCreateInfos`는 사용할 큐의 생성 정보들을 갖고 있는 [`VkDeviceQueueCreateInfo`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkDeviceQueueCreateInfo) 구조체의 배열을 의미한다. 나머지는 instance 생성할 때랑 같다고 보면 되는데, 계층 관련된 매개변수들은 이제 사용하지 않는다. `pEnabledFeatures`는 사용할 [기능](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#features)들에 대한 여러 불리언 값들을 갖고 있다.
+
+아까 물리 장치가 갖고 있는 큐 중에서 어떤 큐를 사용할지 정했다면, 해당 큐를 `VkDeviceQueueCreateInfo` 구조체를 통해 실제로 생성해주어야 한다. 큐가 실제로 생성이 되어야 명령어를 전달할 수 있기 때문이다. 이 구조체를 논리 장치를 생성할 때 전달해주는 것이다.
+
+```cpp
+// Provided by VK_VERSION_1_0
+typedef struct VkDeviceQueueCreateInfo {
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkDeviceQueueCreateFlags    flags;
+    uint32_t                    queueFamilyIndex;
+    uint32_t                    queueCount;
+    const float*                pQueuePriorities;
+} VkDeviceQueueCreateInfo;
+```
+
+실제 생성을 해보자:
+
+```cpp
+float queuePriority = 1.0f;
+
+VkDeviceQueueCreateInfo queueCreateInfo =
+{
+    .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+    .pNext = nullptr,
+    .flags = 0x0,
+    .queueFamilyIndex = m_uGraphicsQueueIndex,
+    .queueCount = 1,
+    .pQueuePriorities = &queuePriority,
+};
+
+const std::vector<const char*> deviceExtensionsToEnableNames =
+{
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+uint32 uExtensionPropertiesCount = 0;
+vr = vkEnumerateDeviceExtensionProperties(m_PhysicalDevice, nullptr, &uExtensionPropertiesCount, nullptr);
+if (vr != VK_SUCCESS)
+{
+    LOGVR(log::eVerbosity::Error, vr);
+    return vr;
+}
+std::vector<VkExtensionProperties> availableDeviceExtensionPropertiesList(uExtensionPropertiesCount);
+vkEnumerateDeviceExtensionProperties(m_PhysicalDevice, nullptr, &uExtensionPropertiesCount, availableDeviceExtensionPropertiesList.data());
+if (vr != VK_SUCCESS)
+{
+    LOGVR(log::eVerbosity::Error, vr);
+    return vr;
+}
+std::unordered_set<std::string> availableDeviceExtensionNamesLookup;
+for (const VkExtensionProperties& deviceExtensionProperties : availableDeviceExtensionPropertiesList)
+{
+    LOGFA(log::eVerbosity::Debug, "Device Extension: %s", deviceExtensionProperties.extensionName);
+    availableDeviceExtensionNamesLookup.insert(std::string(deviceExtensionProperties.extensionName));
+}
+
+for (const char* const extensionToEnableName : deviceExtensionsToEnableNames)
+{
+    auto findIt = availableDeviceExtensionNamesLookup.find(std::string(extensionToEnableName));
+    if (findIt == availableDeviceExtensionNamesLookup.end())
+    {
+        LOGFA(log::eVerbosity::Error, "Extension %s not found in available device extensions", extensionToEnableName));
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+VkPhysicalDeviceFeatures deviceFeatures = { };
+
+VkDeviceCreateInfo createInfo =
+{
+    .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+    .pNext = nullptr,
+    .flags = 0x0,
+    .queueCreateInfoCount = 1,
+    .pQueueCreateInfos = &queueCreateInfo,
+    // deprecated and ignored
+    .enabledLayerCount = 0,
+    // deprecated and ignored
+    .ppEnabledLayerNames = nullptr,
+    .enabledExtensionCount = static_cast<uint32>(deviceExtensionsToEnableNames.size()),
+    .ppEnabledExtensionNames = deviceExtensionsToEnableNames.data(),
+    .pEnabledFeatures = &deviceFeatures,
+};
+
+vr = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device);
+if (vr != VK_SUCCESS)
+{
+    LOGVR(log::eVerbosity::Error, vr);
+    return vr;
+}
+```
+
+나중에 좀 더 Vulkan을 다루다보면 겪겠지만, 가끔 여러 가지 이유로 논리 장치를 우리가 잃어버릴 수도 있다. 정말 말 그대로 어디론가 사라져버리는 것이다. 예를 들어 뭔가를 처리하고 있는데 이게 너무 오래 걸려서 사라져 버리는 경우가 있다. 이 내용은 나중에 좀 더 다루도록 하자.
+
+생성이 있으면 소멸도 있는 법. 논리 장치는 [`vkDestroyDevice`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkDestroyDevice) 함수로 소멸해준다.
+
+```cpp
+// Provided by VK_VERSION_1_0
+void vkDestroyDevice(
+    VkDevice device,
+    const VkAllocationCallbacks* pAllocator
+    );
+```
+
+#### 큐
+
+우리가 위에서 논리 장치를 생성해줄 때 `VkDeviceQueueCreateInfo` 구조체를 통해서 큐도 생성을 해주었었다. 그렇다면 이 큐에 대한 핸들 같은 걸 얻어올 수는 없을까? 당연히 있다. [`VkQueue`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkQueue) 개체가 바로 그러한 핸들이다. 이미 큐를 생성했다면 해당 큐를 사용하는 논리 장치, family 색인과 큐 색인 세 가지만 알면 해당 큐에 대한 핸들을 [`vkGetDeviceQueue`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkGetDeviceQueue) 함수를 통해 얻어올 수 있다:
+
+```cpp
+// Provided by VK_VERSION_1_0
+void vkGetDeviceQueue(
+    VkDevice device,
+    uint32_t queueFamilyIndex,
+    uint32_t queueIndex,
+    VkQueue* pQueue
+    );
+```
+
+이처럼 계속해서 큐와 관련된 작업을 할 때는 이 큐가 어느 family 소속인지를 계속해서 알아야 한다. 그렇기에 큐 family 색인은 따로 저장해두고 필요할 때마다 꺼내서 쓰도록 하자. 단순히 큐에 대한 핸들을 얻을 때 뿐만 아니라 나중에 [`VkCommandPool`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkCommandPool)이라든가, [`VkImage`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkImage)나 [`VkBuffer`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkBuffer) 등을 생성할 때도 필요하게 될 것이다.
+
+큐를 만들어줄 때 우리는 큐에 우선 순위라는 항목을 넣어 주었었다. 1.0부터 0.0까지의 정규화된 값으로 각 큐에 우선 순위를 부여한다고 보면 된다. 당연하겠지만 우선 순위가 높은 큐에 좀 더 많은 연산 예산을 부여해줄 것이다. 근데 이 우선 순위는 같은 장치 내에서 그렇다는 거지, 서로 다른 장치의 큐 간에는 우선 순위의 차이가 크게 의미가 없다.
+
+나중에 이 큐에 명령어를 전달할 때 [`vkQueueSubmit2`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkQueueSubmit2)나 [`vkQueueSubmit`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#vkQueueSubmit)과 같은 ***큐 제출queue submission*** 명령어를 통해 전달하게 된다. 큐 제출 명령은 나중에 이 큐가 꽃혀있는 물리 장치가 작업을 할 ***큐 작업queue operations***의 집합으로 이루어 져있다. 여기엔 세마포어와 펜스를 통한 동기화도 포함된다.
+
+제출 명령은 제출할 대상 큐, 0 이상의 작업 배치batch, 완료 시 신호를 보낼 **추가적인, optional한** 펜스가 있다. 각 배치는 세 가지로 나뉜다:
+
+1. 나머지 배치의 실행 이전에 기다릴 0개 이상의 세마포어
+   1. 만약 그러한 세마포어가 있다면 [세마포어 대기 연산](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#synchronization-semaphores-waiting)을 정의
+2. 실행할 0개 이상의 작업
+   1. 만약 그러한 작업이 있다면 해당 작업에 알맞는 ***큐 연산***을 정의
+3. 작업이 끝나면 신호를 보낼 0개 이상의 세마포어
+   1. 만약 그러한 세마포어가 있다면 [세마포어 신호 연산](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#synchronization-semaphores-signaling)을 정의
+
+큐 제출할 때 펜스가 존재한다면, [펜스 신호 연산](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#synchronization-fences-signaling)이 큐 제출에 의해 정의가 된다.
+
+큐는 `vkCreateDevice`에 의해 생성이 되고, 이에 따라 생성된 논리 장치를 `vkDestroyDevice`로 소멸할 때 같이 소멸된다.
