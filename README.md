@@ -66,6 +66,8 @@ Game Development Studies with Books
         * [Win32 창](/Notes/2023/02/Korean/Window.md)
         * [게임 루프](/Notes/2023/02/Korean/Loops.md)
         * [요즘 그래픽스 API 이해하기](/Notes/2023/02/Korean/UnderstandingModernGraphicsApis.md)
+    * 3월
+        * [동시성의 정석](/Notes/2023/03/Korean/WhatEverySystemsProgrammerShouldKnowAboutConcurrency.md)
 
 ## Mentoring
 
