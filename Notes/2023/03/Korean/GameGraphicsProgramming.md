@@ -204,3 +204,104 @@ int main(void)
 |12|Introduction to Path Tracing|몬테 카를로 적분법|DirectX Raytracing|DXR 실습|
 |13|Light Transport|샘플링|DirectX Raytracing|DXR 실습|
 |14|Final Project Check|최종 프로젝트 점검|
+
+1. Linear Algebra
+   * Cross Product
+   * Dot Product
+   * Transformation Matrix
+   * Orthonormal Bases
+   * Intersection Calculations
+2. RenderDoc / PIX, etc.
+3. Graphics Pipeline
+4. Graphics API
+5. Dependency to a Minimum
+   * Only `glfw` or image loaders, etc.
+6. Beginner's Project
+   1. Blinn-Phong Shading
+   2. Bare-bones Minecraft Renderer
+   3. Directional Lights, Point Lights, and Spotlights
+   4. Heightmap Rendering
+7. More Projects
+   1. Reflection Rendering using Cubemaps
+   2. Shadow Rendering with Shadow Maps
+   3. View Frustum Culling
+   4. Particle Systems
+   5. Cloth Simulation
+
+1. Shadertoy (for instant feedback)
+   * Pixel shaders
+   * UV coordinates
+   * Texturing
+2. Game Engine
+   * Unity
+3. bgfx
+4. Custom Graphics Engine
+
+1. Software Rasterization and Raytracing
+2. Math
+   * Dot Product
+   * Cross Product
+   * Spherical Coordinates
+   * Transformation Matrix (4x4)
+   * Rotation Matrix, Scaling Matrix, Translation Matrix, Homogeneous Coordinates, Quaternions
+   * Orthonormal Basis Matrix
+   * Intersection Calculations
+   * Column-major Order / Row-major Order
+   * Camera Modeling
+3. First Triangle
+4. Beginner's Project
+   * Make a sphere mesh using spherical coordinates, and render it
+   * Simple diffuse/specular shading
+   * Directional lights, point lights, spot lights
+   * Heightmap rendering
+   * Simple parser for a simple mesh format, import it into your program and render it
+       * Try and import and render meshes with textures
+   * Implement a simple minecraft renderer
+   * Reflections with cubemaps
+   * Shadow rendering with shadow maps
+   * View frustum culling
+   * Particle system rendering
+   * Gamma correction
+   * Normal mapping
+   * Instanced rendering
+   * Animate meshes with mesh skinning
+5. Advanced Project
+   * Various post-processing effects
+       * Bloom (Gaussian blur)
+       * SSAO
+       * FXAA
+   * Deferred shading
+
+
+1. What do Graphics Programmers do
+2. What is GPU
+3. Tools?
+4. Graphics API?
+5. Rasterization and Raytracing?
+
+1. C++
+2. Surface Geometry
+3. A Model of Light
+4. The Rendering Equation
+5. Version Control Basics
+6. A Camera Model
+7. Ray Casting
+8. Direct Illumination
+9. Materials
+10. Rendering Algorithms
+11. Numerical Caculus
+12. Path Tracing
+13. Ray Marching
+14. Parallel Architecture
+15. The Eye
+
+1. Math
+   * Vectors and Scalars
+   * Dot Products
+   * Scalars Multiplying with Vectors
+   * Matrices
+2. Graphics API
+3. Memory
+4. Buffers
+5. Optimization
+6. 
