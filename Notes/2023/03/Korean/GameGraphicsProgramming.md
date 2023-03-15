@@ -334,3 +334,31 @@ int main(void)
 27. Film Grain
 28. Lookup Table (LUT)
 29. Gamma Correction
+
+1. Prototyping Engine
+2. Path Tracer
+3. Production Engine
+4. Math
+   1. Linear Algbera
+   2. Projective Geometry
+   3. Geometric Algebra / Quaternions / Dual Quats
+   4. Multivariate Calculus
+   5. Signal Theory
+   6. Fourier/Harmonic Analysis
+   7. Discrete Math
+5. Data Structures
+   1. Acceleration Structures
+   2. I/D-cache Utilization
+   3. Effects of Branching
+   4. Latencies
+6. Papers
+   1. (Recommended) Unreal BRDF
+7. Compression and Aliasing
+   1. BCn codec
+   2. AA (MSAA, MLAA, FXAA, TXAA, etc.)
+8. Study Other Engines
+9. Tools
+   1.  Core dumps
+   2.  GPU dumps
+   3.  Frame dumps
+   4.  Visualizers
