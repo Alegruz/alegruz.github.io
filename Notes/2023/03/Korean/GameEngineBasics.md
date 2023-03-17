@@ -183,3 +183,12 @@
         2.  Allocation Using Buddy-System Methods
         3.  Allocation Using Segregated-Storage Methods
         4.  Memory Compaction
+
+1. Algorithms & Data Structures
+2. Mathematics
+3. Computer Architecture
+4. Graphics
+5. Compilers & Formal Languages
+6. Artificial Intelligence
+7. Networks
+8. UI & UX
