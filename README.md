@@ -68,6 +68,10 @@ Game Development Studies with Books
         * [요즘 그래픽스 API 이해하기](/Notes/2023/02/Korean/UnderstandingModernGraphicsApis.md)
     * 3월
         * [동시성의 정석](/Notes/2023/03/Korean/WhatEverySystemsProgrammerShouldKnowAboutConcurrency.md)
+    * 5월
+        * [컴퓨터 그래픽스 기초](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics.md)
+        * [컴퓨터 그래픽스 기초: 01 서론](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics01Introduction.md)
+        * [컴퓨터 그래픽스 기초: 02 사소한 수학](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics02MiscellaneousMath.md)
 
 ## Mentoring
 

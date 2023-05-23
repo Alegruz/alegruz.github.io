@@ -6,3 +6,4 @@
 ## 목차
 
 1. [서론](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics01Introduction.md)
+2. [사소한 수학](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics02MiscellaneousMath.md)
