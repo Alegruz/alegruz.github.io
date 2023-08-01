@@ -72,6 +72,8 @@ Game Development Studies with Books
         * [컴퓨터 그래픽스 기초](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics.md)
         * [컴퓨터 그래픽스 기초: 01 서론](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics01Introduction.md)
         * [컴퓨터 그래픽스 기초: 02 사소한 수학](/Notes/2023/05/Korean/FundamentalsOfComputerGraphics02MiscellaneousMath.md)
+    * 8월
+      * [정점 쉐이더 구간화](/Notes/2023/08/Korean/VertexShaderBinning.md)
 
 ## Mentoring
 
