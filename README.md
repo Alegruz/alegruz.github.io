@@ -27,7 +27,7 @@ Game Development Studies with Books
         * [ReSTIR for Production](Notes/2022/09/English/ReSTIRforProduction.md)
 * 2023
     * November
-      * [Pygame Engine Development Devlog 00][/Notes/2023/11/Korean/PygameEngineDevelopment00.md]
+      * [Pygame Engine Development Devlog 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
 
 ## Korean Contents
 * 2021
@@ -78,7 +78,7 @@ Game Development Studies with Books
     * 8월
       * [정점 쉐이더 구간화](/Notes/2023/08/Korean/VertexShaderBinning.md)
     * 11월
-      * [Pygame 엔진 개발 일지 00][/Notes/2023/11/Korean/PygameEngineDevelopment00.md]
+      * [Pygame 엔진 개발 일지 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
 
 ## Mentoring
 
