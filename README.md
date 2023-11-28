@@ -80,6 +80,7 @@ Game Development Studies with Books
     * 11월
       * [Pygame 엔진 개발 일지 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
       * [Pygame 엔진 개발 일지 01: 데이터 기반 설계](/Notes/2023/11/Korean/PygameEngineDevelopment01.md)
+      * [Pygame 엔진 개발 일지 02: Assert 대탐험](/Notes/2023/11/Korean/PygameEngineDevelopment02.md)
 
 ## Mentoring
 
