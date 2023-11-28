@@ -1,4 +1,4 @@
-# Pygame 엔진 개발 일지 01 (2023.11.23)
+# Pygame 엔진 개발 일지 01 (2023.11.29)
 
 [Home](/)
 
@@ -50,3 +50,131 @@
 2. 추후 배포나 성능을 위해서는 해당 형식을 binary로 저장/로딩하는 기능을 추가한다
 
 이때 json 형식을 따르도록 할 때 현재로서는 에디터에서는 text 파일을 직접 에디팅하듯이 할 수 있도록 구현을 해둔 상태이다. 나중에 reflection 시스템 등이 제대로 정착되면 UI에 제대로 바인딩을 하도록 수정해야할 것이다.
+
+## 설계 예시
+
+```python
+# resource.py
+"""Resource module"""
+from __future__ import annotations
+import abc
+
+from core.parser import save_dict_to_json
+
+class IResource(abc.ABC):
+    """Resource interface
+    """
+    def __init__(self: IResource, filename: str) -> None:
+        self.__filename: str = filename
+
+    @property
+    def filename(self: IResource) -> str:
+        """Returns the file name of the resource
+
+        Returns:
+            str: file name
+        """
+        return self.__filename
+
+    @abc.abstractmethod
+    def load(self: IResource, data: dict):
+        """Load the resource from the file name
+        """
+
+    def save(self: IResource) -> dict:
+        """Save the resource data into xml data
+
+        Returns:
+            dict: xml data
+        """
+        resource_dict: dict = {}
+        resource_dict = self._save_inner(data=resource_dict)
+        save_dict_to_json(json_filename=self.__filename, data=resource_dict)
+        return resource_dict
+
+    @abc.abstractmethod
+    def _save_inner(self: IResource, data: dict) -> dict:
+        pass
+```
+
+위에처럼 기본적으로 Data-Driven을 적용할 클래스는 `IResource`를 상속 받도록 한다.
+
+상속 예시:
+
+```python
+from __future__ import annotations
+
+import pygame
+from core.assertions import assert_condition
+from core.global_constants import GlobalConstants
+
+from core.parser import parse_json_to_dict
+from resources.resource import IResource
+
+class Character(IResource):
+    NAME_KEY: str = "name"
+    CHARACTERISTIC_KEY: str = "characteristic"
+    PLANET_NAME_KEY: str = "planet_name"
+    SPRITE_FILENAME_KEY: str = "sprite_filename"
+
+    def __init__(self: Character, character_filename: str) -> None:
+        super().__init__(filename=character_filename)
+        self.__name: str
+        self.__characteristic: str
+        self.__planet_name: str
+        self.__sprite_filename: str
+        self.__sprite: pygame.Surface
+        self.load(data=parse_json_to_dict(json_filename=self.filename))
+
+    @property
+    def characteristic(self: Character) -> str:
+        return self.__characteristic
+
+    @property
+    def name(self: Character) -> str:
+        return self.__name
+
+    @property
+    def planet_name(self: Character) -> str:
+        return self.__planet_name
+
+    @property
+    def sprite(self: Character) -> pygame.Surface:
+        return self.__sprite
+
+    def load(self: Character, data: dict) -> None:
+        self.__name = data.get(Character.NAME_KEY)
+        assert_condition(condition=self.__name is not None,
+                         message="Character data must have a name!!")
+        self.__characteristic: str = data.get(Character.CHARACTERISTIC_KEY)
+        assert_condition(condition=self.__characteristic is not None,
+                         message="Character data must have a characteristic!!")
+        self.__planet_name: str = data.get(Character.PLANET_NAME_KEY)
+        assert_condition(condition=self.__planet_name is not None,
+                         message="Character data must have a name!!")
+        self.__sprite_filename: str = data.get(Character.SPRITE_FILENAME_KEY)
+        assert_condition(condition=self.__sprite_filename is not None,
+                         message="Character data must have a sprite filename!!")
+        game_path: str = GlobalConstants.get_constant_or_none(key="game_path")
+        self.__sprite: pygame.Surface = \
+            pygame.image.load(f"{game_path}/{self.__sprite_filename}").convert_alpha()
+
+    def _save_inner(self: Character, data: dict) -> dict:
+        data[Character.NAME_KEY] = self.__name
+        data[Character.CHARACTERISTIC_KEY] = self.__characteristic
+        data[Character.PLANET_NAME_KEY] = self.__planet_name
+        data[Character.SPRITE_FILENAME_KEY] = self.__sprite_filename
+
+        return data
+```
+
+위의 코드로 생성/로딩하는 json은 다음과 같다:
+
+```json
+{
+    "name": "Aberdeen Johnson",
+    "characteristic": "friendly",
+    "planet_name": "eusebio",
+    "sprite_filename": "sprites/alien_blue/blue__0000_idle_1.png"
+}
+```

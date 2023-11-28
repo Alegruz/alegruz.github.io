@@ -79,6 +79,7 @@ Game Development Studies with Books
       * [정점 쉐이더 구간화](/Notes/2023/08/Korean/VertexShaderBinning.md)
     * 11월
       * [Pygame 엔진 개발 일지 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
+      * [Pygame 엔진 개발 일지 01: 데이터 기반 설계](/Notes/2023/11/Korean/PygameEngineDevelopment01.md)
 
 ## Mentoring
 
