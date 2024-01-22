@@ -81,6 +81,9 @@ Game Development Studies with Books
       * [Pygame 엔진 개발 일지 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
       * [Pygame 엔진 개발 일지 01: 데이터 기반 설계](/Notes/2023/11/Korean/PygameEngineDevelopment01.md)
       * [Pygame 엔진 개발 일지 02: Assert 대탐험](/Notes/2023/11/Korean/PygameEngineDevelopment02.md)
+* 2024
+  * 1월
+    * [컴퓨터 그래픽스에서 좌표계 이해하기](/Notes/2024/01/Korean/UnderstandingCoordinateSystemsInComputerGraphics.md)
 
 ## Mentoring
 
