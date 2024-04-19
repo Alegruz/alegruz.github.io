@@ -278,15 +278,44 @@ class Main {
 @enduml
 ```
 
+* LLGL
+
+CreateDXGIFactory
+  D3D12RenderSystem::CreateFactory
+    D3D12RenderSystem::D3D12RenderSystem
+      AllocRenderSystem
+        RenderSystem::Load
+          main
+        LLGL_RenderSystem_Alloc
+vkCreateInstance
+  VKRenderSystem::CreateInstance
+    VKRenderSystem::VKRenderSystem
+      AllocRenderSystem
+
 ```puml
 @startuml
 class D3D12RenderSystem {
   -factory_: ComPtr<IDXGIFactory>
   +D3D12RenderSystem(const RenderSystemDescriptor&)
-  +CreateFactory(bool)
+  -CreateFactory(bool)
 }
 
 D3D12RenderSystem *-- IDXGIFactory
+RenderSystem <|-- D3D12RenderSystem
+
+class RenderSystem {
+  +{static}Load(const RenderSystemDescriptor&, Report*): RenderSystemPtr
+}
+
+@startuml
+class VKRenderSystem {
+  -instance_: VKPtr<VkInstance>
+  +VKRenderSystem(const RenderSystemDescriptor&)
+  -CreateInstance(const RendererConfigurationVulkan*)
+}
+
+VKRenderSystem *-- VkInstance
+RenderSystem <|-- VKRenderSystem
 @enduml
 ```
 
