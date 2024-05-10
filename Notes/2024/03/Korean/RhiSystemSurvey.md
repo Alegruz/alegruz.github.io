@@ -319,6 +319,17 @@ RenderSystem <|-- VKRenderSystem
 @enduml
 ```
 
+* Filament
+
+vkCreateInstance
+  createInstance
+    VulkanPlatform::createDriver
+
+```puml
+@startuml
+@enduml
+```
+
 * BGFX
 
 ```puml
