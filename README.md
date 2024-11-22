@@ -28,6 +28,9 @@ Game Development Studies with Books
 * 2023
     * November
       * [Pygame Engine Development Devlog 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
+* 2024
+    * November
+      * [Pipeline State Cache Studies](/Notes/2024/11/English/PipelineStateCacheStudies.md)
 
 ## Korean Contents
 * 2021
