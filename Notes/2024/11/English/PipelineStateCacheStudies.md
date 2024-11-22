@@ -147,4 +147,78 @@ PSOLibrary "1" *-- "n" MemoryMappedPSOCache
 PSOLibrary "1" *-- "1" MemoryMappedPipelineLibrary
 PSOLibrary "1" *-- "n" CompilePSOThreadData
 @enduml
+
+@startuml O3DE
+class "AZ::Dom::Object"
+class "AZ::RHI::DeviceObject"
+
+"AZ::Dom::Object" <|-- "AZ::RHI::DeviceObject"
+
+class "AZ::RHI::PipelineLibrary" {
+    -{abstract}InitInternal(Device&, const PipelineLibraryDescriptor&): ResultCode
+}
+
+"AZ::RHI::DeviceObject" <|-- "AZ::RHI::PipelineLibrary"
+
+class "AZ::DX12::PipelineLibrary" {
+    -m_serializedData: RHI::ConstPtr<RHI::PipelineLibraryData>
+    -m_library: RHI::Ptr<ID3D12PipelineLibraryX>
+    -m_pipelineStates: AZStd::unordered_map<AZStd::wstring, RHI::Ptr<ID3D12PipelineState>>
+    +CreateGraphicsPipelineState(uint64_t, const D3D12_GRAPHICS_PIPELINE_STATE_DESC&): RHI::Ptr<ID3D12PipelineState>
+    +CreateComputePipelineState(uint64_t, const D3D12_COMPUTE_PIPELINE_STATE_DESC&): RHI::Ptr<ID3D12PipelineState>
+    -InitInternal(RHI::Device&, const RHI::PipelineLibraryDescriptor&): RHI::ResultCode
+}
+
+"AZ::RHI::PipelineLibrary" <|-- "AZ::DX12::PipelineLibrary"
+
+struct "AZ::RHI::PipelineStateCache::ThreadLibraryEntry" {
+    +m_threadLocalCache: PipelineStateSet
+    +m_library: Ptr<AZ::RHI::PipelineLibrary>
+}
+
+"AZ::RHI::PipelineStateCache::ThreadLibraryEntry" *-- "AZ::RHI::PipelineLibrary"
+
+struct "AZ::RHI::PipelineStateCache::GlobalLibraryEntry" {
+    +m_pendingCache: PipelineStateSet
+}
+
+class "AZ::RHI::PipelineStateCache" {
+    -m_threadLibrarySet: ThreadLocalContext<ThreadLibrarySet>
+    -m_globalLibrarySet: GlobalLibrarySet
+    +AcquirePipelineState(PipelineLibraryHandle, const PipelineStateDescriptor&, const AZ::Name&): const PipelineState*
+    +Compact()
+}
+
+"AZ::RHI::PipelineStateCache" *-- "AZ::RHI::PipelineStateCache::GlobalLibraryEntry"
+"AZ::RHI::PipelineStateCache" *-- "AZ::RHI::PipelineStateCache::ThreadLibraryEntry"
+
+class "AZ::RHI:RHISystem" {
+    -m_pipelineStateCache: RHI::Ptr<RHI::PipelineStateCache>
+}
+
+"AZ::RHI:RHISystem" *-- "AZ::RHI::PipelineStateCache"
+
+class "AZ::RPI::RPISystem" {
+    -m_rhiSystem: RHI::RHISystem
+}
+
+"AZ::RPI::RPISystem" *-- "AZ::RHI:RHISystem"
+
+class "AZ::RPI::RPISystemComponent" {
+    -m_rpiSystem: RPISystem
+}
+
+"AZ::RPI::RPISystemComponent" *-- "AZ::RPI::RPISystem"
+
+class "AZ::DX12::PipelineState" {
+    -m_pipelineState: RHI::Ptr<ID3D12PipelineState>
+    -InitInternal(RHI::Device&, const RHI::PipelineStateDescriptorForDraw&, RHI::PipelineLibrary*): RHI::ResultCode
+    -InitInternal(RHI::Device&, const RHI::PipelineStateDescriptorForDispatch&, RHI::PipelineLibrary*): RHI::ResultCode
+}
+
+class "AZ::RHI::PipelineState"
+
+"AZ::RHI::PipelineState" <|-- "AZ::DX12::PipelineState"
+"AZ::RHI::DeviceObject" <|-- "AZ::RHI::PipelineState"
+@enduml
 ```
