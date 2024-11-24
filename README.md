@@ -34,6 +34,7 @@ Game Development Studies with Books
     * November
       * [Pipeline State Cache Studies](/Notes/2024/11/English/PipelineStateCacheStudies.md)
       * [Game Engine RHI System Analysis Series 0: Introduction](/Notes/2024/11/English/GameEngineRhiSystemAnalysisSeries0Introduction.md)
+      * [Game Engine RHI System Analysis Series 1: Instance](/Notes/2024/11/English/GameEngineRhiSystemAnalysisSeries1Instance.md)
 
 ## Korean Contents
 * 2021
