@@ -45,7 +45,11 @@ After creating the instance, Anki uses [Volk](https://github.com/zeux/volk) to l
 
 When instance initialization is over, instance is used to create the surface. Anki supports surface creation via SDL, for Android, and for headless case.
 
+Instance is later used when DLSS needs to be initialized. This is initialized when renderer initializes the renderer objects. One of the renderer objects, `TemporalUpscaler` uses a `GrUpscaler` that which can use DLSS.
+
 ![InstanceAnkiVK](/Images/GameEngineRhiSystemAnalysis/InstanceAnkiVK.png)
+
+Both graphics manager `GrManager` and renderer `Renderer` is initialized when the application `App` is initialized.
 
 ```puml
 @startuml Anki DXGI
@@ -70,6 +74,11 @@ class MicroSwapchain {
 }
 
 GrManagerImpl *-- MicroSwapchain
+
+class App {
+    +init(): Error
+    -initInternal(): Error
+}
 @enduml
 
 @startuml Anki VkInstance
@@ -77,6 +86,7 @@ class MakeSingletonPtr
 
 class GrManager {
     +init(GrManagerInitInfo&): Error
+    +newGrUpscaler(const GrUpscalerInitInfo&): GrUpscalerPtr
 }
 
 MakeSingletonPtr <|-- GrManager
@@ -90,5 +100,45 @@ class GrManagerImpl {
 }
 
 GrManager <|-- GrManagerImpl
+
+class GrObject
+
+class GrUpscaler
+
+GrObject <|-- GrUpscaler
+
+class GrUpscalerImpl {
+    +initInternal(const GrUpscalerInitInfo&): Error
+    -{static} newInstance(const GrUpscalerInitInfo&): GrUpscaler*
+    -initDlss(const GrUpscalerInitInfo&): Error
+}
+
+GrUpscaler <|-- GrUpscalerImpl
+
+class RendererObject
+
+class TemporalUpscaler {
+    -m_grUpscaler: GrUpscalerPtr
+    +init(): Error
+}
+
+RendererObject <|-- TemporalUpscaler
+TemporalUpscaler *-- GrUpscaler
+
+class Renderer {
+    -m_temporalUpscaler: TemporalUpscaler
+    +init(const RendererInitInfo&): Error
+    -initInternal(const RendererInitInfo&): Error
+}
+
+class MakeSingleton
+
+MakeSingleton <|-- Renderer
+Renderer *-- TemporalUpscaler
+
+class App {
+    +init(): Error
+    -initInternal(): Error
+}
 @enduml
 ```
