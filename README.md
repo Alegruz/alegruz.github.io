@@ -33,6 +33,7 @@ Game Development Studies with Books
       * [Why My Depth Buffer Only Writes 0 or 1?](/Notes/2024/09/English/VulkanDepthIssue.md)
     * November
       * [Pipeline State Cache Studies](/Notes/2024/11/English/PipelineStateCacheStudies.md)
+      * [Game Engine RHI System Analysis Series 0: Introduction](/Notes/2024/11/English/GameEngineRhiSystemAnalysisSeries0Introduction.md)
 
 ## Korean Contents
 * 2021
