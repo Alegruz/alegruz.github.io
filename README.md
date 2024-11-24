@@ -31,6 +31,8 @@ Game Development Studies with Books
 * 2024
     * September
       * [Why My Depth Buffer Only Writes 0 or 1?](/Notes/2024/09/English/VulkanDepthIssue.md)
+    * November
+      * [Pipeline State Cache Studies](/Notes/2024/11/English/PipelineStateCacheStudies.md)
 
 ## Korean Contents
 * 2021
