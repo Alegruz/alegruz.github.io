@@ -27,7 +27,10 @@ Game Development Studies with Books
         * [ReSTIR for Production](Notes/2022/09/English/ReSTIRforProduction.md)
 * 2023
     * November
-      * [Pygame Engine Development Devlog 00](/Notes/2023/11/Korean/PygameEngineDevelopment00.md)
+      * [Pygame Engine Development Devlog 00](/Notes/2023/11/English/PygameEngineDevelopment00.md)
+* 2024
+    * September
+      * [Why My Depth Buffer Only Writes 0 or 1?](/Notes/2024/09/English/VulkanDepthIssue.md)
 
 ## Korean Contents
 * 2021
