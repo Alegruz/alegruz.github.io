@@ -96,6 +96,22 @@ The Forge uses the pipeline library method.
 
 The Forge creates pipeline library for every pipeline caches. It seems like The Forge doesn't really use it.
 
+### Wicked Engine
+
+Wicked Engine uses the pipeline library method. Just like the sample, Wicked Engine uses one pipeline library cache.
+
+![WickedEngine](/Images/PipelineStateCache/WickedEngine.png)
+
+According to Turánszki János, the main contributer, pipeline library method is slower than driver-side caching which is why he disabled it.
+
+LoadPipeline/StorePipeline
+    GraphicsDevice_DX12::pso_validate
+    GraphicsDevice_DX12::CreateShader
+    GraphicsDevice_DX12::CreatePipelineState
+
+Serialize
+    ~GraphicsDevice_DX12
+
 # PUML
 
 ```puml
@@ -369,5 +385,50 @@ struct PipelineCacheLoadDesc {
     +pFileName: const char*
     +mFlags: PipelineCacheFlags
 }
+@enduml
+```
+```puml
+@startuml Wicked Engine
+class GraphicsDevice {
+    +{abstract}CreateShader(ShaderStage, const void*, size_t, Shader*): bool
+    +{abstract}CreatePipelineState(const PipelineStateDesc*, PipelineState*, const RenderPassInfo*): bool
+}
+
+class GraphicsDevice_DX12 {
+    #pipelineLibrary: Microsoft::WRL::ComPtr<ID3D12PipelineLibrary1>
+    #commandlists: wi::vector<std::unique_ptr<CommandList_DX12>>
+    #pipelines_global: wi::unordered_map<size_t, Microsoft::WRL::ComPtr<ID3D12PipelineState>>
+    +~GraphicsDevice_DX12()
+    +CreateShader(ShaderStage, const void*, size_t, Shader*): bool
+    +CreatePipelineState(const PipelineStateDesc*, PipelineState*, const RenderPassInfo*): bool
+    #pso_validate(CommandList)
+}
+
+GraphicsDevice <|-- GraphicsDevice_DX12
+
+struct CommandList_DX12 {
+    +pipelines_worker: wi::vector<std::pair<size_t, Microsoft::WRL::ComPtr<ID3D12PipelineState>>>
+}
+
+GraphicsDevice_DX12 *-- CommandList_DX12
+
+struct PipelineState_DX12 {
+    +resource: ComPtr<ID3D12PipelineState>
+}
+
+struct GraphicsDeviceChild {
+    +internal_state: std::shared_ptr<void>
+}
+
+struct Shader
+
+GraphicsDeviceChild <|-- Shader
+
+struct PipelineState
+
+GraphicsDeviceChild <|-- PipelineState
+
+Shader *-- PipelineState_DX12
+PipelineState *-- PipelineState_DX12
 @enduml
 ```
