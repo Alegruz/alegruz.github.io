@@ -52,6 +52,8 @@ There are two methods to implement pipeline caching. You can either cache the pi
 
 BGFX only uses the cached blob method.
 
+![Bgfx](/Images/PipelineStateCache/Bgfx.png)
+
 1. `RendererContextD3D12::getPipelineState(ProgramHandle): ID3D12PipelineState*`
    1. Try to get the PSO from main memory (`RendererContextD3D12::m_pipelineStateCache: StateCacheT<ID3D12PipelineState>`)
    2. Fallback to disk memory for cached blobs if failed (`CallbackC99::cacheRead(uint64_t, void*, uint32_t): bool`)
@@ -63,10 +65,14 @@ BGFX only uses the cached blob method.
 
 BGFX only uses the cached blob method.
 
+![Llgl](/Images/PipelineStateCache/Llgl.png)
+
 1. `D3D12GraphicsPSO::CreateNativePSO(D3D12Device&, const D3D12PipelineLayout&, const D3D12RenderPass*, const GraphicsPipelineDescriptor&, D3D12PipelineCache*)` / `D3D12ComputePSO::CreateNativePSO(D3D12Device&, const D3D12_SHADER_BYTECODE&, D3D12PipelineCache*)`
    1. Create PSO (use cached blob if given `D3D12PipelineCache*` is not null)
    2. `D3D12PipelineState::SetNativeAndUpdateCache(ComPtr<ID3D12PipelineState>&&, D3D12PipelineCache*)`
       1. If the given `D3D12PipelineCache*` is not null but an empty one, set its blob as the cached blob (`ID3D12PipelineState::GetCachedBlob(ID3DBlob**)`)
+
+Loading of pre-cached pipeline and saving current pipeline cache is not managed by the system. If pre-cached pipeline cache exists, then the user has to load the data and call `RenderSystem::CreatePipelineCache`. Using the created `PipelineCache` instance, user can create a pipeline with the call `RenderSystem::CreatePipelineState`. Calling `PipelineCache::GetBlob` returns the cached blob which the user can save.
 
 ### O3DE
 
@@ -147,7 +153,108 @@ PSOLibrary "1" *-- "n" MemoryMappedPSOCache
 PSOLibrary "1" *-- "1" MemoryMappedPipelineLibrary
 PSOLibrary "1" *-- "n" CompilePSOThreadData
 @enduml
+```
+```puml
+@startuml BGFX Pipeline Cache Blob
+struct RendererContextI
+struct RendererContextD3D12 {
+    +m_device: ID3D12Device*
+    +m_pipelineStateCache: StateCacheT<ID3D12PipelineState>
+    +getPipelineState(ProgramHandle): ID3D12PipelineState*
+    +getPipelineState(uint64_t, uint64_t, uint8_t, const VertexLayout**, ProgramHandle, uint8_t): ID3D12PipelineState*
+}
 
+RendererContextI <|-- RendererContextD3D12
+
+struct CallbackI {
+    +{abstract}cacheReadSize(uint64_t): uint32_t
+    +{abstract}cacheRead(uint64_t, void*, uint32_t): bool
+    +{abstract}cacheWrite(uint64_t, const void*, uint32_t)
+}
+
+struct CallbackC99 {
+    +cacheReadSize(uint64_t): uint32_t
+    +cacheRead(uint64_t, void*, uint32_t): bool
+    +cacheWrite(uint64_t, const void*, uint32_t)
+    +m_interface: bgfx_callback_interface_t*
+}
+
+CallbackI <|-- CallbackC99
+
+struct bgfx_callback_interface_t {
+    +vtbl: bgfx_callback_vtbl_s*
+}
+
+CallbackC99 o-- bgfx_callback_interface_t
+
+struct bgfx_callback_vtbl_t {
+    +cache_read_size: uint32_t (*)(bgfx_callback_interface_t*, uint64_t)
+    +cache_read: bool (*)(bgfx_callback_interface_t*, uint64_t, void*, uint32_t);
+    +cache_write: void (*)(bgfx_callback_interface_t*, uint64_t, const void*, uint32_t);
+}
+bgfx_callback_interface_t o-- bgfx_callback_vtbl_t
+@enduml
+```
+```puml
+@startuml LLGL Pipeline Cache Blob
+class NonCopyable
+class Interface
+NonCopyable <|-- Interface
+class RenderSystemChild
+Interface <|-- RenderSystemChild
+class PipelineCache {
+    +{abstract}GetBlob(): Blob
+}
+RenderSystemChild <|-- PipelineCache
+class D3D12PipelineCache {
+    +GetBlob(): Blob
+    -initialBlob_: Blob
+    -nativeBlob_: ComPtr<ID3DBlob>
+}
+PipelineCache <|-- D3D12PipelineCache
+
+class PipelineState
+RenderSystemChild <|-- PipelineState
+class D3D12PipelineState {
+    #SetNativeAndUpdateCache(ComPtr<ID3D12PipelineState>&&, D3D12PipelineCache*);
+}
+PipelineState <|-- D3D12PipelineState
+class D3D12ComputePSO {
+    +D3D12ComputePSO(D3D12Device&, D3D12PipelineLayout&, const ComputePipelineDescriptor&, PipelineCache*)
+    -CreateNativePSO(D3D12Device&, const D3D12_SHADER_BYTECODE&, D3D12PipelineCache*)
+}
+D3D12PipelineState <|-- D3D12ComputePSO
+class D3D12GraphicsPSO {
+    +D3D12GraphicsPSO(D3D12Device&, D3D12PipelineLayout&, const GraphicsPipelineDescriptor&, const D3D12RenderPass*, PipelineCache*)
+    -CreateNativePSO(D3D12Device&, const D3D12PipelineLayout&, const D3D12RenderPass*, const GraphicsPipelineDescriptor&, D3D12PipelineCache*)
+}
+D3D12PipelineState <|-- D3D12GraphicsPSO
+class RenderSystem {
+    +{static}Load(const RenderSystemDescriptor&, Report*): RenderSystemPtr
+    +{abstract}CreatePipelineCache(const Blob& initialBlob): PipelineCache*
+    +{abstract}CreatePipelineState(const GraphicsPipelineDescriptor&, PipelineCache*): PipelineState*
+    +{abstract}CreatePipelineState(const ComputePipelineDescriptor&, PipelineCache*): PipelineState*
+}
+Interface <|-- RenderSystem
+class D3D12RenderSystem {
+    +CreatePipelineCache(const Blob& initialBlob): PipelineCache*
+    +CreatePipelineState(const GraphicsPipelineDescriptor&, PipelineCache*): PipelineState*
+    +CreatePipelineState(const ComputePipelineDescriptor&, PipelineCache*): PipelineState*
+    -pipelineCaches_: HWObjectContainer<D3D12PipelineCache>
+    -pipelineStates_: HWObjectContainer<D3D12PipelineState>
+}
+RenderSystem <|-- D3D12RenderSystem
+D3D12RenderSystem *-- D3D12PipelineCache
+D3D12RenderSystem *-- D3D12PipelineState
+class Blob {
+    +{static}CreateFromFile(const char*): Blob
+    +{static}CreateFromFile(const std::string&): Blob
+}
+NonCopyable <|-- Blob
+D3D12PipelineCache *-- Blob
+@enduml
+```
+```puml
 @startuml O3DE
 class "AZ::Dom::Object"
 class "AZ::RHI::DeviceObject"
