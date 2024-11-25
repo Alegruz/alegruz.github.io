@@ -104,14 +104,6 @@ Wicked Engine uses the pipeline library method. Just like the sample, Wicked Eng
 
 According to Turánszki János, the main contributer, pipeline library method is slower than driver-side caching which is why he disabled it.
 
-LoadPipeline/StorePipeline
-    GraphicsDevice_DX12::pso_validate
-    GraphicsDevice_DX12::CreateShader
-    GraphicsDevice_DX12::CreatePipelineState
-
-Serialize
-    ~GraphicsDevice_DX12
-
 # PUML
 
 ```puml
