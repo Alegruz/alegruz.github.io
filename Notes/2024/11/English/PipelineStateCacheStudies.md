@@ -78,30 +78,15 @@ Loading of pre-cached pipeline and saving current pipeline cache is not managed 
 
 O3DE only uses the pipeline library method. According to O3DE, if RenderDoc or PIX is enabled, CreatePipelineLibrary API does not function properly.
 
-LoadGraphicsPipeline
-    
+![O3de](/Images/PipelineStateCache/O3de.png)
 
-PipelineStateCache::CreateLibrary
-    Shader::InitShader::CreateInternal
-            ShaderSystem::Init
-    
-1. 
-2. `PipelineStateCache::AcquirePipelineState(PipelineLibraryHandle, const PipelineStateDescriptor&, const AZ::Name&): const PipelineState*`
-   1. Get pipeline state from read-only cache
-   2. Fallback to thread-local cache
-   3. Fallback to pipeline library creation
-   4. `PipelineLibrary::Init(Device&, const PipelineLibraryDescriptor&): ResultCode`
-      1. `PipelineLibrary::InitInternal(RHI::Device&, const RHI::PipelineLibraryDescriptor&): RHI::ResultCode`
-         1. Get deserialized pipeline library cache data
-         2. Create pipeline library
-         3. `PipelineStateCache::CompilePipelineState(GlobalLibraryEntry&, ThreadLibraryEntry&, const PipelineStateDescriptor&, PipelineStateHash, const AZ::Name&): ConstPtr<PipelineState>`
-            1. Add PSO to pending cache
-            2. `PipelineState::Init(Device&, const PipelineStateDescriptorForDraw/PipelineStateDescriptorForDispatch/PipelineStateDescriptorForRayTracing&, PipelineLibrary*): ResultCode`
-               1. `PipelineState::InitInternal(RHI::Device&, const RHI::PipelineStateDescriptorForDraw/PipelineStateDescriptorForDispatch/PipelineStateDescriptorForRayTracing&, RHI::PipelineLibrary*): RHI::ResultCode`
-                  1. `PipelineLibrary::CreateGraphicsPipelineState(uint64_t, const D3D12_GRAPHICS_PIPELINE_STATE_DESC&): RHI::Ptr<ID3D12PipelineState>`
-                     1. Load pipeline cache `LoadGraphicsPipeline/LoadComputePipeline`
-                     2. Create PSO on fail
-                        1. Store pipeline
+When a render pass / dispatch item etc. needs a PSO, it will acquire it from the `Shader` that uses it. In O3DE, shaders don't refer to specific shaders like VS, PS. A shader has some shader variants that contains "shader stage functions" which corresponds to VS, PS, and etc. Shaders are more like a complete set of shaders that consists a pipeline. This is the reason O3DE retrieves pipeline state from `Shader::AcquirePipelineState`. This means that each Shader "family" has a `ID3D12PipelineLibrary` object. A `Shader` object has a `m_pipelineLibraryPath` member variable that stores the pipeline library. When a `Shader` object is destroyed by the `Shader::Shutdown` call, the shader saves its pipeline library.
+
+`Shader` caches PSOs into a global libraries and thread libraries. Both libraries manage PSOs with the class `PipelineStateSet`. Global library has two sets with the first one being the read-only cache `m_readOnlyCache: PipelineStateSet` and a locked cache `m_pendingCache: PipelineStateSet`. `PipelineStateCache::Compact` method merges the in-coming pending caches into the read-only cache.
+
+Every `Shader` objects shares the same `m_pipelineStateCache: PipelineStateCache` from the `RHISystem`'s `m_pipelineStateCache: PipelineStateCache`. When an application requests the PSO from the `Shader`, it actually redirects the request to `m_pipelineStateCache`. `m_pipelineStateCache` first checks if the PSO is already cached in the global library's read-only cache `m_readOnlyCache`. If the PSO is not cached, then it next checks if the thread-local thread library has the PSO cached in `m_threadLocalCache: PipelineStateSet`. Of course if one is requesting the PSO for the first time, either caches would not return any valid PSO. In this case, the thread-local library creates a `PipelineLibrary` object that creates the `ID3D12PipelineLibrary` object for the `Shader`(Which means that there are maximum (Number of Threads &times; Number of `Shader`s) amount of `ID3D12PipelineLibrary`s). Afterwards we have to actually create the PSO by the `PipelineStateCache::CompilePipelineState` call.
+
+When compiling a PSO, we must first check if the PSO has already been compiled, but is yet to be merged with the global library's read-only cache. If not, then we finally allocate a `PipelineState` object(which is basically a wrapper for the PSO) and add it to the pending cache of the global library. When creating the PSO, `PipelineState` loades the pipeline from the library(`LoadGraphicsPipeline`/`LoadComputePipeline`). If loading fails for whatever reason, we store the created PSO into the pipeline library(`StorePipeline`).
 
 # PUML
 
@@ -278,6 +263,11 @@ class "AZ::DX12::PipelineLibrary" {
 
 "AZ::RHI::PipelineLibrary" <|-- "AZ::DX12::PipelineLibrary"
 
+struct "AZ::RHI::PipelineLibraryDescriptor" {
+    +m_serializedData: ConstPtr<PipelineLibraryData>
+    +m_filePath: AZStd::string
+}
+
 struct "AZ::RHI::PipelineStateCache::ThreadLibraryEntry" {
     +m_threadLocalCache: PipelineStateSet
     +m_library: Ptr<AZ::RHI::PipelineLibrary>
@@ -286,8 +276,12 @@ struct "AZ::RHI::PipelineStateCache::ThreadLibraryEntry" {
 "AZ::RHI::PipelineStateCache::ThreadLibraryEntry" *-- "AZ::RHI::PipelineLibrary"
 
 struct "AZ::RHI::PipelineStateCache::GlobalLibraryEntry" {
+    +m_readOnlyCache: PipelineStateSet
     +m_pendingCache: PipelineStateSet
+    +m_pipelineLibraryDescriptor: PipelineLibraryDescriptor
 }
+
+"AZ::RHI::PipelineStateCache::GlobalLibraryEntry" *-- "AZ::RHI::PipelineLibraryDescriptor"
 
 class "AZ::RHI::PipelineStateCache" {
     -m_threadLibrarySet: ThreadLocalContext<ThreadLibrarySet>
@@ -327,5 +321,25 @@ class "AZ::RHI::PipelineState"
 
 "AZ::RHI::PipelineState" <|-- "AZ::DX12::PipelineState"
 "AZ::RHI::DeviceObject" <|-- "AZ::RHI::PipelineState"
+
+class "AZ::RPI::Shader" {
+    -m_pipelineStateCache: RHI::PipelineStateCache*
+    -m_pipelineLibraryHandle: RHI::PipelineLibraryHandle
+    -m_pipelineLibraryPath: char[AZ_MAX_PATH_LEN]
+    -Init(ShaderAsset&): RHI::ResultCode
+    -LoadPipelineLibrary(): ConstPtr<RHI::PipelineLibraryData>
+    -SavePipelineLibrary()
+}
+
+"AZ::RPI::Shader" o-- "AZ::RHI::PipelineStateCache"
+
+struct "AZ::RHI::PipelineStateCache::PipelineStateEntry" {
+    +m_pipelineState: ConstPtr<PipelineState>
+}
+
+"AZ::RHI::PipelineStateCache::PipelineStateEntry" *-- "AZ::RHI::PipelineState"
+
+"AZ::RHI::PipelineStateCache::ThreadLibraryEntry" *-- "AZ::RHI::PipelineStateCache::PipelineStateEntry"
+"AZ::RHI::PipelineStateCache::GlobalLibraryEntry" *-- "AZ::RHI::PipelineStateCache::PipelineStateEntry"
 @enduml
 ```
