@@ -88,6 +88,14 @@ Every `Shader` objects shares the same `m_pipelineStateCache: PipelineStateCache
 
 When compiling a PSO, we must first check if the PSO has already been compiled, but is yet to be merged with the global library's read-only cache. If not, then we finally allocate a `PipelineState` object(which is basically a wrapper for the PSO) and add it to the pending cache of the global library. When creating the PSO, `PipelineState` loades the pipeline from the library(`LoadGraphicsPipeline`/`LoadComputePipeline`). If loading fails for whatever reason, we store the created PSO into the pipeline library(`StorePipeline`).
 
+### The Forge
+
+The Forge uses the pipeline library method.
+
+![TheForge](/Images/PipelineStateCache/TheForge.png)
+
+The Forge creates pipeline library for every pipeline caches. It seems like The Forge doesn't really use it.
+
 # PUML
 
 ```puml
@@ -341,5 +349,25 @@ struct "AZ::RHI::PipelineStateCache::PipelineStateEntry" {
 
 "AZ::RHI::PipelineStateCache::ThreadLibraryEntry" *-- "AZ::RHI::PipelineStateCache::PipelineStateEntry"
 "AZ::RHI::PipelineStateCache::GlobalLibraryEntry" *-- "AZ::RHI::PipelineStateCache::PipelineStateEntry"
+@enduml
+```
+
+```puml
+@startuml The Forge
+struct PipelineCache {
+    +pLibrary: ID3D12PipelineLibrary*
+    +pData: void*
+}
+
+struct PipelineCacheDesc {
+    +pData: void*
+    +mSize: size_t
+    +mFlags: PipelineCacheFlags
+}
+
+struct PipelineCacheLoadDesc {
+    +pFileName: const char*
+    +mFlags: PipelineCacheFlags
+}
 @enduml
 ```
