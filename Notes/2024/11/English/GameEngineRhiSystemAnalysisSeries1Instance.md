@@ -4,6 +4,7 @@
 - [Game Engine RHI System Analysis Series 1: Instance (2024.11.25)](#game-engine-rhi-system-analysis-series-1-instance-20241125)
 - [Overview](#overview)
   - [Anki](#anki)
+  - [BGFX](#bgfx)
 
 # Overview
 
@@ -50,6 +51,22 @@ Instance is later used when DLSS needs to be initialized. This is initialized wh
 ![InstanceAnkiVK](/Images/GameEngineRhiSystemAnalysis/InstanceAnkiVK.png)
 
 Both graphics manager `GrManager` and renderer `Renderer` is initialized when the application `App` is initialized.
+
+## BGFX
+
+![InstanceBgfx](/Images/GameEngineRhiSystemAnalysis/InstanceBgfx.png)
+
+BGFX has a `Dxgi` struct where it manages the DXGI instances such as the `IDXGIFactory`. When running the application, the engine initializes the instance when available during the main loop(`Context::renderFrame`). Context has a renderer context, which has the instance.
+
+Enabled layers:
+* `VK_LAYER_KHRONOS_validation`
+
+Enabled extensions:
+* `VK_KHR_surface`
+* `VK_EXT_debug_report`
+* `VK_EXT_debug_utils`
+* `VK_KHR_get_physical_device_properties2`
+* `VK_KHR_win32_surface`
 
 ```puml
 @startuml Anki DXGI
@@ -140,5 +157,41 @@ class App {
     +init(): Error
     -initInternal(): Error
 }
+@enduml
+```
+
+```puml
+@startuml BGFX RHI Instance
+
+struct RendererContextI
+
+struct Dxgi {
+    +m_factory: FactoryI*
+    +init(_caps: Caps&): bool
+}
+
+struct RendererContextD3D12 {
+    +m_dxgi: Dxgi
+    +init(_init: const Init&)
+}
+
+RendererContextI <|-- RendererContextD3D12
+RendererContextD3D12 *-- Dxgi
+
+struct RendererContextVK {
+    +m_instance: VkInstance
+    +init(_init: const Init&)
+}
+
+RendererContextI <|-- RendererContextVK
+
+struct Context {
+    +m_renderCtx: RendererContextI*
+    +renderFrame(int32_t): RenderFrame::Enum
+    +rendererExecCommands(CommandBuffer&)
+}
+
+Context *-- RendererContextI
+
 @enduml
 ```
