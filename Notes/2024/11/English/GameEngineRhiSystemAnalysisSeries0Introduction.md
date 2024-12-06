@@ -11,24 +11,24 @@ This is a series of analysis on different game engines with publicly available s
 The following list is the game engines / renderers that this analysis will be discussing:
 
 * Anki 3D Engine [Blog](https://anki3d.org/) [GitHub](https://github.com/godlikepanos/anki-3d-engine)
-* BGFX [Docs](https://bkaradzic.github.io/bgfx/overview.html) [GitHub](https://github.com/bkaradzic/bgfx)
-* AMD Capsaicin Framework [Page](https://gpuopen.com/capsaicin/) [GitHub](https://github.com/GPUOpen-LibrariesAndSDKs/Capsaicin)
-* Diligent Engine [Blog](https://diligentgraphics.com/diligent-engine/) [GitHub](https://github.com/DiligentGraphics/DiligentEngine)
+* **BGFX [Docs](https://bkaradzic.github.io/bgfx/overview.html) [GitHub](https://github.com/bkaradzic/bgfx)**
+* **AMD Capsaicin Framework [Page](https://gpuopen.com/capsaicin/) [GitHub](https://github.com/GPUOpen-LibrariesAndSDKs/Capsaicin)**
+* **Diligent Engine [Blog](https://diligentgraphics.com/diligent-engine/) [GitHub](https://github.com/DiligentGraphics/DiligentEngine)**
 * DirectX-Graphics-Samples [GitHub](https://github.com/microsoft/DirectX-Graphics-Samples)
-* Falcor [Page](https://developer.nvidia.com/falcor) [GitHub](https://github.com/NVIDIAGameWorks/Falcor)
-* Filament [Page](https://google.github.io/filament/) [GitHub](https://github.com/google/filament)
+* **Falcor [Page](https://developer.nvidia.com/falcor) [GitHub](https://github.com/NVIDIAGameWorks/Falcor)**
+* **Filament [Page](https://google.github.io/filament/) [GitHub](https://github.com/google/filament)**
 * Flax Engine [Page](https://flaxengine.com/) [GitHub](https://github.com/FlaxEngine/FlaxEngine)
-* Godot Engine [Page](https://godotengine.org/) [GitHub](https://github.com/godotengine/godot)
+* **Godot Engine [Page](https://godotengine.org/) [GitHub](https://github.com/godotengine/godot)**
 * Granite [Blog](https://themaister.net/blog/) [GitHub](https://github.com/Themaister/Granite)
-* IGL [GitHub](https://github.com/facebook/igl)
+* **IGL [GitHub](https://github.com/facebook/igl)**
 * LLGL [GitHub](https://github.com/LukasBanana/LLGL)
-* Native SDK [Page](https://docs.imgtec.com/sdk-documentation/html/introduction.html) [GitHub](https://github.com/powervr-graphics/Native_SDK)
-* O3DE [Page](https://o3de.org/) [GitHub](https://github.com/o3de/o3de)
-* OGRE-Next [Page](https://ogrecave.github.io/ogre-next/api/latest/) [GitHub](https://github.com/OGRECave/ogre-next)
+* **Native SDK [Page](https://docs.imgtec.com/sdk-documentation/html/introduction.html) [GitHub](https://github.com/powervr-graphics/Native_SDK)**
+* **O3DE [Page](https://o3de.org/) [GitHub](https://github.com/o3de/o3de)**
+* **OGRE-Next [Page](https://ogrecave.github.io/ogre-next/api/latest/) [GitHub](https://github.com/OGRECave/ogre-next)**
 * Spartan Engine [Blog](https://panoskarabelas.com/) [GitHub](https://github.com/PanosK92/SpartanEngine)
-* The Forge [Page](https://theforge.dev/) [GitHub](https://github.com/ConfettiFX/The-Forge)
+* **The Forge [Page](https://theforge.dev/) [GitHub](https://github.com/ConfettiFX/The-Forge)**
 * Torque [Page](https://torque3d.org/) [GitHub](https://github.com/TorqueGameEngines/Torque3D)
-* Unreal Engine [Page](https://www.unrealengine.com/en-US) [GitHub](https://github.com/EpicGames/UnrealEngine)
+* **Unreal Engine [Page](https://www.unrealengine.com/en-US) [GitHub](https://github.com/EpicGames/UnrealEngine)**
 * Wicked Engine [Page](https://wickedengine.net/) [GitHub](https://github.com/turanszkij/WickedEngine)
 
 Based on these engines, I will be analysing their RHI systems, rendering systems, and etc.
