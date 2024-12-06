@@ -54,6 +54,219 @@ Both graphics manager `GrManager` and renderer `Renderer` is initialized when th
 
 ## BGFX
 
+* D3D12
+  1. Open [`WinPixEventRuntime.dll`](https://devblogs.microsoft.com/pix/winpixeventruntime/)
+  2. Get symbols to `PIXEventsThreadInfo` and set `PIXEventsReplaceBlock` to zero
+  3. Load [RenderDoc](https://renderdoc.org/)
+     1. Skip RenderDoc if [IntelGPA](https://www.intel.com/content/www/us/en/developer/tools/graphics-performance-analyzers/overview.html) is running (check `shimloader32.dll` or `shimloader64.dll`)
+     2. Check if module `renderdoc.dll` is already injected, open the dll if not injected
+     3. Get symbols to `RENDERDOC_GetAPI` and initialize RenderDoc
+  4. Initialize uniforms and resolution to zero
+  5. Open [`kernel32.dll`](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#KERNEL32.DLL)
+     1. Get symbol to `CreateEventExA`
+  6. Open [`nvapi.dll` / `nvapi64.dll`](https://developer.nvidia.com/rtx/path-tracing/nvapi/get-started)
+     1. Get symbol to `nvapi_QueryInterface`
+     2. Initialize NVAPI
+     3. Enumeration physical GPUs, and set the first GPU as the main NVIDIA GPU
+  7. Open `d3d12.dll` (`libd3d12.so` in Linux)
+     1. Find crucial symbols in D3D12 (`D3D12CreateDevice`, `D3D12GetDebugInterface`, `D3D12SerializeRootSignature`, etc.)
+  8. Open `dxgi.dll` (`dxgi.so` in Linux)
+     1. Open `dxgidebug.dll`
+        1. Get symbols to `DXGIGetDebugInterface`, `DXGIGetDebugInterface1`
+     2. Get symbols to `CreateDXGIFactory1` / `CreateDXGIFactory`
+     3. Create a factory
+        1. Enumerate adapters (GPUs)
+           1. Enumerate outputs (monitors)
+              1. Check features (HDR10, transparent back buffer, etc.)
+           2. Set the first adapter as the main adapter
+           3. Set the first output as the main output
+  9. Initialize D3D12 Debug Layer
+  10. Create the D3D12 Device with the highest feature level
+  11. Query the most recent DXGI Device interface
+  12. Query the most recent D3D12 Device interface
+  13. Shutdown NVAPI if current chosen vendor is not NVIDIA
+  14. For each nodes in the D3D12 Device, check their architecture, and keep the first node's architecture
+  15. Check D3D12 feature options
+  16. Get heap properties of Custom, Default, Upload, Readback from the D3D12 Device
+  17. Create a Direct command queue and its fence
+      1.  Create command allocators for direct command lists
+          1.  Create a direct command list and close it
+  18. Initialize swap chain
+      1.  Check MSAA support
+      2.  Check tearing support
+      3.  Create swap chain
+      4.  Query the most recent swap chain interface
+      5.  Check the color space support
+      6.  Set the color space according to the swap chain's format
+      7.  Check the display specs of the output containing the swap chain
+      8.  Set the HDR10 meta data
+  19. Initialize D3D12 Info Queues
+  20. Create RTV, DSV heap
+  21. Create scratch buffers (size = max draw calls * 1024, descriptors = max textures + max shaders + max draw calls)
+      1.  Create CBV/SRV/UAV heap
+      2.  Create committed resource with upload heap properties (custom heap type)
+      3.  Map to CPU data
+  22. Create sampler allocator
+      1.  Create sampler heap
+  23. Create descriptor ranges with each range having a single descriptor type
+      1.  sampler (N)
+      2.  SRV (N)
+      3.  CBV (1)
+      4.  UAV (N)
+  24. Create root parameters
+      1.  Descriptor table: sampler range
+      2.  Descriptor table: SRV range
+      3.  Root CBV: register space=0, shader register=0
+      4.  Descriptor table: UAV range
+  25. Create a root signature
+  26. Check direct access support (UMA)
+  27. Check resource supports
+  28. Check limits
+  29. For every formats,
+      1.  Check if format is supported for various types (texture2d, texture3d, etc.)
+      2.  If the format could be read as texture image, check for UAV RW suports
+      3.  Check if the format's corresponding SRGB format is supported for various SRGB types (texture2d, texture3d, etc.)
+  30. Create RTVs for each swap chain buffers
+  31. Allocate a command list from command allocator by resetting the command list
+  32. Create a depth-stencil buffer from a heap of default heap properties
+  33. Create a DSV
+  34. Set a resource barrier of depth-stencil buffer from common state to depth write state
+  35. Set indirect arguments
+      1.  VBV 0
+      2.  VBV 1
+      3.  VBV 2
+      4.  VBV 3
+      5.  VBV 4
+      6.  CBV 2
+      7.  DRAW 0
+  36. Create a draw command signature
+  37. Set indirect arguments
+      1.  VBV 0
+      2.  VBV 1
+      3.  VBV 2
+      4.  VBV 3
+      5.  VBV 4
+      6.  IBV 0
+      7.  CBV 2
+      8.  DRAW INDEXED 0
+  38. Create a draw indexed command signature
+  39. Create commands for each draw type per batch
+  40. Create indirects (size=max draw per batch * command size)
+  41. Initialize GPU timer
+      1.  Create query heap
+      2.  Create read back resource
+      3.  Get timestamp frequency
+      4.  Map read back buffer to query result
+      5.  Reset results and control
+  42. Initialize occlusion query
+      1.  Create query heap
+      2.  Create read back resource
+      3.  Map read back buffer to result
+  43. Create command signatures for Dispatch, Draw, and Draw Indexed
+  44. If NVAPI is initialized,
+      1.  Kick the command queue
+          1.  Close the command list
+          2.  Execute command lists
+          3.  Create fence event
+          4.  Let command queue signal fence value
+          5.  Set fence event on completion
+          6.  Commit a control (+1 write +1 current)
+      2.  Finish the command queue
+          1.  If there exist an available control,
+              1.  Consume the command queue
+                  1.  Wait for the fence event
+                  2.  Close the fence event
+                  3.  Set the completed fence value
+                  4.  Check if GPU has passed the fence via command queue wait
+                  5.  Release read resources
+                  6.  Consume a control (+1 read)
+      3.  Initialize [Aftermath](https://developer.nvidia.com/nsight-aftermath)
+          1.  Open `GFSDK_Aftermath_Lib.x86.dll` / `GFSDK_Aftermath_Lib.x64.dll`
+          2.  Get necessary symbols
+          3.  Initialize Aftermath
+* Vulkan
+  1.  Just like D3D12, load RenderDoc
+  2.  Open `vulkan-1.dll` / `libvulkan.so` (Android) / `libMoltenVK.dylib` (OSX) / `libvulkan.so.1`
+  3.  Import crucial vulkan functions
+  4.  Set layers/extensions needed
+      1.  `VK_LAYER_LUNARG_standard_validation` (disabled if `VK_LAYER_KHRONOS_validation` is supported)
+      2.  `VK_LAYER_KHRONOS_validation`
+      1.  `VK_EXT_debug_report`
+      2.  `VK_EXT_shader_viewport_index_layer`
+      3.  `VK_EXT_conservative_rasterization`
+      4.  `VK_KHR_draw_indirect_count`
+      5.  `VK_EXT_custom_border_color`
+      6.  `VK_EXT_debug_utils`
+      7.  `VK_EXT_line_rasterization`
+      8.  `VK_EXT_memory_budget`
+      9.  `VK_KHR_get_physical_device_properties2`
+      10. `VK_KHR_win32_surface` / `VK_KHR_android_surface` / `VK_KHR_wayland_surface` / `VK_KHR_xlib_surface` / `VK_KHR_xcb_surface` / `VK_MVK_MACOS_SURFACE_EXTENSION_NAME` / `VK_NN_VI_SURFACE_EXTENSION_NAME`
+  5.  Create Vulkan instance
+  6.  Import Vulkan instance API calls
+  7.  Initialize Debug Layer if extension `VK_EXT_debug_report` is supported
+  8.  Enumerate physical devices
+      1.  Check availabe extensions
+  9.  Set the first one to be the main physical device
+  10. Get and check physical device features/limits (custom border color, line rasterization, etc.)
+  11. Update MSAA support
+  12. For every texture formats,
+      1.  Check their MSAA support per image type/usage bit, etc.
+  13. Get physical device's memory properties
+  14. Get query family properties, and get the global queue family that supports graphics and compute
+  15. Create a Vulkan device with a global queue from the global queue family
+  16. Import Vulkan logical device API calls
+  17. Get the global queue
+  18. For number of required frame buffers,
+      1.  Create a command pool
+      2.  Allocate a command buffer from the pool
+      3.  Create a fence
+  19. Allocate a command buffer
+      1.  Wait for fences
+      2.  Reset command pool
+      3.  Begin command buffer
+  20. Create back buffers
+      1.  Create swap chain
+          1.  Create a surface and check if the physical device supports the surface
+          2.  Create swap chain with appropriate format, present mode, etc.
+          3.  Create attachments
+              1.  For each swap chain images, create image views
+              2.  Create present/render semaphores per back buffers
+              3.  Create depth-stencil attachment
+                  1.  Create image
+                  2.  Allocate device memory according to the image memory requirements
+                  3.  Bind image to the device memory
+                  4.  Set image memory barrier from undefined to depth-stencil attachment optimal
+              4.  Create depth-stencil image view
+          4.  Create frame buffers
+              1.  Create a render pass that uses back buffers
+              2.  Create Vulkan frame buffers using created render passes
+  21. Create descriptor pools
+      1.  Sampled image: max descriptor sets * max texture samplers
+      2.  Sampler: max descriptor sets * max texture samplers
+      3.  Uniform buffer dynamic: max descriptor sets * 2
+      4.  Storage buffer: max descriptor sets * max texture samplers
+      5.  Storage image: max descriptor sets * max texture samplers
+  22. Create pipeline cache
+  23. For each frame buffers, create scratch buffers
+      1.  Create uniform buffer
+      2.  Allocate device memory
+      3.  Bind buffer to device memory
+      4.  Map device memory to CPU data
+  24. For each frame buffers, create scratch staging buffers
+      1.  Create staging buffer (transfer dst/src bit set)
+  25. Initialize GPU timer
+      1.  Create query pool
+      2.  Record query pool reset command to command buffer
+      3.  Create read back host buffer
+      4.  Map read back memory to query result
+      5.  Reset results and control
+  26. Initialize occlusion query
+      1.  Create query pool
+      2.  Record query pool reset command to command buffer
+      3.  Create read back host buffer
+      4.  Map read back memory to query result
+      5.  Reset control
+
 ![InstanceBgfx](/Images/GameEngineRhiSystemAnalysis/InstanceBgfx.png)
 
 BGFX has a `Dxgi` struct where it manages the DXGI instances such as the `IDXGIFactory`. When running the application, the engine initializes the instance when available during the main loop(`Context::renderFrame`). Context has a renderer context, which has the instance.
