@@ -5,6 +5,7 @@
 - [Overview](#overview)
   - [Anki](#anki)
   - [BGFX](#bgfx)
+  - [Diligent Engine](#diligent-engine)
 
 # Overview
 
@@ -408,3 +409,33 @@ Context *-- RendererContextI
 
 @enduml
 ```
+
+## Diligent Engine
+
+Diligent engine does not keep track of the DXGI adapter / factory. The adapter can be retrieved from the D3D12 device by the LUID, and the factory can be created any time.
+
+1. Load `d3d12.dll`
+2. Find Adapters
+   1. Create a DXGI Factory `CreateDXGIFactory1`
+   2. Enumerate adapters and check if adapter can create a D3D12 device using minimum feature level ([`IDXGIFactory::EnumAdapters`](https://learn.microsoft.com/en-us/windows/win32/api/dxgi/nf-dxgi-idxgifactory-enumadapters))
+   3. For each enumerated adapter,
+      1. Create the D3D12 Device that supports the highest feature level
+      2. Check supported features
+      3. If tiled resource tier is greater or equal to 1, load NVAPI (if NVPAI is enabled)
+      4. Check outputs
+   4. For each enumerated adapters,
+      1. Get the best adapter (discrete > integrated, more memory)
+   5. Get display modes ([`IDXGIOutput::GetDisplayModeList`](https://learn.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-devices-get-adapter-info))
+   6. Create debug layer
+   7. Create DXGI factory and get the predetermined adapter, and create a D3D12 device that supports the highest feature level
+   8. Create the info queue
+   9. Create a direct command queue as the default immediate context, and its fence
+   10. Create a diligent engine's D3D12 render device
+       1.  Create query managers
+       2.  Create shader compilation thread pool
+   11. For each immediate contexts,
+       1.  Create a diligent engine's D3D12 immediate context
+   12. Create a swap chain
+   13. Create a FrameLatencyWaitableObject from the swap chain [`IDXGISwapChain2::GetFrameLatencyWaitableObject`](https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_3/nf-dxgi1_3-idxgiswapchain2-getframelatencywaitableobject)
+   14. Create a texture for each back buffers, and create their RTVs
+   15. Create a depth buffer texture, and it DSV
