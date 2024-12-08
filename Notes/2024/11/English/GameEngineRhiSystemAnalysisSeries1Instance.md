@@ -439,3 +439,113 @@ Diligent engine does not keep track of the DXGI adapter / factory. The adapter c
    13. Create a FrameLatencyWaitableObject from the swap chain [`IDXGISwapChain2::GetFrameLatencyWaitableObject`](https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_3/nf-dxgi1_3-idxgiswapchain2-getframelatencywaitableobject)
    14. Create a texture for each back buffers, and create their RTVs
    15. Create a depth buffer texture, and it DSV
+  
+
+1. Find Adapters
+   1. Create Vulkan instance
+      1. Initialize Volk
+         1. Load `vulkan-1.dll`
+         2. Use volk to load Vulkan functions
+      2. Add instance extensions
+         1. `VK_KHR_surface`
+         2. `VK_KHR_win32_surface` / `VK_KHR_android_surface` / `VK_KHR_wayland_surface` / `VK_KHR_xlib_surface` / `VK_KHR_xcb_surface` / `VK_EXT_metal_surface`
+         3. `VK_KHR_get_physical_device_properties2`
+      3. Create Vulkan instance
+      4. Load instance-related function using Volk
+      5. Set up debug layer
+      6. Enumerate physical devices
+      7. For each devices,
+         1. Get properties, features, memory properties, queue family properties
+         2. Check supported extensions and add features to query accordingly
+            1. `VK_KHR_shader_float16_int8`,
+            2. `VK_KHR_storage_buffer_storage_class`
+               1. `VK_KHR_16bit_storage`
+               2. `VK_KHR_8bit_storage`
+            3. `VK_EXT_mesh_shader`
+            4. `VK_KHR_acceleration_structure`
+            5. `VK_KHR_ray_tracing_pipeline`
+            6. `VK_KHR_ray_query`
+            7. `VK_KHR_buffer_device_address`
+            8. `VK_EXT_descriptor_indexing`
+            9. `VK_KHR_spirv_1_4`
+            10. `VK_KHR_portability_subset`
+            11. `VK_EXT_vertex_attribute_divisor`
+            12. `VK_KHR_timeline_semaphore`
+            13. `VK_KHR_multiview`
+            14. `VK_KHR_create_renderpass2`
+            15. `VK_KHR_fragment_shading_rate`
+            16. `VK_EXT_fragment_density_map`
+            17. `VK_EXT_host_query_reset`
+            18. `VK_KHR_draw_indirect_count`
+            19. `VK_KHR_maintenance3`
+            20. `VK_EXT_multi_draw`
+         3. Check physical device info
+      8. For each enumerated adapters,
+         1. Get the best adapter (discrete > integrated, more memory)
+2. Create device and contexts
+   1. Use device extensions
+      1. `VK_KHR_swapchain`
+      2. `VK_KHR_maintenance1`
+      4. `VK_EXT_mesh_shader`
+      5. `VK_KHR_shader_float16_int8`,
+      6. `VK_KHR_storage_buffer_storage_class`
+         1. `VK_KHR_16bit_storage`
+         2. `VK_KHR_8bit_storage`
+      7. `VK_KHR_acceleration_structure`
+      8. `VK_KHR_ray_tracing_pipeline`
+      9. `VK_KHR_ray_query`
+      10. `VK_KHR_buffer_device_address`
+      11. `VK_EXT_descriptor_indexing`
+      12. `VK_KHR_spirv_1_4`
+      13. `VK_KHR_portability_subset`
+      14. `VK_EXT_vertex_attribute_divisor`
+      15. `VK_KHR_timeline_semaphore`
+      16. `VK_KHR_multiview`
+      17. `VK_KHR_create_renderpass2`
+      18. `VK_KHR_fragment_shading_rate`
+      19. `VK_EXT_fragment_density_map`
+      20. `VK_EXT_host_query_reset`
+      21. `VK_KHR_draw_indirect_count`
+      22. `VK_KHR_maintenance3`
+      23. `VK_KHR_maintenance2`
+      24. `VK_EXT_multi_draw`
+   2. Enable device features
+   3. Enumerate a queue that supports both graphics and compute queue flags
+   4. Create a logical device
+   5. Use volk to load related functions
+   6. Enable features
+   7. Create a graphics context queue (from the Vulkan queue we enumerated)
+   8. Create a Vulkan render device
+      1. Create transient command pool managers and query manager per command queues
+      2. Create shader compilation thread pool
+   9. Create a Vulkan device context
+      1.  Allocate a command buffer and begin
+      2.  Reset stale queries
+      3.  Create a dummy vertex buffer
+      4.  Create a AS compacted size query pool
+   10. Set created device context as the immediate context of the render device
+3.  Create swap chain
+    1.  Create a surface
+    2.  Check if the current queue can present to the given surface
+    3.  Check which supported formats support the current color format
+    4.  Check surface capabilities and present modes
+    5.  Set present modes based on VSync support
+        1.  If VSync enabled
+            1.  FIFO relaxed
+            2.  FIFO
+        2.  Else Vsync disabled
+            1.  Mailbox
+            2.  Immediate
+            3.  FIFO
+    6.  Set the number of back buffers based on the hardware limits and the desire back buffer count
+    7.  Create Vulkan swap chain
+    8.  For each back buffers,
+        1.  Create some semaphores for
+            1.  Image acquisition
+            2.  Draw completion
+        2.  Create a image acquition fence
+    9.  For each back buffers
+        1.  Create a texture
+        2.  Create RTV
+    10. Create a depth buffer texture
+    11. Create default DSV
