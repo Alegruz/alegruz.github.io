@@ -6,6 +6,7 @@
   - [Anki](#anki)
   - [BGFX](#bgfx)
   - [Diligent Engine](#diligent-engine)
+  - [Filament](#filament)
 
 # Overview
 
@@ -439,7 +440,8 @@ Diligent engine does not keep track of the DXGI adapter / factory. The adapter c
    13. Create a FrameLatencyWaitableObject from the swap chain [`IDXGISwapChain2::GetFrameLatencyWaitableObject`](https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_3/nf-dxgi1_3-idxgiswapchain2-getframelatencywaitableobject)
    14. Create a texture for each back buffers, and create their RTVs
    15. Create a depth buffer texture, and it DSV
-  
+
+Vulkan:
 
 1. Find Adapters
    1. Create Vulkan instance
@@ -549,3 +551,29 @@ Diligent engine does not keep track of the DXGI adapter / factory. The adapter c
         2.  Create RTV
     10. Create a depth buffer texture
     11. Create default DSV
+
+## Filament
+
+1. Create instance
+   1. Add `VK_LAYER_KHRONOS_validation` if validation is enabled
+   2. Create Vulkan instance (`vkCreateInstance`)
+   3. Load functions (using BlueVK)
+2. Select physical device
+   1. Enumerate devices (`vkEnumeratePhysicalDevices`)
+   2. For each devices,
+      1. Get their properties and check versions, graphics bit support (`vkGetPhysicalDeviceProperties`, `vkGetPhysicalDeviceQueueFamilyProperties`)
+      2. Enumerate extension properties (`vkEnumerateDeviceExtensionProperties`)
+      3. Check for swap chain extension support
+   3. Sort devices by device type(discrete/integrated) and pick the best one (discrete > integrated > cpu > virtual gpu > other)
+3. Print device info (`vkGetPhysicalDeviceProperties2`, `vkGetPhysicalDeviceProperties`)
+4. Check physical device properties, features, and memory properties (`vkGetPhysicalDeviceFeatures2`, `vkGetPhysicalDeviceMemoryProperties`)
+5. Select appropriate queues
+6. Create logical device (`vkCreateDevice`)
+7. Get queue (`vkGetDeviceQueue`)
+8. Create Vulkan driver
+   1. Create commands
+      1. Create command pool (`vkCreateCommandPool`)
+         1. Create command buffers, and for each command buffers,
+            1. Allocate command buffer from the pool (`vkAllocateCommandBuffers`)
+            2. Create submission semaphore (`vkCreateSemaphore`)
+            3. Create fence (`vkCreateFence`)
