@@ -91,6 +91,9 @@ Game Development Studies with Books
 * 2024
   * 1월
     * [컴퓨터 그래픽스에서 좌표계 이해하기](/Notes/2024/01/Korean/UnderstandingCoordinateSystemsInComputerGraphics.md)
+* 2025
+  * 1월
+    * [수학 공부: How to Prove It. 01. 문장 논리](/Notes/2025/01/Korean/MathematicsStudiesHowToProveIt_01_SententialLogic.md)
 
 ## Mentoring
 
