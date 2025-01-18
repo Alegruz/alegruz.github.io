@@ -94,6 +94,7 @@ Game Development Studies with Books
 * 2025
   * 1월
     * [수학 공부: How to Prove It. 01. 문장 논리](/Notes/2025/01/Korean/MathematicsStudiesHowToProveIt_01_SententialLogic.md)
+    * [그래픽스 공부: Fundamentals of Computer Graphics. 01. 서론](/Notes/2025/01/Korean/ComputerGraphicsStudiesFundamentalsOfComputerGraphics_01_Introduction.md)
 
 ## Mentoring
 
