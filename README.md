@@ -96,6 +96,7 @@ Game Development Studies with Books
     * [수학 공부: How to Prove It. 01. 문장 논리](/Notes/2025/01/Korean/MathematicsStudiesHowToProveIt_01_SententialLogic.md)
     * [그래픽스 공부: Fundamentals of Computer Graphics. 01. 서론](/Notes/2025/01/Korean/ComputerGraphicsStudiesFundamentalsOfComputerGraphics_01_Introduction.md)
     * [그래픽스 공부: Fundamentals of Computer Graphics. 03. 래스터 이미지](/Notes/2025/01/Korean/ComputerGraphicsStudiesFundamentalsOfComputerGraphics_03_RasterImages.md)
+    * [그래픽스 공부: Fundamentals of Computer Graphics. 04. 레이 트레이싱](/Notes/2025/01/Korean/ComputerGraphicsStudiesFundamentalsOfComputerGraphics_04_RayTracing.md)
 
 ## Mentoring
 
