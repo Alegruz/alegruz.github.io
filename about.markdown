@@ -4,15 +4,21 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+This a personal blog of Alegruz.
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+I am a game engine/graphics engineer.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+My interesets are:
 
+Professional interests:
 
-[jekyll-organization]: https://github.com/jekyll
+* Real-time Path Tracing
+* Terrain Generation
+* Game Engine Core Systems
+* Mathematics
+* Quantum Computing
+
+Personal interests:
+
+* Language learning
+* Travel
