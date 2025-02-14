@@ -13,7 +13,7 @@ categories: graphics korean
 
 # 초록
 
-요즘에 GPU로 광선 추적을 가속화할 수 있긴 하지만, 그래도 실시간으론 겨우 몇 개의 광선 밖에 추적을 못 함. 그렇기 때문에 디노이저가 아무리 좋아도 문제가 발생할 수 밖에 없음. 최근 [ReSTIR 알고리듬](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)이 잘 되긴 하는데, 간접광 전용 알고리듬도 필요함.
+요즘에 GPU로 광선 추적을 가속화할 수 있긴 하지만, 그래도 실시간으론 겨우 몇 개의 광선 밖에 추적을 못 함. 그렇기 때문에 디노이저가 아무리 좋아도 문제가 발생할 수 밖에 없음. 최근 [ReSTIR 알고리듬](/_posts/2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.md)이 잘 되긴 하는데, 간접광 전용 알고리듬도 필요함.
 
 평행성이 높은 GPU 구조에 적합한, 간접광을 위한 효과적인 경로 표집 알고리듬을 소개하도록 함. ReSTIR의 screen-space 시공간 재표집 원칙에 기반하여 경로 추적으로 얻을 수 있는 다중 튕김 간접광 경로를 재표집함.
 
@@ -75,7 +75,7 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 
 여기서 `TRACE` 함수란 x에서 방향 &omega;<sub>i</sub>로 광선을 쏘았을 때 처음으로 충돌하는 표면 위의 점을 반환함.
 
-[전통적인 몬테 카를로 방법](/Notes/2022/10/Korean/MonteCarloIntegration.md)에서 사용하는 추정량:
+[전통적인 몬테 카를로 방법](/_posts/2022-10-13-monte-carlo-integration-kr.md)에서 사용하는 추정량:
 
 <div id="eq_3">
  <p style="float: left; width:10%; text-align:left;"></p>
@@ -87,7 +87,7 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 * N: 독립 표본의 수
 * p(**&omega;**<sub>j</sub>): 표본을 뽑은 PDF
 
-[RIS](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)를 통해 직접적으로 표본을 뽑기가 어려운 분포를 근사해줄 수 있음.
+[RIS](/_posts/2022-10-14-importance-resampling-for-global-illumination-kr.md)를 통해 직접적으로 표본을 뽑기가 어려운 분포를 근사해줄 수 있음.
 
 1단계: source 분포 p(y)로부터 M 개의 후보 **y** = y<sub>1</sub>, &hellip;, y<sub>M</sub> 뽑음.<br>
 2단계: target PDF ![TargetPdf](/Images/ReStirGi/TargetPdf.png)로부터 **y**에서 한 표본 z를 재표집함.

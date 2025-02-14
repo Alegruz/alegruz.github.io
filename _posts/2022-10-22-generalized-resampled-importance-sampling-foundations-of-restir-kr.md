@@ -14,7 +14,7 @@ categories: graphics korean
 
 # 초록
 
-장면들이 너무 복잡해지니깐 실시간으로 광선 추적 / 경로 표집할 때 적은 표본으로 최고의 퀄리티를 뽑아야하는 기술이 더욱 중요해짐... 최근엔 *재표집resampling* 기반의 [RIS](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)로 최대한 뭔가를 해보려고 했는데, 그 중 하나가 시공간으로 복잡한 광전달을 픽셀 당 겨우 몇 개의 표본으로 표집하려는 거였음([ReSTIR](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)). 근데 이게 여러 가정을 하는데, 대표적인게 표본 독립성임. 근데 표본을 재사용하면 *상관관계가 발생*함. 그러니까 ReSTIR식 반복은 RIS가 이론적으로 제공하는 수렴 보장성을 잃게됨.
+장면들이 너무 복잡해지니깐 실시간으로 광선 추적 / 경로 표집할 때 적은 표본으로 최고의 퀄리티를 뽑아야하는 기술이 더욱 중요해짐... 최근엔 *재표집resampling* 기반의 [RIS](/_posts/2022-10-14-importance-resampling-for-global-illumination-kr.md)로 최대한 뭔가를 해보려고 했는데, 그 중 하나가 시공간으로 복잡한 광전달을 픽셀 당 겨우 몇 개의 표본으로 표집하려는 거였음([ReSTIR](/_posts/2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.md)). 근데 이게 여러 가정을 하는데, 대표적인게 표본 독립성임. 근데 표본을 재사용하면 *상관관계가 발생*함. 그러니까 ReSTIR식 반복은 RIS가 이론적으로 제공하는 수렴 보장성을 잃게됨.
 
 그렇기에 이론을 확장한 일반 재표집 중요도 표집(GRIS)을 소개함. 이를 통해 상관관계가 있는, PDF도 모르고 여러 영역에서 나온 표본들에 대해 RIS를 적용할 수 있도록 해줌. 이를 통해 이론적인 배경을 탄탄하게 해서 ReSTIR 기반 표집에서 분산의 유계와 수렴 조건을 제시함. 또한 좀 더 실용적인 알고리듬 설계와 복잡한 shift 매핑을 통해 고급진 픽셀 간 재사용을 가능케 해줌.
 
@@ -22,11 +22,11 @@ categories: graphics korean
 
 # 1. 도입
 
-요즘 렌더링의 핵심은 [몬테 카를로 알고리듬](/Notes/2022/10/Korean/MonteCarloIntegration.md)임. 요즘 RTX 덕분에 실시간에 쓸 수 있음. 근데 게임에서 쓰기엔 비용이 좀 빡셈. *최대* 픽셀 당 경로 하나 정도?
+요즘 렌더링의 핵심은 [몬테 카를로 알고리듬](/_posts/2022-10-13-monte-carlo-integration-kr.md)임. 요즘 RTX 덕분에 실시간에 쓸 수 있음. 근데 게임에서 쓰기엔 비용이 좀 빡셈. *최대* 픽셀 당 경로 하나 정도?
 
 결국 표본이 적단 소리인데, 이때 분산을 줄이려고 쓴 방법이 중요도 표집임. 근데 빛이 복잡해지면 좋은 표본을 뽑기가 좀 빡세, 아니 사실상 불가능해짐.
 
-그래서 RIS에 기반한 여러 알고리듬들이 나온 것임. 대충 후보를 뽑아 놓고, 얘네들 중에서 다시 또 뽑아서(재표집) 이상적인 분포에 다가가겠다는 소리임. 이상적으로는 충분히 재사용을 하면 "완벽한" 중요도 분포로 수렴을 할 것임. 이걸 저장소 기반으로 시공간 중요도 재표집을 한 ReSTIR 알고리듬을 [직접광](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md), [전역 조명](/Notes/2022/10/Korean/ReStirGiPathResamplingForRealTimePathTracingRevisited.md), 부피 산란 등에 적용했음. ReSTIR는 스트리밍 알고리듬으로 GPU의 평행성을 사용해서 오류를 줄임.
+그래서 RIS에 기반한 여러 알고리듬들이 나온 것임. 대충 후보를 뽑아 놓고, 얘네들 중에서 다시 또 뽑아서(재표집) 이상적인 분포에 다가가겠다는 소리임. 이상적으로는 충분히 재사용을 하면 "완벽한" 중요도 분포로 수렴을 할 것임. 이걸 저장소 기반으로 시공간 중요도 재표집을 한 ReSTIR 알고리듬을 [직접광](/_posts/2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.md), [전역 조명](/_posts/2022-10-20-restir-gi-path-resampling-for-real-time-path-tracing-revisited-kr.md), 부피 산란 등에 적용했음. ReSTIR는 스트리밍 알고리듬으로 GPU의 평행성을 사용해서 오류를 줄임.
 
 근데 이런 확률 분포의 수렴을 제대로 다룬 적이 없음. 원본 ReSTIR 논문에선 이 확률 분포가 *무편향적*이라는 건 보이긴 했는데 모든 상황에서 수렴한다는 점을 증명하지는 않았음.
 
@@ -101,13 +101,13 @@ Contributions:
 
 이 논문은 *sampling importance resampling*(SIR)에 기반한 재표집 방법을 일반화함. SIR은 독립항등표본의 한 집합 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>에서 재표집 가중치 w<sub>i</sub> = ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(X<sub>i</sub>)/p(X<sub>i</sub>)에 비례하여 한 번 더 표집을 한, 좀 더 잘 분포된 표본 (Y<sub>i</sub>)<sub>i=1</sub><sup>N</sup>을 얻는 과정임. 이때 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)(x)은 원하는 (아마 정규화되있지 않은) 목표 분포임. M이 커질 수록 표본 Y<sub>i</sub>의 분포는 ![TargetResamplingPdf](/Images/Gris/TargetResamplingPdf.png) = ![TargetFunction](/Images/ReStirGi/TargetFunction.png) / \|\|![TargetFunction](/Images/ReStirGi/TargetFunction.png)\|\|에 수렴함.
 
-**[*RIS*](/Notes/2022/10/Korean/ImportanceResamplingForGlobalIllumination.md)<br>**
+**[*RIS*](/_posts/2022-10-14-importance-resampling-for-global-illumination-kr.md)<br>**
 몬테 카를로 방법에서 SIR을 썻을 때 좀 더 제대로 정규화를 해주는 방법을 제시함.
 
 **저장소 표집RS**<br>
 단일 패스 스트림에서 입력 집합 (X<sub>i</sub>)<sub>i=1</sub><sup>M</sup>가 들어왔을 때 무작위로 한 표본을 뽑음. *저장소*는 선택한 표본, 현재 스트림의 길이 M, 가중치 w<sub>i</sub>의 총합을 저장함. 새롭게 스트림에 X<sub>i</sub>가 들어오면, 선택한 표본을 확률 w<sub>i</sub> / ∑<sub>j≤i</sub>w<sub>j</sub>에 따라 교체함.
 
-[**ReSTIR**](/Notes/2022/10/Korean/SpatiotemporalReservoirResamplingForRealTimeRayTracingWithDynamicDirectLighting.md)<br>
+[**ReSTIR**](/_posts/2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.md)<br>
 연쇄된 저장소 재표집으로 픽셀과 프레임 간의 표본을 공유함.
 
 **Shift 매핑**<br>

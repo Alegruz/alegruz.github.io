@@ -9,4 +9,4 @@ categories: programming cpp exceptional_cpp korean
 
 ## 목차
 
-1. [제너릭 프로그래밍 및 C++ 표준 라이브러리](/Notes/2023/05/Korean/ExceptionalCpp01.md)
+1. [제너릭 프로그래밍 및 C++ 표준 라이브러리](/_posts/2023-05-20-exceptional-cpp-01-kr.md)
