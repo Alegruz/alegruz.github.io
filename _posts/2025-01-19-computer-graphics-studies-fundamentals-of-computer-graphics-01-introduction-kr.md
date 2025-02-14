@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  그래픽스 공부: Fundamentals of Computer Graphics. 01. 서론
-date:   2024-01-19 00:00:00 +0000
+date:   2025-01-19 00:00:00 +0000
 categories: graphics korean
 ---
 

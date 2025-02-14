@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  수학 공부: How to Prove It. 01. 문장 논리
-date:   2024-01-19 00:00:00 +0000
+date:   2025-01-19 00:00:00 +0000
 categories: math korean
 ---
 
