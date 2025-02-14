@@ -1,5 +1,7 @@
-temp.py
-Mentoring/CppSamples/.vs
-Mentoring/CppSamples/String/x64
-Mentoring/CppSamples/x64
-Mentoring/Webinar
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+temp
+Gemfile.lock
