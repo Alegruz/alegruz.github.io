@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  그래픽스 공부: Fundamentals of Computer Graphics. 03. 래스터 이미지
+title:  "그래픽스 공부: Fundamentals of Computer Graphics. 03. 래스터 이미지"
 date:   2025-01-19 00:00:00 +0000
 categories: graphics korean
 ---

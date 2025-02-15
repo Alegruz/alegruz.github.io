@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  일반 재표집 중요도 표집: ReSTIR의 근간
+title:  "일반 재표집 중요도 표집: ReSTIR의 근간"
 date:   2022-10-22 00:00:00 +0000
 categories: graphics korean
 ---

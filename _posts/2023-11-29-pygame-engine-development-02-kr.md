@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Pygame 엔진 개발 일지 02: Assert 대탐험
+title:  "Pygame 엔진 개발 일지 02: Assert 대탐험"
 date:   2023-11-29 00:00:00 +0000
 categories: engine korean
 ---

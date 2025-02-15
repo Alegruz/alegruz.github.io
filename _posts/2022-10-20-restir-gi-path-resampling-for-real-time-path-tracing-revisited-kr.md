@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집 (revisited)
+title:  "ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집 (revisited)"
 date:   2022-10-20 00:00:00 +0000
 categories: graphics korean
 ---

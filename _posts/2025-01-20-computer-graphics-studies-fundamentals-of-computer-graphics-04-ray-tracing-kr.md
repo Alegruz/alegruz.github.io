@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  그래픽스 공부: Fundamentals of Computer Graphics. 04. 레이 트레이싱
+title:  "그래픽스 공부: Fundamentals of Computer Graphics. 04. 레이 트레이싱"
 date:   2025-01-20 00:00:00 +0000
 categories: graphics korean
 ---

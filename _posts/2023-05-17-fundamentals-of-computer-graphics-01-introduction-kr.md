@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  컴퓨터 그래픽스 기초: 01 서론
+title:  "컴퓨터 그래픽스 기초: 01 서론"
 date:   2023-05-17 00:00:00 +0000
 categories: graphics korean
 ---

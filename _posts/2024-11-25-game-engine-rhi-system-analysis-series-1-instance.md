@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Game Engine RHI System Analysis Series 1: Instance
+title:  "Game Engine RHI System Analysis Series 1: Instance"
 date:   2024-11-25 00:00:00 +0000
 categories: graphics english
 ---
