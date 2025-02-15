@@ -247,7 +247,7 @@ float ScalarFieldFunction(float3 Position, float3 NeighborPosition)
 
 First of all, we need to define the field function to determine the grid's current status. In this source code, I have defined the field value to be the minimum squared distance between the particles in the adjacent grids. Afterwards, based on these scalar values in each corners, we can determine the number of vertices needed in each grids using predefined table, `gNumVerticesTexture`. For example, if the cube index is `0b1001 1001`, which is depicted in the figure below:
 
-![MarchingCubesIndex10011001](/Images/SphMarchingCubes/MarchingCubesIndex10011001.jpeg)
+![MarchingCubesIndex10011001](/assets/images/SphMarchingCubes/MarchingCubesIndex10011001.jpeg)
 
 ### 2. Scan occupied voxel array to skip empty voxels
 

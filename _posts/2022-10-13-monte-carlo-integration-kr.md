@@ -32,7 +32,7 @@ lang: "ko"
 
 그래픽스의 경우 어떤 한 지점으로 들어오는 모든 빛에 대해서 sampling을 하는 것이므로, 어떤 들어오는 빛 &Phi;<sub>i</sub>가 존재할 때, 해당 시행이 발생할 확률 p<sub>i</sub>는
 
-![ProbabilityOfASingleLight](/Images/MonteCarloIntegration/ProbabilityOfASingleLight.png)
+![ProbabilityOfASingleLight](/assets/images/MonteCarloIntegration/ProbabilityOfASingleLight.png)
 
 가 된다.
 
@@ -102,7 +102,7 @@ PDF는 반드시 양수여야하며, 언제나 정의역에 대하여 적분할 
 
 고등학교 수학 때 배웠던 것처럼, x, y 평면에 정의된 한 함수 f(x)를 x에 대한 범위 [a, b]에 대하여 적분하는 방법은 다음과 같이 표기가 가능하다:
 
-![Integral](/Images/MonteCarloIntegration/Integral.png)
+![Integral](/assets/images/MonteCarloIntegration/Integral.png)
 
 이때 위의 적분을 구하기 위해서 우리는 고등학교 수학 때 구분구적법(리만 합)이라는 것을 배웠다:
 
@@ -110,23 +110,23 @@ PDF는 반드시 양수여야하며, 언제나 정의역에 대하여 적분할 
 
 이처럼 적분값을 추정하는 방법의 가장 대표적인 경우가 바로 구분구적법이다. 헌데 우리는 이 구분구적법을 확률 변수라는 안경으로 바라보려고 한다. 사실 우리는 이 함수의 적분값을 범위에 대해 균등하게 나눈 샘플을 갖고 넓이를 구한게 아닐까? 그럼 각 샘플 x<sub>i</sub>마다 직사각형의 넓이를 구해서 더해준게 구분구적법이잖아? 그러면 우리가 N 개의 직사각형으로 적분을 추정하고 있다고 가정하면, 각 직사각형의 넓이는 곧 
 
-![SingleNorm](/Images/MonteCarloIntegration/SingleNorm.png)
+![SingleNorm](/assets/images/MonteCarloIntegration/SingleNorm.png)
 
 이 된다.
 
 이걸 전부 더해주면 우리는 적분값을 추정할 수 있게 될 것이다:
 
-![RiemannSum](/Images/MonteCarloIntegration/RiemannSum.png)
+![RiemannSum](/assets/images/MonteCarloIntegration/RiemannSum.png)
 
 이때 이 값의 기대값은 과연 얼마일까?
 
-![RiemannSumExpectedValue](/Images/MonteCarloIntegration/RiemannSumExpectedValue.png)
+![RiemannSumExpectedValue](/assets/images/MonteCarloIntegration/RiemannSumExpectedValue.png)
 
 즉, 결국 적분값이 된다!!
 
 근데 생각해보면 어떤 함수의 적분값을 언제나 연속 균등 확률 변수로 구하면 언제나 좋은 결과를 얻을 수는 없을 것이다. 범위를 많이 차지하는 극대점에서는 많이, 극소점에서는 적게 샘플링을 해주면 좀 더 좋은 결과를 낼 수 있는게 아닐까? 이처럼 각 함수별로 더욱 알맞는 확률 분포가 존재할 것이다. 그렇다면 우리는 위의 방법을 어떤 임의의 확률 밀도 함수 PDF에 대해서 일반화해줘야한다:
 
-![MonteCarloEstimator](/Images/MonteCarloIntegration/MonteCarloEstimator.png)
+![MonteCarloEstimator](/assets/images/MonteCarloIntegration/MonteCarloEstimator.png)
 
 이것이 바로 몬테 카를로 추정량이다!
 
@@ -134,11 +134,11 @@ PDF는 반드시 양수여야하며, 언제나 정의역에 대하여 적분할 
 
 변수가 여러 개로 늘어나도 동일하다. 변수 x, y, z에 대하여 적분을 해야한다고 가정해보자:
 
-![MultipleVariablesIntegral](/Images/MonteCarloIntegration/MultipleVariablesIntegral.png)
+![MultipleVariablesIntegral](/assets/images/MonteCarloIntegration/MultipleVariablesIntegral.png)
 
 이 경우 확률 변수 X<sub>i</sub> = (x<sub>i</sub>, y<sub>i</sub>, z<sub>i</sub>)가 주어진 범위에서 연속 균등하게 분포되어있다면,
 
-![MultipleVariablesUniformMonteCarloEstimator](/Images/MonteCarloIntegration/MultipleVariablesUniformMonteCarloEstimator.png)
+![MultipleVariablesUniformMonteCarloEstimator](/assets/images/MonteCarloIntegration/MultipleVariablesUniformMonteCarloEstimator.png)
 
 처럼 표현할 수 있을 것이다.
 
@@ -152,15 +152,15 @@ PDF는 반드시 양수여야하며, 언제나 정의역에 대하여 적분할 
 
 예를 들어 네 가지 경우의 수가 있다고 가정해보자. 각 경우의 수는 p<sub>1</sub>부터 p<sub>4</sub>까지의 확률을 갖는다.
 
-![InversionMethodExamplePdf](/Images/MonteCarloIntegration/InversionMethodExamplePdf.png)
+![InversionMethodExamplePdf](/assets/images/MonteCarloIntegration/InversionMethodExamplePdf.png)
 
 이 분포로부터 한 표본을 뽑으려면 우선 CDF P(x)를 구해야한다.
 
-![InversionMethodExampleCdf](/Images/MonteCarloIntegration/InversionMethodExampleCdf.png)
+![InversionMethodExampleCdf](/assets/images/MonteCarloIntegration/InversionMethodExampleCdf.png)
 
 이제 간단하다. CDF P(x)의 결과값, 즉 치역인 [0, 1] 사이에서 연속 균등 확률 변수 값 ξ 하나를 뽑으면 된다.
 
-![InversionMethodExample](/Images/MonteCarloIntegration/InversionMethodExample.png)
+![InversionMethodExample](/assets/images/MonteCarloIntegration/InversionMethodExample.png)
 
 이러면 필연적으로 i번째 확률변수의 확률 p<sub>i</sub>와 ξ 값이 서로 충돌하게 된다. 이런식으로 연속 균등 확률 변수 ξ<sub>i</sub>에 대하여 p<sub>i</sub>에 대응하는 확률 변수 X<sub>i</sub>를 선택하게 되면, 자연스럽게 PDF에 알맞게 분포가 나올 것이다.
 
@@ -168,7 +168,7 @@ PDF는 반드시 양수여야하며, 언제나 정의역에 대하여 적분할 
 
 좀 더 구체적으로 보자면:
 
-1. CDF를 구한다: ![Cdf](/Images/MonteCarloIntegration/Cdf.png)
+1. CDF를 구한다: ![Cdf](/assets/images/MonteCarloIntegration/Cdf.png)
 2. 역함수 P<sup>-1</sup>(x)를 구한다
 3. 균등 확률 변수 ξ를 구한다
 4. X<sub>i</sub> = P<sup>-1</sup>(ξ)를 구한다
@@ -188,7 +188,7 @@ PDF는 반드시 양수여야하며, 언제나 정의역에 대하여 적분할 
 
 사실상 계속해서 (X, ξ)라는 확률 변수 짝을 구하는건데, 점 (X, ξ c p(X))가 f(X)보다 아래에 있으면 OK, 아니라면 다시!를 외치는 방법이다.
 
-![RejetionMethodExample](/Images/MonteCarloIntegration/RejetionMethodExample.png)
+![RejetionMethodExample](/assets/images/MonteCarloIntegration/RejetionMethodExample.png)
 
 당연하겠지만, c p(x)가 f(x)에 대하여 좀 더 잘 감싸는 형태가 된다면 좀 더 효율적으로 위의 루프가 돌 것이다.
 
@@ -210,19 +210,19 @@ P<sub>y</sub>(y) = P<sub>y</sub>(y(x)) = P<sub>x</sub>(x)
 
 만약 y가 단조증가하는 함수(도함수가 0보다 큼)라면,
 
-![TransformingBetweenDistributionsXYPdfs](/Images/MonteCarloIntegration/TransformingBetweenDistributionsXYPdfs.png)
+![TransformingBetweenDistributionsXYPdfs](/assets/images/MonteCarloIntegration/TransformingBetweenDistributionsXYPdfs.png)
 
 즉,
 
-![TransformingBetweenDistributionsXYPdfsPostive](/Images/MonteCarloIntegration/TransformingBetweenDistributionsXYPdfsPostive.png)
+![TransformingBetweenDistributionsXYPdfsPostive](/assets/images/MonteCarloIntegration/TransformingBetweenDistributionsXYPdfsPostive.png)
 
 이걸 이제 일반화해주자. y가 단조감소인 경우까지 고려해주면 절대값을 씌워주면 될 것이다:
 
-![TransformingBetweenDistributionsXYPdfsGeneralized](/Images/MonteCarloIntegration/TransformingBetweenDistributionsXYPdfsGeneralized.png)
+![TransformingBetweenDistributionsXYPdfsGeneralized](/assets/images/MonteCarloIntegration/TransformingBetweenDistributionsXYPdfsGeneralized.png)
 
 예를 들어 정의역 [0, 1]에 대해 p<sub>x</sub>(x) = 2x이고, Y = sin x라고 가정하면, 확률 변수 Y에 대한 PDF는:
 
-![TransformingBetweenDistributionsExample](/Images/MonteCarloIntegration/TransformingBetweenDistributionsExample.png)
+![TransformingBetweenDistributionsExample](/assets/images/MonteCarloIntegration/TransformingBetweenDistributionsExample.png)
 
 ## 4.1. 다차원 변환
 
@@ -230,7 +230,7 @@ P<sub>y</sub>(y) = P<sub>y</sub>(y(x)) = P<sub>x</sub>(x)
 
 만약 n 차원 확률 변수 X에 대하여 PDF p<sub>x</sub>(x)가 존재하고, Y = T(X)라고 가정하자. 이때 T는 전단사 함수이다. 이때 PDF는 다음과 같다:
 
-![TransformingBetweenDistributionsMultipleDimensionsPdf](/Images/MonteCarloIntegration/TransformingBetweenDistributionsMultipleDimensionsPdf.png)
+![TransformingBetweenDistributionsMultipleDimensionsPdf](/assets/images/MonteCarloIntegration/TransformingBetweenDistributionsMultipleDimensionsPdf.png)
 
 ## 4.2. 극좌표계
 
@@ -240,7 +240,7 @@ x = r cos &theta;, y = r sin &theta;이다.
 
 야코비 행렬을 구해보면:
 
-![TransformingBetweenDistributionsPolarCoordinates](/Images/MonteCarloIntegration/TransformingBetweenDistributionsPolarCoordinates.png)
+![TransformingBetweenDistributionsPolarCoordinates](/assets/images/MonteCarloIntegration/TransformingBetweenDistributionsPolarCoordinates.png)
 
 이때 행렬식은 r이므로, p(x, y) = p(r, &theta;) / r가 된다.
 
@@ -283,13 +283,13 @@ p(&theta;, &phi;) = sin&theta;p(&omega;)
 
 어떤 이차원 확률 밀도 함수가 주어졌을 때, **주변 확률 밀도 함수marginal density function** p(x)는 차원 중 하나를 "적분"하여 얻을 수 있다:
 
-![MarginalDensityFunction](/Images/MonteCarloIntegration/MarginalDensityFunction.png)
+![MarginalDensityFunction](/assets/images/MonteCarloIntegration/MarginalDensityFunction.png)
 
 사실상 어떻게 보면 X에 대한 확률 밀도 함수인 것처럼 해석할 수 있게 된다. 정확하게 표현하자면, 이건 모든 가능한 y 값에 대한 평균 밀도가 된다.
 
 **조건부 확률 밀도 함수conditional density function** p(y|x)는 특정 x가 선택 됐을 때 y에 대한 확률 밀도 함수다:
 
-![ConditionalDensityFunction](/Images/MonteCarloIntegration/ConditionalDensityFunction.png)
+![ConditionalDensityFunction](/assets/images/MonteCarloIntegration/ConditionalDensityFunction.png)
 
 joint 분포로부터의 이차원 표집의 기본은 우선 주변 확률 밀도 함수를 구해서 한 변수를 고정시키고, 이 함수로부터 통상적은 일차원 기법으로 표본을 구하는 것이다. 이 표본을 구한 다음엔, 조건부 확률 밀도 함수를 활용하여 표본을 구하는데, 이번에도 통상적인 일차원 기법으로 표본을 구하게 된다.
 
@@ -301,15 +301,15 @@ joint 분포로부터의 이차원 표집의 기본은 우선 주변 확률 밀�
 
 우선 &theta;에 대하여 표본을 뽑아보도록 하자. &theta;에 대한 주변부 확률 밀도 함수 p(&theta;)를 우선 구해보자:
 
-![ThetaMarginalDensityFunction](/Images/MonteCarloIntegration/ThetaMarginalDensityFunction.png)
+![ThetaMarginalDensityFunction](/assets/images/MonteCarloIntegration/ThetaMarginalDensityFunction.png)
 
 이제 &phi;에 대한 조건부 확률을 구해보도록 하자:
 
-![PhiConditionalDensityFunction](/Images/MonteCarloIntegration/PhiConditionalDensityFunction.png)
+![PhiConditionalDensityFunction](/assets/images/MonteCarloIntegration/PhiConditionalDensityFunction.png)
 
 어라? &phi;는 보니까 균등 확률을 갖고 있다. 직관적으로 이해해보자면, 이러면 반구의 대칭성이 설명이 된다. 자 이제 일차원 기법으로 각 PDF를 순서대로 표집해보자.
 
-![2dSamplingExampleCdfs](/Images/MonteCarloIntegration/2dSamplingExampleCdfs.png)
+![2dSamplingExampleCdfs](/assets/images/MonteCarloIntegration/2dSamplingExampleCdfs.png)
 
 이제 역방법을 적용해보자. 이때 ξ를 1 - ξ로 대체해서 사용해보자 (어차피 균등해서 상관이 없다!).
 
@@ -318,7 +318,7 @@ joint 분포로부터의 이차원 표집의 기본은 우선 주변 확률 밀�
 
 이걸 데카르트 좌표로 다시 변환하면:
 
-![2dSamplingToCartesianCoordinates](/Images/MonteCarloIntegration/2dSamplingToCartesianCoordinates.png)
+![2dSamplingToCartesianCoordinates](/assets/images/MonteCarloIntegration/2dSamplingToCartesianCoordinates.png)
 
 ## 5.2. 단위 원판 표집하기
 
@@ -331,7 +331,7 @@ p(&theta; | r) = 1/(2&pi;)
 
 반구에서와 마찬가지로, 원도 대칭이므로 조건부가 균등하다는 것을 알 수 있다. 이제 이걸 적분하여 P(r)을 구하고, 그 역함수를 구하고, 이를 &theta;에 대한 P(&theta;)을 구하고, 그 역함수를 구하면 그 결과를 알 수 있게 된다:
 
-![UnitDiskRTheta](/Images/MonteCarloIntegration/UnitDiskRTheta.png)
+![UnitDiskRTheta](/assets/images/MonteCarloIntegration/UnitDiskRTheta.png)
 
 ## 5.3. 코사인 가중치 반구 표집
 
@@ -340,11 +340,11 @@ p(&theta; | r) = 1/(2&pi;)
 즉, p(&omega;) ∝ cos &theta; 라는 것인데, 이를 구면좌표계로 변환하여 얼마나 비례하는지 구해보도록 하자:
 
 
-![CosineWeightedHemisphereC](/Images/MonteCarloIntegration/CosineWeightedHemisphereC.png)
+![CosineWeightedHemisphereC](/assets/images/MonteCarloIntegration/CosineWeightedHemisphereC.png)
 
 즉,
 
-![CosineWeightedHemisphereSphericalCoordinatesPdf](/Images/MonteCarloIntegration/CosineWeightedHemisphereSphericalCoordinatesPdf.png)
+![CosineWeightedHemisphereSphericalCoordinatesPdf](/assets/images/MonteCarloIntegration/CosineWeightedHemisphereSphericalCoordinatesPdf.png)
 
 가 된다.
 
@@ -356,7 +356,7 @@ p(&theta; | r) = 1/(2&pi;)
 
 IS의 기본적인 개념은 몬테 카를로 추정량
 
-![MonteCarloEstimator](/Images/MonteCarloIntegration/MonteCarloEstimator.png)
+![MonteCarloEstimator](/assets/images/MonteCarloIntegration/MonteCarloEstimator.png)
 
 에서 표본들이 함수 f(x)랑 비슷한 분포 p(x)에서 나올 수록 더욱 빠르게 수렴한다는 점에서 시작한다. 즉, 피적분 함수의 값이 상대적으로 높은 곳에 좀 더 집중할 수록 더 효율적으로, 정확하게 추정을 할 수 있다는 것이다.
 
@@ -376,17 +376,17 @@ IS는 실무에서 가장 많이 사용하는 변수 줄이기 기법 중 하나
 
 만약 ∫f(x)g(x)dx를 추정하기 위해 두 표집 분포 p<sub>f</sub>와 p<sub>g</sub>를 사용한다고 가정하면, MIS에 의한 추정량은 다음과 같다:
 
-![MultipleImportanceSamplingMonteCarloEstimatorExample](/Images/MonteCarloIntegration/MultipleImportanceSamplingMonteCarloEstimatorExample.png)
+![MultipleImportanceSamplingMonteCarloEstimatorExample](/assets/images/MonteCarloIntegration/MultipleImportanceSamplingMonteCarloEstimatorExample.png)
 
 n<sub>f</sub>는 p<sub>f</sub> 분포에서 뽑은 표본의 수, n<sub>g</sub>는 p<sub>g</sub>에서 뽑은 표본의 수고, w<sub>f</sub>이랑 w<sub>g</sub>는 이 추정량의 기대값이 f(x)g(x)의 적분값과 같아지도록 만드는 특수한 가중치 함수이다.
 
 가중치 함수는 표본 X<sub>i</sub>나 Y<sub>j</sub>가 생성될 수 있는 *모든* 방법을 고려하는 것이다. 특정 방법을 고려하는 것이 아니다! 대표적인 좋은 가중치 함수로는 **균형 휴리스틱balance heuristic**이 있다:
 
-![BalanceHeuristic](/Images/MonteCarloIntegration/BalanceHeuristic.png)
+![BalanceHeuristic](/assets/images/MonteCarloIntegration/BalanceHeuristic.png)
 
 실무에서는 보통 **제곱 휴리스틱power heuristic**을 사용하여 더욱 분산을 줄이곤 한다. 지수 &beta;에 대하여 표현한다:
 
-![PowerHeuristic](/Images/MonteCarloIntegration/PowerHeuristic.png)
+![PowerHeuristic](/assets/images/MonteCarloIntegration/PowerHeuristic.png)
 
 Veach에 의하면 경험적으로 &beta; = 2일 때 제일 잘 된다고 한다.
 
@@ -394,7 +394,7 @@ Veach에 의하면 경험적으로 &beta; = 2일 때 제일 잘 된다고 한다
 
 f(x) = cos(&pi; x / 2) + 2 이고, p가 항등 분포일 때:
 
-![Experiment00](/Images/MonteCarloIntegration/Experiment00.png)
+![Experiment00](/assets/images/MonteCarloIntegration/Experiment00.png)
 
 ```
 Integral: 10.6366

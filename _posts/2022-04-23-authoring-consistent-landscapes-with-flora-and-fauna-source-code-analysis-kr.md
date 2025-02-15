@@ -46,7 +46,7 @@ DEM 데이터를 바탕으로 물 데이터를 생성함.
 
 ## 온도 데이터
 
-![Temperature](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Temperature.png)
+![Temperature](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Temperature.png)
 
 온도는 단순히 -(dem / 100) 으로 처리함.
 
@@ -57,18 +57,18 @@ DEM 데이터를 바탕으로 물 데이터를 생성함.
     * 물 데이터는 자연 로그로 받아오고, 그 후 offset(기본 0) 만큼 더해줌.
     * 토양 데이터는 `geology.load(soil_file_path, colors)`로 불러옴
         1. `soil_file_path`로부터 `rgb_data` 가져옴
-        2. 위의 데이터를 정수로 간단화: ![SoilDataToInt](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/SoilDataToInt.png)
+        2. 위의 데이터를 정수로 간단화: ![SoilDataToInt](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/SoilDataToInt.png)
             * 즉, 32비트 정수를 8비트로 구분하여, 00000000<span style="background-color:rgb(255,0,0)">00000000</span><span style="background-color:rgb(0,255,0)">00000000</span><span style="background-color:rgb(0,0,255)">00000000</span> 와 같이 나누겠다는 의미.
         3. 결론적으로 `geol`라는 행렬/이미지는 각 픽셀별로 해당하는 soil의 index를 갖고 있을 것
 2. 데이터로 RAG<sub>0</sub> 구축
     1. 월별 온도. `ecosys.convert(온도 + 월별 평균 온도, 일교차(저점), 일교차(고점))
         * 온도를 [1 - 10] 스케일로 수정
-        * ![ConvertedTemperature](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ConvertedTemperature.png)
+        * ![ConvertedTemperature](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/ConvertedTemperature.png)
     2. 월별 배수량
     3. 월별 일조량
     * 월별 배수량, 일조량도 위의 식으로 동일하게 처리.
-        * ![ConvertedDrainage](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ConvertedDrainage.png)
-        * ![ConvertedIllumination](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ConvertedIllumination.png)
+        * ![ConvertedDrainage](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/ConvertedDrainage.png)
+        * ![ConvertedIllumination](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/ConvertedIllumination.png)
     * `conditions` = { 월별 일조량, 월별 온도, 월별 배수량 }
 3. 식물 간 경쟁 처리 `ecosys.plant_compet(plants, conditions, geol)`
     * 식물별 데이터:

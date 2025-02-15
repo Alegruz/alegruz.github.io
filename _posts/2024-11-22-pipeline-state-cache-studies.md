@@ -22,7 +22,7 @@ Now I will give my studies on how to implement this system based on the Microsof
 
 There are two methods to implement pipeline caching. You can either cache the pipelines into a single pipeline library, or cache them per pipeline. The former requires you to initialize a pipeline library instance, and the latter requires you to call `ID3D12PipelineState::GetCachedBlob(ID3DBlob**)`.
 
-![MicrosoftDirectX12Sample](/Images/PipelineStateCache/MicrosoftDirectX12Sample.png)
+![MicrosoftDirectX12Sample](/assets/images/PipelineStateCache/MicrosoftDirectX12Sample.png)
 
 #### Pipeline Library Method
 
@@ -57,7 +57,7 @@ There are two methods to implement pipeline caching. You can either cache the pi
 
 BGFX only uses the cached blob method.
 
-![Bgfx](/Images/PipelineStateCache/Bgfx.png)
+![Bgfx](/assets/images/PipelineStateCache/Bgfx.png)
 
 1. `RendererContextD3D12::getPipelineState(ProgramHandle): ID3D12PipelineState*`
    1. Try to get the PSO from main memory (`RendererContextD3D12::m_pipelineStateCache: StateCacheT<ID3D12PipelineState>`)
@@ -70,7 +70,7 @@ BGFX only uses the cached blob method.
 
 BGFX only uses the cached blob method.
 
-![Llgl](/Images/PipelineStateCache/Llgl.png)
+![Llgl](/assets/images/PipelineStateCache/Llgl.png)
 
 1. `D3D12GraphicsPSO::CreateNativePSO(D3D12Device&, const D3D12PipelineLayout&, const D3D12RenderPass*, const GraphicsPipelineDescriptor&, D3D12PipelineCache*)` / `D3D12ComputePSO::CreateNativePSO(D3D12Device&, const D3D12_SHADER_BYTECODE&, D3D12PipelineCache*)`
    1. Create PSO (use cached blob if given `D3D12PipelineCache*` is not null)
@@ -83,7 +83,7 @@ Loading of pre-cached pipeline and saving current pipeline cache is not managed 
 
 O3DE only uses the pipeline library method. According to O3DE, if RenderDoc or PIX is enabled, CreatePipelineLibrary API does not function properly.
 
-![O3de](/Images/PipelineStateCache/O3de.png)
+![O3de](/assets/images/PipelineStateCache/O3de.png)
 
 When a render pass / dispatch item etc. needs a PSO, it will acquire it from the `Shader` that uses it. In O3DE, shaders don't refer to specific shaders like VS, PS. A shader has some shader variants that contains "shader stage functions" which corresponds to VS, PS, and etc. Shaders are more like a complete set of shaders that consists a pipeline. This is the reason O3DE retrieves pipeline state from `Shader::AcquirePipelineState`. This means that each Shader "family" has a `ID3D12PipelineLibrary` object. A `Shader` object has a `m_pipelineLibraryPath` member variable that stores the pipeline library. When a `Shader` object is destroyed by the `Shader::Shutdown` call, the shader saves its pipeline library.
 
@@ -97,7 +97,7 @@ When compiling a PSO, we must first check if the PSO has already been compiled, 
 
 The Forge uses the pipeline library method.
 
-![TheForge](/Images/PipelineStateCache/TheForge.png)
+![TheForge](/assets/images/PipelineStateCache/TheForge.png)
 
 The Forge creates pipeline library for every pipeline caches. It seems like The Forge doesn't really use it.
 
@@ -105,7 +105,7 @@ The Forge creates pipeline library for every pipeline caches. It seems like The 
 
 Wicked Engine uses the pipeline library method. Just like the sample, Wicked Engine uses one pipeline library cache.
 
-![WickedEngine](/Images/PipelineStateCache/WickedEngine.png)
+![WickedEngine](/assets/images/PipelineStateCache/WickedEngine.png)
 
 According to Turánszki János, the main contributer, pipeline library method is slower than driver-side caching which is why he disabled it.
 

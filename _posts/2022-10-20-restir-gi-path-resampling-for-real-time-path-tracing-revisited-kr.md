@@ -52,7 +52,7 @@ Bekeart et al.에서 사용한 좀 더 일반적인 하위 경로 재사용 방�
 
 <div id="eq_1">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
  <p style="float: left; width:10%; text-align:right;">(1)</p>
 </div>
 <div style="clear: both;"></div>
@@ -69,7 +69,7 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 
 <div id="eq_2">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/Equation2.png" alt="Equation2"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/Equation2.png" alt="Equation2"/></p>
  <p style="float: left; width:10%; text-align:right;">(2)</p>
 </div>
 <div style="clear: both;"></div>
@@ -80,7 +80,7 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 
 <div id="eq_3">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
  <p style="float: left; width:10%; text-align:right;">(3)</p>
 </div>
 <div style="clear: both;"></div>
@@ -91,13 +91,13 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 [RIS](/_posts/2022-10-14-importance-resampling-for-global-illumination-kr.md)를 통해 직접적으로 표본을 뽑기가 어려운 분포를 근사해줄 수 있음.
 
 1단계: source 분포 p(y)로부터 M 개의 후보 **y** = y<sub>1</sub>, &hellip;, y<sub>M</sub> 뽑음.<br>
-2단계: target PDF ![TargetPdf](/Images/ReStirGi/TargetPdf.png)로부터 **y**에서 한 표본 z를 재표집함.
+2단계: target PDF ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)로부터 **y**에서 한 표본 z를 재표집함.
 
 이때 z는 다음 확률에 의해 뽑음:
 
 <div id="eq_4">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
  <p style="float: left; width:10%; text-align:right;">(4)</p>
 </div>
 <div style="clear: both;"></div>
@@ -106,7 +106,7 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 
 <div id="eq_5">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
  <p style="float: left; width:10%; text-align:right;">(5)</p>
 </div>
 <div style="clear: both;"></div>
@@ -115,7 +115,7 @@ participating 매질을 무시한다면 "들어오는 radiance L<sub>i</sub>"는
 
 <div id="eq_6">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
  <p style="float: left; width:10%; text-align:right;">(6)</p>
 </div>
 <div style="clear: both;"></div>
@@ -126,7 +126,7 @@ Bitterli et al.이 보였듯, WRS를 통해 RIS를 좀 더 효율적으로 GPU�
 
 <div id="eq_7">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/Weight.png" alt="Weight"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/Weight.png" alt="Weight"/></p>
  <p style="float: left; width:10%; text-align:right;">(7)</p>
 </div>
 <div style="clear: both;"></div>
@@ -135,7 +135,7 @@ RIS 추정량은 다음과 같이 단순화 할 수 있음:
 
 <div id="eq_8">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
  <p style="float: left; width:10%; text-align:right;">(8)</p>
 </div>
 <div style="clear: both;"></div>
@@ -161,13 +161,13 @@ RIS 추정량은 다음과 같이 단순화 할 수 있음:
 
 # 4. ReSTIR GI
 
-원래 ReSTIR 논문에서는 초기 표본을 빛 표집으로 함. 즉, 광원들을 power에 따라 뽑은 다음, 뽑힌 광원들을 광원 표면에 대해 균등하게 표집하는 source PDF p(x)를 바탕으로 적용함. Target PDF ![TargetFunction](/Images/ReStirGi/TargetFunction.png)의 경우는 그림자가 지지 않은 반사 radiance, 즉 발산하는 radiance * BSDF * 기하항으로 삼음.
+원래 ReSTIR 논문에서는 초기 표본을 빛 표집으로 함. 즉, 광원들을 power에 따라 뽑은 다음, 뽑힌 광원들을 광원 표면에 대해 균등하게 표집하는 source PDF p(x)를 바탕으로 적용함. Target PDF ![TargetFunction](/assets/images/ReStirGi/TargetFunction.png)의 경우는 그림자가 지지 않은 반사 radiance, 즉 발산하는 radiance * BSDF * 기하항으로 삼음.
 
 ReSTIR으로 간접광 표집하려면 우선 간접광에 contribute하는 방향을 표현할 수 있어야 함. 근데 공간 상의 서로 다른 지점에서 시공간 재사용을 해야하니까, 지역 반구 상의 방향을 표현하는 단위 벡터는 좋은 표현 방법은 아닌 듯함. 차라리 표면 위의 한 지점과, 광선으로 산란되어 오는 radiance를 연계해서 보도록 함.
 
 우선 *가시점visible point*이란 카메라가 어떤 장면을 바라볼 때 각 픽셀마다 보이는 표면의 지점을 의미함. 이 가시점에서 우선 무작위로 한 방향을 표집해보자. 이 방향으로 광선을 쏘았을 때 처음으로 충돌하는 지점을 바로 *표본점sample point*이라 부를 것임. 이렇게 표본을 생성한 다음엔 재표집을 진행하고 각 가시점마다 shading을 진행함.
 
-![Figure2](/Images/ReStirGi/Figure2.jpeg)
+![Figure2](/assets/images/ReStirGi/Figure2.jpeg)
 
 알고리듬은 총 세 개의 이미지 크기의 버퍼를 저장함:
 
@@ -175,7 +175,7 @@ ReSTIR으로 간접광 표집하려면 우선 간접광에 contribute하는 방�
 * 시간 저장소 버퍼: 직전 프레임에서 생성한 표본에 WRS를 적용한 표본을 받아들이는 `Reservoir`의 버퍼
 * 공간 저장소 버퍼: 이웃 픽셀에 WRS를 적용한 표본을 받아들이는 `Reservoir`의 버퍼
 
-![Figure4](/Images/ReStirGi/Figure4.jpeg)
+![Figure4](/assets/images/ReStirGi/Figure4.jpeg)
 
 ## 4.1. 표본 생성
 
@@ -202,7 +202,7 @@ ReSTIR으로 간접광 표집하려면 우선 간접광에 contribute하는 방�
 
 <div id="eq_9">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/TargetFunctionEquation.png" alt="TargetFunctionEquation"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/TargetFunctionEquation.png" alt="TargetFunctionEquation"/></p>
  <p style="float: left; width:10%; text-align:right;">(9)</p>
 </div>
 <div style="clear: both;"></div>
@@ -211,14 +211,14 @@ ReSTIR으로 간접광 표집하려면 우선 간접광에 contribute하는 방�
 
 <div id="eq_10">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/SimpleTargetFunction.png" alt="SimpleTargetFunction"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/SimpleTargetFunction.png" alt="SimpleTargetFunction"/></p>
  <p style="float: left; width:10%; text-align:right;">(10)</p>
 </div>
 <div style="clear: both;"></div>
 
 이렇게만 해도 잘 됨. 제일 최적인 함수는 아니어도, 공간 재사용할 땐 도움이 됨. 이게 어떤 특정 표본들을 유지시켜주는데, 이 표본들이 정작 자기를 생성한 픽셀 말고, 다른 픽셀들에 좀 도움이 됨.
 
-초기 표본 생성한 다음엔 우선 시간 재사용을 적용함. 이 단계에서는 초기 표본 버퍼를 통해 무작위로 시간 저장소를 갱신하게 됨. [5번 식](#eq_5)의 RIS 가중치를 구할 땐 source PDF를 방향을 뽑을 PDF로 활용하고 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)은 [10번 식](#eq_10)으로 두고 구하면 됨.
+초기 표본 생성한 다음엔 우선 시간 재사용을 적용함. 이 단계에서는 초기 표본 버퍼를 통해 무작위로 시간 저장소를 갱신하게 됨. [5번 식](#eq_5)의 RIS 가중치를 구할 땐 source PDF를 방향을 뽑을 PDF로 활용하고 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)은 [10번 식](#eq_10)으로 두고 구하면 됨.
 
 <blockquote>
   <h3 id="알고리듬-3-시간-재사용">알고리듬 3: 시간 재사용</h3>
@@ -238,14 +238,14 @@ ReSTIR으로 간접광 표집하려면 우선 간접광에 contribute하는 방�
 
 <div id="eq_11">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="/Images/ReStirGi/JacobianTransformation.png" alt="JacobianTransformation"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="/assets/images/ReStirGi/JacobianTransformation.png" alt="JacobianTransformation"/></p>
  <p style="float: left; width:10%; text-align:right;">(11)</p>
 </div>
 <div style="clear: both;"></div>
 
 여기서 x<sub>1</sub><sup>q</sup>와 x<sub>2</sub><sup>q</sup>는 재사용 경로의 첫째와 둘째 정점, x<sub>1</sub><sup>r</sup>은 가시점, &Phi;<sub>2</sub><sup>q</sup>와 &Phi;<sub>1</sub><sup>q</sup>는 각각 벡터 x<sub>1</sub><sup>q</sup> - x<sub>2</sub><sup>q</sup>와 x<sub>1</sub><sup>r</sup> - x<sub>2</sub><sup>q</sup>가 x<sub>2</sub><sup>q</sup>에서의 법선과 이루는 각도를 의미함.
 
-![Figure6](/Images/ReStirGi/Figure6.jpeg)
+![Figure6](/assets/images/ReStirGi/Figure6.jpeg)
 
 <blockquote>
   <h3 id="알고리듬-4-공간-재사용">알고리듬 4: 공간 재사용</h3>
@@ -287,7 +287,7 @@ ReSTIR의 경우 공간 재표집을 할 때 픽셀마다 서로 다른 PDF을 �
 
 공간 재사용에서 편향성을 줄이는 다른 방법으로는 공간 저장소가 이웃 공간 저장소가 아니라, 이웃 시간 저장소에서만 처리하도록 하는 것임. 이러면 여러 단계의 편향된 표집을 재표집하면서 편향성이 누적되지 않을 것임. 물론 이렇게 되면 가려져 있다가 밖으로 나온 픽셀들은 충분히 많은 표본을 갖지 않을 것이므로 노이즈가 발생할 것임. 이럴 경우를 위해 적은 입력 표본 개수를 갖는 공간 저장소를 사용하여 근처 공간 저장소를 통해 수렴 속도를 개선하도록 함.
 
-![Figure10](/Images/ReStirGi/Figure10.jpeg)
+![Figure10](/assets/images/ReStirGi/Figure10.jpeg)
 
 만약 source 분포가 각 픽셀의 지역적인 기하적 특성에 의존하게 된다면, 즉 BSDF 표집을 사용하게 되면 편향성이 발생함. 넓이를 기준으로 한 같은 분포라도 서로 다른 픽셀의 입체각에 따라 다른 모양을 갖게 됨. 이런 차이점을 고려 안 하고 이웃으로부터 표본을 재사용하게 되면 편향성이 발생함. 이건 11번식을 통해 해결할 수 있음. 어차피 연산 복잡도도 낮은데 안해줄 이유가 없는?듯.
 

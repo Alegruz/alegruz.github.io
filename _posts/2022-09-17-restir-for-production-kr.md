@@ -190,7 +190,7 @@ lang: "ko"
 
 어떤 점 y에서 직접광에 의해 &omega; 방향으로 반사되는 radiance L은 광원의 표면 A에 대한 적분식으로 다음과 같이 구할 수 있음:
 
-![RenderingEquation](/Images/RestirForGameGi/RenderingEquation.png)
+![RenderingEquation](/assets/images/RestirForGameGi/RenderingEquation.png)
 
 여기서 &rho;는 BSDF, L<sub>e</sub>는 광원이 내뿜는 radiance, V는 x와 y 사이의 상호 가시성, G는 역 제곱 거리와 코사인 항을 갖는 기하적 요소.
 
@@ -198,13 +198,13 @@ lang: "ko"
 
 이때 위의 식을 x에 대해 간략하게 표현한다면:
 
-![ImportanceSamplingFx](/Images/RestirForGameGi/ImportanceSamplingFx.png)
+![ImportanceSamplingFx](/assets/images/RestirForGameGi/ImportanceSamplingFx.png)
 
-![ImportanceSamplingL](/Images/RestirForGameGi/ImportanceSamplingL.png)
+![ImportanceSamplingL](/assets/images/RestirForGameGi/ImportanceSamplingL.png)
 
 이걸 몬테 카를로 Importance Sampling(IS)를 통해 source 확률밀도함수 p(x<sub>i</sub>)에서 N 개의 샘플 x<sub>i</sub> 고르면 적분식을 estimate 할 수 있게 됨:
 
-![ImportanceSamplingMonteCarloIntegration](/Images/RestirForGameGi/ImportanceSamplingMonteCarloIntegration.png)
+![ImportanceSamplingMonteCarloIntegration](/assets/images/RestirForGameGi/ImportanceSamplingMonteCarloIntegration.png)
 
 이때 f(x)가 0이 아닐 때 p(x)가 양수이기만 하면 무편향성을 띰. 또한 이상적으로는 p(x)가 f(x)와 상관관계가 있으면 분산이 낮아짐.
 
@@ -214,11 +214,11 @@ lang: "ko"
 
 즉, M 개의 샘플링 방법 p<sub>s</sub>이 존재할 때, 각 s번째 샘플링 방법마다 N<sub>s</sub> 개의 샘플을 뽑고, 이들을 하나로 합쳐서 하나의 가중치가 부여된 estimator로 만들어 줄 수 있음. 이것이 바로 MIS:
 
-![MultipleImportanceSamplingMonteCarloIntegration](/Images/RestirForGameGi/MultipleImportanceSamplingMonteCarloIntegration.png)
+![MultipleImportanceSamplingMonteCarloIntegration](/assets/images/RestirForGameGi/MultipleImportanceSamplingMonteCarloIntegration.png)
 
 이때 가중치 w<sub>s</sub> 들의 합이 1만 이루기만 하면 MIS는 무편향성을 가짐. 대표적인 가중치 함수로는 balance heuristic 함수를 쓺:
 
-![MultipleImportanceSamplingBalanceHeuristic](/Images/RestirForGameGi/MultipleImportanceSamplingBalanceHeuristic.png)
+![MultipleImportanceSamplingBalanceHeuristic](/assets/images/RestirForGameGi/MultipleImportanceSamplingBalanceHeuristic.png)
 
 #### Resampled Importance Sampling (RIS)
 
@@ -226,7 +226,7 @@ MIS가 각 항의 선형 결합으로부터 샘플링을 했다면, RIS는 이 �
 
 근데 애초에 IS를 이유는, 당연히 아래의 식과 같이 완벽한 source PDF를 구할 수 있다면 아무런 문제가 되지 않을 것임:
 
-![ResampledImportanceSamplingOptimalSourcePdf](/Images/RestirForGameGi/ResampledImportanceSamplingOptimalSourcePdf.png)
+![ResampledImportanceSamplingOptimalSourcePdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingOptimalSourcePdf.png)
 
 근데 애초에 우리가 몬테 카를로를 하는 이유 자체가 적분을 못해서인데, 여기서 저 적분을 구하라고 하는게 말이 안되잖음.
 
@@ -236,29 +236,29 @@ MIS가 각 항의 선형 결합으로부터 샘플링을 했다면, RIS는 이 �
 
 근데 완벽한 p를 구한다는 발상을 반대로 생각해서, 애초에 완벽한 p를 근사를 해보려고 시도할 수도 있다. 즉, 저 적분을 한 번 근사해보자는 것이다.
 
-즉, 현실적으로 f에 대해서 샘플링하기가 힘드니까, 일단 f를 샘플링의 대상이 아니라, 우리가 구할 target 함수 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)로 다르게 바라보자는 것이다. (이때 이 target 함수는 PDF처럼 normalized 된 상태가 아닐 것이다!)
+즉, 현실적으로 f에 대해서 샘플링하기가 힘드니까, 일단 f를 샘플링의 대상이 아니라, 우리가 구할 target 함수 ![ResampledImportanceSamplingDesiredPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)로 다르게 바라보자는 것이다. (이때 이 target 함수는 PDF처럼 normalized 된 상태가 아닐 것이다!)
 
-![ResampledImportanceSamplingNormalizationApproximation](/Images/RestirForGameGi/ResampledImportanceSamplingNormalizationApproximation.png)
+![ResampledImportanceSamplingNormalizationApproximation](/assets/images/RestirForGameGi/ResampledImportanceSamplingNormalizationApproximation.png)
 
 그렇다면 이제 이 target을 근사할 새로운 source PDF p가 생긴다. 즉, 적당히 최적이면서 구하기 쉬운 source 분포 p로부터 한 개 이상(M ≥ 1)의 후보 샘플들(x = {x<sub>1</sub>, &hellip;, x<sub>M</sub>})을 우선 뽑는 것이다. 이제 여기서 임의의 z 번째 샘플 하나를 다음 이산 확률로 뽑는다:
 
-![ResampledImportanceSamplingCandidateProbability](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
+![ResampledImportanceSamplingCandidateProbability](/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
 
 이때 가중치 w는 다음과 같다:
 
-![ResampledImportanceSamplingCandidateWeight](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
+![ResampledImportanceSamplingCandidateWeight](/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
 
 이렇게 되면 자연스럽게 구하려는 식을 다시 쓸 수 있게 된다:
 
-![ResampledImportanceSamplingMonteCarloIntegration](/Images/RestirForGameGi/ResampledImportanceSamplingMonteCarloIntegration.png)
+![ResampledImportanceSamplingMonteCarloIntegration](/assets/images/RestirForGameGi/ResampledImportanceSamplingMonteCarloIntegration.png)
 
 여기서 N 개의 샘플이 아니라, 하나의 샘플만을 다루게 된다면 식을 다음과 같이 정리할 수 있다:
 
-![ResampledImportanceSamplingSingleSampleMonteCarloIntegration](/Images/RestirForGameGi/ResampledImportanceSamplingSingleSampleMonteCarloIntegration.png)
+![ResampledImportanceSamplingSingleSampleMonteCarloIntegration](/assets/images/RestirForGameGi/ResampledImportanceSamplingSingleSampleMonteCarloIntegration.png)
 
-이렇게 되면 마치 y 라는 샘플을 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 뽑은 것처럼 속여서 사용할 수 있게 된다. 뒤에 있는 괄호 안에 있는 내용은 "아, 이게 보면 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 분포에서 뽑은 것처럼 보이긴 하는데, 사실은 p에서 온거고, 이걸로 근사를 하려고 했던거에요~"라고 알려주는 거다.
+이렇게 되면 마치 y 라는 샘플을 ![ResampledImportanceSamplingDesiredPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 뽑은 것처럼 속여서 사용할 수 있게 된다. 뒤에 있는 괄호 안에 있는 내용은 "아, 이게 보면 ![ResampledImportanceSamplingDesiredPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 분포에서 뽑은 것처럼 보이긴 하는데, 사실은 p에서 온거고, 이걸로 근사를 하려고 했던거에요~"라고 알려주는 거다.
 
-RIS는 M, N ≥ 1이고, f가 0이 아닐 때 p와 ![ResampledImportanceSamplingDesiredPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수기만 하면 무편향성을 띤다.
+RIS는 M, N ≥ 1이고, f가 0이 아닐 때 p와 ![ResampledImportanceSamplingDesiredPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수기만 하면 무편향성을 띤다.
 
 RIS 알고리듬:
 

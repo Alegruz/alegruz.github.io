@@ -84,7 +84,7 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 
 <div id="eq_1">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/RenderingEquation.png" alt="RenderingEquation"/></p>
  <p style="float: left; width:10%; text-align:right;">(1)</p>
 </div>
 <div style="clear: both;"></div>
@@ -101,7 +101,7 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 
 <div id="eq_2">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Equation2.png" alt="Equation2"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Equation2.png" alt="Equation2"/></p>
  <p style="float: left; width:10%; text-align:right;">(2)</p>
 </div>
 <div style="clear: both;"></div>
@@ -110,7 +110,7 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 
 <div id="eq_3">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TraditionalMonteCarloEstimator.png" alt="TraditionalMonteCarloEstimator"/></p>
  <p style="float: left; width:10%; text-align:right;">(3)</p>
 </div>
 <div style="clear: both;"></div>
@@ -120,11 +120,11 @@ Dahm과 Keller이 강화학습을 적용[[DK16](#dk16)]해준 연구처럼 다�
 
 적분 결과가 0이 아닐 때 p(&omega;) > 0이기만 하면 추정 법칙은 적분에 대해 편향되지 않은 추정치를 제공함(Pharr et al. [PJH16](#pjh16) 등의 자료를 바탕으로 몬테 카를로 방법과 이를 렌더링에 적용하는 부분에 대한 추가 정보를 참고).
 
-PDF p가 적분과 비슷할수록 몬테 카를로 추정 법칙의 오류가 낮아짐. 재표집 중요도 표집[[TCE05](#tce05)]은 직접 표집할 수 없는 복잡한 분포에서 표집을 하는 효과적인 방법임. 표본을 생성할 때 2패스 알고리듬을 사용함. 우선 원본 분포 p(y)로부터 M 개의 후보 표본 **y** = y<sub>1</sub>, &hellip;, y<sub>M</sub>을 표집함. 이후 *목표 PDF* ![TargetPdf](/Images/ReStirGi/TargetPdf.png)로부터 아래 확률로 **y**로부터 표본 z 하나를 재표집함:
+PDF p가 적분과 비슷할수록 몬테 카를로 추정 법칙의 오류가 낮아짐. 재표집 중요도 표집[[TCE05](#tce05)]은 직접 표집할 수 없는 복잡한 분포에서 표집을 하는 효과적인 방법임. 표본을 생성할 때 2패스 알고리듬을 사용함. 우선 원본 분포 p(y)로부터 M 개의 후보 표본 **y** = y<sub>1</sub>, &hellip;, y<sub>M</sub>을 표집함. 이후 *목표 PDF* ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)로부터 아래 확률로 **y**로부터 표본 z 하나를 재표집함:
 
 <div id="eq_4">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/ResampleProbability.png" alt="ResampleProbability"/></p>
  <p style="float: left; width:10%; text-align:right;">(4)</p>
 </div>
 <div style="clear: both;"></div>
@@ -133,18 +133,18 @@ PDF p가 적분과 비슷할수록 몬테 카를로 추정 법칙의 오류가 �
 
 <div id="eq_5">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/SampleRelativeWeight.png" alt="SampleRelativeWeight"/></p>
  <p style="float: left; width:10%; text-align:right;">(5)</p>
 </div>
 <div style="clear: both;"></div>
 
-w(y)는 표본의 상대 가중치임. M이 증가할 수록 z 표본의 분포가 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)와 더욱 비슷해짐. 재표집을 위해 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)을 목표 PDF에 비례하면서 정규화normalize하지 않은 목표 함수로 교체해줘도 됨. 앞으로 이러한 성질을 장점으로 삼을 것이며, 앞으로는 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)를 목표 함수로 부를 것임.
+w(y)는 표본의 상대 가중치임. M이 증가할 수록 z 표본의 분포가 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)와 더욱 비슷해짐. 재표집을 위해 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)을 목표 PDF에 비례하면서 정규화normalize하지 않은 목표 함수로 교체해줘도 됨. 앞으로 이러한 성질을 장점으로 삼을 것이며, 앞으로는 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)를 목표 함수로 부를 것임.
 
-**y**로부터 재표집한 z가 주어졌을 때, 적분이 0이 아닐 때 ![TargetPdf](/Images/ReStirGi/TargetPdf.png) > 0이기만 하면 적분 ![Integrand](/Images/ReStirGi/Integrand.png)에 대해 편향되지 않은 추정치를 RIS 추정 법칙으로 구할 수 있음:
+**y**로부터 재표집한 z가 주어졌을 때, 적분이 0이 아닐 때 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png) > 0이기만 하면 적분 ![Integrand](/assets/images/ReStirGi/Integrand.png)에 대해 편향되지 않은 추정치를 RIS 추정 법칙으로 구할 수 있음:
 
 <div id="eq_6">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/UnbiasedRisEstimate.png" alt="UnbiasedRisEstimate"/></p>
  <p style="float: left; width:10%; text-align:right;">(6)</p>
 </div>
 <div style="clear: both;"></div>
@@ -155,7 +155,7 @@ Bitterli et al. [[BWP<span>&#42;</span>20](#bwp*20)]에서 보여주었듯, 가�
 
 <div id="eq_7">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Weight.png" alt="Weight"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Weight.png" alt="Weight"/></p>
  <p style="float: left; width:10%; text-align:right;">(7)</p>
 </div>
 <div style="clear: both;"></div>
@@ -164,7 +164,7 @@ Bitterli et al. [[BWP<span>&#42;</span>20](#bwp*20)]에서 보여주었듯, 가�
 
 <div id="eq_8">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/RisEstimate.png" alt="RisEstimate"/></p>
  <p style="float: left; width:10%; text-align:right;">(8)</p>
 </div>
 <div style="clear: both;"></div>
@@ -228,7 +228,7 @@ bool UpdateReservoir(float weight, GIReservoir srcReservoir, inout TinyUniformSa
 
 # 4. ReSTIR GI
 
-원본 ReSTIR 알고리듬[[BWP<span>&#42;</span>20](#bwp*20)]에서는 초기 표본을 소스 PDF p(x)가 빛의 표면에서 균일하게 표집해주는 빛 표집을 통해 구함. 이때 이 빛의 표면은 빛이 발하는 힘에 따라 빛 자체가 표집됨. (원본: The original ReSTIR algorithm places initial samples using light sampling where the source PDF p(x) samples uniformly on the surfaces of lights that are themselves sampled according to their emitted power.) 목표 함수 ![TargetFunction](/Images/ReStirGi/TargetFunction.png)는 빛 표본에 의해 그림자가 지지 않은 반사된 방사 휘도로 구할 수 있으며, 이때 이 방사 휘도는 발산 방사 휘도, BSDF와 기하학적 결합항의 곱으로 구할 수 있음.
+원본 ReSTIR 알고리듬[[BWP<span>&#42;</span>20](#bwp*20)]에서는 초기 표본을 소스 PDF p(x)가 빛의 표면에서 균일하게 표집해주는 빛 표집을 통해 구함. 이때 이 빛의 표면은 빛이 발하는 힘에 따라 빛 자체가 표집됨. (원본: The original ReSTIR algorithm places initial samples using light sampling where the source PDF p(x) samples uniformly on the surfaces of lights that are themselves sampled according to their emitted power.) 목표 함수 ![TargetFunction](/assets/images/ReStirGi/TargetFunction.png)는 빛 표본에 의해 그림자가 지지 않은 반사된 방사 휘도로 구할 수 있으며, 이때 이 방사 휘도는 발산 방사 휘도, BSDF와 기하학적 결합항의 곱으로 구할 수 있음.
 
 ReSTIR로 간접 조명을 표집하기 위해서는 간접 조명에 영향을 주는 방향을 표현해줘야함. 이 표현이 공간의 여러 점에서 시공간적으로 재사용이 가능해야하므로 방향을 의미하는 지역 반구의 단위 벡터는 좋은 표현 방법이 아님. 그러므로 표면 위의 점과 입사 광선을 통해 산란되어 돌아오는 방사 휘도를 연관지음.
 
@@ -241,22 +241,22 @@ ReSTIR로 간접 조명을 표집하기 위해서는 간접 조명에 영향을 
 * 공간적 저장소 버퍼: 근처 픽셀에서의 표본에 WRS를 적용하여 얻은 표본을 저장하는 `Reservoir`의 버퍼.
 
 <div style="text-align: center" id="figure_2">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure2.jpeg" alt="Figure2">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure2.jpeg" alt="Figure2">
 <p><strong>그림 2:</strong> ReSTIR과 ReSTIR GI. (a) 원본 ReSTIR 알고리듬<a href="#bwp*20">[BWP*20]</a>은 장면에서의 빛에서 무작위로 표본을 생성하는 것으로 시작함. (b) 재표집 이후 아무런 영향을 주지 않는 표본을 버림; 유용한 표본은 시공간적으로 공유하며 이들의 기여도에 따른 확률에 따라 사용함. (c) 이 논문에서 제시한 방법의 경우 무작위 방향을 표집하고, 광선을 추적하여 최근접 교차점을 찾아 초기 표본을 생성함. 이때 교차점에서 경로 추적법을 통해 반사 방사 휘도를 계산함. (d) 시공간 재표집을 비슷한 방법으로 적용해줌. 이를 통해 의미 있는 간접 조명을 주는 방향을 찾을 수 있음. 이건 ReSTIR에서는 해주지 못했음.</p>
 </div>
 
 <div id="figure_3">
 <pre><code><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Sample</span></span>
-    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/VisiblePoint.png" alt="VisiblePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/VisiblePointSurfaceNormal.png" alt="VisiblePointSurfaceNormal">    <span class="hljs-comment">// 가시점과 표면 법선</span>
-    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePoint.png" alt="SamplePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePointSurfaceNormal.png" alt="SamplePointSurfaceNormal">    <span class="hljs-comment">// 표본점과 표면 법선</span>
-    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SamplePointOutgoingRadiance.png" alt="SamplePointOutgoingRadiance">        <span class="hljs-comment">// 표본점으로부터 나가는 RGB 방사 휘도</span>
+    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/VisiblePoint.png" alt="VisiblePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/VisiblePointSurfaceNormal.png" alt="VisiblePointSurfaceNormal">    <span class="hljs-comment">// 가시점과 표면 법선</span>
+    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/SamplePoint.png" alt="SamplePoint">, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/SamplePointSurfaceNormal.png" alt="SamplePointSurfaceNormal">    <span class="hljs-comment">// 표본점과 표면 법선</span>
+    float3 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/SamplePointOutgoingRadiance.png" alt="SamplePointOutgoingRadiance">        <span class="hljs-comment">// 표본점으로부터 나가는 RGB 방사 휘도</span>
     float3 Random    <span class="hljs-comment">// 경로에 사용할 임의의 수</span>
 </code></pre>
 <p><strong>그림 3:</strong> 표본 표현. <code>Sample</code>은 표본에서의 지역 기하와 나가는 방사 휘도 값과 표본점을 생성할 때 사용한 가시점에서의 지역 기하를 둘 다 저장해줌. 가시점 기하와 경로 추적에 사용할 임의의 수는 <a href="#43-편향">섹션 4.3</a>에서 설명할 표본 검증 알고리듬에 사용함.</p>
 </div>
 
 <div style="text-align: center" id="figure_4">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure4.jpeg" alt="Figure4">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure4.jpeg" alt="Figure4">
 <p><strong>그림 4:</strong> 알고리듬 작업 흐름. 각 프레임마다, 각 픽셀마다 다음 단계를 수행해줌: 초기 샘플링: 가시점(빨간 점)마다 임의의 방향으로 광선을 추적하여 최근접 교차점을 스크린 스페이스 초기 표본 버퍼에 저장함. 교차점의 위치, 법선과 방사 휘도, 다음 이벤트 추정 때 사용할 임의의 숫자, 픽셀의 위치와 법선을 저장함. 시간적 재사용: 초기 표본 버퍼에서의 표본과 현재 프레임에서 생성된 표본 중 하나를 임의로 선택하여 시간적 저장소 버퍼를 업데이트해줌. 시간적 재투영을 적용하여 해당 시간적 저장소를 이전 프레임으로부터 찾아냄. 공간적 재사용: 이웃 픽셀 중 임의의 한 시간적 저장소를 선택하여 공간적 저장소를 업데이트해줌. 편향을 억제하기 위해 선택한 픽셀의 깊이와 법선을 현재 픽셀의 깊이와 법선으로 비교해주어 비슷한 기하학적 특징을 갖는 픽셀을 선택함.</p>
 </div>
 
@@ -271,11 +271,11 @@ ReSTIR GI 알고리듬의 첫번째 단계는 각 가시점마다 새 표본점�
 ### 알고리듬 2: 초기 표집
 
 * **각** 픽셀 q**마다**
-    * G버퍼에서 가시점 x<sub>v</sub>와 법선 ![VisiblePointSurfaceNormal](/Images/ReStirGi/VisiblePointSurfaceNormal.png) 구함
+    * G버퍼에서 가시점 x<sub>v</sub>와 법선 ![VisiblePointSurfaceNormal](/assets/images/ReStirGi/VisiblePointSurfaceNormal.png) 구함
     * 소스 PDF p<sub>q</sub>에서 임의의 방향 &omega;<sub>i</sub>로의 광선을 표집
-    * 광선 추적하여 표본점 x<sub>s</sub>와 법선 ![SamplePointSurfaceNormal](/Images/ReStirGi/SamplePointSurfaceNormal.png)을 구함
-    * x<sub>s</sub>에서 나가는 방사 휘도 ![SamplePointOutgoingRadiance](/Images/ReStirGi/SamplePointOutgoingRadiance.png) 추정.
-    * InitialSampleBuffer[q] ← Sample(x<sub>v</sub>, ![VisiblePointSurfaceNormal](/Images/ReStirGi/VisiblePointSurfaceNormal.png), x<sub>s</sub>, ![SamplePointSurfaceNormal](/Images/ReStirGi/SamplePointSurfaceNormal.png), ![SamplePointOutgoingRadiance](/Images/ReStirGi/SamplePointOutgoingRadiance.png));
+    * 광선 추적하여 표본점 x<sub>s</sub>와 법선 ![SamplePointSurfaceNormal](/assets/images/ReStirGi/SamplePointSurfaceNormal.png)을 구함
+    * x<sub>s</sub>에서 나가는 방사 휘도 ![SamplePointOutgoingRadiance](/assets/images/ReStirGi/SamplePointOutgoingRadiance.png) 추정.
+    * InitialSampleBuffer[q] ← Sample(x<sub>v</sub>, ![VisiblePointSurfaceNormal](/assets/images/ReStirGi/VisiblePointSurfaceNormal.png), x<sub>s</sub>, ![SamplePointSurfaceNormal](/assets/images/ReStirGi/SamplePointSurfaceNormal.png), ![SamplePointOutgoingRadiance](/assets/images/ReStirGi/SamplePointOutgoingRadiance.png));
 
 ```cpp
 // ScreenSpaceReSTIR.slang
@@ -313,7 +313,7 @@ void WriteReservoir(RWStructuredBuffer<PackedGIReservoir> reservoirBuffer, uint 
 ```
 
 <div style="text-align: center" id="figure_5">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure5.jpeg" alt="Figure5">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure5.jpeg" alt="Figure5">
 <p><strong>그림 5:</strong> 다중 튕김 GI. 각 표본점 x<sub>2</sub><sup>*</sup>마다 대응하는 가시점에 산란된 방사 휘도를 경로 추적법으로 추정함. 최종 경로 정점에 연결하여 다른 가시점이 전체 경로의 기여도를 재사용할 수 있게됨.</p>
 </div>
 
@@ -323,7 +323,7 @@ void WriteReservoir(RWStructuredBuffer<PackedGIReservoir> reservoirBuffer, uint 
 
 <div id="eq_9">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetFunctionEquation.png" alt="TargetFunctionEquation"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetFunctionEquation.png" alt="TargetFunctionEquation"/></p>
  <p style="float: left; width:10%; text-align:right;">(9)</p>
 </div>
 <div style="clear: both;"></div>
@@ -332,23 +332,23 @@ void WriteReservoir(RWStructuredBuffer<PackedGIReservoir> reservoirBuffer, uint 
 
 <div id="eq_10">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/SimpleTargetFunction.png" alt="SimpleTargetFunction"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/SimpleTargetFunction.png" alt="SimpleTargetFunction"/></p>
  <p style="float: left; width:10%; text-align:right;">(10)</p>
 </div>
 <div style="clear: both;"></div>
 
 함수와 같이 단순한 목표 함수도 잘 작동은 함. 픽셀 하나에 대한 목표 함수 중 제일 좋은 것은 아니지만, 사용해보니 초기에 생성된 픽셀을 제외한 픽셀에 대해서 효과적이라는 점에서 공간 재표집을 할 때엔 유용함.
 
-초기 표본을 생성한 후에 시간적 재표집을 적용함. 이 단계에서는 각 픽셀마다 초기 표본 버퍼에서 표본 하나를 읽어온 다음, 이를 통해 [식 5](#eq_5)와 소스 PDF를 표집한 방향 p<sub>q</sub>(&omega;<sub>i</sub>)에 대한 PDF로서 사용하고, ![TargetPdf](/Images/ReStirGi/TargetPdf.png)를 [식 10](#eq_10)대로 사용하여 RIS 가중치를 구해주어 무작위로 시간적 저장소를 업데이트해줌. 시간적 재표집 의사 코드는 [알고리듬 3](#알고리듬-3-시간적-재표집)에 제시하였음.
+초기 표본을 생성한 후에 시간적 재표집을 적용함. 이 단계에서는 각 픽셀마다 초기 표본 버퍼에서 표본 하나를 읽어온 다음, 이를 통해 [식 5](#eq_5)와 소스 PDF를 표집한 방향 p<sub>q</sub>(&omega;<sub>i</sub>)에 대한 PDF로서 사용하고, ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)를 [식 10](#eq_10)대로 사용하여 RIS 가중치를 구해주어 무작위로 시간적 저장소를 업데이트해줌. 시간적 재표집 의사 코드는 [알고리듬 3](#알고리듬-3-시간적-재표집)에 제시하였음.
 
 ### 알고리듬 3: 시간적 재표집
 
 * **각** 픽셀 q**마다**
     * S ← InitialSampleBuffer[q]
     * R ← TemporalReservoirBuffer[q]
-    * w ← ![TargetPdf](/Images/ReStirGi/TargetPdf.png)<sub>q</sub>(S) / p<sub>q</sub>(S)    ([식 5](#eq_5), [식 9](#eq_9) 혹은 [식 10](#eq_10))
+    * w ← ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)<sub>q</sub>(S) / p<sub>q</sub>(S)    ([식 5](#eq_5), [식 9](#eq_9) 혹은 [식 10](#eq_10))
     * R.Update(S, w)
-    * R.W ← R.w / (R.M · ![TargetPdf](/Images/ReStirGi/TargetPdf.png)(R.z)) ([식 7](#eq_7))
+    * R.W ← R.w / (R.M · ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)(R.z)) ([식 7](#eq_7))
     * TemporalReservoirBuffer[q] ← R
 
 ```cpp
@@ -459,7 +459,7 @@ void execute(const uint2 pixel)
 
 <div id="eq_11">
  <p style="float: left; width:10%; text-align:left;"></p>
- <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/JacobianTransformation.png" alt="JacobianTransformation"/></p>
+ <p style="float: left; width:80%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/JacobianTransformation.png" alt="JacobianTransformation"/></p>
  <p style="float: left; width:10%; text-align:right;">(11)</p>
 </div>
 <div style="clear: both;"></div>
@@ -467,12 +467,12 @@ void execute(const uint2 pixel)
 이때 x<sub>1</sub><sup>q</sup>와 x<sub>2</sub><sup>q</sup>는 각각 재사용 경로의 첫번째와 두번째 정점이며, x<sub>1</sub><sup>r</sup>는 종착 픽셀으로부터의 가시점이고, &Phi;<sub>2</sub><sup>q</sup>와 &Phi;<sub>2</sub><sup>r</sup>은 벡터 x<sub>1</sub><sup>q</sup> - x<sub>2</sub><sup>q</sup>와 x<sub>1</sub><sup>r</sup> - x<sub>2</sub><sup>q</sup>가 x<sub>2</sub><sup>q</sup>에서의 법선과 이루는 각임([그림 6](#figure_6)). [그림 7](#figure_7)을 통해 이 항이 얼마나 중요한지 볼 수 있음.
 
 <div style="text-align: center" id="figure_6">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure6.jpeg" alt="Figure6">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure6.jpeg" alt="Figure6">
 <p><strong>그림 6:</strong> 만약 가시점 x<sub>1</sub><sup>q</sup>이 다른 자시점 x<sub>1</sub><sup>r</sup>에서 재사용될 표본점 x<sub>2</sub><sup>q</sup>을 생성했다면, <a href="#eq_11">식 11</a>에서의 야코비 행렬식은 x<sub>q</sub><sup>q</sup> 자체가 표본점 x<sub>2</sub><sup>q</sup>를 다른 확률로 생성했을 것이라는 사실을 고려해줌.</p>
 </div>
 
 <div style="text-align: center" id="figure_7">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure7.jpeg" alt="Figure7">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure7.jpeg" alt="Figure7">
 <p><strong>그림 7:</strong> 공간적 재표집에서 <a href="#eq_11">식 11</a>, 야코비 행렬식의 영향. 벽은 태양빛을 받아 땅바닥에 간접광을 줌. 맨 위: 빛에서 야코비 결과를 무시할 경우 땅바닥의 불연속성을 무시하고 벽과 땅이 붙은 부분에서의 빛을 과도하게 추정함. 중간: 야코비가 추가되어 위와 같은 이상한 점들이 처리됨. 맨 밑: 경로 추적을 한 실제 사진.</p>
 </div>
 
@@ -493,17 +493,17 @@ void execute(const uint2 pixel)
 8:              continue
 9:          R<sub>n</sub> ← TemporalReservoirBuffer[q<sub>n</sub>]
 10:         |J<sub>q<sub>n</sub> → q</sub>| 계산  (<a href="#eq_11">식 11</a>)  
-11:         <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>| 
-12:         <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|  
+11:         <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>| 
+12:         <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|  
 13:         if R<sub>n</sub>의 표본점이 q의 x<sub>v</sub>에서 보이지 않는다면 then
-14:             <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← 0  
-15:         R<sub>s</sub>.Merge(R<sub>n</sub>, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/>'<sub>q</sub>)
+14:             <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← 0  
+15:         R<sub>s</sub>.Merge(R<sub>n</sub>, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub>)
 16:         Q ← Q ∩ q<sub>n</sub>
 17:     Z ← 0
 18:     for each q<sub>n</sub> in Q do
-19:         if <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/><sub>q<sub>n</sub></sub> &gt; 0 then
+19:         if <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q<sub>n</sub></sub> &gt; 0 then
 20:             Z ← Z + R<sub>n</sub>.M   (편향 정정)  
-21:     R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>s</sub>.z))   (<a href="#eq_7">식 7</a>)
+21:     R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>s</sub>.z))   (<a href="#eq_7">식 7</a>)
 22:     SpatialReservoirBuffer[q] ← R<sub>s</sub>
 </code></pre>
 
@@ -723,14 +723,14 @@ void execute(const uint2 pixel)
 [그림 9](#figure_9)에서 편향 표본 재사용과 무편향 표본 재사용의 차이를 보여줌. 이 그림의 경우 목표 함수를 나가는 빛의 방사 휘도와 난반사와 정반사 성분을 포함한 BSDF 항으로 이루어져있음. 특히 그림자 영역에서 가시성의 변화 때문에 편향이 주로 나옴. 목표 함수가 광택 반사를 포함하고, 정반사 방향으로 표본을 더 주기 때문에 운 나쁘게도 복잡한 가시성 변화가 발생함. 그렇기에 의자 다리 근처에서의 광택진 바닥 쪽의 편향이 더욱 심함.
 
 <div style="text-align: center" id="figure_9">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure9.jpeg" alt="Figure9">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure9.jpeg" alt="Figure9">
 <p><strong>그림 9:</strong> 공간적 재사용에 의한 편향. 좌측: 무편향 결과. 중간: 편향된 결과. 우측: 10× 차이. 특히 그림자 영역에서 가시성의 변화 때문에 편향이 주로 나옴. 목표 함수가 광택 반사를 포함하고, 정반사 방향으로 표본을 더 주기 때문에, 의자 다리 근처에서의 광택진 바닥 쪽의 편향이 더욱 심함.</p>
 </div>
 
 공간적 재사용에 의한 편향을 줄이는 다른 방법은 공간적 저장소가 [알고리듬 4](#알고리듬-4-공간적-재표집)에서처럼 근처 픽셀의 공간적 저장소에서 작동하는 것이 아닌, 근처 픽셀의 시간적 저장소에서만 작동하도록 해주는 것임. 이러면 편향된 표본을 여러번 재표집하여 편향이 누적되는 현상을 막을 수 있음. 하지만 공간적 저장소만 사용할 경우 새롭게 시야에 등장한(즉, 가려지지 않은) 픽셀이 충분한 표본을 수집할 수 없게 될 수도 있어 가시적인 노이즈가 발생할 수 있음. 이 경우 입력 표본의 수가 적은 공간 저장소의 경우 근처 공간 저장소를 재사용하여 수렴 속도를 향상시킴. [그림 10](#figure_10)에서 전체 데이터 흐름을 볼 수 있음. 
 
 <div style="text-align: center" id="figure_10">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/ReStirGi/Figure10.jpeg" alt="Figure10">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure10.jpeg" alt="Figure10">
 <p><strong>그림 10:</strong> ReSTIR GI의 데이터 흐름도. 매 프레임마다 각 픽셀의 시간적 저장소가 새롭게 생성된 표본을 받아들임. 언제나 다른 공간적 저장소를 재사용하는 대신 각 공간 저장소는 오로지 근처 픽셀의 시간 저장소를 재사용하여 편향을 억제함. 표본 수가 적으면 공간 저장소는 다른 공간 저장소를 재사용하여 수렴을 부스팅해줌.</p>
 </div>
 

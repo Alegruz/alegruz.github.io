@@ -2367,7 +2367,7 @@ if (GI == 0)
 
 ## Light Pre-Pass Renderer
 
-![LightPrePassRenderer](/Images/DeferredShading/LightPrePassRenderer.png)<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+![LightPrePassRenderer](/assets/images/DeferredShading/LightPrePassRenderer.png)<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
 * Store depth / normal<sup>[EngelShaderX709](#EngelShaderX709)</sup>
   * Normal: R8G8B8A8
@@ -2458,8 +2458,8 @@ if (GI == 0)
 * near<sub>0</sub> = near (first subdivision)
 * h<sub>0</sub> = (2 near tan &theta;) / S<sub>y</sub> (S<sub>y</sub> = number of subdivisions in the Y direction, FoV = 2&theta;)
 * near<sub>k</sub> = near(1 + (2 tan &theta;) / S<sub>y</sub>)<sup>k</sup>
-* ![ClusterK](/Images/DeferredShading/ClusterK.png)
-* Cluster key tuple ![ClusterKey](/Images/DeferredShading/ClusterKey.png)
+* ![ClusterK](/assets/images/DeferredShading/ClusterK.png)
+* Cluster key tuple ![ClusterKey](/assets/images/DeferredShading/ClusterKey.png)
 
 #### Finding Unique Clusters
 

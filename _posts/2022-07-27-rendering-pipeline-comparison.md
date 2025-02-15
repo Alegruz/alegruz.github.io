@@ -41,57 +41,57 @@ lang: "en"
 
 ### Frame Duration
 
-![FrameDurationBarAll](/Images/DeferredShading/FrameDurationBarAll.png)
+![FrameDurationBarAll](/assets/images/DeferredShading/FrameDurationBarAll.png)
 
-![FrameDurationBarDeferred](/Images/DeferredShading/FrameDurationBarDeferred.png)
+![FrameDurationBarDeferred](/assets/images/DeferredShading/FrameDurationBarDeferred.png)
 
-![FrameDurationBarDeferredNoDefault](/Images/DeferredShading/FrameDurationBarDeferredNoDefault.png)
+![FrameDurationBarDeferredNoDefault](/assets/images/DeferredShading/FrameDurationBarDeferredNoDefault.png)
 
-![FrameDurationBarForward](/Images/DeferredShading/FrameDurationBarForward.png)
+![FrameDurationBarForward](/assets/images/DeferredShading/FrameDurationBarForward.png)
 
-![FrameDurationBarForwardNoDefault](/Images/DeferredShading/FrameDurationBarForwardNoDefault.png)
+![FrameDurationBarForwardNoDefault](/assets/images/DeferredShading/FrameDurationBarForwardNoDefault.png)
 
 ### Light Phase Duration
 
-![LightPhaseDurationBarAll](/Images/DeferredShading/LightPhaseDurationBarAll.png)
+![LightPhaseDurationBarAll](/assets/images/DeferredShading/LightPhaseDurationBarAll.png)
 
-![LightPhaseDurationBarAllNoDefault](/Images/DeferredShading/LightPhaseDurationBarAllNoDefault.png)
+![LightPhaseDurationBarAllNoDefault](/assets/images/DeferredShading/LightPhaseDurationBarAllNoDefault.png)
 
-![LightPhaseDurationBarTiled](/Images/DeferredShading/LightPhaseDurationBarTiled.png)
+![LightPhaseDurationBarTiled](/assets/images/DeferredShading/LightPhaseDurationBarTiled.png)
 
-![LightPhaseDurationBarClustered](/Images/DeferredShading/LightPhaseDurationBarClustered.png)
+![LightPhaseDurationBarClustered](/assets/images/DeferredShading/LightPhaseDurationBarClustered.png)
 
 ### Render Color Duration
 
-![RenderColorDurationBarAll](/Images/DeferredShading/RenderColorDurationBarAll.png)
+![RenderColorDurationBarAll](/assets/images/DeferredShading/RenderColorDurationBarAll.png)
 
-![RenderColorDurationBarDeferred](/Images/DeferredShading/RenderColorDurationBarDeferred.png)
+![RenderColorDurationBarDeferred](/assets/images/DeferredShading/RenderColorDurationBarDeferred.png)
 
-![RenderColorDurationBarDeferredNoDefault](/Images/DeferredShading/RenderColorDurationBarDeferredNoDefault.png)
+![RenderColorDurationBarDeferredNoDefault](/assets/images/DeferredShading/RenderColorDurationBarDeferredNoDefault.png)
 
-![RenderColorDurationBarForward](/Images/DeferredShading/RenderColorDurationBarForward.png)
+![RenderColorDurationBarForward](/assets/images/DeferredShading/RenderColorDurationBarForward.png)
 
-![RenderColorDurationBarForwardNoDefault](/Images/DeferredShading/RenderColorDurationBarForwardNoDefault.png)
+![RenderColorDurationBarForwardNoDefault](/assets/images/DeferredShading/RenderColorDurationBarForwardNoDefault.png)
 
-![RenderColorDurationBarTiled](/Images/DeferredShading/RenderColorDurationBarTiled.png)
+![RenderColorDurationBarTiled](/assets/images/DeferredShading/RenderColorDurationBarTiled.png)
 
-![RenderColorDurationBarTiledNoShading](/Images/DeferredShading/RenderColorDurationBarTiledNoShading.png)
+![RenderColorDurationBarTiledNoShading](/assets/images/DeferredShading/RenderColorDurationBarTiledNoShading.png)
 
-![RenderColorDurationBarClustered](/Images/DeferredShading/RenderColorDurationBarClustered.png)
+![RenderColorDurationBarClustered](/assets/images/DeferredShading/RenderColorDurationBarClustered.png)
 
 ### Tile / Cluster Assignment Duration
 
-![TileClusterAssignmentDurationBarAll](/Images/DeferredShading/TileClusterAssignmentDurationBarAll.png)
+![TileClusterAssignmentDurationBarAll](/assets/images/DeferredShading/TileClusterAssignmentDurationBarAll.png)
 
-![TileClusterAssignmentDurationBarDeferred](/Images/DeferredShading/TileClusterAssignmentDurationBarDeferred.png)
+![TileClusterAssignmentDurationBarDeferred](/assets/images/DeferredShading/TileClusterAssignmentDurationBarDeferred.png)
 
-![TileClusterAssignmentDurationBarDeferredNoShading](/Images/DeferredShading/TileClusterAssignmentDurationBarDeferredNoShading.png)
+![TileClusterAssignmentDurationBarDeferredNoShading](/assets/images/DeferredShading/TileClusterAssignmentDurationBarDeferredNoShading.png)
 
-![TileClusterAssignmentDurationBarForward](/Images/DeferredShading/TileClusterAssignmentDurationBarForward.png)
+![TileClusterAssignmentDurationBarForward](/assets/images/DeferredShading/TileClusterAssignmentDurationBarForward.png)
 
-![TileClusterAssignmentDurationBarTiled](/Images/DeferredShading/TileClusterAssignmentDurationBarTiled.png)
+![TileClusterAssignmentDurationBarTiled](/assets/images/DeferredShading/TileClusterAssignmentDurationBarTiled.png)
 
-![TileClusterAssignmentDurationBarClustered](/Images/DeferredShading/TileClusterAssignmentDurationBarClustered.png)
+![TileClusterAssignmentDurationBarClustered](/assets/images/DeferredShading/TileClusterAssignmentDurationBarClustered.png)
 
 ## Bandwidth
 
@@ -679,73 +679,73 @@ lang: "en"
 
 ### Frame Duration
 
-![FrameDurationAll](/Images/DeferredShading/FrameDurationAll.png)
+![FrameDurationAll](/assets/images/DeferredShading/FrameDurationAll.png)
 
-![FrameDurationDeferred](/Images/DeferredShading/FrameDurationDeferred.png)
+![FrameDurationDeferred](/assets/images/DeferredShading/FrameDurationDeferred.png)
 
-![FrameDurationDeferredNoDefault](/Images/DeferredShading/FrameDurationDeferredNoDefault.png)
+![FrameDurationDeferredNoDefault](/assets/images/DeferredShading/FrameDurationDeferredNoDefault.png)
 
-![FrameDurationForward](/Images/DeferredShading/FrameDurationForward.png)
+![FrameDurationForward](/assets/images/DeferredShading/FrameDurationForward.png)
 
-![FrameDurationForwardNoDefault](/Images/DeferredShading/FrameDurationForwardNoDefault.png)
+![FrameDurationForwardNoDefault](/assets/images/DeferredShading/FrameDurationForwardNoDefault.png)
 
-![FrameDurationTiled](/Images/DeferredShading/FrameDurationTiled.png)
+![FrameDurationTiled](/assets/images/DeferredShading/FrameDurationTiled.png)
 
-![FrameDurationTiled2_5D](/Images/DeferredShading/FrameDurationTiled2_5D.png)
+![FrameDurationTiled2_5D](/assets/images/DeferredShading/FrameDurationTiled2_5D.png)
 
-![FrameDurationTiled2_5DAABB](/Images/DeferredShading/FrameDurationTiled2_5DAABB.png)
+![FrameDurationTiled2_5DAABB](/assets/images/DeferredShading/FrameDurationTiled2_5DAABB.png)
 
-![FrameDurationClustered](/Images/DeferredShading/FrameDurationClustered.png)
+![FrameDurationClustered](/assets/images/DeferredShading/FrameDurationClustered.png)
 
 ### Light Phase Duration
 
-![LightPhaseDurationDeferred](/Images/DeferredShading/LightPhaseDurationDeferred.png)
+![LightPhaseDurationDeferred](/assets/images/DeferredShading/LightPhaseDurationDeferred.png)
 
-![LightPhaseDurationDeferredNoDefault](/Images/DeferredShading/LightPhaseDurationDeferredNoDefault.png)
+![LightPhaseDurationDeferredNoDefault](/assets/images/DeferredShading/LightPhaseDurationDeferredNoDefault.png)
 
-![LightPhaseDurationTiled](/Images/DeferredShading/LightPhaseDurationTiled.png)
+![LightPhaseDurationTiled](/assets/images/DeferredShading/LightPhaseDurationTiled.png)
 
-![LightPhaseDurationTiled2_5D](/Images/DeferredShading/LightPhaseDurationTiled2_5D.png)
+![LightPhaseDurationTiled2_5D](/assets/images/DeferredShading/LightPhaseDurationTiled2_5D.png)
 
-![LightPhaseDurationTiled2_5DAABB](/Images/DeferredShading/LightPhaseDurationTiled2_5DAABB.png)
+![LightPhaseDurationTiled2_5DAABB](/assets/images/DeferredShading/LightPhaseDurationTiled2_5DAABB.png)
 
-![LightPhaseDurationClustered](/Images/DeferredShading/LightPhaseDurationClustered.png)
+![LightPhaseDurationClustered](/assets/images/DeferredShading/LightPhaseDurationClustered.png)
 
 ### Render Color Duration
 
-![RenderColorDurationAll](/Images/DeferredShading/RenderColorDurationAll.png)
+![RenderColorDurationAll](/assets/images/DeferredShading/RenderColorDurationAll.png)
 
-![RenderColorDurationDeferred](/Images/DeferredShading/RenderColorDurationDeferred.png)
+![RenderColorDurationDeferred](/assets/images/DeferredShading/RenderColorDurationDeferred.png)
 
-![RenderColorDurationDeferredNoDefault](/Images/DeferredShading/RenderColorDurationDeferredNoDefault.png)
+![RenderColorDurationDeferredNoDefault](/assets/images/DeferredShading/RenderColorDurationDeferredNoDefault.png)
 
-![RenderColorDurationForward](/Images/DeferredShading/RenderColorDurationForward.png)
+![RenderColorDurationForward](/assets/images/DeferredShading/RenderColorDurationForward.png)
 
-![RenderColorDurationForwardNoDefault](/Images/DeferredShading/RenderColorDurationForwardNoDefault.png)
+![RenderColorDurationForwardNoDefault](/assets/images/DeferredShading/RenderColorDurationForwardNoDefault.png)
 
-![RenderColorDurationTiled](/Images/DeferredShading/RenderColorDurationTiled.png)
+![RenderColorDurationTiled](/assets/images/DeferredShading/RenderColorDurationTiled.png)
 
-![RenderColorDurationTiled2_5D](/Images/DeferredShading/RenderColorDurationTiled2_5D.png)
+![RenderColorDurationTiled2_5D](/assets/images/DeferredShading/RenderColorDurationTiled2_5D.png)
 
-![RenderColorDurationTiled2_5DAABB](/Images/DeferredShading/RenderColorDurationTiled2_5DAABB.png)
+![RenderColorDurationTiled2_5DAABB](/assets/images/DeferredShading/RenderColorDurationTiled2_5DAABB.png)
 
-![RenderColorDurationClustered](/Images/DeferredShading/RenderColorDurationClustered.png)
+![RenderColorDurationClustered](/assets/images/DeferredShading/RenderColorDurationClustered.png)
 
 ### Tile / Cluster Assignment Duration
 
-![TileClusterAssignmentDurationAll](/Images/DeferredShading/TileClusterAssignmentDurationAll.png)
+![TileClusterAssignmentDurationAll](/assets/images/DeferredShading/TileClusterAssignmentDurationAll.png)
 
-![TileClusterAssignmentDurationDeferred](/Images/DeferredShading/TileClusterAssignmentDurationDeferred.png)
+![TileClusterAssignmentDurationDeferred](/assets/images/DeferredShading/TileClusterAssignmentDurationDeferred.png)
 
-![TileClusterAssignmentDurationForward](/Images/DeferredShading/TileClusterAssignmentDurationForward.png)
+![TileClusterAssignmentDurationForward](/assets/images/DeferredShading/TileClusterAssignmentDurationForward.png)
 
-![TileClusterAssignmentDurationTiled](/Images/DeferredShading/TileClusterAssignmentDurationTiled.png)
+![TileClusterAssignmentDurationTiled](/assets/images/DeferredShading/TileClusterAssignmentDurationTiled.png)
 
-![TileClusterAssignmentDurationTiled2_5D](/Images/DeferredShading/TileClusterAssignmentDurationTiled2_5D.png)
+![TileClusterAssignmentDurationTiled2_5D](/assets/images/DeferredShading/TileClusterAssignmentDurationTiled2_5D.png)
 
-![TileClusterAssignmentDurationTiled2_5DAABB](/Images/DeferredShading/TileClusterAssignmentDurationTiled2_5DAABB.png)
+![TileClusterAssignmentDurationTiled2_5DAABB](/assets/images/DeferredShading/TileClusterAssignmentDurationTiled2_5DAABB.png)
 
-![TileClusterAssignmentDurationClustered](/Images/DeferredShading/TileClusterAssignmentDurationClustered.png)
+![TileClusterAssignmentDurationClustered](/assets/images/DeferredShading/TileClusterAssignmentDurationClustered.png)
 
 ## GBuffer: Fat Buffer vs Thin Buffer<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
@@ -755,19 +755,19 @@ lang: "en"
 
 #### Frame Duration
 
-![NormalCompressionFrameDurationNoDefault](/Images/DeferredShading/NormalCompressionFrameDurationNoDefault.png)
+![NormalCompressionFrameDurationNoDefault](/assets/images/DeferredShading/NormalCompressionFrameDurationNoDefault.png)
 
 #### Render Color Duration
 
-![NormalCompressionRenderColorDurationNoDefault](/Images/DeferredShading/NormalCompressionRenderColorDurationNoDefault.png)
+![NormalCompressionRenderColorDurationNoDefault](/assets/images/DeferredShading/NormalCompressionRenderColorDurationNoDefault.png)
 
 #### Geometry Phase Duration
 
-![NormalCompressionGeometryPhaseDurationNoDefault](/Images/DeferredShading/NormalCompressionGeometryPhaseDurationNoDefault.png)
+![NormalCompressionGeometryPhaseDurationNoDefault](/assets/images/DeferredShading/NormalCompressionGeometryPhaseDurationNoDefault.png)
 
 #### Lighting Phase Duration
 
-![NormalCompressionLightingPhaseDurationNoDefault](/Images/DeferredShading/NormalCompressionLightingPhaseDurationNoDefault.png)
+![NormalCompressionLightingPhaseDurationNoDefault](/assets/images/DeferredShading/NormalCompressionLightingPhaseDurationNoDefault.png)
 
 ## False Positive Rate
 

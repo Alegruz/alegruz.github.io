@@ -81,7 +81,7 @@ Modern Forward Shading:<sup>[Olsson15](#Olsson15)</sup>
 
 Construct depth-only pass (Z pre-pass) first to fill the z buffer with depth data, and at the same time fill the z culling. Then render the scene using this occlusion data to prevent pixel overdraw.<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
-![ZPrePassRenderer](/Images/DeferredShading/ZPrePassRenderer.png)<sup>[EngelShaderX709](#EngelShaderX709)</sup>
+![ZPrePassRenderer](/assets/images/DeferredShading/ZPrePassRenderer.png)<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
 A naïve multi-light solution that accompanies a Z pre-pass renderer design pattern would just render a limited number of lights in the pixel shader.<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
@@ -589,7 +589,7 @@ float4 PS( PSInput i ) : SV_TARGET
 
 ### Render Passes<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
-![Forward+RenderPasses](/Images/DeferredShading/Forward%2BRenderPasses.png)
+![Forward+RenderPasses](/assets/images/DeferredShading/Forward%2BRenderPasses.png)
 
 #### One-Bounce Indirect Illumination<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
@@ -3225,7 +3225,7 @@ viud DepthBoundsCS( uint3 globalIdx : SV_DispatchThreadID,
 
 This is the second rendering pass where we store light properties of all lights in a light buffer(aka L-Buffer).<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
-![LightPrePassRenderer](/Images/DeferredShading/LightPrePassRenderer.png)
+![LightPrePassRenderer](/assets/images/DeferredShading/LightPrePassRenderer.png)
 <sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
 Compared to a deferred renderer, the light pre-pass renderer offers more flexibility regarding material implementations. Compared to a Z pre-pass renderer, it offers less flexibility but a flexible and fast multi-light solution.<sup>[EngelShaderX709](#EngelShaderX709)</sup>
@@ -3394,9 +3394,9 @@ for (uint sl = 0; sl < spot_light_count; ++sl)    // Spot lights
     * 2&theta;: field of view
     * S<sub>y</sub>: number of subdivisions in the Y direction
   * near<sub>k</sub> = near ( 1 + 2 tan &theta; / S<sub>y</sub>)<sup>k</sup>
-  * ![ClusterK](/Images/DeferredShading/ClusterK.png)
+  * ![ClusterK](/assets/images/DeferredShading/ClusterK.png)
 * Cluster key tuple (i, j, k):<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
-  * ![ClusterKey](/Images/DeferredShading/ClusterKey.png)
+  * ![ClusterKey](/assets/images/DeferredShading/ClusterKey.png)
   * Can be extended with a number of bits that encode a quantized normal direction
   * i, j = 2D tile id - `gl_FragCoord.xy`<sup>[Olsson15](#Olsson15)</sup>
   * k = &approx;log(view space z)<sup>[Olsson15](#Olsson15)</sup>
@@ -3542,7 +3542,7 @@ In the sorting approach, we explicitly store this index for each pixel. When the
 
 #### Cluster Key Packing<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
 
-Allocate 8 bits to each i and j components, which allows up to 8192 &times; 8192 size RTs. Depth index k is determined from settings for the near and far planes and ![ClusterK](/Images/DeferredShading/ClusterK.png). 
+Allocate 8 bits to each i and j components, which allows up to 8192 &times; 8192 size RTs. Depth index k is determined from settings for the near and far planes and ![ClusterK](/assets/images/DeferredShading/ClusterK.png). 
 
 The paper uses 10 bits, 4 bits for the actually depth data, and 6 bits for the optional normal clustering.
 

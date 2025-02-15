@@ -31,7 +31,7 @@ lang: "ko"
 
 # 2. 배경 지식
 
-ReSTIR는 직접광만 처리. 픽셀마다 M 개의 표본 x<sub>i</sub>를 간단한 분포 p로부터 우선 뽑음. 여기서 좀 더 고퀄리티의 분포 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)에 따라 한 번 더 표집, 즉 재표집을 하는 것임. 보통 이때 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)는 실제 셰이딩에 사용할 조명 함수 f와 최대한 비슷하게 해줌. 이때 가시성까지 고려해주면 비용이 비싸니까 가시성만 없는, 즉 그림자 없는 조명이라 부르는 것으로 ![TargetPdf](/Images/ReStirGi/TargetPdf.png)를 설정함. 이를 통해 픽셀마다 초기 저장소를 구축할 수 있음.
+ReSTIR는 직접광만 처리. 픽셀마다 M 개의 표본 x<sub>i</sub>를 간단한 분포 p로부터 우선 뽑음. 여기서 좀 더 고퀄리티의 분포 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)에 따라 한 번 더 표집, 즉 재표집을 하는 것임. 보통 이때 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)는 실제 셰이딩에 사용할 조명 함수 f와 최대한 비슷하게 해줌. 이때 가시성까지 고려해주면 비용이 비싸니까 가시성만 없는, 즉 그림자 없는 조명이라 부르는 것으로 ![TargetPdf](/assets/images/ReStirGi/TargetPdf.png)를 설정함. 이를 통해 픽셀마다 초기 저장소를 구축할 수 있음.
 
 이 저장소들을 시공간적으로 합쳐주어 이웃 픽셀 간의 상관관계를 효율적으로 사용할 수 있게 해줌.
 

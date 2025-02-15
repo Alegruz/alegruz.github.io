@@ -114,7 +114,7 @@ The higher-order term, namely the shear stress divergence ∇ ⋅ *τ*, has simp
 
 Let's now rearrange the equation into a SPH terminology:
 
-![NavierStokesEquation](/Images/Sph/NavierStokesEquation.png)<sup>[15](#footnote_15)</sup>
+![NavierStokesEquation](/assets/images/Sph/NavierStokesEquation.png)<sup>[15](#footnote_15)</sup>
 
 In order to calculate the left-side term, then we need to understand each terms in the right-side.
 
@@ -147,57 +147,57 @@ We can deep dive into all the discussions and theories about dirac functions and
 
 If there exists a function A(**x**<sub>i</sub>), the function can be discretized into:
 
-![SphDiscretization](/Images/Sph/SphDiscretization.png)
+![SphDiscretization](/assets/images/Sph/SphDiscretization.png)
 
 The discretization of differential operator would be:
 
-![SphDifferentialOperatorDiscretization](/Images/Sph/SphDifferentialOperatorDiscretization.png)
+![SphDifferentialOperatorDiscretization](/assets/images/Sph/SphDifferentialOperatorDiscretization.png)
 
 For improved readability, we will drop the second argument of the kernel function and use the abbreviation: 
 
-![KernelFunctionAbbreviation](/Images/Sph/SKernelFunctionAbbreviation.gif)
+![KernelFunctionAbbreviation](/assets/images/Sph/SKernelFunctionAbbreviation.gif)
 
 In order to ensure symmetry, the equation is then rearranged into:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](/Images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
 
 The discretization of laplace operator would be:
 
-![SphLaplaceOperatorDiscretization](/Images/Sph/SphLaplaceOperatorDiscretization.png)
+![SphLaplaceOperatorDiscretization](/assets/images/Sph/SphLaplaceOperatorDiscretization.png)
 
 In order to cope with very poor estimate of the 2<sup>nd</sup>-order differential, Brookshaw propositioned an improved discrete operator for the Laplacian:
 
-![SphLaplaceOperatorDiscretizationBrookshaw](/Images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png)
+![SphLaplaceOperatorDiscretizationBrookshaw](/assets/images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png)
 
 However, the resulting 2<sup>nd</sup>-order derivatives has problems that in the context of physics simulations, the forces derived using this operator are not conserving momentum. By a little bit of mathematical magic, the formula can be rearranged into:
 
-![SphLaplaceOperatorDiscretizationImproved](/Images/Sph/SphLaplaceOperatorDiscretizationImproved.png)
+![SphLaplaceOperatorDiscretizationImproved](/assets/images/Sph/SphLaplaceOperatorDiscretizationImproved.png)
 
 ##### Kernel Functions
 
 Images and equations from [Staubach. 2010.]<sup>[16](#footnote_16)</sup>.
 
 * 6th degree polynomial kernel (default kernel)
-    * ![Poly6](/Images/Sph/Poly6.png)
-    * ![Poly6Gradient](/Images/Sph/Poly6Gradient.png)
-    * ![Poly6Laplacian](/Images/Sph/Poly6Laplacian.png)
-    * ![Poly6Graph](/Images/Sph/Poly6Graph.png)
+    * ![Poly6](/assets/images/Sph/Poly6.png)
+    * ![Poly6Gradient](/assets/images/Sph/Poly6Gradient.png)
+    * ![Poly6Laplacian](/assets/images/Sph/Poly6Laplacian.png)
+    * ![Poly6Graph](/assets/images/Sph/Poly6Graph.png)
 * Spiky kernel (pressure kernel)
-    * ![Spiky](/Images/Sph/Spiky.png)
-    * ![SpikyGradient](/Images/Sph/SpikyGradient.png)
-    * ![SpikyLaplacian](/Images/Sph/SpikyLaplacian.png)
-    * ![SpikyGraph](/Images/Sph/SpikyGraph.png)
+    * ![Spiky](/assets/images/Sph/Spiky.png)
+    * ![SpikyGradient](/assets/images/Sph/SpikyGradient.png)
+    * ![SpikyLaplacian](/assets/images/Sph/SpikyLaplacian.png)
+    * ![SpikyGraph](/assets/images/Sph/SpikyGraph.png)
 * Viscosity kernel
-    * ![Viscosity](/Images/Sph/Viscosity.png)
-    * ![ViscosityGradient](/Images/Sph/ViscosityGradient.png)
-    * ![ViscosityLaplacian](/Images/Sph/ViscosityLaplacian.png)
-    * ![ViscosityGraph](/Images/Sph/ViscosityGraph.png)
+    * ![Viscosity](/assets/images/Sph/Viscosity.png)
+    * ![ViscosityGradient](/assets/images/Sph/ViscosityGradient.png)
+    * ![ViscosityLaplacian](/assets/images/Sph/ViscosityLaplacian.png)
+    * ![ViscosityGraph](/assets/images/Sph/ViscosityGraph.png)
 
 #### Mass Density Estimation
 
-Using ![SphDifferentialOperatorDiscretization](/Images/Sph/SphDifferentialOperatorDiscretization.png), the density field at positionition **x**<sub>i</sub> results in:
+Using ![SphDifferentialOperatorDiscretization](/assets/images/Sph/SphDifferentialOperatorDiscretization.png), the density field at positionition **x**<sub>i</sub> results in:
 
-![MassDensityFunction](/Images/Sph/MassDensityFunction.png)
+![MassDensityFunction](/assets/images/Sph/MassDensityFunction.png)
 
 ### Simple Fluid Simulator<sup>[15](#footnote_15)</sup>
 
@@ -872,7 +872,7 @@ In order to approximate the Laplacian of the velocityocity field we
 combine an SPH derivative with a finite difference derivative which
 yields the following equation<sup>[17](#footnote_17)</sup>:
 
-![MonaghanSphDerivative](/Images/Sph/MonaghanSphDerivative.png)
+![MonaghanSphDerivative](/assets/images/Sph/MonaghanSphDerivative.png)
 
 where **x**<sub>ij</sub> = **x**<sub>i</sub> − **x**<sub>j</sub>, **v**<sub>ij</sub> = **v**<sub>i</sub> − **v**<sub>j</sub> and *d* is the number of spatial dimensions.
 
@@ -1031,7 +1031,7 @@ Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -1/ρ ∇<i>p
 
 Discretization of differential operator:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](/Images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
 
 As for state equations, it requires density values, thus it would be efficient to compute them with densities altogether:
 

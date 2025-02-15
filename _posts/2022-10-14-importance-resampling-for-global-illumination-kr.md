@@ -47,11 +47,11 @@ Rubin에 의해 1987년에 처음 등장한 개념이다.
 > 2. 각 표본의 가중치 w<sub>j</sub>를 계산
 > 3. 가중치 <w<sub>1</sub>, &hellip;, w<sub>M</sub>>에 비례한 확률로 **X**로부터 한 표본 Y를 뽑음
 
-이때 가중치를 ![Weight](/Images/ResampledImportanceSampling/Weight.png)라는 함수로 두고 Y라는 표본을 뽑는다면, 이 Y는 g에 근사한 분포를 띨 것이다. 간단히 말하면 source 분포 p에서 표본을 뽑고, 여기서 한 번 "필터링"을 거쳐서 새로 Y를 뽑는데, 이때 Y가 g에 근사하여 분포하도록 필터링을 해주는 것이다.
+이때 가중치를 ![Weight](/assets/images/ResampledImportanceSampling/Weight.png)라는 함수로 두고 Y라는 표본을 뽑는다면, 이 Y는 g에 근사한 분포를 띨 것이다. 간단히 말하면 source 분포 p에서 표본을 뽑고, 여기서 한 번 "필터링"을 거쳐서 새로 Y를 뽑는데, 이때 Y가 g에 근사하여 분포하도록 필터링을 해주는 것이다.
 
 이때 M의 값은 일종의 분포 보간 변수로 생각할 수 있다. M = 1이라는 것은 사실상 Y가 p에 대한 분포를 가진다는 뜻이고, M → ∞이면 Y의 분포가 g에 다가갈 것이다. 이때 M의 개수는 유한하므로 M 개를 통한 근사에 의해 발생하는 편향을 줄이려면 충분히 큰 M 값을 사용해야한다.
 
-![Figure1](/Images/ResampledImportanceSampling/Figure1.png)
+![Figure1](/assets/images/ResampledImportanceSampling/Figure1.png)
 
 위의 그림의 경우 여러 M 값들에 대해 p가 항등 분포이고, g ∝ cos(&theta;) + sin<sup>4</sup>(6&theta;)일 때 Y의 분포를 나타낸 그림이다.
 
@@ -61,21 +61,21 @@ Rubin에 의해 1987년에 처음 등장한 개념이다.
 
 예를 들어 어떤 함수 f(x)의 적분값 I를 구하려고 한다고 가정해보자:
 
-![IntegralIOfFunctionF](/Images/ResampledImportanceSampling/IntegralIOfFunctionF.png)
+![IntegralIOfFunctionF](/assets/images/ResampledImportanceSampling/IntegralIOfFunctionF.png)
 
 이때 우리에겐 당장 표집을 할 수 있으나 f를 잘 근사하지는 못하는 source PDF p와 f를 잘 근사하지만 정규화가 되어있지 않거나 표집하기 어려운 sampling PDF g, 두 PDF가 있다고 가정하자. 원래 중요도 표집의 경우엔 p 하나 밖에 못 쓰지만, 이걸 일반화하여 g를 추가하여 추정을 더 잘 할 수 있도록 할 수 있다. RIS는 g에 근사하여 표본을 뽑는 중요도 재표집을 사용하여 g를 무편향적으로 사용할 수 있다.
 
 중요도 재표집 과정에서 표본 집합 **X**로부터 얻은 Y가 주어졌다면, RIS 추정량을 일종의 가중치 중요도 표집의 형태로 정리할 수 있다:
 
-![RisInWeightedImportanceSamplingForm](/Images/ResampledImportanceSampling/RisInWeightedImportanceSamplingForm.png)
+![RisInWeightedImportanceSamplingForm](/assets/images/ResampledImportanceSampling/RisInWeightedImportanceSamplingForm.png)
 
 이때 가중치 함수 w는 g가 정규화 되어있지 않다는 점, 그리고 Y가 g에만 근사한다는 점을 고려하여 선택해야 한다. 이에 적합한 w는 놀랍게도 매우 간단한데, 그냥 재표집 단계에서 얻은 가중치들의 평균이다:
 
-![WeightingFunctionW](/Images/ResampledImportanceSampling/WeightingFunctionW.png)
+![WeightingFunctionW](/assets/images/ResampledImportanceSampling/WeightingFunctionW.png)
 
 위의 두 방정식을 합치면 RIS 추정량을 얻게 된다:
 
-![RisEstimator](/Images/ResampledImportanceSampling/RisEstimator.png)
+![RisEstimator](/assets/images/ResampledImportanceSampling/RisEstimator.png)
 
 M = 1이 되면 그냥 일반 중요도 표집이 될 것이다.
 

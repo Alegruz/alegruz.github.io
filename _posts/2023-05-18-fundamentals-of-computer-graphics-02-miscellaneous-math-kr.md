@@ -222,9 +222,9 @@ float shade = integrate(cos()*f*(), unit-hemisphere)
 float weightedShade = integrate((1/pi)*cos()*f*(), unit-hemisphere) // integrate(cos(), unit-hemisphere) = pi
 ```
 
-![SolidAngleIntegration](/Images/FundamentalOfComputerGraphics/SolidAngleIntegration.png)
+![SolidAngleIntegration](/assets/images/FundamentalOfComputerGraphics/SolidAngleIntegration.png)
 
-![SolidAngleSphericalCoordinatesIntegration](/Images/FundamentalOfComputerGraphics/SolidAngleSphericalCoordinatesIntegration.png)
+![SolidAngleSphericalCoordinatesIntegration](/assets/images/FundamentalOfComputerGraphics/SolidAngleSphericalCoordinatesIntegration.png)
 
 ## 2.6 밀도 함수density function
 

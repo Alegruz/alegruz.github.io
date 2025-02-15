@@ -109,25 +109,25 @@ vectorization: <a href="//commons.wikimedia.org/wiki/User:Wjh31" title="User:Wjh
 
 결국 렌더링을 해서 구하려는 것은 광휘radiance임. 지금까지는 *반사 방정식reflectance equation*으로 구했음:
 
-![ReflectanceEquation](/Images/GlobalIllumination/ReflectanceEquation.svg)
+![ReflectanceEquation](/assets/images/GlobalIllumination/ReflectanceEquation.svg)
 
-![ReflectanceEquationImage](/Images/GlobalIllumination/ReflectanceEquationImage.png)
+![ReflectanceEquationImage](/assets/images/GlobalIllumination/ReflectanceEquationImage.png)
 
 ### 렌더링 방정식
 
 사실 반사 방정식은 렌더링 방정식의 한 특수한 경우임.
 
-![RenderingEquation](/Images/GlobalIllumination/RenderingEquation.png)
+![RenderingEquation](/assets/images/GlobalIllumination/RenderingEquation.png)
 
-여기서 ![EmittedRadiance](/Images/GlobalIllumination/EmittedRadiance.png)은 표면 위의 한 점 **p**에서 **v** 방향으로 발광하는 방사 휘도를 의미함.
+여기서 ![EmittedRadiance](/assets/images/GlobalIllumination/EmittedRadiance.png)은 표면 위의 한 점 **p**에서 **v** 방향으로 발광하는 방사 휘도를 의미함.
 
-![IncomingRadianceIsOutgoingRadiance](/Images/GlobalIllumination/IncomingRadianceIsOutgoingRadiance.png)
+![IncomingRadianceIsOutgoingRadiance](/assets/images/GlobalIllumination/IncomingRadianceIsOutgoingRadiance.png)
 
-이때 위의 식처럼 결국 **p** 위치에서 방향 **l**로 들어오는 방사 휘도는 같은 지점에서 반대 방향 **-l**으로 나가는 방사 휘도와 같음. 여기서 함수 ![RayCastingFunction](/Images/GlobalIllumination/RayCastingFunction.png)를 *광선 투사 함수ray casting function*이라 부름.
+이때 위의 식처럼 결국 **p** 위치에서 방향 **l**로 들어오는 방사 휘도는 같은 지점에서 반대 방향 **-l**으로 나가는 방사 휘도와 같음. 여기서 함수 ![RayCastingFunction](/assets/images/GlobalIllumination/RayCastingFunction.png)를 *광선 투사 함수ray casting function*이라 부름.
 
-렌더링 방정식의 의미 자체는 매우 단순함. **p**라는 표면 위의 지점을 셰이딩해주기 위해서는 **p**를 떠나 시점 방향 **v**로 가는 나가는 방사 휘도를 구해주면 됨. 이 값은 결국 발광 방사 휘도 ![EmittedRadiance](/Images/GlobalIllumination/EmittedRadiance.png)에 반사된 방사 휘도를 더한 값임.
+렌더링 방정식의 의미 자체는 매우 단순함. **p**라는 표면 위의 지점을 셰이딩해주기 위해서는 **p**를 떠나 시점 방향 **v**로 가는 나가는 방사 휘도를 구해주면 됨. 이 값은 결국 발광 방사 휘도 ![EmittedRadiance](/assets/images/GlobalIllumination/EmittedRadiance.png)에 반사된 방사 휘도를 더한 값임.
 
-이때 ![IncomingRadianceIsOutgoingRadiance](/Images/GlobalIllumination/IncomingRadianceIsOutgoingRadiance.png)라는 식에 의해 한 지점에서 나가는 방사 휘도는 곧 다른 지점으로부터 나오는 방사 휘도와 같다는 것을 알 수 있음. 즉, 이 방정식은 재귀 방정식임.
+이때 ![IncomingRadianceIsOutgoingRadiance](/assets/images/GlobalIllumination/IncomingRadianceIsOutgoingRadiance.png)라는 식에 의해 한 지점에서 나가는 방사 휘도는 곧 다른 지점으로부터 나오는 방사 휘도와 같다는 것을 알 수 있음. 즉, 이 방정식은 재귀 방정식임.
 
 렌더링 방정식의 중요한 특징은 발광량에 *선형linear*의 관계를 갖는다는 것임. 어떤 물체가 각 빛에 대응하는 것도 독립적으로 이루어짐.
 
@@ -173,11 +173,11 @@ vectorization: <a href="//commons.wikimedia.org/wiki/User:Wjh31" title="User:Wjh
 
 렌더링 방정식을 바탕으로 패치 i의 라디오시티를 다음과 같이 구할 수 있음:
 
-![Radiosity](/Images/GlobalIllumination/Radiosity.png)
+![Radiosity](/assets/images/GlobalIllumination/Radiosity.png)
 
 여기서 B<sub>i</sub>는 패치 i의 라디오시티를 의미하고, B<sub>i</sub><sup>e</sup>는 복사 *발산도exitance*, 즉 패치 i가 발산하는 라디오시티를 의미하며, &rho;<sub>ss</sub>는 부분면의 알베도임. F<sub>ij</sub>는 패치 i와 j 사이의 *파형률form factor*를 의미함. 여기서 파형률은 다음과 같음:
 
-![FormFactor](/Images/GlobalIllumination/FormFactor.png)
+![FormFactor](/assets/images/GlobalIllumination/FormFactor.png)
 
 여기서 A<sub>i</sub>는 패치 i의 영역을 의미하고, V(**i**, **j**)는 점 **i**와 **j** 간의 가시성 함수를 의미함. 각도 &theta;<sub>i</sub>와 &theta;<sub>j</sub>는 두 패치의 각 법선과 두 점 **i**와 **j**를 잇는 광선 간의 각도를 의미하며, d<sub>ij</sub>는 광선의 길이를 의미함.
 
@@ -215,7 +215,7 @@ vectorization: <a href="//commons.wikimedia.org/wiki/User:Wjh31" title="User:Wjh
 
 앰비언트 어클루전의 이론적 배경 자체가 바로 반사 방정식임. 설명의 편의상 램버트 표면에만 집중하도록 함. 이러한 표면 위에서 나가는 방사 휘도 L<sub>o</sub>은 표면 방사 조도 E에 비례함. 방사 조도는 들어오는 방사 휘도에 코사인으로 가중치를 준 합임. 일반적으로 표면 위의 위치 **p**와 그 법선 **n**에 따른다는 뜻임. 설명의 편의상 들어오는 방사 휘도는 상수라고 가정함. 즉, 들어오는 모든 방향 **l**에 대해 L<sub>i</sub>(**l**) = L<sub>A</sub>임. 이 경우 방사 조도 방정식은 다음과 같음:
 
-![AOIrradiance](/Images/GlobalIllumination/AOIrradiance.png)
+![AOIrradiance](/assets/images/GlobalIllumination/AOIrradiance.png)
 
 여기서 &Omega;란 들어올 수 있는 모든 가능한 방향에 대한 반구를 의미함.
 

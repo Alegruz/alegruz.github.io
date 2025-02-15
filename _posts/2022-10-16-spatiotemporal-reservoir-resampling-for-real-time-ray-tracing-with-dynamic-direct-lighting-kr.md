@@ -39,65 +39,65 @@ lang: "ko"
 
 # 2. 이론적 배경
 
-어떤 점 y에서 직접광에 의해 방향 ![DirectionOmega](/Images/ReStir/DirectionOmega.png)로 반사된 radiance L은 모든 광원 표면 A에 대한 적분으로 구할 수 있음:
+어떤 점 y에서 직접광에 의해 방향 ![DirectionOmega](/assets/images/ReStir/DirectionOmega.png)로 반사된 radiance L은 모든 광원 표면 A에 대한 적분으로 구할 수 있음:
 
-![ReflectedRadianceL](/Images/ReStir/ReflectedRadianceL.png)
+![ReflectedRadianceL](/assets/images/ReStir/ReflectedRadianceL.png)
 
 &rho;: BSDF<br>
 L<sub>e</sub>: 광원 radiance<br>
 V: x와 y 사이의 상호 가시성<br>
 G: 기하항. 역제곱 거리와 코사인항
 
-보는 방향 ![DirectionOmega](/Images/ReStir/DirectionOmega.png)와 shading할 점 y를 편의성을 위해 빼놓고 넓이의 변화량을 dx로 표기하면 다음과 같이 L을 간단하게 표현할 수 있음:
+보는 방향 ![DirectionOmega](/assets/images/ReStir/DirectionOmega.png)와 shading할 점 y를 편의성을 위해 빼놓고 넓이의 변화량을 dx로 표기하면 다음과 같이 L을 간단하게 표현할 수 있음:
 
-![SimplifiedReflectedRadianceL](/Images/ReStir/SimplifiedReflectedRadianceL.png)
+![SimplifiedReflectedRadianceL](/assets/images/ReStir/SimplifiedReflectedRadianceL.png)
 
-![IntegrandF](/Images/ReStir/IntegrandF.png)
+![IntegrandF](/assets/images/ReStir/IntegrandF.png)
 
 여기에 *중요도 표집Importance Sampling*(IS)를 적용하면 다음과 같아짐:
 
-![ImportanceSampling](/Images/ReStir/ImportanceSampling.png)
+![ImportanceSampling](/assets/images/ReStir/ImportanceSampling.png)
 
 여기에 *다중 중요도 표집Multiple Importance Sampling*(MIS)를 적용할 경우 다음과 같아짐:
 
-![MultipleImportanceSampling](/Images/ReStir/MultipleImportanceSampling.png)
+![MultipleImportanceSampling](/assets/images/ReStir/MultipleImportanceSampling.png)
 
-여기서 w<sub>s</sub> 함수는 가중치 함수로, 주로 균형 휴리스틱 함수 ![BalanceHeuristic](/Images/MonteCarloIntegration/BalanceHeuristic.png) 사용함.
+여기서 w<sub>s</sub> 함수는 가중치 함수로, 주로 균형 휴리스틱 함수 ![BalanceHeuristic](/assets/images/MonteCarloIntegration/BalanceHeuristic.png) 사용함.
 
 ## 2.1. RIS
 
 MIS 대신 사용할 수 있는 방법에는 몇몇 항의 곱에 *근사하게* 비례하는 표본을 뽑는 방법이 있음. 즉, RIS를 사용하는 것임.
 
-예를 들어, 우리가 구해야하는 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 표집을 하려고 보니, 실질적으로 그게 불가능하다면, 이 PDF에 근사할 수 있도록 source PDF p를 구하는 것임.
+예를 들어, 우리가 구해야하는 target PDF ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 표집을 하려고 보니, 실질적으로 그게 불가능하다면, 이 PDF에 근사할 수 있도록 source PDF p를 구하는 것임.
 
 즉, 적당히 최적인 PDF p에서 z 개의 표본을 우선 뽑아보고, 이 집합에서 확률 p(z \| **x**)에 따라 한 표본을 또다시 뽑는 것임. 이때의 표본 집합의 모든 z 개의 표본은 각각 가중치를 갖는데, 이 가중치에 비례하여 확률을 부여함. 이때 한 표본을 뽑을 때, target PDF에 근사하게 표본을 뽑아야 하므로 가중치에 target PDF의 정보를 추가함:
 
-![ResampledImportanceSamplingCandidateProbability](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
+![ResampledImportanceSamplingCandidateProbability](/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
 
-![ResampledImportanceSamplingCandidateWeight](/Images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
+![ResampledImportanceSamplingCandidateWeight](/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
 
 이런 방법을 사용하여 최종적으로 샘플 y ≡ x<sub>z</sub>를 뽑게 됨.
 
 이때 단일 표본 RIS 추정량은 다음과 같음:
 
-![SingleSampleRisEstimator](/Images/ReStir/SingleSampleRisEstimator.png)
+![SingleSampleRisEstimator](/assets/images/ReStir/SingleSampleRisEstimator.png)
 
-즉, 추정량은 마치 y가 p가 아니라 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 온 것으로 착각하게 되고, 괄호 안의 항을 통해 실제로는 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 근사하고 있음을 알 수 있음.
+즉, 추정량은 마치 y가 p가 아니라 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 온 것으로 착각하게 되고, 괄호 안의 항을 통해 실제로는 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 근사하고 있음을 알 수 있음.
 
 RIS를 여러 표본에 대해 반복하고 평균을 내게 되면 N개 표본 RIS 추정량을 얻을 수 있음:
 
-![NSampleRisEstimator](/Images/ReStir/NSampleRisEstimator.png)
+![NSampleRisEstimator](/assets/images/ReStir/NSampleRisEstimator.png)
 
 이 논문에서는 단일 표본을 가정하고 진행함.
 
-일반적으로 각 픽셀 q는 고유한 피적분함수 f<sub>q</sub>와 이에 대응하는 target PDF ![TargetPdfForPixelQ](/Images/ReStir/TargetPdfForPixelQ.png)를 가질 것임.
+일반적으로 각 픽셀 q는 고유한 피적분함수 f<sub>q</sub>와 이에 대응하는 target PDF ![TargetPdfForPixelQ](/assets/images/ReStir/TargetPdfForPixelQ.png)를 가질 것임.
 
 RIS 알고리듬은 다음과 같음:
 
 <blockquote>
   <h3 id="알고리듬-1-ris">알고리듬 1: RIS</h3>
   <p>입력: M, q: 픽셀 q에 대해 생성할 후보 표본의 수 M(M ≥ 1)<br>
-출력: 표본 y와 RIS 가중치의 합 <img src="/Images/ReStir/SumOfRisWeights.png" alt="SumOfRisWeights"></p>
+출력: 표본 y와 RIS 가중치의 합 <img src="/assets/images/ReStir/SumOfRisWeights.png" alt="SumOfRisWeights"></p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1  // 후보군 x = {x_1, ..., x_M} 생성
  2  x ← 0
  3  w ← 0
@@ -118,7 +118,7 @@ RIS 알고리듬은 다음과 같음:
 
 **RIS와 MIS 섞기**
 
-위에서는 source PDF p가 하나라고 가정했지만, MIS에서 그랬듯, 여러 이미 잘 되는 표집 기술들이 존재함. 어차피 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수일 때 p가 양수이기만 하면 M → ∞일 수록 y의 분포는 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근하지만, source PDF p의 생김새는 y의 PDF가 얼마나 잘 되느냐와 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 얼마나 빠르게 수렴하느냐를 결정하기도 함. 실제로 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 두 함수의 곱(예를 들면 lighting × BSDF)이라고 하면, y의 PDF가 얼마나 잘 되느냐는 source PDF가 어떤 함수(lighting? 아니면 BSDF?)에서 왔느냐에 따라 다름.
+위에서는 source PDF p가 하나라고 가정했지만, MIS에서 그랬듯, 여러 이미 잘 되는 표집 기술들이 존재함. 어차피 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 양수일 때 p가 양수이기만 하면 M → ∞일 수록 y의 분포는 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근하지만, source PDF p의 생김새는 y의 PDF가 얼마나 잘 되느냐와 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 얼마나 빠르게 수렴하느냐를 결정하기도 함. 실제로 target PDF ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)가 두 함수의 곱(예를 들면 lighting × BSDF)이라고 하면, y의 PDF가 얼마나 잘 되느냐는 source PDF가 어떤 함수(lighting? 아니면 BSDF?)에서 왔느냐에 따라 다름.
 
 다행히도 RIS 내부적으로 MIS를 사용하여 분산 줄이기를 해줄 수 있음. MIS를 통해 후보군 명단을 뽑은 다음, 여기서 구한 MIS(혼합) PDF를 source PDF로 사용하여 남은 RIS를 처리해주면 됨.
 
@@ -130,7 +130,7 @@ RIS 알고리듬은 다음과 같음:
 
 가중치 저장소 표집Weighted reservoir sampling (WRS)이란 어떤 연속된, 지속적으로 들어오는 데이터 스트림stream {x<sub>1</sub>, &hellip; x<sub>M</sub>}에 대해서 N 개의 원소를 무작위로 표집하는 알고리듬의 한 종류임. RIS에서처럼 각 원소에는 가중치 w(x<sub>i</sub>)가 있으며, 이 가중치에 따른 확률로 x<sub>i</sub>를 선택하게 됨:
 
-![WrsWeightsProbability](/Images/ReStir/WrsWeightsProbability.png)
+![WrsWeightsProbability](/assets/images/ReStir/WrsWeightsProbability.png)
 
 저장소 표집은 원소마다 딱 한 번만 처리하며, 메모리엔 오로지 N 개의 원소만 있을 수 있다. 스트림의 크기 M은 사전에 몰라도 됨.
 
@@ -138,9 +138,9 @@ RIS 알고리듬은 다음과 같음:
 
 저장소 표집은 입력 스트림의 원소를 들어온 순서대로 처리하며, N 개의 표본을 저장할 수 있는 *저장소reservoir*에 표본을 저장함. 스트림의 어느 시점에서나 저장소 표집은, 저장소의 표본들이 목표하는 분포(현재까지 처리한 모든 원소에 대해서)로부터 뽑히도록하는 불변량을 유지함. 스트림이 끝나면 저장소를 반환함. 이 논문에서는 N = 1, 즉 저장소에 표본이 딱 하나 밖에 없는 경우만 다룸.
 
-스트림에 새 원소가 들어오면, 불변량을 유지하기 위해 저장소를 갱신해줘야 함. 즉, m 개의 표본을 처리한 이후에 표본 x<sub>i</sub>가 ![WrsWeightsProbability](/Images/ReStir/WrsWeightsProbability.png)의 확률로 저장소에 등장한다는 것. 갱신 규칙에 의해 ![ReservoirReplacementProbability](/Images/ReStir/ReservoirReplacementProbability.png)의 확률로 저장소에 있는 x<sub>i</sub>를 다음 표본 x<sub>m + 1</sub>으로 교체한다. 이를 통해 x<sub>m + 1</sub>가 원하는 빈도에 따라 저장소에 등장할 수 있도록 해줌. 즉, 임의의 이전 표본 x<sub>i</sub>가 저장소에 있을 확률은 다음과 같음:
+스트림에 새 원소가 들어오면, 불변량을 유지하기 위해 저장소를 갱신해줘야 함. 즉, m 개의 표본을 처리한 이후에 표본 x<sub>i</sub>가 ![WrsWeightsProbability](/assets/images/ReStir/WrsWeightsProbability.png)의 확률로 저장소에 등장한다는 것. 갱신 규칙에 의해 ![ReservoirReplacementProbability](/assets/images/ReStir/ReservoirReplacementProbability.png)의 확률로 저장소에 있는 x<sub>i</sub>를 다음 표본 x<sub>m + 1</sub>으로 교체한다. 이를 통해 x<sub>m + 1</sub>가 원하는 빈도에 따라 저장소에 등장할 수 있도록 해줌. 즉, 임의의 이전 표본 x<sub>i</sub>가 저장소에 있을 확률은 다음과 같음:
 
-![XiRemainingInReservoirProbability](/Images/ReStir/XiRemainingInReservoirProbability.png)
+![XiRemainingInReservoirProbability](/assets/images/ReStir/XiRemainingInReservoirProbability.png)
 
 이를 통해 불변량이 유지됨.
 
@@ -189,11 +189,11 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 </code></pre></div></div>
 </blockquote>
 
-우선 광원의 표면에서 균등하게 표본을 생성한 다음, 그림자가 져있지 않은 경로의 contribution ![TargetDistribution](/Images/ReStir/TargetDistribution.png)를 target 분포로 삼아 살아남은 N 개의 RIS 표본에 대해서 그림자 광선만을 추적해줌. M의 개수에 따라 얼마나 잘 렌더링이 되는지를 확인해본 결과, M이 증가할 수록 RIS가 제일 렌더링이 잘 됨. 위의 알고리듬은 공간 복잡도 자체는 상수지만, 시간 복잡도 자체는 O(M)임.
+우선 광원의 표면에서 균등하게 표본을 생성한 다음, 그림자가 져있지 않은 경로의 contribution ![TargetDistribution](/assets/images/ReStir/TargetDistribution.png)를 target 분포로 삼아 살아남은 N 개의 RIS 표본에 대해서 그림자 광선만을 추적해줌. M의 개수에 따라 얼마나 잘 렌더링이 되는지를 확인해본 결과, M이 증가할 수록 RIS가 제일 렌더링이 잘 됨. 위의 알고리듬은 공간 복잡도 자체는 상수지만, 시간 복잡도 자체는 O(M)임.
 
 ## 3.2. 시공간 재사용
 
-위에서 언급한 방법은 각 픽셀 q에서 독립적으로 후보를 생성하고, 이를 target PDF ![TargetPdfForPixelQ](/Images/ReStir/TargetPdfForPixelQ.png)에 따라 재표집을 해준 것임. 참고로, 이웃의 픽셀 간에는 상당한 상관관계가 존재함. 예를 들어 그림자가 지지 않은 조명(![TargetDistribution](/Images/ReStir/TargetDistribution.png))을 사용할 경우, 공간적으로 보면 당연히 근처 픽셀들의 geometry 항이나 BSDF 항은 비슷하지 않겠음? 이 상관관계를 처리하는 가장 순진한 방법은 픽셀마다 후보군과 가중치를 생성하고, 두번째 단계에서 자기 픽셀과 이웃의 픽셀을 합쳐서 *재사용reuse*을 해주는 것임. 가중치 연산은 첫번째 단계에서 처리가 될테니까 이웃 후보군을 재사용하는게 같은 수의 후보군을 새롭게 생성하는 것보다 더 효율적임.
+위에서 언급한 방법은 각 픽셀 q에서 독립적으로 후보를 생성하고, 이를 target PDF ![TargetPdfForPixelQ](/assets/images/ReStir/TargetPdfForPixelQ.png)에 따라 재표집을 해준 것임. 참고로, 이웃의 픽셀 간에는 상당한 상관관계가 존재함. 예를 들어 그림자가 지지 않은 조명(![TargetDistribution](/assets/images/ReStir/TargetDistribution.png))을 사용할 경우, 공간적으로 보면 당연히 근처 픽셀들의 geometry 항이나 BSDF 항은 비슷하지 않겠음? 이 상관관계를 처리하는 가장 순진한 방법은 픽셀마다 후보군과 가중치를 생성하고, 두번째 단계에서 자기 픽셀과 이웃의 픽셀을 합쳐서 *재사용reuse*을 해주는 것임. 가중치 연산은 첫번째 단계에서 처리가 될테니까 이웃 후보군을 재사용하는게 같은 수의 후보군을 새롭게 생성하는 것보다 더 효율적임.
 
 근데 이건 실제로 불가능함. 재사용할 후보마다 *저장*을 해야되니까. 이걸 피할 수 있는 방법으로는 저장소 표집의 중요한 속성을 활용하면 됨. 즉, 입력 스트림에 접근할 필요도 없이 여러 저장소를 합칠 수 있다는 점임.
 
@@ -213,7 +213,7 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 </code></pre></div></div>
 </blockquote>
 
-보면 알겠지만 O(k)의 시간 복잡도를 가짐. 이웃 픽셀 q'의 표본이 서로 다른 target 분포 ![NeighboringPixelTargetPdf](/Images/ReStir/NeighboringPixelTargetPdf.png)를 갖고 있다는 점을 잊으면 안 됨. 그러므로 표본을 ![NeighboringTargetPdfFactor](/Images/ReStir/NeighboringTargetPdfFactor.png)로 다시 작성해주어 현재 픽셀에 비해 이웃 쪽이 over/undersample 되었는지 여부를 처리해주어야 함. 결론적으로 얻게 된 식은 ![ResultingTerm](/Images/ReStir/ResultingTerm.png) 인데, 알고리듬 3에서의 이미 구한 값으로 치환해주면 ![ResultTermSuccinct](/Images/ReStir/ResultTermSuccinct.png)로 표현해줄 수 있음.
+보면 알겠지만 O(k)의 시간 복잡도를 가짐. 이웃 픽셀 q'의 표본이 서로 다른 target 분포 ![NeighboringPixelTargetPdf](/assets/images/ReStir/NeighboringPixelTargetPdf.png)를 갖고 있다는 점을 잊으면 안 됨. 그러므로 표본을 ![NeighboringTargetPdfFactor](/assets/images/ReStir/NeighboringTargetPdfFactor.png)로 다시 작성해주어 현재 픽셀에 비해 이웃 쪽이 over/undersample 되었는지 여부를 처리해주어야 함. 결론적으로 얻게 된 식은 ![ResultingTerm](/assets/images/ReStir/ResultingTerm.png) 인데, 알고리듬 3에서의 이미 구한 값으로 치환해주면 ![ResultTermSuccinct](/assets/images/ReStir/ResultTermSuccinct.png)로 표현해줄 수 있음.
 
 **공간 재표집Spatial Reuse**
 
@@ -225,7 +225,7 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 
 **가시성 재사용Visibility Reuse**
 
-솔직히 후보의 개수는 무한대로 늘어날 순 있지만, 그럼에도 아예 노이즈가 없을 순 없음. M이 무한대로 가면서 표본의 분포가 target PDF ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근은 하겠지만, 애초에 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 자체가 피적분함수 f를 완벽하게 표집하는게 아님. 실무에선 보통 ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 그림자가 지지 않은 경로의 contribution으로 설정되기 때문에 M이 커질 수록 가시성에 의해 발생하는 노이즈가 생기게 됨. 특히 큰 장면에서는 더욱 그럴 것임. 이걸 해결하기 위해선 *가시성 재사용*을 진행함. 시공간 재사용하기 전에 우선 각 픽셀의 저장소의 표본 y의 가시성을 확인함. 만약 y가 가려져 있다면 해당 저장소는 버림. 즉, 가려져 있는 표본들은 이웃을 확인하지 않음. 만약 지역적으로 가시성이 일관된 상태라면, 공간 재사용을 한 최종 표본은 가려지지 않은 상태일 것임.
+솔직히 후보의 개수는 무한대로 늘어날 순 있지만, 그럼에도 아예 노이즈가 없을 순 없음. M이 무한대로 가면서 표본의 분포가 target PDF ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에 점근은 하겠지만, 애초에 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) 자체가 피적분함수 f를 완벽하게 표집하는게 아님. 실무에선 보통 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 그림자가 지지 않은 경로의 contribution으로 설정되기 때문에 M이 커질 수록 가시성에 의해 발생하는 노이즈가 생기게 됨. 특히 큰 장면에서는 더욱 그럴 것임. 이걸 해결하기 위해선 *가시성 재사용*을 진행함. 시공간 재사용하기 전에 우선 각 픽셀의 저장소의 표본 y의 가시성을 확인함. 만약 y가 가려져 있다면 해당 저장소는 버림. 즉, 가려져 있는 표본들은 이웃을 확인하지 않음. 만약 지역적으로 가시성이 일관된 상태라면, 공간 재사용을 한 최종 표본은 가려지지 않은 상태일 것임.
 
 다음은 완성된 알고리듬의 의사 코드임:
 
@@ -269,11 +269,11 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 
 RIS에서 어느 부분에서 편향성이 발생하는지를 보기 위해 우선 단일 표본 RIS 추정량 공식을 다시 살펴보기로 함:
 
-![SingleSampleRisEstimatorRegrouped](/Images/ReStir/SingleSampleRisEstimatorRegrouped.png)
+![SingleSampleRisEstimatorRegrouped](/assets/images/ReStir/SingleSampleRisEstimatorRegrouped.png)
 
 이때 W는 생성된 표본 y ≡ x<sub>z</sub>에 대한 확률 가중치임:
 
-![StochasticWeight](/Images/ReStir/StochasticWeight.png)
+![StochasticWeight](/assets/images/ReStir/StochasticWeight.png)
 
 이때 W의 역할은 도대체 뭘까?
 
@@ -283,35 +283,35 @@ RIS에서 어느 부분에서 편향성이 발생하는지를 보기 위해 우�
 
 **재가중치항 설명**
 
-알고리듬 4에 의하면 이웃 표본들의 가중치는 ![ResultTermSuccinct](/Images/ReStir/ResultTermSuccinct.png)임. 이걸 위에서는 직관적으로 이해했는데, 이제 좀 더 제대로 이해해보자:
+알고리듬 4에 의하면 이웃 표본들의 가중치는 ![ResultTermSuccinct](/assets/images/ReStir/ResultTermSuccinct.png)임. 이걸 위에서는 직관적으로 이해했는데, 이제 좀 더 제대로 이해해보자:
 
-![StandardRisWeight](/Images/ReStir/StandardRisWeight.png)는 결국 간단히 말하면 ![TargetPdfOfPixelQOverSourcePdfP](/Images/ReStir/TargetPdfOfPixelQOverSourcePdfP.png)의 표준 RIS 가중치임. 여기서 문제는 PDF p(r.y)가 뭔지는 모르고, 이 대신 PDF 역수의 추정량 r.W을 사용한다는 것임. r.y가 여러 표본을 합친 결과를 의미하므로, r.y를 생성한 후보들의 수 r.M에 따라 가중치가 추가적으로 scaling됨.
+![StandardRisWeight](/assets/images/ReStir/StandardRisWeight.png)는 결국 간단히 말하면 ![TargetPdfOfPixelQOverSourcePdfP](/assets/images/ReStir/TargetPdfOfPixelQOverSourcePdfP.png)의 표준 RIS 가중치임. 여기서 문제는 PDF p(r.y)가 뭔지는 모르고, 이 대신 PDF 역수의 추정량 r.W을 사용한다는 것임. r.y가 여러 표본을 합친 결과를 의미하므로, r.y를 생성한 후보들의 수 r.M에 따라 가중치가 추가적으로 scaling됨.
 
 ## 4.2. 편향 RIS
 
 이제 RIS에 의해 생성된 표본들의 PDF p(y)를 구해보자. 표준 RIS에서는 모든 후보 표본이 같은 PDF p에서 올 것이라고 가정하지만, 여기서는 **x**의 표본 x<sub>i</sub>가 서로 다른 source PDF p<sub>i</sub>(x<sub>i</sub>)에서 왔을 수도 있다고 가정. 이 모든 후보들의 joint PDF는 단순히 모든 PDF를 곱한 것임:
 
-![JointPdf](/Images/ReStir/JointPdf.png)
+![JointPdf](/assets/images/ReStir/JointPdf.png)
 
 RIS 알고리듬의 2단계에서는 한 인덱스 z ∈ {1, &hellip;, M}를 뽑지만, 이때 뽑는 확률과 가중치는 이제 후보의 출신 PDF에 따라 처리함:
 
-![RisCandidateSpecificProbability](/Images/ReStir/RisCandidateSpecificProbability.png)
+![RisCandidateSpecificProbability](/assets/images/ReStir/RisCandidateSpecificProbability.png)
 
-![RisCandidateSpecificWeight](/Images/ReStir/RisCandidateSpecificWeight.png)
+![RisCandidateSpecificWeight](/assets/images/ReStir/RisCandidateSpecificWeight.png)
 
 p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된 인덱스 z에 대한 joint PDF를 다음과 같이 곱으로 나타낼 수 있음:
 
-![JointPdfRewritten](/Images/ReStir/JointPdfRewritten.png)
+![JointPdfRewritten](/assets/images/ReStir/JointPdfRewritten.png)
 
 그래서 p(y)이 무엇이느냐?
 
 고정된 출력 표본 y에 대해서 여러 **x**, z가 존재할 수 있음. 예를 들어 x<sub>1</sub> = y이고 z = 1이라고 하면 나머지 x<sub>2</sub>, &hellip;, x<sub>M</sub>는 아무거나일 수도 있음. z = 2인 경우도 마찬가지임. 당연히 y는 p<sub>i</sub>(y) > 0인 경우에서만 생성되므로, 다음과 같이 집합으로 표현해보자:
 
-![SetOfYs](/Images/ReStir/SetOfYs.png)
+![SetOfYs](/assets/images/ReStir/SetOfYs.png)
 
 출력 표본 y에 대한 전체 PDF를 구하려면, 단순히 y를 생성할 수 있는 모든 경우의 수에 대한 joint PDF를 주변부로 처리해주면 됨:
 
-![TotalPdfOfAnOutputSampleY](/Images/ReStir/TotalPdfOfAnOutputSampleY.png)
+![TotalPdfOfAnOutputSampleY](/assets/images/ReStir/TotalPdfOfAnOutputSampleY.png)
 
 이때 **x**<sup>i &rarr; y</sup> = {x<sub>1</sub>, &hellip;, x<sub>i - 1</sub>, y, x<sub>i + 1</sub>, &hellip;, x<sub>M</sub>}을 의미함. 즉, i번째 후보를 y로 픽스한 것임. 적분은 픽스되지 않은 나머지 후보들에 대해서만 적용함.
 
@@ -319,11 +319,11 @@ p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된
 
 이제 RIS의 PDF도 정의했겠다, RIS 가중치 W(**x**, z)의 기대값이 PDF의 역수임을 보이도록 하면 됨. 우선 이걸 구하려면 조건부 기대값을 적용해야함. 어떤 출력 표본 y가 *주어졌을 때*, 평균 가중치가 무엇인가? 즉, x<sub>z</sub> = y인 **x**와 z에 대한 W(**x**, z)의 기대값을 구하고 p(y)로 나눠준 x<sub>z</sub> = y 시행의 확률 밀도를 구하면 됨:
 
-![ExpectationOfRisWeight](/Images/ReStir/ExpectationOfRisWeight.png)
+![ExpectationOfRisWeight](/assets/images/ReStir/ExpectationOfRisWeight.png)
 
 부록 A에서 이 표현식이 다음과 같이 간략화 됨을 보임:
 
-![SimplifiedExpectationOfRisWeight](/Images/ReStir/SimplifiedExpectationOfRisWeight.png)
+![SimplifiedExpectationOfRisWeight](/assets/images/ReStir/SimplifiedExpectationOfRisWeight.png)
 
 즉, 두 가지를 알 수 있음:
 
@@ -336,15 +336,15 @@ p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된
 
 RIS 가중치를 수정해주면 편향성을 없앨 수 있음. 1/M을 곱하는 대신, 어떤 가중치 m(x<sub>z</sub>)을 곱해주는 것임:
 
-![UnbiasedStochasticWeight](/Images/ReStir/UnbiasedStochasticWeight.png)
+![UnbiasedStochasticWeight](/assets/images/ReStir/UnbiasedStochasticWeight.png)
 
 위에서처럼 W의 기대값을 계산해보면:
 
-![UnbiasedExpectationOfRisWeight](/Images/ReStir/UnbiasedExpectationOfRisWeight.png)
+![UnbiasedExpectationOfRisWeight](/assets/images/ReStir/UnbiasedExpectationOfRisWeight.png)
 
 즉, 무편향 추정량은 그냥 
 
-![UnbiasedEstimatorRequirement](/Images/ReStir/UnbiasedEstimatorRequirement.png)
+![UnbiasedEstimatorRequirement](/assets/images/ReStir/UnbiasedEstimatorRequirement.png)
 
 만 만족하면 됨.
 
@@ -358,7 +358,7 @@ RIS 가중치를 수정해주면 편향성을 없앨 수 있음. 1/M을 곱하�
 
 다행히도 아래 예시와 같이 가중치 m(x<sub>z</sub>)을 아무거나 고를 수 있음:
 
-![BalanceHeuristicOfCandidatePdfs](/Images/ReStir/BalanceHeuristicOfCandidatePdfs.png)
+![BalanceHeuristicOfCandidatePdfs](/assets/images/ReStir/BalanceHeuristicOfCandidatePdfs.png)
 
 즉, 후보 PDF들의 균형 휴리스틱임. 이를 통해 편향성도 해결, 노이즈도 해결할 수 있음.
 
@@ -366,7 +366,7 @@ RIS 가중치를 수정해주면 편향성을 없앨 수 있음. 1/M을 곱하�
 
 이제 편향성을 해결한 식을 재사용 알고리듬(알고리듬 5)에 적용하면 됨. 편향성 자체는 여러 저장소를 합칠 때(알고리듬 4) 발생함: 픽셀 q가 이웃에서 저장소 r<sub>i</sub>를 가져올 때, 각 저장소는 표본 r<sub>i</sub>.y만큼 기여함. 근데 이 표본의 PDF가 0이면서 또 q의 피적분함수는 0이 아닐 수도 있음! 예를 들어 반구 밑에 있는 후보들은 보통 버려지지만, 이웃 픽셀의 경우 서로 다른 orientation의 평면 법선을 가질 수도 있어 q에는 0이 아닌 contribution을 줄 수 있는 표본들을 버릴 수도 있음. 우리 알고리듬도 유사하게 재사용의 첫 단계에서 가려진 표본들을 버림(즉, PDF가 0이 됨). 그러나 이 픽셀에서 가려져 있다고 해서 이웃에서도 가려져 있다는 보장은 없음. 즉, 이걸 버리면 편향이 발생함.
 
-각 표본 r<sub>i</sub>.y은 재사용의 결과이고, 이 표본의 실제 PDF가 뭔지는 모름. 그러나 실제 PDF가 0일 때 이 PDF를 근사한 것도 0에 가깝다는 것만 알면 이걸로 무편향 가중치를 구하면 됨. 픽셀 q<sub>i</sub>마다 ![ApproximationToRealPdfOfSamplesAtQi](/Images/ReStir/ApproximationToRealPdfOfSamplesAtQi.png)를 근사 PDF로 사용하도록 함. 왜냐면 실제 PDF가 0일 때 이 근사도 0이기 때문임. 만약 가시성 재사용을 ㄱ수행한다면 추가적으로 x가 q<sub>i</sub>에서 가려져있는지 여부도 확인하여 PDF를 0으로 설정해줌.
+각 표본 r<sub>i</sub>.y은 재사용의 결과이고, 이 표본의 실제 PDF가 뭔지는 모름. 그러나 실제 PDF가 0일 때 이 PDF를 근사한 것도 0에 가깝다는 것만 알면 이걸로 무편향 가중치를 구하면 됨. 픽셀 q<sub>i</sub>마다 ![ApproximationToRealPdfOfSamplesAtQi](/assets/images/ReStir/ApproximationToRealPdfOfSamplesAtQi.png)를 근사 PDF로 사용하도록 함. 왜냐면 실제 PDF가 0일 때 이 근사도 0이기 때문임. 만약 가시성 재사용을 ㄱ수행한다면 추가적으로 x가 q<sub>i</sub>에서 가려져있는지 여부도 확인하여 PDF를 0으로 설정해줌.
 
 다음은 무편향 저장소 혼합(균등 가중치 사용) 의사 코드임:
 
@@ -405,7 +405,7 @@ GPU 기반 실시간 렌더링 시스템에 구현.
 
 **Target PDF**
 
-알고리듬의 재사용 단계에서는 표본을 target PDF에 따라 가중치를 줌. 여기서는 그림자가 지지 않은 경로 contribution ![TargetPdf](/Images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) ∝ &rho; · L<sub>e</sub> · G를 각 픽셀의 target PDF로 사용함. 장면의 모든 기하에 대해서는 통일된 material 모델을 활용함. 이 모델은 diffuse 람베르트 substrate 위에 dielectric GGX microfacet 계층이 있는 모델임.
+알고리듬의 재사용 단계에서는 표본을 target PDF에 따라 가중치를 줌. 여기서는 그림자가 지지 않은 경로 contribution ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png) ∝ &rho; · L<sub>e</sub> · G를 각 픽셀의 target PDF로 사용함. 장면의 모든 기하에 대해서는 통일된 material 모델을 활용함. 이 모델은 diffuse 람베르트 substrate 위에 dielectric GGX microfacet 계층이 있는 모델임.
 
 **이웃 선택**
 

@@ -35,7 +35,7 @@ lang: "ko"
 이 논문의 시스템을 사용할 경우 보통 입력 지형에 대해서 기후를 정의해주고, 심을 식물들의 종, 초식동물 종, 육식동물 종을 입력해주고, 추가적으로 경쟁 이후 얼만큼의 비율로 있을지에 대한 정보도 주게 됨. 이 입력에 대한 출력은 결국 생태계가 나올 것임. 이 생태계는 주어진 지형에 종이 존재하는 밀도 맵으로 표현이 됨. 당연히 수정 가능. 각 먹이사슬 단계마다, 생성된 개체 하나 하나 마다의 영향이 해당 개체가 소비할 자원으로 역전파됨. 개체와 자원 둘 간의 경로를 연산하여 해당 경로에서의 방목, 먹이 탐색 활동, 침식 등을 처리해줌. 이를 전부 적용한 최종적인 지형은 이제 식물상, 동물상과 일관되어있음. [그림 1](#figure_1) 참조.
 
 <div style="text-align: center" id="figure_1">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure1.png" alt="Figure1">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure1.png" alt="Figure1">
 <p>그림 1. 지형, 기후 조건과 경쟁 관계인 종 간 의도한 비율과 먹이 사슬 종속성을 입력으로 줌. 이 입력에 대해 우리의 알고리듬은 자원 접근 그래프에 대해 반복적으로 종의 밀도 맵을 계산하여 동물의 일상 경로를 추출할 수 있음. 그 결과로 식생, 동물, 그리고 동물이 만들어낸 경로를 전부 포함한 당장 사용 가능한 3D 지형이 나옴. 이 맵은 언제든지 페인트 툴로 수정 가능함.</p>
 </div>
 
@@ -62,7 +62,7 @@ lang: "ko"
 이 논문의 목표는 아티스트/생물학자/고생물학자 등의 의도대로 식물상과 동물상이 경관에 일관적으로 존재하며, 생활하는 모습을 생성하는 것임. 여기서 사용자의 의도를 반영해주기 위해서 새로운 파이프라인을 제시함([그림 2](#figure_2) 참고). 이 파이프라인을 통해 **안정 상태 가설steady-state hypothesis** 하에서 지형 위에 지형과 일관되게 식물, 초식동물, 육식동물을 생성하고 통합해줄 수 있음.
 
 <div style="text-align: center" id="figure_2">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure2.jpeg" alt="Figure2">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure2.jpeg" alt="Figure2">
 <p>그림 2. 시스템 개요: 자원 맵을 초기화한 뒤 각 먹이 사슬 단계마다, 즉 식물에서 육식 동물까지 해당하는 단계에서의 자원 접근 그래프(RAG), 같은 단계 내의 종 간 경쟁의 결과, 동물의 일상 경로, 직전 단계의 자원의 남은 잉여를 계산함. 결과로 나온 밀도 맵과 지형에 대한 침식된 경로, 동물의 일상 계획을 통해 실제처럼 움직이는, 생태계가 존재하는 경관을 생성함. 사용자는 맵 위에 직접 그려줄 수 있어 직관적으로 맵을 수정할 수 있음.</p>
 </div>
 
@@ -83,7 +83,7 @@ lang: "ko"
 우리 논문에서 제시하는 알고리듬의 핵심은 바로 **자원 접근 그래프Resource Access Graph** (RAG)라는 방향성 그래프 자료구조. 여러 먹이 사슬 단계에서의 종 간의 상호작용과 종과 지형 간의 관계를 인코딩해줌. [그림 3](#figure_3) 참고.
 
 <div style="text-align: center" id="figure_3">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure3.jpeg" alt="Figure3">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure3.jpeg" alt="Figure3">
 <p>그림 3. 자원 접근 그래프의 개념도. 종 별 다른 색으로 잉여 노드를 구분함. RAG<sup>0</sup>에서는 식물이 필요로하는 자원을 인코딩함. RAG<sup>1</sup>은 초식동물의 자원인 숲이나 강둑 등을 인코딩함. 영양은 강 여울에서만 강을 건널 수 있고, 절벽을 건널 수는 없기에 세 개의 제한 구역으로 나뉨. RAG<sup>2</sup>은 육식동물(늑대)의 자원(영양)을 인코딩함. RAG<sup>1</sup>에서 연결된 성분들 중에서 영양이 잉여를 생산하는 부분(밑의 부분과 오른쪽 부분)은 RAG<sup>2</sup>에서는 하나의 자원 노드로 통합됨. 모서리를 통해 늑대는 절벽을 다른 이동 속도로 오르내릴 수 있음을 알 수 있음.</p>
 </div>
 
@@ -131,7 +131,7 @@ RAG의 계층을 통해 각 종이 곧 다른 종의 자원이 될 수 있음을
 
 각 r ∈ R인 자원 r들에 대해 종의 적응도 범위 F(s, r) 중 주어진 자원 r의 연간 변화량 r<sub>year</sub>에 해당하는 범위를 계산함. 가장 드문 드문 난 자원이 s가 그곳에 거주할 수 있는지 여부를 결정할 수 있으므로, 최소값을 사용해주면 됨:
 
-![FitnessScore](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/FitnessScore.png)
+![FitnessScore](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/FitnessScore.png)
 
 월간 시간적 변화도 주어진다면 위의 최소값에 자원별로 여러 항들을 사용해주면 됨. 위의 식의 결과는 0 <= fit(s, R) <= 1인 연속된 값이 나옴. 0이면 s가 생존이 불가능하다는 것이고, 1이면 제일 적응도가 높다는 것임. 어쨋든 모든 자원의 변화량은 종의 적응도 범위 내에 있음.
 
@@ -188,7 +188,7 @@ RAG의 계층을 통해 각 종이 곧 다른 종의 자원이 될 수 있음을
 
 여러가지의 맵을 직접적으로 먹이 사슬을 따라 유형, 수량, 종의 이동 능력과 자원으로의 접근성, 물에 대한 수요, 다른 종에 대한 포식을 확인해주면서 진행하는 것은 좋은 해결방법이 아님. 데이터 계산을 단순화하고 위와 같은 정보에 대한 탐색을 좀 더 효율적으로 만들기 위해 필요한 모든 정보를 추출하여 그래프 구조로 계층적으로 표현해줌. 즉, [그림 3](#figure_3)에서 이미 소개한 자원 접근 그래프(RAG)를 사용함. 5장에서는 RAG에 대한 형식적인 정의를 소개하고, 이 구조를 어떻게 점진적으로 구축하는지를 소개함.
 
-먹이 사슬을 표기해주기 위해 다음과 같은 표기법을 사용하도록 함: 생태계 내의 종은 ![Species](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Species.png)으로 표기하며, 여기서 ![FoodChainLevel](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/FoodChainLevel.png)는 먹이 사슬 단계 i의 종을 의미하는 부분 집합임. 이 논문에서는 FCL<sup>0</sup>이 식물, FCL<sup>1</sup>이 초식동물, FCL<sup>2</sup>이 육식동물을 의미함. R<sup>i</sup>는 FCL<sup>i</sup>이 필요로하는 자원 집합을 의미함. 이러한 자원들은 공간적으로 표기함: r ∈ R<sup>i</sup>인 자원 r은 근본적인 속성과 사용 가능한 수량 뿐만 아니라 해당 자원이 커버하는 범위(예를 들어 이 논문에서는 무한하다고 가정한 수자원의 경우 동물이 목을 축일 수 있는 강둑 등의 범위를 커버함)로도 표기함. 자원 접근 그래프([3.2 섹션](#32-자원-접근-그래프-개념) 참고)는 다음 원소를 이용하여 생성함.
+먹이 사슬을 표기해주기 위해 다음과 같은 표기법을 사용하도록 함: 생태계 내의 종은 ![Species](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Species.png)으로 표기하며, 여기서 ![FoodChainLevel](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/FoodChainLevel.png)는 먹이 사슬 단계 i의 종을 의미하는 부분 집합임. 이 논문에서는 FCL<sup>0</sup>이 식물, FCL<sup>1</sup>이 초식동물, FCL<sup>2</sup>이 육식동물을 의미함. R<sup>i</sup>는 FCL<sup>i</sup>이 필요로하는 자원 집합을 의미함. 이러한 자원들은 공간적으로 표기함: r ∈ R<sup>i</sup>인 자원 r은 근본적인 속성과 사용 가능한 수량 뿐만 아니라 해당 자원이 커버하는 범위(예를 들어 이 논문에서는 무한하다고 가정한 수자원의 경우 동물이 목을 축일 수 있는 강둑 등의 범위를 커버함)로도 표기함. 자원 접근 그래프([3.2 섹션](#32-자원-접근-그래프-개념) 참고)는 다음 원소를 이용하여 생성함.
 
 **자원 노드resource node** v는 RAG의 정점임. 어떤 한 위치에 속한 하나 이상의 자원을 의미함. 자원 노드 V는 해당 자원이 지형에서 차지하는 영역의 중심에 위치함. 노드는 먹이 사슬 단계에 따라 계층순으로 정렬함. **자원량quantity of resource** q(r, v)은 v에서 소비 가능한 자원 r의 자원량으로, 자료구조의 노드에 각 자원별로 저장이 되어있음.
 
@@ -197,7 +197,7 @@ RAG의 계층을 통해 각 종이 곧 다른 종의 자원이 될 수 있음을
 **계층적 모서리hierarchical edge** h는 단계간 모서리로, RAG<sup>i + 1</sup>의 노드(예를 들어 늑대의 자원인 영양의 무리)와 RAG<sup>i + 1</sup>를 만드는데 사용한 RAG<sup>i</sup>의 노드(즉, 앞에서 언급한 영양 무리의 자원)를 이어줌. 계층적 모서리를 통해 영양 무리가 정확히 어느 영역에 있고, 어느 경로에 있는지 등, 해당 자원에 대한 정보를 얻을 수 있음.
 
 <div style="text-align: center" id="figure_4">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure4.jpeg" alt="Figure4">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure4.jpeg" alt="Figure4">
 <p>그림 4. RAG<sup>i</sup>: 공간적 자원 (a)가 종 자원 노드 (b)로 변환되며, 접근성 맵 (c)을 구함. (c)의 같은 색에 속한 노드들은 최종적으로 종으로 라벨링한 모서리로 연결됨 (d). 임의의 모양으로 된 영역이 존재는 하나, 공간적 자원을 자원의 색, 크기, 위치가 각각 근본적인 속성, 양, 자원의 중심에 대응하도록 타원으로 묘사함으로써 현저성을 향상시킴.</p>
 </div>
 
@@ -229,7 +229,7 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 <div id="eq_1">
  <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/PrescenceProbability.png" alt="PrescenceProbability"/></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/PrescenceProbability.png" alt="PrescenceProbability"/></p>
  <p style="float: left; width:33.33333%; text-align:right;">(1)</p>
 </div>
 <div style="clear: both;"></div>
@@ -240,7 +240,7 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 <div id="eq_2">
  <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/MovementProbability.png" alt="MovementProbability"/></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/MovementProbability.png" alt="MovementProbability"/></p>
  <p style="float: left; width:33.33333%; text-align:right;">(2)</p>
 </div>
 <div style="clear: both;"></div>
@@ -249,7 +249,7 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 
 <div id="eq_3">
  <p style="float: left; width:33.33333%; text-align:left;"></p>
- <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/ErosionImpact.png" alt="ErosionImpact"/></p>
+ <p style="float: left; width:33.33333%; text-align:center;"><img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/ErosionImpact.png" alt="ErosionImpact"/></p>
  <p style="float: left; width:33.33333%; text-align:right;">(3)</p>
 </div>
 <div style="clear: both;"></div>
@@ -261,13 +261,13 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 이 경로를 실제 렌더링을 해줄 때 시각적으로 표현해주기 위해 이 경로를 식물 밀도 맵에서 빼주며, 가중치에 따라 살짝 지형을 깎아준 뒤 약간 진흙이나 암석 등의 텍스처로 렌더링해줌.
 
 <div style="text-align: center" id="figure_5">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure5.jpeg" alt="Figure5">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure5.jpeg" alt="Figure5">
 <p>그림 5. 동물 경로 및 맵(좌측)과 3D 탐험을 위해 선택된 영역(우측). 이 예시는 그랜드 캐니언 DEM을 사용했음. 이를 통해 경로가 어떻게 분기하여 좌우로 진행할 뿐만 아니라 계곡 아래로도 내려가는지를 보여줌.</p>
 </div>
 
 ## 6.2. 3D 일상 계획 및 동물 개체화
 
-종 s의 한 무리 h의 **일상 계획daily-planning**이란 무리의 제한 영역의 RAG 노드를 방문한 순서대로, 그 노드와 노드에 들어오고 나간 시간에 대한 정렬된 리스트 ![Planning](/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Planning.png)임. 무리 별로 이러한 계획을 계산하는 것이 3D 개체화의 핵심임.
+종 s의 한 무리 h의 **일상 계획daily-planning**이란 무리의 제한 영역의 RAG 노드를 방문한 순서대로, 그 노드와 노드에 들어오고 나간 시간에 대한 정렬된 리스트 ![Planning](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Planning.png)임. 무리 별로 이러한 계획을 계산하는 것이 3D 개체화의 핵심임.
 
 무리 h가 하루에 얼마나 많은 자원 노드를 연속으로 방문할 수 있는지를 계산해주기 위해 RAG의 공간 모서리의 근사 이동 시간 t<sub>s</sub>(v, v')을 통해 주어진 노드에서 얼마나 오래 있는지를 추정함. 실세계에서는 한 무리가 실제로 한 자원에 얼마나 시간을 할애하는지는 각 종마다 갖고 있는 복잡한 법칙을 따를 것이지만, 이 논문에서의 방법은 그러한 특수한 동물학적 지식을 사용하지는 않음. 대신 해당 노드에 대한 종의 수요와 자원량(연간 성장률에 비례함)에 따라 평균 방문 시간 t<sub>s</sub>(v)을 추정함.
 
@@ -305,7 +305,7 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 탐험 도중엔 카메라의 위치와 시야각에 따라 동물을 그때 그때 바로 개체화해줌. 동물은 [Reynolds [1987]](#reynolds1987)의 알고리듬을 사용하여 애니메이션해주어 충돌을 막고, 무리 간의 관계를 반영한 움직임을 반영해줌. 참고로 이 논문에선 이 단순한 방법을 사용해도 이 논문의 핵심을 3D로 시각화하기엔 충분하였기에, 종 별로 종 특유의 무리 짓는 모습을 반영하지 않아 [Ecormier-Nocca et al. 2019](#ecormier_nocca2019) 개선할 수 있는 부분이 있음.
 
 <div style="text-align: center" id="figure_7">
-<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/Images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure7.jpeg" alt="Figure7">
+<img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Figure7.jpeg" alt="Figure7">
 <p>그림 7. 왼쪽 위: 말코손바닥사슴 무리의 일상 계획(초록색)과 이들을 추적하는 늑대 그룹(검은색). 이 둘은 강가에 같은 시간에 도착하며(빨간색 사각형) 늑대는 하루의 나머지 시간동안 다른 무리를 쫓음. 오른쪽 위와 아래: 곰, 말코손바닥사슴과 늑대가 자신의 일상 경로를 지나는 모습.</p>
 </div>
 
