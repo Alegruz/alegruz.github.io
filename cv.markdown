@@ -60,7 +60,7 @@ permalink: /cv/
     * Tiles/clustered rendering
 * **Undergraduate Researcher** - [*MLVC*](https://mlvc.khu.ac.kr/contact) - (Jan 2021 - Aug 2021)
     * My research focus was on the use of deep learning in games
-    * Participated in CVPR-NAS 2021 with PhD candidate [Cam-Hao Hua](https://www.linkedin.com/in/cam-hao-hua-a3246ab2/?originalSubdomain=vn)
+    * Participated in CVPR-NAS 2021 with PhD candidate [Tam Linh Tran](https://mlvc.khu.ac.kr/team)
 * **Android Programmer** - [*Social Radio Company*](https://www.linkedin.com/company/socialradiocompany/) - (Sep 2020 - Feb 2021)
     * Technical QA
     * Search front-end
