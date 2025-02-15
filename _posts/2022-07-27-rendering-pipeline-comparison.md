@@ -2,7 +2,8 @@
 layout: post
 title:  Rendering Pipeline Comparison
 date:   2022-07-27 00:00:00 +0000
-categories: graphics english
+categories: graphics
+lang: "en"
 ---
 
 # Environment

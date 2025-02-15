@@ -2,7 +2,8 @@
 layout: post
 title:  "컴퓨터 그래픽스 기초: 02 사소한 수학"
 date:   2023-05-18 00:00:00 +0000
-categories: graphics korean
+categories: graphics
+lang: "ko"
 ---
 
 [목차](/_posts/2023-05-17-fundamentals-of-computer-graphics-kr.md)

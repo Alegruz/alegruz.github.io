@@ -2,7 +2,8 @@
 layout: post
 title:  실무에서의 ReSTIR
 date:   2022-09-17 00:00:00 +0000
-categories: graphics korean
+categories: graphics
+lang: "ko"
 ---
 
 # 공부 노트

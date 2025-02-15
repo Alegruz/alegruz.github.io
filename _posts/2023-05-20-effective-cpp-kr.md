@@ -2,7 +2,8 @@
 layout: post
 title:  이펙티브 C++
 date:   2023-05-20 00:00:00 +0000
-categories: programming cpp effective_cpp korean
+categories: programming cpp effective_cpp
+lang: "ko"
 ---
 
 게임 개발자의 시선에서 본 Effective C++ 정리 글입니다.

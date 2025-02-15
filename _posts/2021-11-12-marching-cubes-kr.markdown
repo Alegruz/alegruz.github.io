@@ -2,7 +2,8 @@
 layout: post
 title:  마칭 큐브 공부 노트
 date:   2021-11-12 00:00:00 +0000
-categories: graphics korean
+categories: graphics
+lang: "ko"
 ---
 
 ## 명시적 곡면과 암시적 곡면<sup>[1](#footnote_1)</sup>

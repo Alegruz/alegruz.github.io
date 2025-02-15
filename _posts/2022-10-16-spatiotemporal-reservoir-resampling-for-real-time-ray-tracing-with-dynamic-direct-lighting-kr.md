@@ -2,7 +2,8 @@
 layout: post
 title:  ReSTIR 논문 정리
 date:   2022-10-16 00:00:00 +0000
-categories: graphics korean
+categories: graphics
+lang: "ko"
 ---
 
 * [Benedikt Bitterli](https://benedikt-bitterli.me/), Dartmouth College

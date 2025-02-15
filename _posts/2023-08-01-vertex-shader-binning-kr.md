@@ -2,7 +2,8 @@
 layout: post
 title:  정점 쉐이더 구간화 Vertex Shader Binning
 date:   2023-08-01 00:00:00 +0000
-categories: graphics korean
+categories: graphics
+lang: "ko"
 ---
 
 [원본 링크](https://patentimages.storage.googleapis.com/5f/5c/e2/4e1079a4869503/US20070279421A1.pdf)

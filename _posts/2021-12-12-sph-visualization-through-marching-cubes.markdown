@@ -2,7 +2,8 @@
 layout: post
 title:  SPH Visualization through Marching Cubes
 date:   2021-12-12 00:00:00 +0000
-categories: graphics english
+categories: graphics
+lang: "en"
 ---
 
 ## Marching Cubes in CUDA Sample Code

@@ -2,7 +2,8 @@
 layout: post
 title:  Pipeline State Cache Studies
 date:   2024-11-22 00:00:00 +0000
-categories: graphics english
+categories: graphics
+lang: "en"
 ---
 
 # Introduction

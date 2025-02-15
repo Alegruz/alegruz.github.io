@@ -2,7 +2,8 @@
 layout: post
 title:  Efficient Rendering Study Notes
 date:   2022-07-19 00:00:00 +0000
-categories: graphics english
+categories: graphics
+lang: "en"
 ---
 
 # Forward Rendering

@@ -2,7 +2,8 @@
 layout: post
 title:  익셉셔널 C++
 date:   2023-05-20 00:00:00 +0000
-categories: programming cpp exceptional_cpp korean
+categories: programming cpp exceptional_cpp
+lang: "ko"
 ---
 
 게임 개발자의 시선에서 본 Exceptional C++ 정리 글입니다.

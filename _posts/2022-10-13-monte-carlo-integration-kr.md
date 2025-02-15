@@ -2,7 +2,8 @@
 layout: post
 title:  몬테 카를로 적분법이란?
 date:   2022-10-13 00:00:00 +0000
-categories: math korean
+categories: math
+lang: "ko"
 ---
 
 몬테 카를로 적분법Monte Carlo integration이란 적분값을 직접 구하기 힘들 때, 무작위로 sample을 추출하여 적분값을 추정하는 방법임.

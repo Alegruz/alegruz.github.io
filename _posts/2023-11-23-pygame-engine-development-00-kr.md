@@ -2,7 +2,8 @@
 layout: post
 title:  Pygame 엔진 개발 일지 00 Pygame Engine Development 00
 date:   2023-11-23 00:00:00 +0000
-categories: engine korean
+categories: engine
+lang: "ko"
 ---
 
 # 소개

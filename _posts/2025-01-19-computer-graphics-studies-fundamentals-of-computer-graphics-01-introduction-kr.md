@@ -2,7 +2,8 @@
 layout: post
 title:  "그래픽스 공부: Fundamentals of Computer Graphics. 01. 서론"
 date:   2025-01-19 00:00:00 +0000
-categories: graphics korean
+categories: graphics
+lang: "ko"
 ---
 
 컴퓨터 그래픽스computer graphics란 컴퓨터로 이미지image를 만들어내는 모든 용법을 의미한다.

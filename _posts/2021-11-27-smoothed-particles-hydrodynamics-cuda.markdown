@@ -2,7 +2,8 @@
 layout: post
 title:  Smoothed Particle Hydrodynamics by CUDA
 date:   2021-11-27 00:00:00 +0000
-categories: simulation english
+categories: simulation
+lang: "en"
 ---
 
 ## Smoothed Particle Hydrodynamics

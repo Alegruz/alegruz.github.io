@@ -2,7 +2,8 @@
 layout: post
 title:  수학 처음부터 끝까지 공부해보기
 date:   2022-10-28 00:00:00 +0000
-categories: math korean
+categories: math
+lang: "ko"
 ---
 
 [원글 1](https://youtu.be/pTnEG_WGd2Q)<br>

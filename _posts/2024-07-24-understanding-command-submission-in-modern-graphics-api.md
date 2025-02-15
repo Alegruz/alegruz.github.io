@@ -2,7 +2,8 @@
 layout: post
 title:  Understanding Command Submission in Modern Graphics
 date:   2024-07-24 00:00:00 +0000
-categories: graphics english
+categories: graphics
+lang: "en"
 ---
 
 One of the significant shifts in modern graphics APIs is the management of GPU commands. This shift, where developers now manage the entire lifecycle of GPU commands, from recording to submission and synchronization, is a complex and crucial challenge that underscores the importance of your expertise in this field.

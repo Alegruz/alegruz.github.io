@@ -2,7 +2,8 @@
 layout: post
 title:  "이펙티브 C++: 01 C++에 익숙해지기"
 date:   2023-05-20 00:00:00 +0000
-categories: programming cpp effective_cpp korean
+categories: programming cpp effective_cpp
+lang: "ko"
 ---
 
 [목차](/_posts/2023-05-20-effective-cpp-kr.md)

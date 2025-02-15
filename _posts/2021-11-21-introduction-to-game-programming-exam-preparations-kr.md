@@ -2,7 +2,8 @@
 layout: post
 title:  게임 프로그래밍 입문 공부 노트
 date:   2021-11-21 00:00:00 +0000
-categories: study korean
+categories: study
+lang: "ko"
 ---
 
 ## 파이썬 Python

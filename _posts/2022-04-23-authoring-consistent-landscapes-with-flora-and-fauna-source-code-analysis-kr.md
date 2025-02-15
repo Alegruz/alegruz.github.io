@@ -2,7 +2,8 @@
 layout: post
 title:  지형에 일관된 식물상과 동물상 저작하기 소스 코드 분석
 date:   2022-04-23 00:00:00 +0000
-categories: simulation korean
+categories: simulation
+lang: "ko"
 ---
 
 [소스 코드 링크](https://github.com/pecormiernocca/authoring-consistent-landscapes)
