@@ -18,7 +18,7 @@ permalink: /cv/
     * Korean (Native)
     * English (Fluent)
     * Spanish (Basic)
-    * Chinese (Basic)
+    * Chinese (Basic. HSK 4)
 
 ## Summary
 
@@ -99,7 +99,18 @@ permalink: /cv/
     * Minimal use of standard libraries
     * Current focus is on creating Vulkan real-time path tracer
     * The goal is to implement state-of-the-art path tracing technologies (ReSTIR, etc.)
-* **Pygame-Based Game Engine** (School Project, 2021)
+* [**NES Emulator**](https://github.com/Alegruz/NintendoMuseum) (Side Project, 2023 - Present)
+* [**Screen Space ReSTIR GI**](https://github.com/Alegruz/Screen-Space-ReSTIR-GI) (Graduation Project, 2022)
+    * My *attempt* at trying to implement ReSTIR GI
+* [**Renderer Pipeline Optimization Studies**](https://github.com/Alegruz/DirectX-Graphics-Samples) (Intern Project, 2022)
+    * Implemented some famous renderer pipeline optimization techniques such as deferred rendering, tiled/clustered lighting
+* [**Simple Ray Tracer**](https://github.com/Alegruz/RayTracingTutorial) (Side Project, 2022)
+    * Used as a lab assignment for game graphics programming course
+    * Based on Peter Shirley's Ray Tracing in One Week
+    * Implemented with C++20 modules
+* [**SPH in Unreal 4**](https://github.com/Alegruz/SphFishingGame) (School Project, 2022)
+    * SPH using CUDA in UE4 in interactive rates
+* [**Pygame-Based Game Engine**](https://github.com/Alegruz/pygame_engine) (School Project, 2021)
     * Developed a game engine using pygame to develop a clone to The Legend of Zelda: A Link to the Past
 * **Direct3D 11 Based Renderer** (Side Project, 2021 - 2022)
     * Used as the lab project for Kyung Hee University's Game Graphics Programming course
@@ -108,7 +119,10 @@ permalink: /cv/
 
 ## Certifications & Courses
 
-* **Object-Oriented Programming and Design** - *POCU Academy*
-* **Assembly Programming** - *POCU Academy*
-* **C++ Unmanaged Programming** - *POCU Academy*
-* **Algorithm and Data Structure** - *POCU Academy*
+* [**Object-Oriented Programming and Design**](https://pocu.academy/ko/Courses/COMP2500) - [*POCU Academy*](https://pocu.academy/ko)
+* [**Assembly Programming**](https://pocu.academy/ko/Courses/COMP2300) - [*POCU Academy*](https://pocu.academy/ko)
+    * 6502 Assembly (6502 Breadcrumb)
+    * x16 Assembly (DOS)
+    * x86 Assembly
+* [**C++ Unmanaged Programming**](https://pocu.academy/ko/Courses/COMP3200) - [*POCU Academy*](https://pocu.academy/ko)
+* [**Algorithm and Data Structure**](https://pocu.academy/ko/Courses/COMP3500) - [*POCU Academy*](https://pocu.academy/ko)
