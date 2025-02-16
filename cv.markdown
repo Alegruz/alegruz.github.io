@@ -89,10 +89,10 @@ permalink: /cv/
 
 * **Farming Horror Game in Unreal Engine 5** (Game Jam Team Project, 2025)
     * Primary goal is to familiarize myself with UE5 and its GAS system
-* **2D Tile-Based Platformer Puzzle Game in Unity 5** (Side Project, 2024)
+* **2D Tile-Based Platformer Puzzle Game in Unity 6** (Side Project, 2024)
     * Used URP to create a greyscale world where the player has to bring back colors to the world
     * Used compute shader to create a 3D color distance field to mask the materials rendered
-* **2D Tile-Based Topdown Adventure Game in Unity 4** (Side Project, 2024)
+* **2D Tile-Based Topdown Adventure Game in Unity 5** (Side Project, 2024)
     * Developed dialogue systems, combat AI systems, URP, cooking systems
 * **Direct3D 12/Vulkan Based Renderer** (Side Project, 2023 - Present)
     * Off-work project
