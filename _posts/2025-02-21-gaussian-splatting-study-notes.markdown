@@ -34,7 +34,7 @@ lang: "en"
             * [Floating Textures](https://graphics.tu-bs.de/publications/Eisemann08FT)
             * [Deep Blending for Free-Viewpoint Image-Based Rendering](https://github.com/Phog/DeepBlending)
             * [PointBased Neural Rendering with Per-View Optimization](https://repo-sam.inria.fr/fungraph/differentiable-multi-view/)
-        2.  Neural Rendering and Radiance Fields
+        2. Neural Rendering and Radiance Fields
             * [Deepstereo: Learning to predict new views from the world’s imagery](https://arxiv.org/abs/1506.06825)
             * [View Synthesis by Appearance Flow](https://arxiv.org/abs/1605.03557)
             * [Deep Blending for Free-Viewpoint Image-Based Rendering](https://github.com/Phog/DeepBlending)
@@ -53,7 +53,7 @@ lang: "en"
             * [PlenOctrees for Real-time Rendering of Neural Radiance Fields](https://alexyu.net/plenoctrees/)
             * [Variable Bitrate Neural Fields](https://nv-tlabs.github.io/vqad/)
             * [Direct Voxel Grid Optimization: Super-fast Convergence for Radiance Fields Reconstruction](https://arxiv.org/abs/2111.11215)
-        3.  Point-Based Rendering and Radiance Fields
+        3. Point-Based Rendering and Radiance Fields
             * [Point-Based Graphics](https://www.sciencedirect.com/book/9780123706041/point-based-graphics)
             * [Point Sample Rendering](https://cgl.ethz.ch/Downloads/Seminar_Arbeiten/1999/adesboeufs.pdf)
             * [Point-based rendering techniques](https://www.sciencedirect.com/science/article/abs/pii/S0097849304001530)
