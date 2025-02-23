@@ -104,4 +104,9 @@ lang: "en"
                     * [Differentiable Surface Splatting for Point-based Geometry Processing](https://yifita.netlify.app/publication/dss/)
                 * Defined by a full 3D convariance matrix &Sigma; in world space centered at point (mean)
 $$ G(x) = e^{-{\frac{1}{2}}\left(x \right)^{T}\sum^{-1}{\left(x\right)}} $$
+                    * [Surface Splatting](https://cgl.ethz.ch/research/past_projects/surfels/surfacesplatting/index.html)
+                * Project 3D Gaussians to 2D
+$$ \Sigma = RSS^{T}R^{T} $$
+                    * S: scaling matrix on the ellipsoid -> vec3 s
+                    * R: rotation matrix on the ellipsoid -> quaternion q
                     * [EWA Volume Splatting](https://cgl.ethz.ch/research/past_projects/surfels/ewavolumesplatting/index.html)
