@@ -65,3 +65,43 @@ lang: "en"
                 * [Surface Splatting](https://cgl.ethz.ch/research/past_projects/surfels/surfacesplatting/index.html)
                 * [SynSin: End-to-end View Synthesis from a Single Image](https://arxiv.org/abs/1912.08804)
                 * [Differentiable Surface Splatting for Point-based Geometry Processing](https://yifita.netlify.app/publication/dss/)
+                * [Neural Point-Based Graphics](https://saic-violet.github.io/npbg/)
+                * [ADOP: Approximate Differentiable One-Pixel Point Rendering](https://arxiv.org/abs/2110.06635)
+                * [Neural Point Catacaustics for Novel-View Synthesis of Reflections](https://repo-sam.inria.fr/fungraph/neural_catacaustics/)
+                * [PointBased Neural Rendering with Per-View Optimization](https://repo-sam.inria.fr/fungraph/differentiable-multi-view/)
+                * [Pulsar: Efficient Sphere-Based Neural Rendering](https://arxiv.org/abs/2004.07484)
+                * [Differentiable Point-Based Radiance Fields for Efficient View Synthesis](https://light.princeton.edu/publication/point-based-radiance-fields/)
+                * [Point-NeRF: Point-based Neural Radiance Fields](https://xharlie.github.io/projects/project_sites/pointnerf/)
+                * [A Versatile Scene Model with Differentiable Visibility Applied to Generative Pose Estimation](https://vcai.mpi-inf.mpg.de/projects/DiffVis/)
+                * [Fast Articulated Motion Tracking using a Sums of Gaussians Body Model](https://mindlink.industries/assets/pdf/2011_iccv_sum_of_gaussians.pdf)
+                * [VoGE: A Differentiable Volume Renderer using Neural Gaussian Ellipsoids for Analysis-by-Synthesis](https://github.com/Angtian/VoGE)
+                * [Mixture of Volumetric Primitives for Efficient Neural Rendering](https://stephenlombardi.github.io/projects/mvp/)
+    3. Overview
+        * Input: Images of a static scene (SfM)
+            * [Structure-from-Motion Revisited](https://openaccess.thecvf.com/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf)
+        * Output: Set of 3D Gaussians
+            * position (mean)
+            * covariance matrix
+            * opacity &alpha;
+            * spherical harmonics (color)
+                * [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/)
+                * [Instant Neural Graphics Primitives with a Multiresolution Hash Encoding](https://nvlabs.github.io/instant-ngp/)
+        * Algorithm: Sequentially optimize the 3D Gaussian parameters + adaptively control the Gaussian density
+        * Rasterization:
+            * Tile-based (mobile-style)
+            * &alpha;-blending
+            * sorting
+    4. Differentiable 3D Gaussian Splatting
+        * Goal: optimize a scene representation from a sparse set of SfMs
+        * Solution:
+            * 3D Gaussians
+                * Differentiable
+                * Can be easily projected to 2D splats
+                    * Allows fast &alpha;-blending
+                * prev methods assume each point is a small planar circle with a normal
+                    * normals are noisy (sparsity of SfM points)
+                    * [PointBased Neural Rendering with Per-View Optimization](https://repo-sam.inria.fr/fungraph/differentiable-multi-view/)
+                    * [Differentiable Surface Splatting for Point-based Geometry Processing](https://yifita.netlify.app/publication/dss/)
+                * Defined by a full 3D convariance matrix &Sigma; in world space centered at point (mean)
+                    * $$ G(x) = e^{-{{1}\over{2}}\left(x \right)^{T}\sum^{-1}{\left(x\right)}} $$
+                    * [EWA Volume Splatting](https://cgl.ethz.ch/research/past_projects/surfels/ewavolumesplatting/index.html)
