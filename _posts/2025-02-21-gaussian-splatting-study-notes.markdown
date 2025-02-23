@@ -103,5 +103,5 @@ lang: "en"
                     * [PointBased Neural Rendering with Per-View Optimization](https://repo-sam.inria.fr/fungraph/differentiable-multi-view/)
                     * [Differentiable Surface Splatting for Point-based Geometry Processing](https://yifita.netlify.app/publication/dss/)
                 * Defined by a full 3D convariance matrix &Sigma; in world space centered at point (mean)
-                    * $$ G(x) = e^{-{\frac{1}{2}}\left(x \right)^{T}\sum^{-1}{\left(x\right)}} $$
+$$ G(x) = e^{-{\frac{1}{2}}\left(x \right)^{T}\sum^{-1}{\left(x\right)}} $$
                     * [EWA Volume Splatting](https://cgl.ethz.ch/research/past_projects/surfels/ewavolumesplatting/index.html)
