@@ -130,4 +130,27 @@ $$ \Sigma = RSS^{T}R^{T} $$
                     * [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/)
                 * loss function = L<sub>1</sub> + D-SSIM term<br>
 $$ L = \left(1 - \lambda \right)L_{1} + \lambda L_{\textrm{D-SSIM}} $$
-                    * used &lambda; = 0.2
+                    * used *&lambda;* = 0.2
+        2. Adaptive Control of Gaussians
+                * densify every 100 iterations
+                * remove any Gaussians such that *&eta;<sub>&alpha</sub>* > *&alpha;*
+                * areas with over/underfitting Gaussians have large view-space positional gradients
+                    * densify gaussians with *&tau;*<sub>pos</sub> > average magnitude of view-space position gradients
+                        * *&tau;* = 0.0002
+                    * underfitting: clone the gradient and move it in the direction of the positional gradient
+                    * overfitting: areas with high variance
+                        * split into two Gaussians
+                        * divide by the factor of &Phi; = 1.6 (heuristic value)
+                        * position is sampled from the original(big) Gaussian's PDF
+                    * set &alpha; value to zero every N = 3000 iterations
+
+
+## Concepts to Study
+
+* SfM
+* Point-based Rendering
+* NeRF
+* Spherical Harmonics
+* Stochastic Gradient Descent (more of a review)
+    * Activation functions
+    * Loss functions
