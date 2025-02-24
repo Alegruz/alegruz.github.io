@@ -140,10 +140,10 @@ $$ L = \left(1 - \lambda \right)L_{1} + \lambda L_{\textrm{D-SSIM}} $$
                     * underfitting: clone the gradient and move it in the direction of the positional gradient
                     * overfitting: areas with high variance
                         * split into two Gaussians
-                        * divide by the factor of &Phi; = 1.6 (heuristic value)
+                        * divide by the factor of *&Phi;* = 1.6 (heuristic value)
                         * position is sampled from the original(big) Gaussian's PDF
-                    * set &alpha; value to zero every N = 3000 iterations
-
+                    * set *&alpha;* value to zero every *N* = 3000 iterations
+    6. 
 
 ## Concepts to Study
 
