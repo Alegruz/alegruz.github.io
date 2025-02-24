@@ -102,10 +102,10 @@ lang: "en"
                     * normals are noisy (sparsity of SfM points)
                     * [PointBased Neural Rendering with Per-View Optimization](https://repo-sam.inria.fr/fungraph/differentiable-multi-view/)
                     * [Differentiable Surface Splatting for Point-based Geometry Processing](https://yifita.netlify.app/publication/dss/)
-                * Defined by a full 3D convariance matrix &Sigma; in world space centered at point (mean)
+                * Defined by a full 3D convariance matrix &Sigma; in world space centered at point (mean)<br>
 $$ G(x) = e^{-{\frac{1}{2}}\left(x \right)^{T}\sum^{-1}{\left(x\right)}} $$
                     * [Surface Splatting](https://cgl.ethz.ch/research/past_projects/surfels/surfacesplatting/index.html)
-                * Project 3D Gaussians to 2D
+                * Project 3D Gaussians to 2D<br>
 $$ \Sigma = RSS^{T}R^{T} $$
                     * S: scaling matrix on the ellipsoid -> vec3 **s**
                     * R: rotation matrix on the ellipsoid -> quaternion **q**
@@ -128,6 +128,6 @@ $$ \Sigma = RSS^{T}R^{T} $$
                 * initial covariance = isotropic Gaussian with axes equal to the mean of the distance to the closest three points
                 * standard exponential decay scheduling technique for positions
                     * [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/)
-                * loss function = L<sub>1</sub> + D-SSIM term
+                * loss function = L<sub>1</sub> + D-SSIM term<br>
 $$ L = \left(1 - \lambda \right)L_{1} + \lambda L_{\textrm{D-SSIM}} $$
                     * used &lambda; = 0.2
