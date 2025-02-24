@@ -107,6 +107,27 @@ $$ G(x) = e^{-{\frac{1}{2}}\left(x \right)^{T}\sum^{-1}{\left(x\right)}} $$
                     * [Surface Splatting](https://cgl.ethz.ch/research/past_projects/surfels/surfacesplatting/index.html)
                 * Project 3D Gaussians to 2D
 $$ \Sigma = RSS^{T}R^{T} $$
-                    * S: scaling matrix on the ellipsoid -> vec3 s
-                    * R: rotation matrix on the ellipsoid -> quaternion q
+                    * S: scaling matrix on the ellipsoid -> vec3 **s**
+                    * R: rotation matrix on the ellipsoid -> quaternion **q**
                     * [EWA Volume Splatting](https://cgl.ethz.ch/research/past_projects/surfels/ewavolumesplatting/index.html)
+    5. Optimization with Adaptive Density Control of 3D Gaussians
+        * **p**: position
+        * *&alpha;*: opacity
+        * *&Sigma;*: covariance
+        * *c*: color (SH coefficient)
+        1. Optimization
+                * needs to create/destroy/move geometry to better represent the scene's geometry
+                * stochastic gradient descent + custom CUDA kernels
+                    * [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/)
+                    * [Direct Voxel Grid Optimization: Super-fast Convergence for Radiance Fields Reconstruction](https://sunset1995.github.io/dvgo/)
+                * sigmoid activation function &alpha;
+                    * constrain output into [0, 1) range
+                    * smooth gradient
+                * exponential activation function
+                    * used for the scale of the covariance
+                * initial covariance = isotropic Gaussian with axes equal to the mean of the distance to the closest three points
+                * standard exponential decay scheduling technique for positions
+                    * [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/)
+                * loss function = L<sub>1</sub> + D-SSIM term
+$$ L = \left(1 - \lambda \right)L_{1} + \lambda L_{\textrm{D-SSIM}} $$
+                    * used &lambda; = 0.2
