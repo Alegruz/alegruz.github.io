@@ -43,3 +43,5 @@ This is the order I will read these:
 1. [World-Space Spatiotemporal Reservoir Reuse for Ray-traced Global Illumination](https://gpuopen.com/download/publications/SA2021_WorldSpace_ReSTIR.pdf)
 1. [Area ReSTIR: Resampling for Real-Time Defocus and Antialiasing](https://graphics.cs.utah.edu/research/projects/area-restir/)
 1. [Efficient Visibility Reuse for Real-time ReSTIR](https://dl.acm.org/doi/10.1145/3641233.3664320)
+
+During studying each materials, I will be diving into concepts that I don't fully understand.
