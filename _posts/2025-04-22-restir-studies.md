@@ -29,10 +29,10 @@ Before I start the journey, I have aggregated notable ReSTIR papers and articles
 This is the order I will read these:
 
 1. [A gentler introduction to ReSTIR](https://interplayoflight.wordpress.com/2023/12/17/a-gentler-introduction-to-restir/)
+1. [Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting](https://cs.dartmouth.edu/~wjarosz/publications/bitterli20spatiotemporal.html)
 1. [A Gentle Introduction to ReSTIR Path Reuse in Real-Time](https://intro-to-restir.cwyman.org/)
 1. [How to add thousands of lights to your renderer and not die in the process](http://www.zyanidelab.com/how-to-add-thousands-of-lights-to-your-renderer/)
 1. [Spatiotemporal Reservoir Resampling (ReSTIR) - Theory and Basic Implementation](https://gamehacker1999.github.io/posts/restir/)
-1. [Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting](https://cs.dartmouth.edu/~wjarosz/publications/bitterli20spatiotemporal.html)
 1. [Reframing Light Transport for Real-Time](https://www.highperformancegraphics.org/2020/program/#reframing_light_transport_for_realtime)
 1. [RTXDI: Details on Achieving Real-Time Performance](https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s32639/)
 1. [Rearchitecting Spatiotemporal Resampling for Production](https://research.nvidia.com/publication/2021-07_rearchitecting-spatiotemporal-resampling-production)
@@ -45,3 +45,9 @@ This is the order I will read these:
 1. [Efficient Visibility Reuse for Real-time ReSTIR](https://dl.acm.org/doi/10.1145/3641233.3664320)
 
 During studying each materials, I will be diving into concepts that I don't fully understand.
+
+## Concepts to Study
+
+1. BRDF
+1. Reprojection
+1. Rejection
