@@ -22,10 +22,22 @@ Let's use simple words to understand this mathematical burden. The only thing yo
 
 $$E = \int_{H^2}{L_i{\left(\omega_i\right)}\cos{\theta_i}d\omega_i}$$
 
-This represents the total incoming power per unit area at a surface point, accumulated over all directions in the upper hemisphere.
+This equation represents the total incoming power (irradiance 𝐸) per unit area at a surface point. It is computed by integrating the incoming radiance 𝐿<sub>𝑖</sub>(𝜔<sub>𝑖</sub>), weighted by the cosine of the angle between the incoming direction 𝜔<sub>𝑖</sub> and the surface normal 𝜃<sub>𝑖</sub>, over the upper hemisphere 𝐻<sup>2</sup> of directions.
 
-We have to choose a single incoming light from the direction ωᵢ, so we simply get the differential of the power *dE*. So given this tiny amount of directional incoming energy, we are curious of how much energy is scattered in a specific outgoing direction? We could rephrase this into "given an incoming direction, I would like to know how efficiently energy is scattered into the outgoing direction."
+To isolate the contribution from a single incoming direction 𝜔<sub>𝑖</sub>, we consider a differential amount of irradiance 𝑑𝐸(𝜔<sub>𝑖</sub>), which is:
+
+$$dE\left(\omega_i\right) = L_i{\left(\omega_i\right)}\cos{\theta_i}d\omega_i$$
+
+Now, we ask:
+
+Given this infinitesimally small amount of incoming energy from direction 𝜔<sub>𝑖</sub>, how much energy is scattered into a specific outgoing direction 𝜔<sub>𝑜</sub>?
+
+This leads us to define the Bidirectional Reflectance Distribution Function (BRDF):
 
 $$\begin{align*}f_r{\left(\omega_i, \omega_o\right)} &= \frac{dL_o{\left(\omega_o\right)}}{dE\left(\omega_i\right)}\newline & =\frac{dL_o{\left(\omega_o\right)}}{L_i\left(\omega_i\right)\cos{\theta_i}d\omega_i} \end{align*}$$
 
-This definition holds for opaque materials that reflect but do not transmit energy. The resulting BRDF has units of sr⁻¹.
+This function describes the scattering efficiency of a surface:
+
+It quantifies how effectively light arriving from direction 𝜔<sub>𝑖</sub> is reflected toward direction 𝜔<sub>𝑜</sub>, per unit irradiance, per unit solid angle.
+
+The reason incoming and outgoing radiances use different function is to abstract the fact that incoming lights could be from anything like environment mapping, direct illumination, indirect illuminations, etc., and the outgoing radiance is what the current context(material, etc.) is computing.
