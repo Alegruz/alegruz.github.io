@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Understanding BRDF
-date:   2025-04-22 21:16:00 +0900
+date:   2025-04-23 21:16:00 +0900
 categories: graphics
 lang: "en"
 ---
