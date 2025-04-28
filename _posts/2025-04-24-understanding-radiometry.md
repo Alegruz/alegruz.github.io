@@ -34,13 +34,13 @@ This energy considers the wavelength, thus we call this **spectral energy**, and
 
 We need one more physical dimension to consider: **the time**. The amount of energy transferred/converted per unit time is called **power**, and is measured in watts(W). So, in theory, a 100W light bulb is emitting 100J of light energy per second. Of course, to be physically correct(no pun intended), due to some heat loss the resulting omission would be less than 100J, but say that it does emit 100J for simplicity. Let's say that we are using a light that emits &lambda; = 500 nm photons. According to the equation between photon energy and its wavelength:
 
-$$E = \frac{hc}{\lambda}$$
+$$Q = \frac{hc}{\lambda}$$
 
 We can calculate that the resulting photon energy is:
 
 $$
 \begin{align*}
-E &= \frac{hc}{\lambda}\newline
+Q &= \frac{hc}{\lambda}\newline
 &= \frac{hc}{500\textrm{nm}}\newline
 &= \frac{hc}{500 \times 10^{-9}\textrm{m}}\newline
 &\approx \frac{h\times3\times10^8\textrm{ms}^{-1}}{500 \times 10^{-9}\textrm{m}}\newline
