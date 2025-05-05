@@ -51,3 +51,54 @@ During studying each materials, I will be diving into concepts that I don't full
 1. BRDF
 1. Reprojection
 1. Rejection
+
+## Other Papers on Real-Time Rendering
+
+* 2025
+    * Eurographics
+        * [Linearly Transformed Spherical Distributions for Interactive Single Scattering with Area Lights](https://onlinelibrary.wiley.com/doi/10.1111/cgf.70049?af=R)
+        * [Adaptive Multi-view Radiance Caching for Heterogeneous Participating Media](https://onlinelibrary.wiley.com/doi/10.1111/cgf.70051?af=R)
+        * [Many-Light Rendering Using ReSTIR-Sampled Shadow Maps](https://onlinelibrary.wiley.com/doi/10.1111/cgf.70059?af=R)
+        * [Neural Two-Level Monte Carlo Real-Time Rendering](https://arxiv.org/abs/2412.04634)
+        * [Real-time Procedural Resurfacing Using GPU Mesh Shader](https://onlinelibrary.wiley.com/doi/10.1111/cgf.70075?af=R)
+        * [Dynamic Voxel-Based Global Illumination](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15262)
+        * [SOBB: Skewed Oriented Bounding Boxes for Ray Tracing](https://onlinelibrary.wiley.com/doi/10.1111/cgf.70062?af=R)
+        * [Axis-Normalized Ray-Box Intersection](https://graphics.tu-bs.de/publications/friederichs2025axis-normalized)
+        * [FastAtlas: Real-Time Compact Atlases for Texture Space Shading](https://arxiv.org/abs/2502.17712)
+    * I3D
+        * [Real-Time Markov Chain Path Guiding for Global Illumination and Single Scattering](https://www.lalber.org/2025/04/markov-chain-path-guiding/)
+        * [A Stack-Free Traversal Algorithm for Left-Balanced k-d Trees](https://arxiv.org/abs/2210.12859)
+    * CGF
+        * [Efficient Environment Map Rendering Based on Decomposition](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15264)
+* 2024
+    * SIGGRAPH
+        * [Real-Time Path Guiding Using Bounding Voxel Sampling](https://dl.acm.org/doi/10.1145/3658203)
+        * [Area ReSTIR: Resampling for Real-Time Defocus and Antialiasing](https://graphics.cs.utah.edu/research/projects/area-restir/)
+        * [Ray Tracing Harmonic Functions](https://markjgillespie.com/Research/harnack-tracing/index.html)
+        * [Real-time Physically Guided Hair Interpolation](https://kuiwuchn.github.io/hairInterp.html)
+        * [Real-time Hair Rendering With Hair Meshes](https://dl.acm.org/doi/10.1145/3641519.3657521)
+        * [Modeling Hair Strands With Roving Capsules](https://research.nvidia.com/publication/2024-07_modeling-hair-strands-roving-capsules)
+        * [Real-time Neural Woven Fabric Rendering](https://arxiv.org/abs/2406.17782)
+        * [Proxy Tracing: Unbiased Reciprocal Estimation for Optimized Sampling in BDPT](https://arxiv.org/abs/2503.23412)
+        * [Decorrelating ReSTIR Samplers via MCMC Mutations](https://arxiv.org/abs/2211.00166)
+        * [Quad-optimized Low-discrepancy Sequences](https://dl.acm.org/doi/10.1145/3641519.3657431)
+        * [Specular Polynomials](https://arxiv.org/abs/2405.13409)
+        * [MARS: Multi-sample Allocation through Russian roulette and Splitting](https://arxiv.org/abs/2410.20429)
+        * [Volume Scattering Probability Guiding](https://kehanxuuu.github.io/vspg-website/)
+        * [Efficient Image-Space Shape Splatting for Monte Carlo Rendering](https://uwspace.uwaterloo.ca/items/693b8789-cdc9-442e-9c3c-de58ffa8227f)
+        * [Hierarchical Light Sampling with Accurate Spherical Gaussian Lighting](https://dl.acm.org/doi/10.1145/3680528.3687647)
+        * [A Generalized Ray Formulation For Wave-Optical Light Transport](https://arxiv.org/abs/2303.15762)
+        * [Appearance-Preserving Scene Aggregation for Level-of-Detail Rendering](https://mangosister.github.io/scene_agn_site/)
+    * Eurographics
+        * [Real-time Polygonal Lighting of Iridescence Effect using Precomputed  Monomial-Gaussians](https://onlinelibrary.wiley.com/doi/abs/10.1111/cgf.14991)
+        * [Real-time Seamless Object Space Shading](https://diglib.eg.org/items/538ea8c6-183c-4c07-bf4c-73dd852a411a)
+        * [A Highly Adaptable and Flexible Rendering Engine by Minimum API Bindings](https://ksp.etri.re.kr/ksp/article/read?id=69224)
+    * Eurographics Symposium on Rendering
+        * [Robust Cone Step Mapping](https://diglib.eg.org/items/72110813-71ae-4cb3-b438-c9b0f7fc5b7f)
+        * [Sobol Sampling: Faster, Neater, and Compact](https://youtu.be/ZubSTnxPFZc?si=OvgOLfoSF5illB_G)
+        * [Residual Path Integrals for Re-rendering](https://arxiv.org/abs/2406.16302)
+        * [ReSTIR FG: Real-Time Reservoir Resampled Photon Final Gathering](https://diglib.eg.org/items/df98f89d-a0ca-4800-9bc4-74528feaf872)
+        * [Computing Manifold Next-Event Estimation without Derivatives](https://diglib.eg.org/items/7be3bf17-f5e0-42e1-abe5-660352a64b8b)
+        * [Bridge Sampling for Connections via Multiple Scattering Events](https://cg.ivd.kit.edu/english/vertex-bridges.php)
+        * [Real-Time Pixel-Perfect Hard Shadows with Leak Tracing](https://diglib.eg.org/items/d3b40fa5-bbd1-4cf1-8b4f-378e30c9d74f)
+        * [Ray Traced Stochastic Depth Map for Ambient Occlusion](https://diglib.eg.org/items/f260354b-12b1-41f7-8fb3-7732e9bb489c)
