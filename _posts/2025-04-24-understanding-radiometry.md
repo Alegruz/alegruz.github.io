@@ -137,3 +137,7 @@ So, how do we calculate the radiance from a point? It requires some information 
 In principle, all we have to know is the radiance and irradiance. However, other concepts, such as radiant flux, are also important. Radiant flux is the total amount of photonic energy in the scene in a given slice of time. This means that the amount of radiant flux is "how bright the scene is."
 
 Further studies lead to other concepts such as BRDF, but it is also crucial for graphics engineers to look into photometry. Perception of vision is innately subjective because of its sensor, the human. Each human being senses light differently, and the same human senses light differently at different times. To capture this effect, photometry maps the radiometric concepts into their terminologies. For example, the radiant flux in photometry is called luminous flux, and its measurement is in lumens. Irradiance corresponds to luminance, and radiance to illuminance.
+
+Below is an image ChatGPT created based on this text. As you can see, there are some strange diagrams at the end, but I think the readers can decipher this image.
+
+![radiosity_diagram](/assets/images/Radiometry/radiometry_diagram.png)
