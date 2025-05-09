@@ -54,6 +54,18 @@ During studying each materials, I will be diving into concepts that I don't full
 
 ## Other Papers on Real-Time Rendering
 
+* Conferences
+  * SIGGRAPH
+  * SIGGRAPH Asia
+  * Eurographics
+  * Eurographics Symposium on Rendering
+  * I3D
+  * HPG
+* Journals
+  * ACM Transactions on Graphics
+  * Computer Graphics Forum
+  * Proceedings of the ACM on Computer Graphics and Interactive Techniques 
+
 * 2025
     * Eurographics
         * [Linearly Transformed Spherical Distributions for Interactive Single Scattering with Area Lights](https://onlinelibrary.wiley.com/doi/10.1111/cgf.70049?af=R)
@@ -83,6 +95,7 @@ During studying each materials, I will be diving into concepts that I don't full
         * [Decorrelating ReSTIR Samplers via MCMC Mutations](https://arxiv.org/abs/2211.00166)
         * [Quad-optimized Low-discrepancy Sequences](https://dl.acm.org/doi/10.1145/3641519.3657431)
         * [Specular Polynomials](https://arxiv.org/abs/2405.13409)
+    * SIGGRAPH Asia
         * [MARS: Multi-sample Allocation through Russian roulette and Splitting](https://arxiv.org/abs/2410.20429)
         * [Volume Scattering Probability Guiding](https://kehanxuuu.github.io/vspg-website/)
         * [Efficient Image-Space Shape Splatting for Monte Carlo Rendering](https://uwspace.uwaterloo.ca/items/693b8789-cdc9-442e-9c3c-de58ffa8227f)
@@ -102,3 +115,35 @@ During studying each materials, I will be diving into concepts that I don't full
         * [Bridge Sampling for Connections via Multiple Scattering Events](https://cg.ivd.kit.edu/english/vertex-bridges.php)
         * [Real-Time Pixel-Perfect Hard Shadows with Leak Tracing](https://diglib.eg.org/items/d3b40fa5-bbd1-4cf1-8b4f-378e30c9d74f)
         * [Ray Traced Stochastic Depth Map for Ambient Occlusion](https://diglib.eg.org/items/f260354b-12b1-41f7-8fb3-7732e9bb489c)
+    * I3D
+        * [Bounded VNDF Sampling for the Smith–GGX BRDF](https://dl.acm.org/doi/10.1145/3651291)
+        * [ZH3: Quadratic Zonal Harmonics](https://research.activision.com/publications/2024/05/ZH3_QUADRATIC_ZONAL_HARMONICS)
+        * [Interactive Rendering of Caustics using Dimension Reduction for Manifold Next-Event Estimation](https://theses.hal.science/INRIA2/hal-04561024v1)
+    * HPG
+        * [H-PLOC Hierarchical Parallel Locally-Ordered Clustering for Bounding Volume Hierarchy Construction](https://dl.acm.org/doi/10.1145/3675377)
+        * [Concurrent Binary Trees for Large-Scale Game Components](https://arxiv.org/abs/2407.02215)
+        * [SAH-Optimized k-DOP Hierarchies for Ray Tracing](https://dl.acm.org/doi/10.1145/3675391)
+        * [Hybrid Voxel Formats for Efficient Ray Tracing](https://arxiv.org/abs/2410.14128)
+        * [Optimizing Path Termination for Radiance Caching Through Explicit Variance Trading](https://cg.ivd.kit.edu/english/variance-trading.php)
+        * [Photon-Driven Manifold Sampling](https://dl.acm.org/doi/10.1145/3675375)
+        * [ReSTIR Subsurface Scattering for Real-Time Path Tracing](https://cg.ivd.kit.edu/english/restir-sss.php)
+        * [Light Path Guided Culling for Hybrid Real-Time Path Tracing](https://dl.acm.org/doi/10.1145/3675387)
+        * [Radiance Caching with On-Surface Caches for Real-Time Global Illumination](https://dl.acm.org/doi/10.1145/3675382)
+        * [Real-Time Procedural Generation with GPU Work Graphs](https://dl.acm.org/doi/10.1145/3675376)
+        * [Real-Time Decompression and Rasterization of Massive Point Clouds](https://rahul-goel.github.io/pcrhpg24/)
+    * ACM ToG
+        * [Texture Size Reduction Through Symmetric Overlap and Texture Carving](https://dl.acm.org/doi/10.1145/3714408)
+    * CGF
+        * [Ray Tracing Animated Displaced Micro-Meshes](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15225)
+        * [Faster Ray Tracing through Hierarchy Cut Code](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15226)
+        * [Anisotropic Specular Image-Based Lighting Based on BRDF Major Axis Sampling](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15233)
+        * [Real-Time Polygonal Lighting of Iridescence Effect using Precomputed Monomial-Gaussians](https://onlinelibrary.wiley.com/doi/10.1111/cgf.14991)
+        * [Real-Time Underwater Spectral Rendering](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15009)
+        * [Physically Based Real-Time Rendering of Atmospheres using Mie Theory](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15010)
+        * [Enhancing Spatiotemporal Resampling with a Novel MIS Weight](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15049)
+        * [State of the Art in Efficient Translucent Material Rendering with BSSRDF](https://onlinelibrary.wiley.com/doi/10.1111/cgf.14998)
+* 2023
+    * ACM CGaIT
+        * [Efficient Spatial Resampling Using the PDF Similarity](https://dl.acm.org/doi/10.1145/3585501)
+        * [Subspace Culling for Ray-Box Intersection](https://dl.acm.org/doi/10.1145/3585503)
+        * [Importance-Based Ray Strategies for Dynamic Diffuse Global Illumination](https://dl.acm.org/doi/10.1145/3585500)
