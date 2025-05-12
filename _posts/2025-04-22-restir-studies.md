@@ -212,6 +212,16 @@ During studying each materials, I will be diving into concepts that I don't full
         * [Enhancing Spatiotemporal Resampling with a Novel MIS Weight](https://onlinelibrary.wiley.com/doi/10.1111/cgf.15049)
         * [State of the Art in Efficient Translucent Material Rendering with BSSRDF](https://onlinelibrary.wiley.com/doi/10.1111/cgf.14998)
 * 2023
+    * SIGGRAPH
+        * [Efficient Rendering of Glossy Surfaces by Interpolating Prefiltered Environment Maps Depending on Primary Normals](https://dl.acm.org/doi/10.1145/3588028.3603659)
+        * [Reverse Projection: Real-Time Local Space Texture Mapping](https://arxiv.org/abs/2401.05593)
+        * [A Gentle Introduction to ReSTIR: Path Reuse in Real-time](https://intro-to-restir.cwyman.org/)
+        * [HypeHype Mobile Rendering Architecture](https://advances.realtimerendering.com/s2023/index.html#HypeHype)
+        * [Nubis<sup>3</sup>: Methods (and madness) to model and render immersive real-time voxel-based clouds](https://advances.realtimerendering.com/s2023/index.html#Nubis3)
+        * [Large Scale Terrain Rendering in Call of Duty](https://advances.realtimerendering.com/s2023/index.html#CODTerrain)
+        * [Authoring Materials That Matters - Substrate in Unreal Engine 5](https://advances.realtimerendering.com/s2023/index.html#Strata)
+        * [The Rendering of The Callisto Protocol](https://advances.realtimerendering.com/s2023/index.html#Calisto)
+        * [Kernel-Based Frame Interpolation for Spatio-Temporally Adaptive Rendering](https://studios.disneyresearch.com/2023/07/23/kernel-based-frame-interpolation-for-spatio-temporally-adaptive-rendering/)
     * ACM CGaIT
         * [Efficient Spatial Resampling Using the PDF Similarity](https://dl.acm.org/doi/10.1145/3585501)
         * [Subspace Culling for Ray-Box Intersection](https://dl.acm.org/doi/10.1145/3585503)
