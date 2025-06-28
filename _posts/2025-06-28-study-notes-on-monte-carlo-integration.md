@@ -15,7 +15,7 @@ When learning new concepts, I often ask the following questions to keep myself f
 
 The topic of the post is **Monte Carlo Integration**.
 
-# What is it?
+# What is it? (briefly)
 
 Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote1">1</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula \(A = \pi r^2\). However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
 
@@ -155,6 +155,150 @@ Let's try an interactive example:
   updateStats();
 })();
 </script>
+
+As you can see, the estimated value of &pi; approaches the actual value as we increase the number of points. This is a simple example of how Monte Carlo integration works.
+
+Basically, Monte Carlo integration uses random sampling to estimate the value of an integral. It is particularly useful for high-dimensional integrals or when the function to be integrated is complex or difficult to evaluate analytically.
+
+# Where and when is it used?
+
+Common question in rendering is to solve the rendering equation, which is an integral equation. Monte Carlo integration is often used in computer graphics to solve this equation, especially in global illumination algorithms. It allows us to estimate the contribution of light from various sources in a scene, taking into account complex interactions between light and surfaces.
+
+$$L(x, \omega_o) = L_e(x, \omega_o) + \int_{\Omega} f_r(x, \omega_i, \omega_o) L_i(x, \omega_i) d\omega_i$$
+
+# Why is it used?
+
+Let's rephrase the question: why not use other numerical integration methods? The answer is that Monte Carlo integration is particularly effective for high-dimensional integrals, where traditional methods like trapezoidal or Simpson's rule become impractical due to the curse of dimensionality. In such cases, Monte Carlo integration can provide a more efficient and scalable solution.
+
+# What is it? (thoroughly)
+
+Computer Graphics: Principles and Practice
+
+30. Probability and Monte Carlo Integration
+30.2. Numerical Integration
+30.3 Random Variables and Randomized Algorithms
+30.3.1. Discrete Probability and Its Relationship to Programs
+30.3.2. Expected Value
+30.3.3. Properties of Expected Value, and Related Terms
+30.3.4. Continuum Probability
+30.3.5 Probability Density Functions
+30.3.6. Application to the Sphere
+30.3.7. A Simple Example
+30.3.8. Application to Scattering
+30.4. Continuum Probability, Continued
+30.5. Importance Sampling and Integration
+30.6. Mixed Probabilities
+30.7. Discussion and Further Reading
+30.8. Exercises
+
+Advnced Global Illumination, 2nd Edition
+
+3. Monte Carlo Methods
+3.1. Brief History
+3.2. Why Are Monte Carlo Techniques Useful?
+3.3. Review of Probability Theory
+3.3.1. Discrete Random Variables
+3.3.2. Continuous Random Variables
+3.3.3. Conditional and Marginal Probabilities
+3.4. Monte Carlo Integration
+3.4.1. Weighted Sum of Random Variables
+3.4.2. Estimator
+3.4.3. Bias
+3.4.4. Accuracy
+3.4.5. Estimating the Variance
+3.4.6. Deterministic Quadrature versus Monte Carlo
+3.4.7. Multidimensional Monte Carlo Integration
+3.4.8. Summary of Monte Carlo
+3.5. Sampling Random Variables
+3.5.1. Inverse Cumulative Distribution Function
+3.5.2. Rejection Sampling
+3.5.3. Look-Up Table
+3.6. Variance Reduction
+3.6.1. Importance Sampling
+3.6.2. Stratified Sampling
+3.6.3. N-Rooks or Latin Hypercube Algorithm
+3.6.4. Combining Stratified Sampling and Importance Sampling
+3.6.5. Combining Estimators of Different Distributions
+3.6.6. Control Variates
+3.6.7. Quasi-Monte Carlo
+3.7. Summary
+3.8. Exercises
+
+Advanced Global Illumination, SIGGRAPH
+
+Monte Carlo Integration
+1. Terms and definitions
+2. Basic Monte Carlo Integration
+3. Importance Sampling
+4. Stratified Sampling
+5. When to use Monte Carlo Integration?
+6. Fredholm Equation and Monte Carlo Integration
+6.1. Fredholm equations of the second kind
+6.2. Relationship with global illumination
+6.3. Recursive Monte Carlo solutions
+
+Physically Based Rendering, 4th Edition
+
+2. Monte Carlo Integration
+2.1. Monte Carlo: Basics
+2.1.1. Background and Probability Review
+2.1.2. Expected Values
+2.1.3. The Monte Carlo Estimator
+2.1.4. Error in Monte Carlo Estimators
+2.2. Improving Efficiency
+2.2.1. Stratified Sampling
+2.2.2. Importance Sampling
+2.2.3. Multiple Importance Sampling
+2.2.4. Russian Roulette
+2.2.5. Splitting
+2.3. Sampling Using the Inversion Method
+2.3.1. Discrete Case
+2.3.2. Continuous Case
+2.4. Transforming between Distributions
+2.4.1. Transformation in Multiple Dimensions
+2.4.2. Sampling with Multidimensional Transformations
+
+Mathematical Statistics and Data Analysis, 3rd Edition
+
+5. Limit Theorems
+5.1. Introduction
+5.2. The Law of Large Numbers
+Example A: Monte Carlo Integration
+
+Fundamentals of Computer Graphics, 5th Edition
+
+Principles of Digital Image Synthesis
+
+7. Monte Carlo Integration
+7.1. Introduction
+7.2. Basic Monte Carlo Ideas
+7.3. Confidence
+7.4. Blind Monte Carlo
+7.4.1. Crude Monte Carlo
+7.4.2. Rejection Monte Carlo
+7.4.3. Blind Stratified Sampling
+7.4.4. Quasi Monte Carlo
+7.4.5. Weighted Monte Carlo
+7.4.6. Multidimensional Weighted Monte Carlo
+7.5. Informed Monte Carlo
+7.5.1. Informed Stratified Sampling
+7.5.2. Importance Sampling
+7.5.3. Control Variates
+7.5.4. Antithetic Variates
+7.6. Adaptive Sampling
+7.7. Other Approaches
+7.8. Summary
+7.9. Further Reading
+7.10. Exercises
+
+Algebra and Trigonometry, 4th Edition
+
+14. Counting and Probability
+Focus on Modeling: The Monte Carlo Method
+
+State of the Art in Monte Carlo Global Illumination: SIGGRAPH 2004
+
+# How is it used?
 
 <div class="footnote">
   <p id="footnote1">1. <a href="https://en.wikipedia.org/wiki/Monte_Carlo_integration">Wikipedia</a></p>
