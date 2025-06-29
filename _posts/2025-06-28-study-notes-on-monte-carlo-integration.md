@@ -15,7 +15,7 @@ When learning new concepts, I often ask the following questions to keep myself f
 
 The topic of the post is **Monte Carlo Integration**.
 
-# What is it? (briefly)
+## What is it? (briefly)
 
 Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote1">1</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula \(A = \pi r^2\). However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
 
@@ -59,12 +59,12 @@ Let's try an interactive example:
   
   function drawCircleAndSquare() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     // Draw square
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.strokeRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
-    
+
     // Draw circle
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
@@ -77,25 +77,25 @@ Let's try an interactive example:
     // Generate random point in square
     const x = (Math.random() - 0.5) * 2 * radius + centerX;
     const y = (Math.random() - 0.5) * 2 * radius + centerY;
-    
+
     // Check if point is inside circle
     const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
     const isInside = distance <= radius;
-    
+
     if (isInside) {
       pointsInside++;
       ctx.fillStyle = '#28a745'; // Green for inside
     } else {
       ctx.fillStyle = '#dc3545'; // Red for outside
     }
-    
+
     totalPoints++;
-    
+
     // Draw point
     ctx.beginPath();
     ctx.arc(x, y, 2, 0, 2 * Math.PI);
     ctx.fill();
-    
+
     // Update statistics
     updateStats();
   }
@@ -103,7 +103,7 @@ Let's try an interactive example:
   function updateStats() {
     document.getElementById('points-inside').textContent = pointsInside;
     document.getElementById('total-points').textContent = totalPoints;
-    
+
     if (totalPoints > 0) {
       const estimatedPi = (pointsInside / totalPoints) * 4;
       document.getElementById('estimated-pi').textContent = estimatedPi.toFixed(6);
@@ -160,21 +160,70 @@ As you can see, the estimated value of &pi; approaches the actual value as we in
 
 Basically, Monte Carlo integration uses random sampling to estimate the value of an integral. It is particularly useful for high-dimensional integrals or when the function to be integrated is complex or difficult to evaluate analytically.
 
-# Where and when is it used?
+## Where and when is it used?
 
 Common question in rendering is to solve the rendering equation, which is an integral equation. Monte Carlo integration is often used in computer graphics to solve this equation, especially in global illumination algorithms. It allows us to estimate the contribution of light from various sources in a scene, taking into account complex interactions between light and surfaces.
 
 $$L(x, \omega_o) = L_e(x, \omega_o) + \int_{\Omega} f_r(x, \omega_i, \omega_o) L_i(x, \omega_i) d\omega_i$$
 
-# Why is it used?
+## Why is it used?
 
 Let's rephrase the question: why not use other numerical integration methods? The answer is that Monte Carlo integration is particularly effective for high-dimensional integrals, where traditional methods like trapezoidal or Simpson's rule become impractical due to the curse of dimensionality. In such cases, Monte Carlo integration can provide a more efficient and scalable solution.
 
-# What is it? (thoroughly)
+## What is it? (thoroughly)
+
+Our ideal goal is to compute the radiance L at a point x in a direction &omega;<sub>o</sub> using the rendering equation.
+
+$$L(x, \omega_o) = L_e(x, \omega_o) + \int_{\Omega} f_r(x, \omega_i, \omega_o) L_i(x, \omega_i) d\omega_i$$
+
+where:
+
+* L<sub>e</sub>(x, &omega;<sub>o</sub>) is the emitted radiance from point x in direction &omega;<sub>o</sub>,
+* f<sub>r</sub>(x, &omega;<sub>i</sub>, &omega;<sub>o</sub>) is the bidirectional reflectance distribution function (BRDF) at point x for incoming direction &omega;<sub>i</sub> and outgoing direction &omega;<sub>o</sub>,
+* L<sub>i</sub>(x, &omega;<sub>i</sub>) is the incoming radiance at point x from direction &omega;<sub>i</sub>,
+* &Omega; is the hemisphere of directions above the surface at point x.
+
+Among these terms, the emission term L<sub>e</sub>(x, &omega;<sub>o</sub>) is usually straightforward to compute, as it is often a constant value for a given surface. The BRDF term f<sub>r</sub>(x, &omega;<sub>i</sub>, &omega;<sub>o</sub>) is also typically known for a given material. However, the incoming radiance L<sub>i</sub>(x, &omega;<sub>i</sub>) is often complex and difficult to compute directly, especially in scenes with multiple light sources and complex geometry. Even though we can compute the integral over the hemisphere, it is often impractical to do so analytically due to the complexity of the scene and the interactions between light and surfaces. Ultimately, theoretically, it is impossible to compute the integral analytically, so we need to use numerical methods to estimate it.
+
+### Numerical Integration
+
+For a given function f(x) defined over an interval [a, b], numerical integration methods approximate the integral of f over that interval. The integral can be expressed as:
+
+$$I(f) = \int_{a}^{b} f(x) dx$$
+
+Any explicit formula that can approximate I(f) is called a *numerical integration formula* or *quadrature formula*.
+
+For example, let's say that there exists an approximation function f<sub>n</sub>(x) where n is a non-negative integer. We instead compute the integral of f<sub>n</sub>(x) over the interval [a, b]:
+
+$$I_n(f) = \int_{a}^{b} f_n(x) dx$$
+
+We can compute the *quadrature error* as follows:
+
+$$E_n(f) = I(f) - I_n(f) = \int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx$$
+
+Where E stands for *error*. The goal of numerical integration is to minimize this error E<sub>n</sub>(f).
+
+If function f is continuous in the interval [a, b], or f &in; C<sup>0</sup>([a, b])<sup><a href="#footnote_2"></a></sup>, according to the triangle inequality<sup><a href="#footnote_3"></a></sup>, we can bound the error as follows:
+
+$$|E_n(f)| = |I(f) - I_n(f)| = |\int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx| \leq \int_{a}^{b} |f(x) - f_n(x)| dx$$
+
+Using the fact that an integral of a function that is continuous in the interval [a, b] is bounded by the area of the rectangle with height equal to the maximum value of the function and width equal to the length of the interval, we can further bound the error. We call the norm with this maximum height the uniform norm, denoted as ||f - f<sub>n</sub>||<sub>∞</sub> in our case. Thus, we can write:
+
+$$\int_{a}^{b} |f(x) - f_n(x)| dx \leq ||f - f_n||_{\infty} \cdot (b - a)$$
+
+Thus our final inequality for the error becomes:
+
+$$|E_n(f)| \leq \int_{a}^{b} |f(x) - f_n(x)| dx \leq ||f - f_n||_{\infty} \cdot (b - a)$$
+
+Therefore, if we can bound the uniform norm ||f - f<sub>n</sub>||<sub>∞</sub>, we can bound the error of our numerical integration formula. For example, let's say that our uniform norm is bounded by a constant &epsilon;, then we can write:
+
+$$||f - f_n||_{\infty} < \epsilon$$
+
+$$|E_n(f)| \leq \epsilon \cdot (b - a)$$
 
 Computer Graphics: Principles and Practice
 
-30. Probability and Monte Carlo Integration
+1.  Probability and Monte Carlo Integration
 30.2. Numerical Integration
 30.3 Random Variables and Randomized Algorithms
 30.3.1. Discrete Probability and Its Relationship to Programs
@@ -227,6 +276,7 @@ Advnced Global Illumination, 2nd Edition
 Advanced Global Illumination, SIGGRAPH
 
 Monte Carlo Integration
+
 1. Terms and definitions
 2. Basic Monte Carlo Integration
 3. Importance Sampling
@@ -298,8 +348,10 @@ Focus on Modeling: The Monte Carlo Method
 
 State of the Art in Monte Carlo Global Illumination: SIGGRAPH 2004
 
-# How is it used?
+## How is it used?
 
 <div class="footnote">
   <p id="footnote1">1. <a href="https://en.wikipedia.org/wiki/Monte_Carlo_integration">Wikipedia</a></p>
+  <p id="footnote_2">2. <a href="https://en.wikipedia.org/wiki/Function_space">Wikipedia</a></p>
+  <p id="footnote_3">3. <a href="https://en.wikipedia.org/wiki/Triangle_inequality">Wikipedia</a></p>
 </div>
