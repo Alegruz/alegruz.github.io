@@ -214,7 +214,7 @@ If function f is continuous in the interval [a, b], or f &in; C<sup>0</sup>([a, 
 
 $$|E_n(f)| = |I(f) - I_n(f)| = |\int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx| \leq \int_{a}^{b} |f(x) - f_n(x)| dx$$
 
-Using the fact that an integral of a function that is continuous in the interval [a, b] is bounded by the area of the rectangle with height equal to the maximum value of the function and width equal to the length of the interval, we can further bound the error. We call the norm with this maximum height the uniform norm, denoted as ||f - f<sub>n</sub>||<sub>∞</sub> in our case. Thus, we can write:
+Using the fact that an integral of a function that is continuous in the interval [a, b] is bounded by the area of the rectangle with height equal to the maximum value of the function and width equal to the length of the interval, we can further bound the error. We call the norm with this maximum height the uniform norm, denoted as \|\|f - f<sub>n</sub>\|\|<sub>∞</sub> in our case. Thus, we can write:
 
 $$\int_{a}^{b} |f(x) - f_n(x)| dx \leq ||f - f_n||_{\infty} \cdot (b - a)$$
 
@@ -222,7 +222,7 @@ Thus our final inequality for the error becomes:
 
 $$|E_n(f)| \leq \int_{a}^{b} |f(x) - f_n(x)| dx \leq ||f - f_n||_{\infty} \cdot (b - a)$$
 
-Therefore, if we can bound the uniform norm ||f - f<sub>n</sub>||<sub>∞</sub>, we can bound the error of our numerical integration formula. For example, let's say that our uniform norm is bounded by a constant &epsilon;, then we can write:
+Therefore, if we can bound the uniform norm \|\|f - f<sub>n</sub>\|\|<sub>∞</sub>, we can bound the error of our numerical integration formula. For example, let's say that our uniform norm is bounded by a constant &epsilon;, then we can write:
 
 $$||f - f_n||_{\infty} < \epsilon$$
 
@@ -444,7 +444,7 @@ Move the inverse volume of the domain of integration &Omega; into the integral:
 
 $$I(f) = {|\Omega|}\int_{\mathbb{R}^n} f(\textbf{x}) \frac{\chi_{\Omega}(\textbf{x})}{|\Omega|} d\textbf{x}$$
 
-We can see that the term &chi;<sub>&Omega;</sub>(**x**) / |&Omega;| is a probability density function (PDF) defined over the domain of integration &Omega;. Wait, doesn't this look like an expected value? Yes, it does! We can rewrite the integral as an expected value of the function f over the PDF defined by the characteristic function &chi;<sub>&Omega;</sub>(x):
+We can see that the term &chi;<sub>&Omega;</sub>(**x**) / \|&Omega;\| is a probability density function (PDF) defined over the domain of integration &Omega;. Wait, doesn't this look like an expected value? Yes, it does! We can rewrite the integral as an expected value of the function f over the PDF defined by the characteristic function &chi;<sub>&Omega;</sub>(x):
 
 $$I(f) = |\Omega| \mathbb{E}_{\chi_{\Omega}}[f(\textbf{x})] = |\Omega| \int_{\mathbb{R}^n} f(\textbf{x}) p(\textbf{x}) d\textbf{x} = |\Omega| \mu(f)$$
 
@@ -465,6 +465,39 @@ I think this is a good place to review probabilities and random variables, as th
 A random variable is a mathematical formalization of a quantity or object which depends on random events<sup><a href="#footnote_5">[5]</a></sup>. We all know that this kind of formal definition is not very useful, so let's try to understand it better.
 
 For example, let's say that we have three fair coins. A fair coin is a coin that has an equal probability of landing on heads or tails. In this case, the random event is the outcome of flipping the coins. Based on this event, we can define a random variable X that represents the number of heads that appear when we flip the three coins. The possible values of X are 0, 1, 2, or 3, depending on how many heads appear. You can define a random variable for any quantity that depends on a random event, such as the number of tails, the sum of the values of the coins, or even the color of the coins if they are colored.
+
+<div style="text-align: center; margin: 20px 0;">
+  <h2>🎲 Flip 3 Coins – Discrete Random Variable</h2>
+  <button id="flip-button" style="padding: 10px 20px; margin: 10px; background-color: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer;">Flip Coins</button>
+  <div id="result" style="font-size: 1.5em; margin-top: 10px;"></div>
+  <div id="numeric" style="margin-top: 10px; font-family: monospace;"></div>
+</div>
+
+<script>
+(function () {
+  const resultDiv = document.getElementById("result");
+  const numericDiv = document.getElementById("numeric");
+  const flipBtn = document.getElementById("flip-button");
+
+  function flipCoin() {
+    return Math.random() < 0.5 ? 'H' : 'T';
+  }
+
+  function countHeads(outcome) {
+    return outcome.split('').filter(c => c === 'H').length;
+  }
+
+  flipBtn.addEventListener("click", () => {
+    const outcome = [flipCoin(), flipCoin(), flipCoin()].join('');
+    const numHeads = countHeads(outcome);
+    const numTails = 3 - numHeads;
+
+    resultDiv.textContent = `Outcome: ${outcome}`;
+    numericDiv.textContent = `Number of Heads = ${numHeads}, Number of Tails = ${numTails}`;
+  });
+})();
+</script>
+
 
 Let's get back to our initial example. Let's first list the possible outcomes of flipping three fair coins:
 
