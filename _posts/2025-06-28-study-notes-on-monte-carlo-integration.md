@@ -482,10 +482,11 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
 (function () {
   const resultDiv = document.getElementById("result");
   const numericDiv = document.getElementById("numeric");
+  const frequenciesDiv = document.getElementById("frequencies");
   const flipBtn = document.getElementById("flip-button");
   const resetBtn = document.getElementById("reset-button");
 
-  // Add Auto Flip Button
+  // Auto Flip Button
   const autoBtn = document.createElement("button");
   autoBtn.textContent = "Auto Flip 100 Times";
   autoBtn.style.padding = "10px 20px";
@@ -499,21 +500,40 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
   const counts = [0, 0, 0, 0]; // index = number of heads
   let totalFlips = 0;
 
+  const theoretical = [1/8, 3/8, 3/8, 1/8];
+
   const chart = new Chart(document.getElementById('pmfChart').getContext('2d'), {
     type: 'bar',
     data: {
       labels: ['0 Heads', '1 Head', '2 Heads', '3 Heads'],
-      datasets: [{
-        label: 'Relative Frequency',
-        data: counts,
-        backgroundColor: ['#6c757d', '#007bff', '#17a2b8', '#28a745']
-      }]
+      datasets: [
+        {
+          label: 'Observed Frequency',
+          data: counts,
+          backgroundColor: '#007bff'
+        },
+        {
+          label: 'Theoretical Probability',
+          data: theoretical,
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2,
+          type: 'bar'
+        }
+      ]
     },
     options: {
       scales: {
         y: {
           beginAtZero: true,
           max: 1
+        }
+      },
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top'
         }
       }
     }
@@ -534,6 +554,16 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
     numericDiv.textContent = `Heads = ${numHeads}, Tails = ${3 - numHeads}, Total Trials = ${totalFlips}`;
   }
 
+  function updateFrequencies() {
+    let html = '';
+    for (let i = 0; i < counts.length; i++) {
+      const count = counts[i];
+      const pct = totalFlips > 0 ? (count / totalFlips * 100).toFixed(1) : "0.0";
+      html += `${i} Head${i !== 1 ? 's' : ''}: ${count} (${pct}%)<br>`;
+    }
+    frequenciesDiv.innerHTML = html;
+  }
+
   function updateChart() {
     if (totalFlips === 0) {
       chart.data.datasets[0].data = [0, 0, 0, 0];
@@ -541,6 +571,7 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
       chart.data.datasets[0].data = counts.map(c => c / totalFlips);
     }
     chart.update();
+    updateFrequencies();
   }
 
   flipBtn.addEventListener("click", () => {
@@ -553,7 +584,8 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
     totalFlips = 0;
     resultDiv.textContent = '';
     numericDiv.textContent = '';
-    updateChart(); // ✅ fixes visual reset
+    frequenciesDiv.innerHTML = '';
+    updateChart();
   });
 
   autoBtn.addEventListener("click", () => {
