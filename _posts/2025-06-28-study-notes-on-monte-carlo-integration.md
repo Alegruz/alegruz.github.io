@@ -17,7 +17,7 @@ The topic of the post is **Monte Carlo Integration**.
 
 ## What is it? (briefly)
 
-Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote1">1</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula \(A = \pi r^2\). However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
+Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote_1">[1]</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula \(A = \pi r^2\). However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
 
 By <a href="//commons.wikimedia.org/wiki/User:Yoderj" title="User:Yoderj">Yoderj</a>, <a href="//commons.wikimedia.org/wiki/User:Mysid" title="User:Mysid">Mysid</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=35608043">Link</a>
 
@@ -203,7 +203,7 @@ $$E_n(f) = I(f) - I_n(f) = \int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx$$
 
 Where E stands for *error*. The goal of numerical integration is to minimize this error E<sub>n</sub>(f).
 
-If function f is continuous in the interval [a, b], or f &in; C<sup>0</sup>([a, b])<sup><a href="#footnote_2"></a></sup>, according to the triangle inequality<sup><a href="#footnote_3"></a></sup>, we can bound the error as follows:
+If function f is continuous in the interval [a, b], or f &in; C<sup>0</sup>([a, b])<sup><a href="#footnote_2">[2]</a></sup>, according to the triangle inequality<sup><a href="#footnote_3">[3]</a></sup>, we can bound the error as follows:
 
 $$|E_n(f)| = |I(f) - I_n(f)| = |\int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx| \leq \int_{a}^{b} |f(x) - f_n(x)| dx$$
 
@@ -229,7 +229,7 @@ We can
 
 where P<sub>n</sub>([a, b]) is the space of polynomials of degree at most n defined over the interval [a, b]. In this case, we can use polynomial interpolation to find a polynomial that approximates f(x) well enough.
 
-One way is to use the interpolating Lagrange polynomial. The Lagrange interpolating polynomial is the unique polynomial of lowest degree that interpolates a given set of data<sup><a href="#footnote_4"></a></sup>.
+One way is to use the interpolating Lagrange polynomial. The Lagrange interpolating polynomial is the unique polynomial of lowest degree that interpolates a given set of data<sup><a href="#footnote_4">[4]</a></sup>.
 
 <div id="lagrange-interpolating-polynomial-demo" style="text-align: center; margin: 20px 0;">
   <canvas id="lagrange-interpolating-polynomial-canvas" width="400" height="400" style="border: 1px solid #ccc; margin: 10px;"></canvas>
@@ -371,6 +371,225 @@ One way is to use the interpolating Lagrange polynomial. The Lagrange interpolat
 })();
 </script>
 
+What we have to do is to sample n points from the function f(x) and use these points to construct the Lagrange interpolating polynomial. The Lagrange polynomial is defined as:
+
+$$f_n = \Pi_n f$$
+
+If Lagrange interpolating polynomial is a polynomial, then what are the basis of the polynomial? The basis of the polynomial is given by the Lagrange basis polynomials, which are defined as:
+
+$$L_i(x) = \prod_{j=0, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}$$
+
+where x<sub>i</sub> are the sample points. The Lagrange polynomial can then be expressed as:
+
+$$L_n(x) = \sum_{i=0}^{n} f(x_i) L_i(x)$$
+
+where L<sub>i</sub>(x) are the Lagrange basis polynomials.
+
+Now let's define the approximation function f<sub>n</sub>(x) as the Lagrange polynomial:
+
+$$f_n(x) = L_n(x) = \sum_{i=0}^{n} f(x_i) L_i(x)$$
+
+The final integral can then be approximated as:
+
+$$I_n(f) = \int_{a}^{b} f_n(x) dx = \int_{a}^{b} \sum_{i=0}^{n} f(x_i) L_i(x) dx$$
+
+The f(x<sub>i</sub>) are constant values, so we can take them out of the integral:
+
+$$I_n(f) = \sum_{i=0}^{n} f(x_i) \int_{a}^{b} L_i(x) dx$$
+
+We can generalize this by defining the integrand as a coefficient &alpha;<sub>i</sub>:
+
+$$I_n(f) = \sum_{i=0}^{n} \alpha_i f(x_i)$$
+
+where &alpha;<sub>i</sub> = &int;<sub>a</sub><sup>b</sup> L<sub>i</sub>(x) dx.
+
+This can be viewed as a weighted sum of the function values at the sample points, where the sample points are called **nodes** and the **weights** are called **coefficients**.
+
+#### Multidimensional Numerical Integration
+
+The function we want to integrate is defined over a multidimensional space, such as a sphere or a hemisphere. Especially, when the number of dimensions exceed two, we often use Monte Carlo integration to estimate the integral. Unlike other analytical methods, Monte Carlo integration's quadrature nodes or coefficients are statistically chosen according to the values attained by random variables having a known probability distribution.
+
+The basic idea is to consider the integral as the expected value of a function over a probability distribution. We call this as a **statistic mean value**.
+
+Now that we have multidimensional space, we can define the integral as:
+
+$$I(f) = \int_{\Omega} f(\textbf{x}) d\textbf{x}$$
+
+where &Omega; is the domain of integration, which can be a sphere, hemisphere, or any other multidimensional space. Thus,
+
+$$\Omega \in \mathbb{R}^n$$
+
+where n is the number of dimensions.
+
+We can rewrite the original integral from the domain of integration &Omega; to the entire space &Ropf;<sup>n</sup> by using a characteristic function &chi;<sub>&Omega;</sub>(x):
+
+$$\chi_{\Omega}(\textbf{x}) = \begin{cases} 1 & \text{if } \textbf{x} \in \Omega \\ 0 & \text{otherwise} \end{cases}$$
+
+Thus, we can rewrite the integral as:
+
+$$I(f) = \int_{\mathbb{R}^n} f(\textbf{x}) \chi_{\Omega}(\textbf{x}) d\textbf{x}$$
+
+Now is the time for a little trick. Multiply the volume of the domain of integration &Omega; to the integral with its inverse:
+
+$$I(f) = \frac{|\Omega|}{|\Omega|} \int_{\mathbb{R}^n} f(\textbf{x}) \chi_{\Omega}(\textbf{x})  d\textbf{x}$$
+
+Move the inverse volume of the domain of integration &Omega; into the integral:
+
+$$I(f) = {|\Omega|}\int_{\mathbb{R}^n} f(\textbf{x}) \frac{\chi_{\Omega}(\textbf{x})}{|\Omega|} d\textbf{x}$$
+
+We can see that the term &chi;<sub>&Omega;</sub>(**x**) / |&Omega;| is a probability density function (PDF) defined over the domain of integration &Omega;. Wait, doesn't this look like an expected value? Yes, it does! We can rewrite the integral as an expected value of the function f over the PDF defined by the characteristic function &chi;<sub>&Omega;</sub>(x):
+
+$$I(f) = |\Omega| \mathbb{E}_{\chi_{\Omega}}[f(\textbf{x})] = |\Omega| \int_{\mathbb{R}^n} f(\textbf{x}) p(\textbf{x}) d\textbf{x} = |\Omega| \mu(f)$$
+
+where 
+
+$$p(\textbf{x}) = \frac{\chi_{\Omega}(\textbf{x})}{|\Omega|}$$
+
+is the PDF defined over the domain of integration &Omega;, and &mu;(f) is the expected value of the function f over the PDF p.
+
+where &Omega; is the volume of the domain of integration &Omega;. This is equivalent to multiplying the integral by 1, so it does not change the value of the integral.
+
+I think this is a good place to review probabilities and random variables, as they are the key concepts in Monte Carlo integration.
+
+### Probability and Random Variables
+
+#### Random Variables
+
+A random variable is a mathematical formalization of a quantity or object which depends on random events<sup><a href="#footnote_5">[5]</a></sup>. We all know that this kind of formal definition is not very useful, so let's try to understand it better.
+
+For example, let's say that we have three fair coins. A fair coin is a coin that has an equal probability of landing on heads or tails. In this case, the random event is the outcome of flipping the coins. Based on this event, we can define a random variable X that represents the number of heads that appear when we flip the three coins. The possible values of X are 0, 1, 2, or 3, depending on how many heads appear. You can define a random variable for any quantity that depends on a random event, such as the number of tails, the sum of the values of the coins, or even the color of the coins if they are colored.
+
+Let's get back to our initial example. Let's first list the possible outcomes of flipping three fair coins:
+
+| Outcome | Number of Heads (X) |
+|---------|---------------------|
+| HHH     | 3                   |
+| HHT     | 2                   |
+| HTH     | 2                   |
+| THH     | 2                   |
+| HTT     | 1                   |
+| THT     | 1                   |
+| TTH     | 1                   |
+| TTT     | 0                   |
+
+Now let's also add a column for the probability of each outcome. Since the coins are fair, each outcome has an equal probability of occurring. There are 2<sup>3</sup> = 8 possible outcomes, so the probability of each outcome is 1/8.
+
+| Outcome | Number of Heads (X) | Probability |
+|---------|---------------------|-------------|
+| HHH     | 3                   | 1/8         |
+| HHT     | 2                   | 1/8         |
+| HTH     | 2                   | 1/8         |
+| THH     | 2                   | 1/8         |
+| HTT     | 1                   | 1/8         |
+| THT     | 1                   | 1/8         |
+| TTH     | 1                   | 1/8         |
+| TTT     | 0                   | 1/8         |
+
+But remember that we are interested in the random variable X, which represents the number of heads, not the outcomes themselves. So let's summarize the probabilities of each value of X:
+
+| Number of Heads (X) | Outcomes | Probability |
+|---------------------|----------|-------------|
+| 0                   | TTT      | 1/8         |
+| 1                   | HTT, THT, TTH | 3/8         |
+| 2                   | HHT, HTH, THH | 3/8         |
+| 3                   | HHH      | 1/8         |
+
+If we ask "what is the probability of getting exactly 2 heads when flipping three fair coins?", we can see that there are 3 outcomes that result in 2 heads, and the total number of outcomes is 8. Therefore, the probability of getting exactly 2 heads is:
+
+$$P(X = 2) = \frac{3}{8}$$
+
+We all remember that a probability of a random event is the number of occurences of that event divided by the total number of possible outcomes. Thus, if we add up the probabilities of all possible values of X, we should get 1:
+
+$$P(X = 0) + P(X = 1) + P(X = 2) + P(X = 3) = 1$$
+
+Or more generally:
+
+$$\sum_{x \in X} P(X = x) = 1$$
+
+where X is the set of all possible values of the random variable X.
+
+In probability, we define a **probability distribution** as a function that assigns a probability to each possible value of a random variable. In our case, we can define the probability distribution of the random variable X as:
+
+$$P(X = x) = \begin{cases}
+\frac{1}{8} & \text{if } x = 0 \\
+\frac{3}{8} & \text{if } x = 1 \\
+\frac{3}{8} & \text{if } x = 2 \\
+\frac{1}{8} & \text{if } x = 3 \\
+0 & \text{otherwise}
+\end{cases}$$
+
+In plain English, this means that the probability of getting 0 heads is 1/8, the probability of getting 1 head is 3/8, the probability of getting 2 heads is 3/8, and the probability of getting 3 heads is 1/8. The probability of getting any other value is 0.
+
+There is one more function that we often use, which is the **cumulative distribution function (CDF)**. The CDF of a random variable X is a function that gives the probability that X is less than or equal to a certain value x:
+
+$$F_X(x) = P(X \leq x) = \sum_{k \leq x} P(X = k)$$
+
+In plain English, this means that the CDF gives us the probability that the random variable X is less than or equal to x. For example, if we want to know the probability of getting at most 2 heads when flipping three fair coins, we can use the CDF:
+
+$$F_X(2) = P(X \leq 2) = P(X = 0) + P(X = 1) + P(X = 2) = \frac{1}{8} + \frac{3}{8} + \frac{3}{8} = \frac{7}{8}$$
+
+#### Discrete Random Variables
+
+The examples above are for discrete random variables, which take on a finite or countably infinite set of values. In this case, we define the probability mass function (PMF) as the function that gives the probability of each value of the random variable. The PMF is defined as:
+
+$$p(a) = P(X = a)$$
+
+For every value a in the range of the random variable X, PMF is non-negative, but if the given value is not in the range of the random variable, then PMF is 0:
+
+$$p(a) = \begin{cases}
+p_x & \text{if } a \in X \\
+0 & \text{otherwise}
+\end{cases}$$
+
+And since the sum of all probabilities must equal 1, we can write:
+
+$$\sum_{a \in X} p(a) = 1$$
+
+#### Expected Value
+
+The term expected value is actually self explanatory. For example, what is the expected value of the random variable X if we flip three fair coins? In real life, everyone would give different answers, or refuse to answer because you can't expect the future. However, the term expectation means, what value is most likely to be the safest bet. For example, if we flip three fair coins, which random variable X has the highest probability of occurring? We can see that the most likely value is 1 or 2 heads, as they have the highest probabilities of 3/8. So we can say that maybe the expected value of X is around one or two heads. But how do we compute the expected value mathematically?
+
+We can think of this as a weighted average of all possible values of the random variable, where the weights are the probabilities of each value. By weighing each value by its probability, the final result would tend to be closer to the values with higher probabilities. The expected value of a discrete random variable X is defined as:
+
+$$\mathbb{E}[X] = \sum_{x \in X} x \cdot p(x)$$
+
+Before we discuss further, let's see some characteristics about expected values:
+
+$$\mathbb{E}[g(X)] = \sum_{x \in X} g(x) \cdot p(x)$$
+
+where g(X) is a function of the random variable X. This means that we can compute the expected value of any function of the random variable by applying the function to each value of the random variable and multiplying it by the probability of that value.
+
+$$\mathbb{E}[aX + c] = a\mathbb{E}[X] + c$$
+
+#### Variance
+
+A variance is a measure of how much the values of a random variable vary from the expected value. For example, say that there exist a society where the top 1% of the population has a net worth of $1 billion, while the rest of the population has a net worth of $10,000. The expected value of the net worth in this society would be heavily skewed towards the $1 billion value, even though most people have a net worth of $10,000. This means that the variance is very high, as the values are very spread out from the expected value. Without variance, people who don't know the distribution of the net worth in this society would think that the expected value is a good representation of the net worth of the average person, which is not true.
+
+Now, how can we represent this gap between the expected value and the actual values of the random variable? Well, I think we've just defined it. What does the term "gap between the expected value and the actual values" mean? It sounds like a distance, right?
+
+$$\text{Distance} = |X - \mathbb{E}[X]|$$
+
+If there are n possible values of the random variable X, then we would have n distances. What would be a good way to summarize these distances? Let's say that we have squared distances, which would be:
+
+$$\text{Squared Distance} = (X - \mathbb{E}[X])^2$$
+
+The variance of a discrete random variable X is defined as the expected value of the squared distance from the expected value:
+
+$$\text{Var}(X) = \mathbb{E}[(X - \mathbb{E}[X])^2] = \sum_{x \in X} (x - \mathbb{E}[X])^2 \cdot p(x)$$
+
+This could be rephrased as:
+
+$$\text{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$$
+
+Humans are not very good at dealing with squared distances, so we often take the square root of the variance to get the standard deviation:
+
+$$\text{Standard Deviation}(X) = \sqrt{\text{Var}(X)}$$
+
+#### Continuous Random Variables
+
+The fun of math is in generalization. We can generalize the concept of random variables to continuous random variables, which take on an uncountably infinite set of values.
+
+It is easy understanding the discrete random variables because a lot of real-world phenomena can be modeled as discrete events, such as flipping coins, rolling dice, or counting the number of occurrences of an event. So people have hard time understanding continuous random variables, as they are not as intuitive. However, many real-world phenomena can be modeled as continuous events.
 
 Computer Graphics: Principles and Practice
 
@@ -502,8 +721,9 @@ State of the Art in Monte Carlo Global Illumination: SIGGRAPH 2004
 ## How is it used?
 
 <div class="footnote">
-  <p id="footnote1">1. <a href="https://en.wikipedia.org/wiki/Monte_Carlo_integration">Wikipedia</a></p>
+  <p id="footnote_1">1. <a href="https://en.wikipedia.org/wiki/Monte_Carlo_integration">Wikipedia</a></p>
   <p id="footnote_2">2. <a href="https://en.wikipedia.org/wiki/Function_space">Wikipedia</a></p>
   <p id="footnote_3">3. <a href="https://en.wikipedia.org/wiki/Triangle_inequality">Wikipedia</a></p>
   <p id="footnote_4">4. <a href="https://en.wikipedia.org/wiki/Lagrange_polynomial">Wikipedia</a></p>
+  <p id="footnote_5">5. <a href="https://en.wikipedia.org/wiki/Random_variable">Wikipedia</a></p>
 </div>
