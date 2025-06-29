@@ -467,33 +467,76 @@ A random variable is a mathematical formalization of a quantity or object which 
 For example, let's say that we have three fair coins. A fair coin is a coin that has an equal probability of landing on heads or tails. In this case, the random event is the outcome of flipping the coins. Based on this event, we can define a random variable X that represents the number of heads that appear when we flip the three coins. The possible values of X are 0, 1, 2, or 3, depending on how many heads appear. You can define a random variable for any quantity that depends on a random event, such as the number of tails, the sum of the values of the coins, or even the color of the coins if they are colored.
 
 <div style="text-align: center; margin: 20px 0;">
-  <h2>🎲 Flip 3 Coins – Discrete Random Variable</h2>
-  <button id="flip-button" style="padding: 10px 20px; margin: 10px; background-color: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer;">Flip Coins</button>
-  <div id="result" style="font-size: 1.5em; margin-top: 10px;"></div>
-  <div id="numeric" style="margin-top: 10px; font-family: monospace;"></div>
+  <h2>🪙 Flip 3 Coins — Discrete Random Variable Tracker</h2>
+  <button id="flip-button" style="padding: 10px 20px; margin: 5px;">Flip Coins</button>
+  <button id="reset-button" style="padding: 10px 20px; margin: 5px; background-color: #dc3545; color: white;">Reset</button>
+
+  <div id="result" style="font-size: 1.5em; margin-top: 15px;"></div>
+  <div id="numeric" style="margin: 10px; font-family: monospace;"></div>
+
+  <canvas id="pmfChart" width="500" height="300" style="margin-top: 20px;"></canvas>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 (function () {
   const resultDiv = document.getElementById("result");
   const numericDiv = document.getElementById("numeric");
   const flipBtn = document.getElementById("flip-button");
+  const resetBtn = document.getElementById("reset-button");
+
+  const counts = [0, 0, 0, 0]; // index = number of heads
+  let totalFlips = 0;
+
+  const chart = new Chart(document.getElementById('pmfChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['0 Heads', '1 Head', '2 Heads', '3 Heads'],
+      datasets: [{
+        label: 'Relative Frequency',
+        data: counts,
+        backgroundColor: ['#6c757d', '#007bff', '#17a2b8', '#28a745']
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 1
+        }
+      }
+    }
+  });
 
   function flipCoin() {
     return Math.random() < 0.5 ? 'H' : 'T';
   }
 
-  function countHeads(outcome) {
-    return outcome.split('').filter(c => c === 'H').length;
+  function updateChart() {
+    if (totalFlips === 0) return;
+    chart.data.datasets[0].data = counts.map(c => c / totalFlips);
+    chart.update();
   }
 
   flipBtn.addEventListener("click", () => {
     const outcome = [flipCoin(), flipCoin(), flipCoin()].join('');
-    const numHeads = countHeads(outcome);
-    const numTails = 3 - numHeads;
+    const numHeads = outcome.split('').filter(c => c === 'H').length;
+
+    counts[numHeads]++;
+    totalFlips++;
 
     resultDiv.textContent = `Outcome: ${outcome}`;
-    numericDiv.textContent = `Number of Heads = ${numHeads}, Number of Tails = ${numTails}`;
+    numericDiv.textContent = `Heads = ${numHeads}, Tails = ${3 - numHeads}, Total Trials = ${totalFlips}`;
+
+    updateChart();
+  });
+
+  resetBtn.addEventListener("click", () => {
+    for (let i = 0; i < counts.length; i++) counts[i] = 0;
+    totalFlips = 0;
+    resultDiv.textContent = '';
+    numericDiv.textContent = '';
+    updateChart();
   });
 })();
 </script>
