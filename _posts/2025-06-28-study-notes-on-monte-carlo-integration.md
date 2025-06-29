@@ -485,6 +485,17 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
   const flipBtn = document.getElementById("flip-button");
   const resetBtn = document.getElementById("reset-button");
 
+  // Add Auto Flip Button
+  const autoBtn = document.createElement("button");
+  autoBtn.textContent = "Auto Flip 100 Times";
+  autoBtn.style.padding = "10px 20px";
+  autoBtn.style.margin = "5px";
+  autoBtn.style.backgroundColor = "#ffc107";
+  autoBtn.style.border = "none";
+  autoBtn.style.borderRadius = "5px";
+  autoBtn.style.cursor = "pointer";
+  flipBtn.insertAdjacentElement("afterend", autoBtn);
+
   const counts = [0, 0, 0, 0]; // index = number of heads
   let totalFlips = 0;
 
@@ -512,13 +523,7 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
     return Math.random() < 0.5 ? 'H' : 'T';
   }
 
-  function updateChart() {
-    if (totalFlips === 0) return;
-    chart.data.datasets[0].data = counts.map(c => c / totalFlips);
-    chart.update();
-  }
-
-  flipBtn.addEventListener("click", () => {
+  function runTrial() {
     const outcome = [flipCoin(), flipCoin(), flipCoin()].join('');
     const numHeads = outcome.split('').filter(c => c === 'H').length;
 
@@ -527,7 +532,19 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
 
     resultDiv.textContent = `Outcome: ${outcome}`;
     numericDiv.textContent = `Heads = ${numHeads}, Tails = ${3 - numHeads}, Total Trials = ${totalFlips}`;
+  }
 
+  function updateChart() {
+    if (totalFlips === 0) {
+      chart.data.datasets[0].data = [0, 0, 0, 0];
+    } else {
+      chart.data.datasets[0].data = counts.map(c => c / totalFlips);
+    }
+    chart.update();
+  }
+
+  flipBtn.addEventListener("click", () => {
+    runTrial();
     updateChart();
   });
 
@@ -536,11 +553,17 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
     totalFlips = 0;
     resultDiv.textContent = '';
     numericDiv.textContent = '';
+    updateChart(); // ✅ fixes visual reset
+  });
+
+  autoBtn.addEventListener("click", () => {
+    for (let i = 0; i < 100; i++) {
+      runTrial();
+    }
     updateChart();
   });
 })();
 </script>
-
 
 Let's get back to our initial example. Let's first list the possible outcomes of flipping three fair coins:
 
