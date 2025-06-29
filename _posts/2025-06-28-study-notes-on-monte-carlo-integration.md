@@ -585,7 +585,9 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
     resultDiv.textContent = '';
     numericDiv.textContent = '';
     frequenciesDiv.innerHTML = '';
-    updateChart();
+
+    chart.data.datasets[0].data = [0, 0, 0, 0]; // 🛠 clear the bar chart
+    chart.update();
   });
 
   autoBtn.addEventListener("click", () => {
