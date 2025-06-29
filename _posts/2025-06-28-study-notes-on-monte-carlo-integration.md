@@ -221,6 +221,157 @@ $$||f - f_n||_{\infty} < \epsilon$$
 
 $$|E_n(f)| \leq \epsilon \cdot (b - a)$$
 
+Now, the problem is to come up with an easily integrable function f<sub>n</sub>(x) that approximates the original function f(x) well enough. One example is to use a polynomial approximation, or:
+
+$$f_n \in \mathbb{P}_n$$
+
+We can 
+
+where P<sub>n</sub>([a, b]) is the space of polynomials of degree at most n defined over the interval [a, b]. In this case, we can use polynomial interpolation to find a polynomial that approximates f(x) well enough.
+
+One way is to use the interpolating Lagrange polynomial. The Lagrange interpolating polynomial is the unique polynomial of lowest degree that interpolates a given set of data<sup><a href="#footnote_4"></a></sup>.
+
+<div id="lagrange-interpolating-polynomial-demo" style="text-align: center; margin: 20px 0;">
+  <canvas id="lagrange-interpolating-polynomial-canvas" width="400" height="400" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+  <br>
+  <button id="add-point" style="padding: 10px 20px; margin: 5px; background-color: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer;">Add Point</button>
+  <button id="reset-points" style="padding: 10px 20px; margin: 5px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Reset</button>
+  <div style="margin: 10px; font-family: monospace;">
+    <p>Number of Points: <span id="num-points">0</span></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById("lagrange-interpolating-polynomial-canvas");
+  const ctx = canvas.getContext("2d");
+  const addPointBtn = document.getElementById("add-point");
+  const resetBtn = document.getElementById("reset-points");
+  const numPointsDisplay = document.getElementById("num-points");
+
+  const WIDTH = canvas.width;
+  const HEIGHT = canvas.height;
+  const XMIN = -10, XMAX = 10;
+  const YMIN = -10, YMAX = 10;
+
+  let points = [];
+
+  function worldToCanvas(x, y) {
+    const cx = ((x - XMIN) / (XMAX - XMIN)) * WIDTH;
+    const cy = HEIGHT - ((y - YMIN) / (YMAX - YMIN)) * HEIGHT;
+    return [cx, cy];
+  }
+
+  function canvasToWorld(cx, cy) {
+    const x = XMIN + (cx / WIDTH) * (XMAX - XMIN);
+    const y = YMAX - (cy / HEIGHT) * (YMAX - YMIN);
+    return [x, y];
+  }
+
+  function drawAxes() {
+    ctx.strokeStyle = "#999";
+    ctx.lineWidth = 1;
+
+    // X-axis
+    const [x0, y0] = worldToCanvas(XMIN, 0);
+    const [x1, y1] = worldToCanvas(XMAX, 0);
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+
+    // Y-axis
+    const [x2, y2] = worldToCanvas(0, YMIN);
+    const [x3, y3] = worldToCanvas(0, YMAX);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.stroke();
+  }
+
+  function lagrangeBasis(x, i) {
+    const xi = points[i][0];
+    let result = 1;
+    for (let j = 0; j < points.length; j++) {
+      if (j !== i) {
+        const xj = points[j][0];
+        result *= (x - xj) / (xi - xj);
+      }
+    }
+    return result;
+  }
+
+  function lagrangeInterpolatingPolynomial(x) {
+    let sum = 0;
+    for (let i = 0; i < points.length; i++) {
+      sum += points[i][1] * lagrangeBasis(x, i);
+    }
+    return sum;
+  }
+
+  function drawPolynomial() {
+    ctx.beginPath();
+    ctx.strokeStyle = "#007cba";
+    ctx.lineWidth = 2;
+
+    let first = true;
+    for (let px = 0; px <= WIDTH; px++) {
+      const x = XMIN + (px / WIDTH) * (XMAX - XMIN);
+      const y = lagrangeInterpolatingPolynomial(x);
+      const [cx, cy] = worldToCanvas(x, y);
+
+      if (first) {
+        ctx.moveTo(cx, cy);
+        first = false;
+      } else {
+        ctx.lineTo(cx, cy);
+      }
+    }
+
+    ctx.stroke();
+  }
+
+  function drawPoints() {
+    for (const [x, y] of points) {
+      const [cx, cy] = worldToCanvas(x, y);
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
+      ctx.fillStyle = "#dc3545";
+      ctx.fill();
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    drawAxes();
+    drawPoints();
+    if (points.length > 1) {
+      drawPolynomial();
+    }
+  }
+
+  function addRandomPoint() {
+    const x = parseFloat((Math.random() * 20 - 10).toFixed(2));
+    const y = parseFloat((Math.random() * 20 - 10).toFixed(2));
+    points.push([x, y]);
+    numPointsDisplay.textContent = points.length;
+    draw();
+  }
+
+  function reset() {
+    points = [];
+    numPointsDisplay.textContent = "0";
+    draw();
+  }
+
+  addPointBtn.addEventListener("click", addRandomPoint);
+  resetBtn.addEventListener("click", reset);
+
+  draw();
+})();
+</script>
+
+
 Computer Graphics: Principles and Practice
 
 1.  Probability and Monte Carlo Integration
@@ -354,4 +505,5 @@ State of the Art in Monte Carlo Global Illumination: SIGGRAPH 2004
   <p id="footnote1">1. <a href="https://en.wikipedia.org/wiki/Monte_Carlo_integration">Wikipedia</a></p>
   <p id="footnote_2">2. <a href="https://en.wikipedia.org/wiki/Function_space">Wikipedia</a></p>
   <p id="footnote_3">3. <a href="https://en.wikipedia.org/wiki/Triangle_inequality">Wikipedia</a></p>
+  <p id="footnote_4">4. <a href="https://en.wikipedia.org/wiki/Lagrange_polynomial">Wikipedia</a></p>
 </div>
