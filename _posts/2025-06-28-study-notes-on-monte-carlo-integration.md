@@ -580,13 +580,17 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
   });
 
   resetBtn.addEventListener("click", () => {
+    // Reset raw data
     for (let i = 0; i < counts.length; i++) counts[i] = 0;
     totalFlips = 0;
+
+    // Clear text
     resultDiv.textContent = '';
     numericDiv.textContent = '';
     frequenciesDiv.innerHTML = '';
 
-    chart.data.datasets[0].data = [0, 0, 0, 0]; // 🛠 clear the bar chart
+    // 🚨 Break the reference: overwrite with a fresh array copy
+    chart.data.datasets[0].data = [0, 0, 0, 0].slice(); 
     chart.update();
   });
 
