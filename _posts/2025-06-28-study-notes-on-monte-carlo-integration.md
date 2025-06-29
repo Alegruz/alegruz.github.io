@@ -15,6 +15,13 @@ When learning new concepts, I often ask the following questions to keep myself f
 
 The topic of the post is **Monte Carlo Integration**.
 
+## Table of Contents
+
+{: .no_toc}
+
+* TOC
+{:toc}
+
 ## What is it? (briefly)
 
 Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote_1">[1]</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula \(A = \pi r^2\). However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
