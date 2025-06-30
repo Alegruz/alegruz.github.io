@@ -970,7 +970,7 @@ The convergence rate does not depend on the dimension of approximation N, but ra
     const yMin = Math.min(...yVals);
     const yMax = Math.max(...yVals);
 
-    // Draw function
+    // Draw true function curve
     ctx.beginPath();
     ctx.moveTo(0, h * (1 - (values[0].y - yMin) / (yMax - yMin)));
     for (let i = 1; i < values.length; i++) {
@@ -982,10 +982,42 @@ The convergence rate does not depend on the dimension of approximation N, but ra
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Draw samples
+    // Fill exact integral area
+    ctx.fillStyle = 'rgba(0, 123, 255, 0.1)';
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    for (let i = 0; i < values.length; i++) {
+      const px = i;
+      const py = h * (1 - (values[i].y - yMin) / (yMax - yMin));
+      ctx.lineTo(px, py);
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+
+    // Fill MC estimated area
+    if (samples.length > 0) {
+      const avg = samples.reduce((sum, s) => sum + s.y, 0) / samples.length;
+      const avgY = h * (1 - (avg - yMin) / (yMax - yMin));
+      ctx.fillStyle = 'rgba(40, 167, 69, 0.2)';
+      ctx.fillRect(0, avgY, w, h - avgY);
+    }
+
+    // Draw samples with vertical line contribution
     for (const sample of samples) {
       const px = ((sample.x - a) / (b - a)) * w;
       const py = h * (1 - (sample.y - yMin) / (yMax - yMin));
+      const baseY = h * (1 - (0 - yMin) / (yMax - yMin));
+
+      // Draw vertical line for f(x) * p(x)
+      ctx.beginPath();
+      ctx.moveTo(px, baseY);
+      ctx.lineTo(px, py);
+      ctx.strokeStyle = 'rgba(255, 99, 132, 0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Draw point
       ctx.beginPath();
       ctx.arc(px, py, 3, 0, 2 * Math.PI);
       ctx.fillStyle = 'red';
