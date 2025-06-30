@@ -735,6 +735,167 @@ The fun of math is in generalization. We can generalize the concept of random va
 
 It is easy understanding the discrete random variables because a lot of real-world phenomena can be modeled as discrete events, such as flipping coins, rolling dice, or counting the number of occurrences of an event. So people have hard time understanding continuous random variables, as they are not as intuitive. However, many real-world phenomena can be modeled as continuous events.
 
+For example, let's say that we are measuring how good an archer is at hitting a target. The random event is where the arrow lands on the target. The random variable X is the distance from the center of the target to where the arrow lands. For the purpose of the explanation, let's say that the target is infinitely big. The possible values of X are all non-negative real numbers, as the distance can be any positive value. In this case, we can define a continuous random variable X that represents the distance from the center of the target to where the arrow lands. If an archer is very good, the probability of hitting the center of the target is very high, and the probability of hitting farther away from the center is very low.
+
+Unlike our first example of discrete random variables, we cannot list all possible values of a continuous random variable, as there are infinitely many of them. How can we then tell a probability of a continuous random variable? For example, we can say that a good archer has a high chance of hitting the target within a distance of 1 cm from the center, but if the question is about a specific distance, such as 1.5 cm, we cannot say that the probability of hitting exactly 1.5 cm is high or low, as there are infinitely many possible distances that the arrow can land on. But one thing is certain, the probability of hitting the target itself is 1, as the archer will always hit the target, even if it is very far away from the center. This could be mathematically expressed as:
+
+$$P(X \in U) = \int_{0}^{\infty} p(x) \, dx = 1$$
+
+where U is our universe of discourse, the set of all possible distances from the center of the target, and p(x) is the probability density function (PDF) of the continuous random variable X.
+
+We can also say that given a domain of integration [a, b], the probability of hitting the target within that distance is:
+
+$$P(a \leq X \leq b) = \int_{a}^{b} p(x) \, dx$$
+
+where p(x) is the probability density function (PDF) of the continuous random variable X. The PDF is a function that gives the probability density at each point in the range of the random variable. The PDF is non-negative and integrates to 1 over the entire range of the random variable.
+
+Unlike discrete random variables, we cannot call p(x) a probability mass function (PMF), as it does not give the probability of each value of the random variable. Instead, we call it a probability density function (PDF), as it gives the probability density at each point in the range of the random variable:
+
+$$p(x) = \begin{cases}
+p_x & \text{if } x \in X \\
+0 & \text{otherwise}
+\end{cases}$$
+
+Now let's define the probability of continuous random variables. If given a random variable X each is a real number, then the probability of X being in a set A is defined as:
+
+$$P(X \in A) = \int_{A} p(x) \, dx$$
+
+if there exists a probability density function p(x) such that:
+
+$$\int_{\mathbb{R}} p(x) \, dx = 1$$
+
+and is non-negative for all x in the range of the random variable X.
+
+The cumulative distribution function (CDF) of a continuous random variable X is defined as:
+
+$$F_X(x) = P(X \leq x) = \int_{-\infty}^{x} p(t) \, dt$$
+
+This means that a PDF is the derivative of the CDF:
+
+$$p(x) = \frac{d}{dx} F_X(x)$$
+
+##### Expected Value of Continuous Random Variables
+
+The definition of expected value for continuous random variables is no different from the definition for discrete random variables. We just can't sum over the values of the random variable, as there are infinitely many of them. Instead, we integrate over the range of the random variable:
+
+$$E[X] = \int_{-\infty}^{\infty} x p(x) \, dx$$
+
+The following are some properties of expected values of continuous random variables:
+
+$$E[g(X)] = \int_{-\infty}^{\infty} g(x) p(x) \, dx$$
+
+where g(X) is a function of the random variable X. This means that we can compute the expected value of any function of the random variable by applying the function to each value of the random variable and multiplying it by the probability density function.
+
+$$E[Y] = \int_{0}^{\infty} P(Y > y) \, dy$$
+
+where Y is a non-negative continuous random variable. This means that we can compute the expected value of a continuous random variable by integrating the probability that the random variable is greater than a certain value.
+
+#### Uniform Random Variable
+
+The easiest continuous random variable to understand is the uniform random variable. A uniform random variable is a random variable that has a constant probability density function over a certain range. For example, if we have a uniform random variable X in the interval (0, 1), then the PDF of X is:
+
+$$p(x) = \begin{cases}
+1 & \text{if } 0 < x < 1 \\
+0 & \text{otherwise}
+\end{cases}$$
+
+Thus the probability of X being in the interval [a, b] is:
+
+$$P(a \leq X \leq b) = \int_{a}^{b} p(x) \, dx = b - a$$
+
+If we generalize this to a uniform random variable X in the interval (a, b), then the PDF of X is:
+
+$$p(x) = \begin{cases}
+\frac{1}{b - a} & \text{if } a < x < b \\
+0 & \text{otherwise}
+\end{cases}$$
+
+And its cumulative distribution function (CDF) is:
+
+$$F_X(x) = \begin{cases}
+0 & \text{if } x \leq a \\
+\frac{x - a}{b - a} & \text{if } a < x < b \\
+1 & \text{if } x \geq b
+\end{cases}$$
+
+### Monte Carlo Integration
+
+Now that we have a good understanding of probabilities and random variables, we can finally discuss Monte Carlo integration.
+
+Let's define a multidimensional random variable **X** &in; &Ropf;<sup>n</sup>, which is a vector of n random variables. We also call this a **random vector**. Given a random event &zeta;, the random vector **X** is defined as:
+
+$$\mathbf{X} = (X_1(\zeta), X_2(\zeta), \ldots, X_n(\zeta))$$
+
+where each component X<sub>i</sub> is a random variable. The CDF of the random vector **X** is defined as:
+
+$$F_{\mathbf{X}}(\mathbf{x}) = P(\mathbf{X} \leq \mathbf{x}) = \int_{-\infty}^{x_1} \int_{-\infty}^{x_2} \ldots \int_{-\infty}^{x_n} p(\mathbf{t}) \, dt_1 \, dt_2 \ldots dt_n$$
+
+where p(**t**) is the joint probability density function (PDF) of the random vector **X**.
+
+Computing an expected value of a function f(**X**) of a random vector **X** is no different from computing the expected value of a single random variable. We just need to integrate over the joint PDF of the random vector **X**:
+
+$$\mathbb{E}[f(\mathbf{X})] = \int_{\mathbb{R}^n} f(\mathbf{x}) p(\mathbf{x}) \, d\mathbf{x}$$
+
+where p(**x**) is the joint probability density function (PDF) of the random vector **X**.
+
+Numerically computing the expected value of a function f(**X**) of a random vector **X** is done by sampling the random vector **X** from its joint PDF p(**x**) and computing the average of the function values:
+
+$$\mathbb{E}[f(\mathbf{X})] \approx \frac{1}{N} \sum_{i=1}^{N} f(\mathbf{x}_i)$$
+
+where **x**<sub>i</sub> is a sample from the joint PDF p(**x**) and N is the number of samples.
+
+This is our numerical computation of the expected value:
+
+$$I_N(f) = \frac{1}{N} \sum_{i=1}^{N} f(\mathbf{x}_i)$$
+
+Based on the strong law of large numbers, as N approaches infinity, the expected value of the function f(**X**) converges to the true expected value:
+
+$$\lim_{N \to \infty} I_N(f) = \mathbb{E}[f(\mathbf{X})]$$
+
+The first step to numerical compute the expected value of a function f(**X**) of a random vector **X** is to sample the random vector **X**. Usually this is produced by random number generators (RNGs) that generate pseudo-random numbers.
+
+This would be the quadrature error:
+
+$$E_N(f) = \mathbb{E}[f(\mathbf{X})] - I_N(f)$$
+
+If we consider I<sub>N</sub>(f) as a function of N, we can compute the *variance* of the estimator I<sub>N</sub>(f):
+
+$$\text{Var}(I_N(f)) = \mathbb{E}[I_N(f)^2] - \mathbb{E}[I_N(f)]^2$$
+
+and its *standard deviation*:
+
+$$\text{Standard Deviation}(I_N(f)) = \sqrt{\text{Var}(I_N(f))} = \sqrt{\mathbb{E}[I_N(f)^2] - \mathbb{E}[I_N(f)]^2}$$
+
+By the characteristics of the expected value, we can compute the variance of the estimator I<sub>N</sub>(f) as:
+
+$$
+\begin{align*}
+\text{Var}(I_N(f)) &= \mathbb{E}[I_N(f)^2] - \mathbb{E}[I_N(f)]^2 \\
+&= \mathbb{E}\left[\left(I_N(f) - \mathbb{E}[I_N(f)]\right)^2\right] \\
+&= \mathbb{E}\left[\left(\frac{1}{N} \sum_{i=1}^N f(\mathbf{x}_i) - \mathbb{E}[f(\mathbf{X})]\right)^2\right] \\
+&= \frac{1}{N^2} \mathbb{E}\left[\left(\sum_{i=1}^N (f(\mathbf{x}_i) - \mathbb{E}[f(\mathbf{X})])\right)^2\right] \\
+&= \frac{1}{N^2} \sum_{i=1}^N \mathbb{E}\left[(f(\mathbf{x}_i) - \mathbb{E}[f(\mathbf{X})])^2\right] + \frac{1}{N^2} \sum_{i \neq j} \mathbb{E}\left[(f(\mathbf{x}_i) - \mathbb{E}[f(\mathbf{X})])(f(\mathbf{x}_j) - \mathbb{E}[f(\mathbf{X})])\right] \\
+&= \frac{1}{N^2} \cdot N \cdot \text{Var}(f(\mathbf{X})) + \frac{1}{N^2} \cdot N(N-1) \cdot 0 \\
+&= \frac{1}{N} \text{Var}(f(\mathbf{X}))
+\end{align*}
+$$
+
+Same goes to the standard deviation of the estimator I<sub>N</sub>(f):
+
+$$
+\text{Standard Deviation}(I_N(f)) = \sqrt{\text{Var}(I_N(f))} = \sqrt{\frac{1}{N} \text{Var}(f(\mathbf{X}))}
+$$
+
+We often note the standard deviation by the symbol &sigma;, so we can write:
+
+$$\sigma(I_N(f)) = \frac{\sigma(f)}{\sqrt{N}}$$
+
+Thus if N diverges to infinity, the standard deviation of the estimator I<sub>N</sub>(f) converges to 0:
+
+$$\lim_{N \to \infty} \sigma(I_N(f)) = 0$$
+
+The convergence rate does not depend on the dimension of approximation N, but rather on the *regularity* of the function f. This is the reason why Monte Carlo integration unlike quadrature methods does not yield better results for functions that are smooth or have low variation.
+
 Computer Graphics: Principles and Practice
 
 1.  Probability and Monte Carlo Integration
