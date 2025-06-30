@@ -810,6 +810,10 @@ $$p(x) = \begin{cases}
 0 & \text{otherwise}
 \end{cases}$$
 
+![Uniform Random Variable](https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Uniform_Distribution_PDF_SVG.svg/1920px-Uniform_Distribution_PDF_SVG.svg.png)
+
+By <a href="//commons.wikimedia.org/wiki/User:IkamusumeFan" title="User:IkamusumeFan">IkamusumeFan</a> - This <a href="https://en.wikipedia.org/wiki/drawing" class="extiw" title="w:drawing">drawing</a> was created with <a href="https://en.wikipedia.org/wiki/LibreOffice_Draw" class="extiw" title="w:LibreOffice Draw">LibreOffice Draw</a>., <a href="https://creativecommons.org/licenses/by-sa/3.0" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=27378699">Link</a>
+
 And its cumulative distribution function (CDF) is:
 
 $$F_X(x) = \begin{cases}
@@ -817,6 +821,10 @@ $$F_X(x) = \begin{cases}
 \frac{x - a}{b - a} & \text{if } a < x < b \\
 1 & \text{if } x \geq b
 \end{cases}$$
+
+![Uniform Random Variable CDF](https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Uniform_cdf.svg/1920px-Uniform_cdf.svg.png)
+
+By <a href="//commons.wikimedia.org/wiki/User:IkamusumeFan" title="User:IkamusumeFan">IkamusumeFan</a> - This <a href="https://en.wikipedia.org/wiki/drawing" class="extiw" title="w:drawing">drawing</a> was created with <a href="https://en.wikipedia.org/wiki/LibreOffice_Draw" class="extiw" title="w:LibreOffice Draw">LibreOffice Draw</a>., <a href="https://creativecommons.org/licenses/by-sa/3.0" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=27378784">Link</a>
 
 ### Monte Carlo Integration
 
@@ -895,6 +903,128 @@ Thus if N diverges to infinity, the standard deviation of the estimator I<sub>N<
 $$\lim_{N \to \infty} \sigma(I_N(f)) = 0$$
 
 The convergence rate does not depend on the dimension of approximation N, but rather on the *regularity* of the function f. This is the reason why Monte Carlo integration unlike quadrature methods does not yield better results for functions that are smooth or have low variation.
+
+<div style="text-align:center; font-family:sans-serif; margin-top: 20px;">
+  <h2>🎲 Monte Carlo Integration of a Random Function</h2>
+  <button id="generate-button" style="padding: 10px 20px; margin: 10px;">Generate Random Function</button>
+  <button id="add-sample-button" style="padding: 10px 20px; margin: 10px;">Add Sample</button>
+  <button id="reset-button" style="padding: 10px 20px; margin: 10px;">Reset</button>
+  <div id="function-display" style="font-size: 1.2em; margin-bottom: 10px;"></div>
+  <canvas id="function-chart" width="600" height="300" style="border:1px solid #ccc;"></canvas>
+  <p id="result" style="margin-top: 10px;"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+  const canvas = document.getElementById("function-chart");
+  const ctx = canvas.getContext("2d");
+  const resultP = document.getElementById("result");
+  const functionDisplay = document.getElementById("function-display");
+  const generateButton = document.getElementById("generate-button");
+  const addSampleButton = document.getElementById("add-sample-button");
+  const resetButton = document.getElementById("reset-button");
+
+  const a = -1, b = 1;
+  let selected = null;
+  const samples = [];
+
+  const functionPool = [
+    {
+      fn: x => Math.sin(x),
+      str: "f(x) = sin(x)",
+      integral: (a, b) => -Math.cos(b) + Math.cos(a)
+    },
+    {
+      fn: x => x * x,
+      str: "f(x) = x²",
+      integral: (a, b) => (1 / 3) * (b ** 3 - a ** 3)
+    },
+    {
+      fn: x => Math.exp(-x),
+      str: "f(x) = e^{-x}",
+      integral: (a, b) => -Math.exp(-b) + Math.exp(-a)
+    },
+    {
+      fn: x => Math.abs(x),
+      str: "f(x) = |x|",
+      integral: (a, b) => {
+        if (a >= 0) return 0.5 * (b ** 2 - a ** 2);
+        if (b <= 0) return -0.5 * (b ** 2 - a ** 2);
+        return 0.5 * (b ** 2 + a ** 2);
+      }
+    }
+  ];
+
+  function drawFunction(fn, a, b) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const w = canvas.width;
+    const h = canvas.height;
+    const step = (b - a) / w;
+    const values = [];
+    for (let i = 0; i < w; i++) {
+      const x = a + i * step;
+      values.push({ x, y: fn(x) });
+    }
+    const yVals = values.map(p => p.y);
+    const yMin = Math.min(...yVals);
+    const yMax = Math.max(...yVals);
+
+    // Draw function
+    ctx.beginPath();
+    ctx.moveTo(0, h * (1 - (values[0].y - yMin) / (yMax - yMin)));
+    for (let i = 1; i < values.length; i++) {
+      const px = i;
+      const py = h * (1 - (values[i].y - yMin) / (yMax - yMin));
+      ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = '#007bff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw samples
+    for (const sample of samples) {
+      const px = ((sample.x - a) / (b - a)) * w;
+      const py = h * (1 - (sample.y - yMin) / (yMax - yMin));
+      ctx.beginPath();
+      ctx.arc(px, py, 3, 0, 2 * Math.PI);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+    }
+  }
+
+  function updateEstimate() {
+    if (samples.length === 0 || !selected) return;
+    const avg = samples.reduce((sum, s) => sum + s.y, 0) / samples.length;
+    const approx = (b - a) * avg;
+    const exact = selected.integral(a, b);
+    resultP.innerHTML = `Samples: <b>${samples.length}</b><br>Approx: <b>${approx.toFixed(6)}</b>, Exact: <b>${exact.toFixed(6)}</b>, Error: <b>${(approx - exact).toFixed(6)}</b>`;
+  }
+
+  generateButton.addEventListener("click", () => {
+    selected = functionPool[Math.floor(Math.random() * functionPool.length)];
+    samples.length = 0;
+    functionDisplay.textContent = selected.str;
+    drawFunction(selected.fn, a, b);
+    resultP.innerHTML = "Click 'Add Sample' to start approximating.";
+  });
+
+  addSampleButton.addEventListener("click", () => {
+    if (!selected) return;
+    const x = a + (b - a) * Math.random();
+    const y = selected.fn(x);
+    samples.push({ x, y });
+    drawFunction(selected.fn, a, b);
+    updateEstimate();
+  });
+
+  resetButton.addEventListener("click", () => {
+    samples.length = 0;
+    resultP.innerHTML = "Reset. Click 'Add Sample' to begin again.";
+    if (selected) drawFunction(selected.fn, a, b);
+  });
+})();
+</script>
 
 Computer Graphics: Principles and Practice
 
