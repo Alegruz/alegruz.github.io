@@ -24,7 +24,9 @@ The topic of the post is **Monte Carlo Integration**.
 
 ## What is it? (briefly)
 
-Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote_1">[1]</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula \(A = \pi r^2\). However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
+Monte Carlo integration is a technique for numerical integration using random numbers.<sup><a href="#footnote_1">[1]</a></sup> For example, we can use this method to estimate the area of a circle. We all know that the area of a circle is given by the formula A = &pi; r<sup>2</sup>. However, if we want to estimate this area without using the formula, we can use Monte Carlo integration. First, think of a square that contains a circle of radius 1. Put the square and the circle on a coordinate system, as shown below:
+
+![Circle and Square](https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/MonteCarloIntegrationCircle.svg/720px-MonteCarloIntegrationCircle.svg.png?20230918195346)
 
 By <a href="//commons.wikimedia.org/wiki/User:Yoderj" title="User:Yoderj">Yoderj</a>, <a href="//commons.wikimedia.org/wiki/User:Mysid" title="User:Mysid">Mysid</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication">CC0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=35608043">Link</a>
 
