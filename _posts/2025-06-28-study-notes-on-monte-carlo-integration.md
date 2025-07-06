@@ -212,7 +212,7 @@ $$E_n(f) = I(f) - I_n(f) = \int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx$$
 
 Where E stands for *error*. The goal of numerical integration is to minimize this error E<sub>n</sub>(f).
 
-If function f is continuous in the interval [a, b], or f &in; C<sup>0</sup>([a, b])<sup><a href="#footnote_2">[2]</a></sup>, according to the triangle inequality<sup><a href="#footnote_3">[3]</a></sup>, we can bound the error as follows:
+If function f is continuous in the interval [a, b], or f ∈ C<sup>0</sup>([a, b])<sup><a href="#footnote_2">[2]</a></sup>, according to the triangle inequality<sup><a href="#footnote_3">[3]</a></sup>, we can bound the error as follows:
 
 $$|E_n(f)| = |I(f) - I_n(f)| = |\int_{a}^{b} f(x) dx - \int_{a}^{b} f_n(x) dx| \leq \int_{a}^{b} |f(x) - f_n(x)| dx$$
 
@@ -430,7 +430,7 @@ $$\Omega \in \mathbb{R}^n$$
 
 where n is the number of dimensions.
 
-We can rewrite the original integral from the domain of integration &Omega; to the entire space &Ropf;<sup>n</sup> by using a characteristic function &chi;<sub>&Omega;</sub>(x):
+We can rewrite the original integral from the domain of integration &Omega; to the entire space ℝ<sup>n</sup> by using a characteristic function &chi;<sub>&Omega;</sub>(x):
 
 $$\chi_{\Omega}(\textbf{x}) = \begin{cases} 1 & \text{if } \textbf{x} \in \Omega \\ 0 & \text{otherwise} \end{cases}$$
 
@@ -832,7 +832,7 @@ By <a href="//commons.wikimedia.org/wiki/User:IkamusumeFan" title="User:Ikamusum
 
 Now that we have a good understanding of probabilities and random variables, we can finally discuss Monte Carlo integration.
 
-Let's define a multidimensional random variable **X** &in; &Ropf;<sup>n</sup>, which is a vector of n random variables. We also call this a **random vector**. Given a random event &zeta;, the random vector **X** is defined as:
+Let's define a multidimensional random variable **X** ∈ ℝ<sup>n</sup>, which is a vector of n random variables. We also call this a **random vector**. Given a random event &zeta;, the random vector **X** is defined as:
 
 $$\mathbf{X} = (X_1(\zeta), X_2(\zeta), \ldots, X_n(\zeta))$$
 
