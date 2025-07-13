@@ -1087,11 +1087,11 @@ One of the most important problems in computer graphics is to solve the color of
 $$L_o(\mathbf{x}, \mathbf{w}) = L_e(\mathbf{x}, \mathbf{w}) + \int_{\Omega} f_r(\mathbf{x}, \mathbf{w}, \mathbf{w}') L_i(\mathbf{x}, \mathbf{w}') (\mathbf{n} \cdot \mathbf{w}') d\omega'$$
 
 where:
-- **L<sub>o</sub>(**x**, **w**)** is the outgoing radiance at point **x** in direction **w**.
-- **L<sub>e</sub>(**x**, **w**)** is the emitted radiance at point **x** in direction **w**.
-- **f<sub>r</sub>(**x**, **w**, **w'**)** is the bidirectional reflectance distribution function (BRDF)
+- L<sub>o</sub>(**x**, **w**) is the outgoing radiance at point **x** in direction **w**.
+- L<sub>e</sub>(**x**, **w**) is the emitted radiance at point **x** in direction **w**.
+- f<sub>r</sub>(**x**, **w**, **w'**) is the bidirectional reflectance distribution function (BRDF)
   at point **x** for incoming direction **w'** and outgoing direction **w**.
-- **L<sub>i</sub>(**x**, **w'**)** is the incoming radiance at point **x** from direction **w'**.
+- L<sub>i</sub>(**x**, **w'**) is the incoming radiance at point **x** from direction **w'**.
 - **n** is the normal vector at point **x**.
 - **dω'** is the differential solid angle around direction **w'**.
 - **Ω** is the hemisphere above point **x**.
