@@ -66,7 +66,9 @@ public:
 };
 ```
 
-Now that we have our basic two ingredients, we need to implement an intersection test function:
+Now that we have our basic two ingredients, we need to implement an intersection test function. Let me explain how we can tell if a ray is intersecting a triangle.
+
+First, let us understand what is an intersection. Let's start with an intersection between two indefinite lines in 2D space. According to Euclid's Element, Euclid introduced five postulates, and the fifth one states that if two lines are not parallel, they will intersect at a point.
 
 ```cpp
 class IntersectionChecker final
@@ -77,9 +79,11 @@ public:
 
 constexpr bool IntersectionChecker::Check(const Ray& ray, const Triangle& triangle) noexcept
 {
-  
+
 }
 ```
+
+<iframe src="/assets/code/raytracing/main.html" width="100%" height="500px" frameborder="0"></iframe>
 
 ## Appendix
 
