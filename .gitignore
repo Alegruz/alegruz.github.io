@@ -5,3 +5,4 @@ _site
 vendor
 temp
 Gemfile.lock
+assets/externals
