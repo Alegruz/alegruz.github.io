@@ -111,21 +111,25 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 </div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
 <script>
-createRaytracerModule().then(Module => {
-    console.log("WASM module initialized");
-
+  createRaytracerModule().then(Module => {
     const canvas = document.getElementById("wasm-canvas");
     const ctx = canvas.getContext("2d");
     const width = 320, height = 240, channels = 4;
     const imageData = ctx.createImageData(width, height);
 
+    // ⬅️ Initialize the display buffer
     Module._set_resolution(width, height);
     const bufPtr = Module._get_display_buffer();
     const render = Module.cwrap("render_frame", null, ["number"]);
 
     let frame = 0;
     function loop() {
-      render(frame++);
+      // ✅ Defensive check
+      if (!Module.HEAPU8 || !bufPtr) {
+        console.warn("HEAPU8 or buffer pointer not ready");
+        return;
+      }
+
       const buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
       imageData.data.set(buffer);
       ctx.putImageData(imageData, 0, 0);
@@ -133,8 +137,11 @@ createRaytracerModule().then(Module => {
     }
 
     loop();
+  }).catch(err => {
+    console.error("Failed to load WASM module:", err);
   });
 </script>
+
 
 
 ## Appendix
