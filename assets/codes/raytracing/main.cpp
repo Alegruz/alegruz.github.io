@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 
 #include <emscripten/emscripten.h>
