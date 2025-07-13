@@ -105,30 +105,32 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 }
 ```
 
-<canvas id="wasm-canvas" width="320" height="240" style="border:1px solid #aaa;"></canvas>
+<div id="raytracing-cpu-demo" style="text-align: center; margin: 20px 0;">
+  <canvas id="wasm-canvas" width="320" height="240" style="border:1px solid #aaa;"></canvas>
+  <p>Raytracing CPU Demo</p>
+</div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
 <script>
-  const Module = {
-    onRuntimeInitialized() {
-      const canvas = document.getElementById("wasm-canvas");
-      const ctx = canvas.getContext("2d");
-      const width = 320, height = 240, channels = 4;
-      const imageData = ctx.createImageData(width, height);
-      Module._set_resolution(width, height);
-      const bufPtr = Module._get_display_buffer();
-      const render = Module.cwrap("render_frame", null, ["number"]);
+(function() {
+  const canvas = document.getElementById("wasm-canvas");
+  const ctx = canvas.getContext("2d");
+  const width = 320, height = 240, channels = 4;
+  const imageData = ctx.createImageData(width, height);
+  Module._set_resolution(width, height);
+  const bufPtr = Module._get_display_buffer();
+  const render = Module.cwrap("render_frame", null, ["number"]);
 
-      let frame = 0;
-      function loop() {
-        render(frame++);
-        const buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
-        imageData.data.set(buffer);
-        ctx.putImageData(imageData, 0, 0);
-        requestAnimationFrame(loop);
-      }
-      loop();
-    }
-  };
+  let frame = 0;
+  function loop() {
+    render(frame++);
+    const buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+    imageData.data.set(buffer);
+    ctx.putImageData(imageData, 0, 0);
+    requestAnimationFrame(loop);
+  }
+  
+  loop();
+})();
 </script>
 
 
