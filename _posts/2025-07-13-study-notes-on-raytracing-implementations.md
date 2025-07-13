@@ -66,24 +66,71 @@ public:
 };
 ```
 
-Now that we have our basic two ingredients, we need to implement an intersection test function. Let me explain how we can tell if a ray is intersecting a triangle.
-
-First, let us understand what is an intersection. Let's start with an intersection between two indefinite lines in 2D space. According to Euclid's Element, Euclid introduced five postulates, and the fifth one states that if two lines are not parallel, they will intersect at a point.
+Now that we have our basic two ingredients, we need to implement an intersection test function. Usually, the Möller–Trumbore algorithm is used for this purpose, which is efficient and straightforward for triangle-ray intersection tests. Here's a simple implementation:
 
 ```cpp
-class IntersectionChecker final
+constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const ParametricLine& ray, const Triangle& triangle, float& intersectionDistance)
 {
-public:
-  static constexpr bool Check(const Ray& ray, const Triangle& triangle) noexcept;
-};
+  const float3 edge0 = triangle.Vertices[1] - triangle.Vertices[0];
+  const float3 edge1 = triangle.Vertices[2] - triangle.Vertices[0];
+  const float3 rayCrossEdge1 = cross(ray.Direction, edge1);
+  const float determinant0 = dot(edge0, rayCrossEdge1);
+  if(determinant0 > -std::numeric_limits<float>::epsilon() && determinant0 < std::numeric_limits<float>::epsilon())
+  {
+    return std::nullopt; // Placeholder for the actual implementation
+  }
 
-constexpr bool IntersectionChecker::Check(const Ray& ray, const Triangle& triangle) noexcept
-{
+  const float inverseDeterminant0 = 1.0f / determinant0;
+  const float3 s = ray.Origin - triangle.Vertices[0];
+  const float u = dot(s, rayCrossEdge1) * inverseDeterminant0;
+  if((u < 0.0f && std::abs(u) > std::numeric_limits<float>::epsilon()) || (u > 1.0f && std::abs(u - 1.0f) > std::numeric_limits<float>::epsilon()))
+  {
+    return std::nullopt;
+  }
 
+  const float3 rayCrossEdge0 = cross(ray.Direction, edge0);
+  const float v = dot(ray.Direction, rayCrossEdge0) * inverseDeterminant0;
+  if((v < 0.0f && std::abs(v) > std::numeric_limits<float>::epsilon()) || (u + v > 1.0f && std::abs(u + v - 1.0f) > std::numeric_limits<float>::epsilon()))
+  {
+    return std::nullopt;
+  }
+
+  intersectionDistance = dot(edge1, rayCrossEdge0) * inverseDeterminant0;
+  if(intersectionDistance > std::numeric_limits<float>::epsilon())
+  {
+    return ray.Origin + ray.Direction * intersectionDistance;
+  }
+
+  return std::nullopt; // No intersection found
 }
 ```
 
-<iframe src="/assets/codes/raytracing/main.html" width="100%" height="500px" frameborder="0"></iframe>
+<canvas id="wasm-canvas" width="320" height="240" style="border:1px solid #aaa;"></canvas>
+<script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
+<script>
+  const Module = {
+    onRuntimeInitialized() {
+      const canvas = document.getElementById("wasm-canvas");
+      const ctx = canvas.getContext("2d");
+      const width = 320, height = 240, channels = 4;
+      const imageData = ctx.createImageData(width, height);
+      Module._set_resolution(width, height);
+      const bufPtr = Module._get_display_buffer();
+      const render = Module.cwrap("render_frame", null, ["number"]);
+
+      let frame = 0;
+      function loop() {
+        render(frame++);
+        const buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+        imageData.data.set(buffer);
+        ctx.putImageData(imageData, 0, 0);
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+  };
+</script>
+
 
 ## Appendix
 

@@ -1,43 +1,67 @@
 #include <iostream>
 
+#include <emscripten/emscripten.h>
+
 #include "math.h"
 
-int main()
+static uint32_t sWidth = 1280;
+static uint32_t sHeight = 720;
+static uint8_t* sPixels = nullptr;
+
+extern "C" EMSCRIPTEN_KEEPALIVE
+void set_resolution(const uint32_t width, const uint32_t height)
 {
-    raytracing::float3 v1(1.0f, 2.0f, 3.0f);
-    raytracing::float3 v2(4.0f, 5.0f, 6.0f);
+    sWidth = width;
+    sHeight = height;
 
-    raytracing::ParametricLine line(v1, v2 - v1);
-
-    std::cout << "Origin: (" << line.Origin.X << ", " << line.Origin.Y << ", " << line.Origin.Z << ")\n";
-    std::cout << "Direction: (" << line.Direction.X << ", " << line.Direction.Y << ", " << line.Direction.Z << ")\n";
-
-    raytracing::float3 result = v1 + v2;
-    std::cout << "Result of addition: (" << result.X << ", " << result.Y << ", " << result.Z << ")\n";
-
-    result = v1 * 2.0f;
-    std::cout << "Result of scalar multiplication: (" << result.X << ", " << result.Y << ", " << result.Z << ")\n";
-
-    result = v1.cross(v2);
-    std::cout << "Cross product: (" << result.X << ", " << result.Y << ", " << result.Z << ")\n";
-
-    std::cout << "Length of v1: " << v1.length() << "\n";
-    std::cout << "Normalized v1: (" << v1.normalize().X << ", " << v1.normalize().Y << ", " << v1.normalize().Z << ")\n";
-
-    std::cout << "Dot product of v1 and v2: " << v1.dot(v2) << "\n";
-
-    // Example of using ParametricLine
-    raytracing::ParametricLine ray(v1, v2 - v1);
-    std::cout << "Ray Origin: (" << ray.Origin.X << ", " << ray.Origin.Y << ", " << ray.Origin.Z << ")\n";
-    std::cout << "Ray Direction: (" << ray.Direction.X << ", " << ray.Direction.Y << ", " << ray.Direction.Z << ")\n";
-
-    // Example of using Triangle
-    raytracing::Triangle triangle(v1, v2, raytracing::float3(7.0f, 8.0f, 9.0f));
-    std::cout << "Triangle vertices: \n";
-    for (const auto& vertex : triangle.Vertices)
+    if(sPixels != nullptr)
     {
-        std::cout << "(" << vertex.X << ", " << vertex.Y << ", " << vertex.Z << ")\n";
+        delete[] sPixels;
+        sPixels = nullptr;
     }
+}
 
-    return 0;
+void clear_display_buffer()
+{
+    if(sPixels != nullptr)
+    {
+        std::memset(sPixels, 0, sWidth * sHeight * 4);
+    }
+}
+
+void initialize_display_buffer()
+{
+    if(sPixels == nullptr)
+    {
+        sPixels = new uint8_t[sWidth * sHeight * 4];
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE
+void render_frame()
+{
+    initialize_display_buffer();
+
+    // Clear the pixel buffer
+    clear_display_buffer();
+
+    // Example rendering logic (fill with a solid color)
+    for (uint32_t y = 0; y < sHeight; ++y)
+    {
+        for(uint32_t x = 0; x < sWidth; ++x)
+        {
+            uint32_t index = (y * sWidth + x) * 4;
+            sPixels[index] = 255;     // Red
+            sPixels[index + 1] = 0;   // Green
+            sPixels[index + 2] = 0;   // Blue
+            sPixels[index + 3] = 255; // Alpha
+        }
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE
+uint8_t* get_display_buffer()
+{
+    initialize_display_buffer();
+    return sPixels;
 }
