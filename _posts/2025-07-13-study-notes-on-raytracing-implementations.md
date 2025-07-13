@@ -83,7 +83,7 @@ constexpr bool IntersectionChecker::Check(const Ray& ray, const Triangle& triang
 }
 ```
 
-<iframe src="/assets/code/raytracing/main.html" width="100%" height="500px" frameborder="0"></iframe>
+<iframe src="/assets/codes/raytracing/main.html" width="100%" height="500px" frameborder="0"></iframe>
 
 ## Appendix
 
