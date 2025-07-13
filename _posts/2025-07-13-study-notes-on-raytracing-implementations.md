@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Study Notes on Raytracing Implementations
-date:   2025-07-13 27:01:00 +0900
+date:   2025-07-13 17:01:00 +0900
 categories: graphics
 lang: "en"
 ---
@@ -83,7 +83,7 @@ constexpr bool IntersectionChecker::Check(const Ray& ray, const Triangle& triang
 }
 ```
 
-<!-- <iframe src="/assets/code/raytracing/main.html" width="100%" height="500px" frameborder="0"></iframe> -->
+<iframe src="/assets/code/raytracing/main.html" width="100%" height="500px" frameborder="0"></iframe>
 
 ## Appendix
 
