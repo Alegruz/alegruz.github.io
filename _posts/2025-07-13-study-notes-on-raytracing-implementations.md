@@ -139,6 +139,8 @@ createRaytracerModule().then(Module => {
   }
 
   loop();
+}).catch(err => {
+  console.error("Failed to initialize WebAssembly module", err);
 });
 </script>
 
