@@ -43,7 +43,7 @@ void initialize_display_buffer()
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE
-void render_frame()
+void render_frame(const uint32_t frameIndex)
 {
     initialize_display_buffer();
 
@@ -56,7 +56,7 @@ void render_frame()
         for(uint32_t x = 0; x < sWidth; ++x)
         {
             uint32_t index = (y * sWidth + x) * 4;
-            sPixels[index] = 255;     // Red
+            sPixels[index] = 255 - (frameIndex % 255);     // Red
             sPixels[index + 1] = 0;   // Green
             sPixels[index + 2] = 0;   // Blue
             sPixels[index + 3] = 255; // Alpha
