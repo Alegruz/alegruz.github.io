@@ -111,7 +111,11 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 </div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
 <script>
-createRaytracerModule().then(Module => {
+createRaytracerModule({
+  locateFile: (p) => p.endsWith('.wasm')
+    ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
+    : p
+}).then(Module => {
   const canvas = document.getElementById("wasm-canvas");
   const ctx = canvas.getContext("2d");
   const width = 320, height = 240, channels = 4;
@@ -125,14 +129,35 @@ createRaytracerModule().then(Module => {
   const render = Module.cwrap("render_frame", null, ["number"]);
 
   if (!bufPtr || !Module.HEAPU8) {
-    console.error("Failed to allocate buffer");
+        if (!bufPtr) {
+      console.error("bufPtr is zero – buffer not allocated");
+    }
+    if (!Module.HEAPU8) {
+      console.error("Module.HEAPU8 is undefined – wasm file may have failed to load");
+    }
+    console.error("Failed to allocate buffer; WebAssembly module might not be loaded correctly");
+    const container = document.getElementById("raytracing-cpu-demo");
+    if (container) {
+      const msg = document.createElement("p");
+      msg.textContent = "Unable to start renderer. The wasm file may have failed to load.";
+      container.appendChild(msg);
+    }
     return;
   }
 
   let frame = 0;
   function loop() {
     render(frame++);
-    const buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+    let buffer;
+    try {
+      buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+    } catch (e) {
+      if (e instanceof RangeError) {
+        console.error("Failed to allocate buffer", e);
+        return;
+      }
+      throw e;
+    }
     imageData.data.set(buffer);
     ctx.putImageData(imageData, 0, 0);
     requestAnimationFrame(loop);
