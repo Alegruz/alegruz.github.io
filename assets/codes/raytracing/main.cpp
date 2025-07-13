@@ -8,6 +8,9 @@ static uint32_t sWidth = 1280;
 static uint32_t sHeight = 720;
 static uint8_t* sPixels = nullptr;
 
+void clear_display_buffer();
+void initialize_display_buffer();
+
 extern "C" EMSCRIPTEN_KEEPALIVE
 void set_resolution(const uint32_t width, const uint32_t height)
 {
@@ -19,6 +22,8 @@ void set_resolution(const uint32_t width, const uint32_t height)
         delete[] sPixels;
         sPixels = nullptr;
     }
+
+    initialize_display_buffer();
 }
 
 void clear_display_buffer()
