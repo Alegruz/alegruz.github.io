@@ -116,54 +116,56 @@ createRaytracerModule({
     ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
     : p
 }).then(Module => {
-  const canvas = document.getElementById("wasm-canvas");
-  const ctx = canvas.getContext("2d");
-  const width = 320, height = 240, channels = 4;
-  const imageData = ctx.createImageData(width, height);
+  Module.onRuntimeInitialized = () => {
+    const canvas = document.getElementById("wasm-canvas");
+    const ctx = canvas.getContext("2d");
+    const width = 320, height = 240, channels = 4;
+    const imageData = ctx.createImageData(width, height);
 
-  // ✅ Set resolution first so the buffer is correctly allocated
-  Module._set_resolution(width, height);
+    // ✅ Set resolution first so the buffer is correctly allocated
+    Module._set_resolution(width, height);
 
-  // ✅ Now get the buffer pointer AFTER resolution is set
-  const bufPtr = Module._get_display_buffer();
-  const render = Module.cwrap("render_frame", null, ["number"]);
+    // ✅ Now get the buffer pointer AFTER resolution is set
+    const bufPtr = Module._get_display_buffer();
+    const render = Module.cwrap("render_frame", null, ["number"]);
 
-  if (!bufPtr || !Module.HEAPU8) {
-        if (!bufPtr) {
-      console.error("bufPtr is zero – buffer not allocated");
-    }
-    if (!Module.HEAPU8) {
-      console.error("Module.HEAPU8 is undefined – wasm file may have failed to load");
-    }
-    console.error("Failed to allocate buffer; WebAssembly module might not be loaded correctly");
-    const container = document.getElementById("raytracing-cpu-demo");
-    if (container) {
-      const msg = document.createElement("p");
-      msg.textContent = "Unable to start renderer. The wasm file may have failed to load.";
-      container.appendChild(msg);
-    }
-    return;
-  }
-
-  let frame = 0;
-  function loop() {
-    render(frame++);
-    let buffer;
-    try {
-      buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
-    } catch (e) {
-      if (e instanceof RangeError) {
-        console.error("Failed to allocate buffer", e);
-        return;
+    if (!bufPtr || !Module.HEAPU8) {
+          if (!bufPtr) {
+        console.error("bufPtr is zero – buffer not allocated");
       }
-      throw e;
+      if (!Module.HEAPU8) {
+        console.error("Module.HEAPU8 is undefined – wasm file may have failed to load");
+      }
+      console.error("Failed to allocate buffer; WebAssembly module might not be loaded correctly");
+      const container = document.getElementById("raytracing-cpu-demo");
+      if (container) {
+        const msg = document.createElement("p");
+        msg.textContent = "Unable to start renderer. The wasm file may have failed to load.";
+        container.appendChild(msg);
+      }
+      return;
     }
-    imageData.data.set(buffer);
-    ctx.putImageData(imageData, 0, 0);
-    requestAnimationFrame(loop);
-  }
 
-  loop();
+    let frame = 0;
+    function loop() {
+      render(frame++);
+      let buffer;
+      try {
+        buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+      } catch (e) {
+        if (e instanceof RangeError) {
+          console.error("Failed to allocate buffer", e);
+          return;
+        }
+        throw e;
+      }
+      imageData.data.set(buffer);
+      ctx.putImageData(imageData, 0, 0);
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  };
 }).catch(err => {
   console.error("Failed to initialize WebAssembly module", err);
 });
