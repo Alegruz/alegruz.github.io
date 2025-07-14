@@ -22,7 +22,7 @@ template<typename T, eTextureMemoryLayout MEMORY_LAYOUT = DEFAULT_MEMORY_LAYOUT>
 class Texture2D
 {
 public:
-    RT_FORCE_INLINE constexpr Texture2D(const uint32_t width, const uint32_t height) : mWidth(width), mHeight(height), mData(width * height * CHANNELS_COUNT) {}
+    RT_FORCE_INLINE constexpr Texture2D(const uint32_t width, const uint32_t height) : mWidth(width), mHeight(height), mData(width * height) {}
     RT_FORCE_INLINE constexpr Texture2D(const Texture2D& other) noexcept : mWidth(other.mWidth), mHeight(other.mHeight), mData(other.mData) {}
     RT_FORCE_INLINE constexpr Texture2D(Texture2D&& other) noexcept : mWidth(std::move(other.mWidth)), mHeight(std::move(other.mHeight)), mData(std::move(other.mData)) {}
     RT_FORCE_INLINE ~Texture2D() noexcept = default;
@@ -53,11 +53,11 @@ public:
     {
         if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
         {
-            return mData[(y * mWidth + x) * CHANNELS_COUNT];
+            return mData[y * mWidth + x];
         }
         else if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::ColumnMajor)
         {
-            return mData[(x * mHeight + y) * CHANNELS_COUNT];
+            return mData[x * mHeight + y];
         }
         else
         {
@@ -68,11 +68,11 @@ public:
     {
         if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
         {
-            return mData[(y * mWidth + x) * CHANNELS_COUNT];
+            return mData[y * mWidth + x];
         }
         else if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::ColumnMajor)
         {
-            return mData[(x * mHeight + y) * CHANNELS_COUNT];
+            return mData[x * mHeight + y];
         }
         else
         {
@@ -86,7 +86,7 @@ public:
     {
         mWidth = std::max(width, 1u);
         mHeight = std::max(height, 1u);
-        mData.resize(mWidth * mHeight * CHANNELS_COUNT);
+        mData.resize(mWidth * mHeight);
     }
 
     RT_FORCE_INLINE constexpr void Clear(const T& clearValue = T{}) noexcept
@@ -104,7 +104,7 @@ class Texture3D final
 { 
 public:
     RT_FORCE_INLINE constexpr Texture3D(const uint32_t width, const uint32_t height, const uint32_t depth)
-        : mWidth(width), mHeight(height), mDepth(depth), mData(width * height * depth * CHANNELS_COUNT) {}
+        : mWidth(width), mHeight(height), mDepth(depth), mData(width * height * depth) {}
     RT_FORCE_INLINE constexpr Texture3D(const Texture3D& other) noexcept = default;
     RT_FORCE_INLINE constexpr Texture3D(Texture3D&& other) noexcept = default;
     RT_FORCE_INLINE ~Texture3D() noexcept = default;
@@ -119,11 +119,11 @@ public:
     {
         if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
         {
-            return mData[(z * mWidth * mHeight + y * mWidth + x) * CHANNELS_COUNT];
+            return mData[z * mWidth * mHeight + y * mWidth + x];
         }
         else if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::ColumnMajor)
         {
-            return mData[(x * mHeight * mDepth + y * mDepth + z) * CHANNELS_COUNT];
+            return mData[x * mHeight * mDepth + y * mDepth + z];
         }
         else
         {
@@ -134,11 +134,11 @@ public:
     {
         if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
         {
-            return mData[(z * mWidth * mHeight + y * mWidth + x) * CHANNELS_COUNT];
+            return mData[z * mWidth * mHeight + y * mWidth + x];
         }
         else if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::ColumnMajor)
         {
-            return mData[(x * mHeight * mDepth + y * mDepth + z) * CHANNELS_COUNT];
+            return mData[x * mHeight * mDepth + y * mDepth + z];
         }
         else
         {
@@ -151,7 +151,7 @@ public:
         mWidth = std::max(width, 1u);
         mHeight = std::max(height, 1u);
         mDepth = std::max(depth, 1u);
-        mData.resize(mWidth * mHeight * mDepth * CHANNELS_COUNT);
+        mData.resize(mWidth * mHeight * mDepth);
     }
     RT_FORCE_INLINE constexpr void Clear(const T& clearValue = T{}) noexcept
     {
@@ -164,8 +164,8 @@ private:
     std::vector<T> mData;
 };
 
-using Color = float4;
-using Color8Bit = Vector4<uint8_t>;
+using Color = Vector<float, CHANNELS_COUNT>;
+using Color8Bit = Vector<uint8_t, CHANNELS_COUNT>;
 
 static Texture2D<Color>* sPixels = nullptr;
 static Texture2D<Color8Bit>* s8BitColors = nullptr;
@@ -263,7 +263,10 @@ void processPixel(const uint32_t x, const uint32_t y)
         color.X = 0.0f; // Red
         color.Y = 0.0f; // Green
         color.Z = 0.0f; // Blue
-        color.W = 1.0f; // Alpha
+        if constexpr (CHANNELS_COUNT == 4)
+        {
+            color.W = 1.0f; // Alpha
+        }
     }
     else if constexpr (MODE == ePixelProcessingMode::Render)
     {
@@ -274,7 +277,10 @@ void processPixel(const uint32_t x, const uint32_t y)
         color.X = 0.0f; // Red
         color.Y = 0.0f; // Green
         color.Z = 0.0f; // Blue
-        color.W = 1.0f; // Alpha
+        if constexpr (CHANNELS_COUNT == 4)
+        {
+            color.W = 1.0f; // Alpha
+        }
     }
     else
     {
@@ -285,16 +291,14 @@ void processPixel(const uint32_t x, const uint32_t y)
     color8Bit.X = static_cast<uint8_t>(color.X * 255.0f);
     color8Bit.Y = static_cast<uint8_t>(color.Y * 255.0f);
     color8Bit.Z = static_cast<uint8_t>(color.Z * 255.0f);
-    color8Bit.W = static_cast<uint8_t>(color.W * 255.0f);
+    if constexpr (CHANNELS_COUNT == 4)
+    {
+        color8Bit.W = static_cast<uint8_t>(color.W * 255.0f);
+    }
 }
 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT = DEFAULT_MEMORY_LAYOUT>
 void traversePixels();
-
-void clear_display_buffers()
-{
-    
-}
 
 extern "C" EMSCRIPTEN_KEEPALIVE
 void set_resolution(const uint32_t width, const uint32_t height)

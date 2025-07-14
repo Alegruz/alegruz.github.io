@@ -15,11 +15,14 @@ namespace raytracing
 	template<typename T>
 	concept ArithmeticType = std::is_arithmetic_v<T>;
 
-	template<ArithmeticType T>
-	struct Vector3;
+	template<ArithmeticType T, size_t N>
+	struct Vector {};
 	
 	template<ArithmeticType T>
-	struct Vector4;
+	using Vector3 = Vector<T, 3>;
+	
+	template<ArithmeticType T>
+	using Vector4 = Vector<T, 4>;
 
 	template<ArithmeticType T>
 	constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept;
@@ -31,7 +34,7 @@ namespace raytracing
 	constexpr Vector4<T> cross(const Vector4<T>& a, const Vector4<T>& b) noexcept;
 
 	template<ArithmeticType T>
-	struct Vector3 final
+	struct Vector<T, 3> final
 	{
 	public:
 		T X;
@@ -39,36 +42,36 @@ namespace raytracing
 		T Z;
 
 	public:
-		RT_FORCE_INLINE constexpr Vector3() noexcept : Vector3(0) {}
-		RT_FORCE_INLINE constexpr Vector3(const T value) noexcept : Vector3(value, value, value) {}
-		RT_FORCE_INLINE constexpr Vector3(const T x, const T y, const T z) noexcept : X(x), Y(y), Z(z) {}
-		RT_FORCE_INLINE constexpr Vector3(const Vector3& other) noexcept = default;
-		RT_FORCE_INLINE constexpr Vector3(Vector3&& other) noexcept = default;
-		RT_FORCE_INLINE ~Vector3() noexcept = default;
-		RT_FORCE_INLINE constexpr Vector3& operator=(const Vector3& other) noexcept = default;
-		RT_FORCE_INLINE constexpr Vector3& operator=(Vector3&& other) noexcept = default;
-		RT_FORCE_INLINE constexpr Vector3& operator=(const T value) noexcept { X = value; Y = value; Z = value; return *this; }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator+(const Vector3& other) const noexcept { return Vector3(X + other.X, Y + other.Y, Z + other.Z); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator-(const Vector3& other) const noexcept { return Vector3(X - other.X, Y - other.Y, Z - other.Z); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator*(const float scalar) const noexcept { return Vector3(X * scalar, Y * scalar, Z * scalar); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator/(const float scalar) const noexcept { assert(scalar != 0.0f); return Vector3(X / scalar, Y / scalar, Z / scalar); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator-() const noexcept { return Vector3(-X, -Y, -Z); }
-		RT_FORCE_INLINE constexpr Vector3& operator+=(const Vector3& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; return *this; }
-		RT_FORCE_INLINE constexpr Vector3& operator-=(const Vector3& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; return *this; }
-		RT_FORCE_INLINE constexpr Vector3& operator*=(const float scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; return *this; }
-		RT_FORCE_INLINE constexpr Vector3& operator/=(const float scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; return *this; }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator*(const Vector3& other) const noexcept { return Vector3(X * other.X, Y * other.Y, Z * other.Z); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 operator/(const Vector3& other) const noexcept { return Vector3(X / other.X, Y / other.Y, Z / other.Z); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr float dot(const Vector3& other) const noexcept { return raytracing::dot(*this, other); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 cross(const Vector3& other) const noexcept { return raytracing::cross(*this, other); }
+		RT_FORCE_INLINE constexpr Vector<T, 3>() noexcept : Vector<T, 3>(0) {}
+		RT_FORCE_INLINE constexpr Vector<T, 3>(const T value) noexcept : Vector<T, 3>(value, value, value) {}
+		RT_FORCE_INLINE constexpr Vector<T, 3>(const T x, const T y, const T z) noexcept : X(x), Y(y), Z(z) {}
+		RT_FORCE_INLINE constexpr Vector<T, 3>(const Vector<T, 3>& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 3>(Vector<T, 3>&& other) noexcept = default;
+		RT_FORCE_INLINE ~Vector<T, 3>() noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator=(const Vector<T, 3>& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator=(Vector<T, 3>&& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator=(const T value) noexcept { X = value; Y = value; Z = value; return *this; }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator+(const Vector<T, 3>& other) const noexcept { return Vector<T, 3>(X + other.X, Y + other.Y, Z + other.Z); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator-(const Vector<T, 3>& other) const noexcept { return Vector<T, 3>(X - other.X, Y - other.Y, Z - other.Z); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator*(const float scalar) const noexcept { return Vector<T, 3>(X * scalar, Y * scalar, Z * scalar); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator/(const float scalar) const noexcept { assert(scalar != 0.0f); return Vector<T, 3>(X / scalar, Y / scalar, Z / scalar); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator-() const noexcept { return Vector<T, 3>(-X, -Y, -Z); }
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator+=(const Vector<T, 3>& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator-=(const Vector<T, 3>& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator*=(const float scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator/=(const float scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; return *this; }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator*(const Vector<T, 3>& other) const noexcept { return Vector<T, 3>(X * other.X, Y * other.Y, Z * other.Z); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator/(const Vector<T, 3>& other) const noexcept { return Vector<T, 3>(X / other.X, Y / other.Y, Z / other.Z); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr float dot(const Vector<T, 3>& other) const noexcept { return raytracing::dot(*this, other); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> cross(const Vector<T, 3>& other) const noexcept { return raytracing::cross(*this, other); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr float length() const noexcept { return std::sqrt(X * X + Y * Y + Z * Z); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector3 normalize() const noexcept { const float len = length(); return Vector3(X / len, Y / len, Z / len); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> normalize() const noexcept { const float len = length(); return Vector<T, 3>(X / len, Y / len, Z / len); }
 	};
 
 	using float3 = Vector3<float>;
 
 	template<ArithmeticType T>
-	struct Vector4 final
+	struct Vector<T, 4> final
 	{
 	public:
 		T X;
@@ -77,30 +80,30 @@ namespace raytracing
 		T W;
 
 	public:
-		RT_FORCE_INLINE constexpr Vector4() noexcept : Vector4(0) {}
-		RT_FORCE_INLINE constexpr Vector4(const T value) noexcept : Vector4(value, value, value, value) {}
-		RT_FORCE_INLINE constexpr Vector4(const T x, const T y, const T z, const T w) noexcept : X(x), Y(y), Z(z), W(w) {}
-		RT_FORCE_INLINE constexpr Vector4(const Vector4& other) noexcept = default;
-		RT_FORCE_INLINE constexpr Vector4(Vector4&& other) noexcept = default;
-		RT_FORCE_INLINE ~Vector4() noexcept = default;
-		RT_FORCE_INLINE constexpr Vector4& operator=(const Vector4& other) noexcept = default;
-		RT_FORCE_INLINE constexpr Vector4& operator=(Vector4&& other) noexcept = default;
-		RT_FORCE_INLINE constexpr Vector4& operator=(const T value) noexcept { X = value; Y = value; Z = value; W = value; return *this; }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator+(const Vector4& other) const noexcept { return Vector4(X + other.X, Y + other.Y, Z + other.Z, W + other.W); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator-(const Vector4& other) const noexcept { return Vector4(X - other.X, Y - other.Y, Z - other.Z, W - other.W); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator*(const T scalar) const noexcept { return Vector4(X * scalar, Y * scalar, Z * scalar, W * scalar); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator/(const T scalar) const noexcept { assert(scalar != 0); return Vector4(X / scalar, Y / scalar, Z / scalar, W / scalar); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator-() const noexcept { return Vector4(-X, -Y, -Z, -W); }
-		RT_FORCE_INLINE constexpr Vector4& operator+=(const Vector4& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; W += other.W; return *this; }
-		RT_FORCE_INLINE constexpr Vector4& operator-=(const Vector4& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; W -= other.W; return *this; }
-		RT_FORCE_INLINE constexpr Vector4& operator*=(const T scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; W *= scalar; return *this; }
-		RT_FORCE_INLINE constexpr Vector4& operator/=(const T scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; W /= scalar; return *this; }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator*(const Vector4& other) const noexcept { return Vector4(X * other.X, Y * other.Y, Z * other.Z, W * other.W); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 operator/(const Vector4& other) const noexcept { return Vector4(X / other.X, Y / other.Y, Z / other.Z, W / other.W); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr float dot(const Vector4& other) const noexcept { return raytracing::dot(*this, other); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 cross(const Vector4& other) const noexcept { return raytracing::cross(*this, other); }
+		RT_FORCE_INLINE constexpr Vector<T, 4>() noexcept : Vector<T, 4>(0) {}
+		RT_FORCE_INLINE constexpr Vector<T, 4>(const T value) noexcept : Vector<T, 4>(value, value, value, value) {}
+		RT_FORCE_INLINE constexpr Vector<T, 4>(const T x, const T y, const T z, const T w) noexcept : X(x), Y(y), Z(z), W(w) {}
+		RT_FORCE_INLINE constexpr Vector<T, 4>(const Vector<T, 4>& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 4>(Vector<T, 4>&& other) noexcept = default;
+		RT_FORCE_INLINE ~Vector<T, 4>() noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator=(const Vector<T, 4>& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator=(Vector<T, 4>&& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator=(const T value) noexcept { X = value; Y = value; Z = value; W = value; return *this; }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator+(const Vector<T, 4>& other) const noexcept { return Vector<T, 4>(X + other.X, Y + other.Y, Z + other.Z, W + other.W); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator-(const Vector<T, 4>& other) const noexcept { return Vector<T, 4>(X - other.X, Y - other.Y, Z - other.Z, W - other.W); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator*(const T scalar) const noexcept { return Vector<T, 4>(X * scalar, Y * scalar, Z * scalar, W * scalar); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator/(const T scalar) const noexcept { assert(scalar != 0); return Vector<T, 4>(X / scalar, Y / scalar, Z / scalar, W / scalar); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator-() const noexcept { return Vector<T, 4>(-X, -Y, -Z, -W); }
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator+=(const Vector<T, 4>& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; W += other.W; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator-=(const Vector<T, 4>& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; W -= other.W; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator*=(const T scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; W *= scalar; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator/=(const T scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; W /= scalar; return *this; }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator*(const Vector<T, 4>& other) const noexcept { return Vector<T, 4>(X * other.X, Y * other.Y, Z * other.Z, W * other.W); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator/(const Vector<T, 4>& other) const noexcept { return Vector<T, 4>(X / other.X, Y / other.Y, Z / other.Z, W / other.W); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr float dot(const Vector<T, 4>& other) const noexcept { return raytracing::dot(*this, other); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> cross(const Vector<T, 4>& other) const noexcept { return raytracing::cross(*this, other); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr float length() const noexcept { return std::sqrt(X * X + Y * Y + Z * Z + W * W); }
-		[[nodiscard]] RT_FORCE_INLINE constexpr Vector4 normalize() const noexcept { const float len = length(); return Vector4(X / len, Y / len, Z / len, W / len); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> normalize() const noexcept { const float len = length(); return Vector<T, 4>(X / len, Y / len, Z / len, W / len); }
 	};
 
 	using float4 = Vector4<float>;
