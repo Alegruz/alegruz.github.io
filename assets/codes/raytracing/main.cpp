@@ -356,8 +356,14 @@ void traversePixels()
     }
 }
 
+enum class eRaytracingMode
+{
+    OnlyIntersection,
+    Count,
+};
+
 extern "C" EMSCRIPTEN_KEEPALIVE
-void render_frame([[maybe_unused]] const uint32_t frameIndex)
+void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t modeIndex)
 {
     assert(sPixels != nullptr && "Display buffer is not initialized");
     if (sPixels == nullptr)
@@ -369,6 +375,19 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex)
     if (sRays == nullptr)
     {
         std::cerr << "Rays buffer is not initialized!" << std::endl;
+        return;
+    }
+    assert(s8BitColors != nullptr && "8-bit colors buffer is not initialized");
+    if (s8BitColors == nullptr)
+    {
+        std::cerr << "8-bit colors buffer is not initialized!" << std::endl;
+        return;
+    }
+    const eRaytracingMode mode = static_cast<const eRaytracingMode>(modeIndex);
+    assert(mode < eRaytracingMode::Count && "Invalid raytracing mode");
+    if (mode >= eRaytracingMode::Count)
+    {
+        std::cerr << "Invalid raytracing mode" << std::endl;
         return;
     }
 

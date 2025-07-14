@@ -105,9 +105,9 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 }
 ```
 
-<div id="raytracing-cpu-demo" style="text-align: center; margin: 20px 0;">
-  <canvas id="wasm-canvas" width="320" height="240" style="border:1px solid #aaa;"></canvas>
-  <p>Raytracing CPU Demo</p>
+<div id="raytracing-cpu-demo-only-intersection" style="text-align: center; margin: 20px 0;">
+  <canvas id="wasm-canvas-only-intersection" width="320" height="240" style="border:1px solid #aaa;"></canvas>
+  <p>Raytracing CPU Demo - Only Intersection</p>
 </div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
 <script>
@@ -116,7 +116,7 @@ createRaytracerModule({
     ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
     : p
 }).then(Module => {
-  const canvas = document.getElementById("wasm-canvas");
+  const canvas = document.getElementById("wasm-canvas-only-intersection");
   const ctx = canvas.getContext("2d");
   const width = 320, height = 240, channels = 4;
   const imageData = ctx.createImageData(width, height);
@@ -126,7 +126,7 @@ createRaytracerModule({
 
   // ✅ Now get the buffer pointer AFTER resolution is set
   const bufPtr = Module._get_display_buffer();
-  const render = Module.cwrap("render_frame", null, ["number"]);
+  const render = Module.cwrap("render_frame", null, ["number", "number"]);
 
   if (!bufPtr || !Module.HEAPU8) {
         if (!bufPtr) {
@@ -147,7 +147,7 @@ createRaytracerModule({
 
   let frame = 0;
   function loop() {
-    render(frame++);
+    render(frame++, 0); // 0 for only intersection mode
     let buffer;
     try {
       buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);

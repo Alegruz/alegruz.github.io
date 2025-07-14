@@ -4555,7 +4555,7 @@ var _emscripten_stack_get_current = makeInvalidEarlyAccess('_emscripten_stack_ge
 
 function assignWasmExports(wasmExports) {
   Module['_set_resolution'] = _set_resolution = createExportWrapper('set_resolution', 2);
-  Module['_render_frame'] = _render_frame = createExportWrapper('render_frame', 1);
+  Module['_render_frame'] = _render_frame = createExportWrapper('render_frame', 2);
   Module['_get_display_buffer'] = _get_display_buffer = createExportWrapper('get_display_buffer', 0);
   _fflush = createExportWrapper('fflush', 1);
   _strerror = createExportWrapper('strerror', 1);
