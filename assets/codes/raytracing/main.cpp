@@ -340,7 +340,7 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
             (context.CameraRight * ((static_cast<float>(x) - static_cast<float>(context.Width) / 2.0f) * CAMERA.Width / static_cast<float>(context.Width))) +
             (context.CameraUp * ((static_cast<float>(y) - static_cast<float>(context.Height) / 2.0f) * CAMERA.Height / static_cast<float>(context.Height))) +
             (context.CameraForward * CAMERA.FocalLength);
-        sRays->GetPixel(x, y).Direction = pixelPosition - CAMERA.Position;
+        sRays->GetPixel(x, y).Direction = (pixelPosition - CAMERA.Position).normalize();
     }
     else if constexpr (MODE == ePixelProcessingMode::Clear)
     {
