@@ -174,10 +174,18 @@ namespace raytracing
 	struct Triangle final
 	{
 	public:
+		enum class eVertexOrder : uint8_t
+		{
+			Clockwise,
+			CounterClockwise,
+		};
+
+	public:
 		static constexpr uint32_t VERTICES_COUNT = 3;
 
 	public:
 		float3 Vertices[VERTICES_COUNT];
+		eVertexOrder VertexOrder = eVertexOrder::Clockwise; // Default vertex order
 
 	public:
 		RT_FORCE_INLINE constexpr Triangle() noexcept : Vertices{float3(0.0f), float3(0.0f), float3(0.0f)} {}
@@ -225,8 +233,25 @@ namespace raytracing
 
 	constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const ParametricLine& ray, const Triangle& triangle, float& intersectionDistance)
 	{
-		const float3 edge0 = triangle.Vertices[1] - triangle.Vertices[0];
-		const float3 edge1 = triangle.Vertices[2] - triangle.Vertices[0];
+		uint32_t vertexIndex0 = 0;
+		uint32_t vertexIndex1 = 1;
+		uint32_t vertexIndex2 = 2;
+		if (triangle.VertexOrder == Triangle::eVertexOrder::CounterClockwise)
+		{
+			vertexIndex0 = 2;
+			vertexIndex1 = 1;
+			vertexIndex2 = 0;
+		}
+		else
+		{
+			assert(triangle.VertexOrder == Triangle::eVertexOrder::Clockwise);
+			vertexIndex0 = 0;
+			vertexIndex1 = 1;
+			vertexIndex2 = 2;
+		}
+
+		const float3 edge0 = triangle.Vertices[vertexIndex1] - triangle.Vertices[vertexIndex0];
+		const float3 edge1 = triangle.Vertices[vertexIndex2] - triangle.Vertices[vertexIndex0];
 		const float3 rayCrossEdge1 = cross(ray.Direction, edge1);
 		const float determinant0 = dot(edge0, rayCrossEdge1);
 		if(determinant0 > -std::numeric_limits<float>::epsilon() && determinant0 < std::numeric_limits<float>::epsilon())
@@ -235,7 +260,7 @@ namespace raytracing
 		}
 
 		const float inverseDeterminant0 = 1.0f / determinant0;
-		const float3 s = ray.Origin - triangle.Vertices[0];
+		const float3 s = ray.Origin - triangle.Vertices[vertexIndex0];
 		const float u = dot(s, rayCrossEdge1) * inverseDeterminant0;
 		if((u < 0.0f && std::abs(u) > std::numeric_limits<float>::epsilon()) || (u > 1.0f && std::abs(u - 1.0f) > std::numeric_limits<float>::epsilon()))
 		{
