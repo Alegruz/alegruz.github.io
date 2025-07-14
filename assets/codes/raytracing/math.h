@@ -180,7 +180,7 @@ namespace raytracing
 		float3 Vertices[VERTICES_COUNT];
 
 	public:
-		Triangle() = delete;
+		RT_FORCE_INLINE constexpr Triangle() noexcept : Vertices{float3(0.0f), float3(0.0f), float3(0.0f)} {}
 		RT_FORCE_INLINE constexpr Triangle(const float3& vertex0, const float3& vertex1, const float3& vertex2) noexcept : Vertices{vertex0, vertex1, vertex2} {}
 		RT_FORCE_INLINE constexpr Triangle(const Triangle& other) noexcept = default;
 		RT_FORCE_INLINE constexpr Triangle(Triangle&& other) noexcept = default;

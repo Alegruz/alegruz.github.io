@@ -164,14 +164,19 @@ private:
     std::vector<T> mData;
 };
 
-using Color = Vector<float, CHANNELS_COUNT>;
-using Color8Bit = Vector<uint8_t, CHANNELS_COUNT>;
-
-static constexpr Color COLOR_WHITE = {1.0f, 1.0f, 1.0f, 1.0f};
-
-struct Geometry
+namespace raytracing
 {
-    std::array<Triangle, 2> Triangles;
+    using Color = Vector<float, CHANNELS_COUNT>;
+    using Color8Bit = Vector<uint8_t, CHANNELS_COUNT>;
+}
+
+static constexpr raytracing::Color COLOR_WHITE = {1.0f, 1.0f, 1.0f, 1.0f};
+static constexpr raytracing::Color COLOR_RED = {1.0f, 0.0f, 0.0f, 1.0f};
+static constexpr raytracing::Color COLOR_GREEN = {0.0f, 1.0f, 0.0f, 1.0f};
+
+struct Geometry final
+{
+    std::vector<Triangle> Triangles;
     Color Color = COLOR_WHITE;
     bool IsEmissive = false;
 };
@@ -245,21 +250,103 @@ void initialize(Texture2D<Ray, MEMORY_LAYOUT>& rays)
 
 namespace cornell_box
 {
-    [[maybe_unused]] static constexpr Geometry FLOOR = {
-        .Triangles = {
-            Triangle({0.0f, 0.0f, 0.0f}, {559.2f, 0.0f, 0.0f}, {559.2f, 0.0f, 552.8f}),
-            Triangle({0.0f, 0.0f, 0.0f}, {559.2f, 0.0f, 552.8f}, {0.0f, 0.0f, 552.8f})
+    static Geometry FLOOR =
+    {
+        .Triangles =
+        {
+            Triangle(float3(0.0f, 0.0f, 0.0f), float3(559.2f, 0.0f, 0.0f), float3(559.2f, 0.0f, 552.8f)),
+            Triangle(float3(0.0f, 0.0f, 0.0f), float3(559.2f, 0.0f, 552.8f), float3(0.0f, 0.0f, 552.8f))
         },
         .Color = COLOR_WHITE,
     };
-    [[maybe_unused]] static constexpr Geometry LIGHT = {
-        .Triangles = {
-            Triangle({343.0f, 548.8f, 227.0f}, {343.0f, 548.8f, 332.0f}, {213.0f, 548.8f, 332.0f}),
-            Triangle({213.0f, 548.8f, 227.0f}, {343.0f, 548.8f, 227.0f}, {213.0f, 548.8f, 332.0f})
+    static Geometry LIGHT =
+    {
+        .Triangles =
+        {
+            Triangle(float3(343.0f, 548.8f, 227.0f), float3(343.0f, 548.8f, 332.0f), float3(213.0f, 548.8f, 332.0f)),
+            Triangle(float3(213.0f, 548.8f, 227.0f), float3(343.0f, 548.8f, 227.0f), float3(213.0f, 548.8f, 332.0f))
         },
         .Color = COLOR_WHITE,
+        .IsEmissive = true
     };
-}
+    static Geometry CEILING =
+    {
+        .Triangles =
+        {
+            Triangle(float3(556.0f, 548.8f, 0.0f), float3(556.0f, 548.8f, 559.2f), float3(0.0f, 548.8f, 559.2f)),
+            Triangle(float3(0.0f, 548.8f, 0.0f), float3(556.0f, 548.8f, 0.0f), float3(0.0f, 548.8f, 559.2f))
+        },
+        .Color = COLOR_WHITE
+    };
+    // Back wall
+    static Geometry BACK_WALL =
+    {
+        .Triangles =
+        {
+            Triangle(float3(549.6f, 0.0f, 559.2f), float3(0.0f, 0.0f, 559.2f), float3(0.0f, 548.8f, 559.2f)),
+            Triangle(float3(549.6f, 0.0f, 559.2f), float3(0.0f, 548.8f, 559.2f), float3(556.0f, 548.8f, 559.2f))
+        },
+        .Color = COLOR_WHITE
+    };
+    static Geometry RIGHT_WALL =
+    {
+        .Triangles =
+        {
+            Triangle(float3(0.0f, 0.0f, 559.2f), float3(0.0f, 0.0f, 0.0f), float3(0.0f, 548.8f, 0.0f)),
+            Triangle(float3(0.0f, 0.0f, 559.2f), float3(0.0f, 548.8f, 0.0f), float3(0.0f, 548.8f, 559.2f))
+        },
+        .Color = COLOR_GREEN
+    };
+    static Geometry LEFT_WALL =
+    {
+        .Triangles =
+        {
+            Triangle(float3(552.8f, 0.0f, 0.0f), float3(549.6f, 0.0f, 559.2f), float3(556.0f, 548.8f, 559.2f)),
+            Triangle(float3(556.0f, 548.8f, 0.0f), float3(552.8f, 0.0f, 0.0f), float3(556.0f, 548.8f, 559.2f))
+        },
+        .Color = COLOR_RED
+    };
+    static Geometry SHORT_BLOCK =
+    {
+        .Triangles =
+        {
+            Triangle(float3(130.0f, 165.0f, 65.0f), float3(82.0f, 165.0f, 225.0f), float3(240.0f, 165.0f, 272.0f)),
+            Triangle(float3(290.0f, 165.0f, 114.0f), float3(130.0f, 165.0f, 65.0f), float3(240.0f, 165.0f, 272.0f)),
+            Triangle(float3(290.0f, 0.0f, 114.0f), float3(290.0f, 165.0f, 114.0f), float3(240.0f, 165.0f, 272.0f)),
+            Triangle(float3(240.0f, 0.0f, 272.0f), float3(290.0f, 0.0f, 114.0f), float3(240.0f, 165.0f, 272.0f)),
+            Triangle(float3(130.0f, 0.0f, 65.0f), float3(130.0f, 165.0f, 65.0f), float3(290.0f, 165.0f, 114.0f)),
+            Triangle(float3(290.0f, 0.0f, 114.0f), float3(130.0f, 0.0f, 65.0f), float3(290.0f, 165.0f, 114.0f)),
+            Triangle(float3(82.0f, 0.0f, 225.0f), float3(82.0f, 165.0f, 225.0f), float3(130.0f, 165.0f, 65.0f)),
+            Triangle(float3(130.0f, 0.0f, 65.0f), float3(82.0f, 0.0f, 225.0f), float3(130.0f, 165.0f, 65.0f)),
+            Triangle(float3(240.0f, 0.0f, 272.0f), float3(240.0f, 165.0f, 272.0f), float3(82.0f, 165.0f, 225.0f)),
+            Triangle(float3(82.0f, 0.0f, 225.0f), float3(240.0f, 0.0f, 272.0f), float3(82.0f, 165.0f, 225.0f))
+        },
+        .Color = COLOR_WHITE
+    };
+    static Geometry TALL_BLOCK =
+    {
+        .Triangles =
+        {
+            // Top
+            Triangle(float3(423.0f, 330.0f, 247.0f), float3(265.0f, 330.0f, 296.0f), float3(314.0f, 330.0f, 456.0f)),
+            Triangle(float3(472.0f, 330.0f, 406.0f), float3(423.0f, 330.0f, 247.0f), float3(314.0f, 330.0f, 456.0f)),
+            // Front
+            Triangle(float3(423.0f, 0.0f, 247.0f), float3(423.0f, 330.0f, 247.0f), float3(472.0f, 330.0f, 406.0f)),
+            Triangle(float3(472.0f, 0.0f, 406.0f), float3(423.0f, 0.0f, 247.0f), float3(472.0f, 330.0f, 406.0f)),
+            // Right
+            Triangle(float3(472.0f, 0.0f, 406.0f), float3(472.0f, 330.0f, 406.0f), float3(314.0f, 330.0f, 456.0f)),
+            Triangle(float3(314.0f, 0.0f, 456.0f), float3(472.0f, 0.0f, 406.0f), float3(314.0f, 330.0f, 456.0f)),
+            // Back
+            Triangle(float3(314.0f, 0.0f, 456.0f), float3(314.0f, 330.0f, 456.0f), float3(265.0f, 330.0f, 296.0f)),
+            Triangle(float3(265.0f, 0.0f, 296.0f), float3(314.0f, 0.0f, 456.0f), float3(265.0f, 330.0f, 296.0f)),
+            // Left
+            Triangle(float3(265.0f, 0.0f, 296.0f), float3(265.0f, 330.0f, 296.0f), float3(423.0f, 330.0f, 247.0f)),
+            Triangle(float3(423.0f, 0.0f, 247.0f), float3(265.0f, 0.0f, 296.0f), float3(423.0f, 330.0f, 247.0f))
+        },
+        .Color = COLOR_WHITE
+    };
+};
+
 
 enum class ePixelProcessingMode
 {
@@ -301,7 +388,7 @@ void processPixel(const uint32_t x, const uint32_t y)
                     color.Z = geometry.Color.Z;
                     if constexpr (CHANNELS_COUNT == 4)
                     {
-                        color.W = geometry.IsEmissive ? 1.0f : 0.0f; // Set alpha based on emissiveness
+                        color.W = geometry.Color.W;
                     }
                     goto triangles_traversal_end; // Exit the loop early if an intersection is found
                 }
@@ -424,6 +511,12 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
         // Initialize geometries only once
         sGeometries.push_back(cornell_box::FLOOR);
         sGeometries.push_back(cornell_box::LIGHT);
+        sGeometries.push_back(cornell_box::CEILING);
+        sGeometries.push_back(cornell_box::BACK_WALL);
+        sGeometries.push_back(cornell_box::RIGHT_WALL);
+        sGeometries.push_back(cornell_box::LEFT_WALL);
+        sGeometries.push_back(cornell_box::SHORT_BLOCK);
+        sGeometries.push_back(cornell_box::TALL_BLOCK);
     }
 
     // Clear the pixel buffer
