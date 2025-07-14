@@ -12,7 +12,7 @@ source "$EMSDK_PATH/emsdk_env.sh"
 
 emcc main.cpp -o main.js -std=c++20 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wshadow -s WASM=1 \
     -g \
-    -s EXPORTED_FUNCTIONS="['_render_frame', '_get_display_buffer', '_set_resolution']" \
+    -s EXPORTED_FUNCTIONS="['_render_frame', '_get_display_buffer', '_initialize']" \
     -s EXPORTED_RUNTIME_METHODS="['cwrap', 'getValue', 'HEAPU8']" \
     -s MODULARIZE=1 \
     -s EXPORT_NAME="createRaytracerModule"  \

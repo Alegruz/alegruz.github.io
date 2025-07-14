@@ -4540,7 +4540,7 @@ function checkIncomingModuleAPI() {
 }
 
 // Imports from the Wasm binary.
-var _set_resolution = Module['_set_resolution'] = makeInvalidEarlyAccess('_set_resolution');
+var _initialize = Module['_initialize'] = makeInvalidEarlyAccess('_initialize');
 var _render_frame = Module['_render_frame'] = makeInvalidEarlyAccess('_render_frame');
 var _get_display_buffer = Module['_get_display_buffer'] = makeInvalidEarlyAccess('_get_display_buffer');
 var _fflush = makeInvalidEarlyAccess('_fflush');
@@ -4554,7 +4554,7 @@ var __emscripten_stack_alloc = makeInvalidEarlyAccess('__emscripten_stack_alloc'
 var _emscripten_stack_get_current = makeInvalidEarlyAccess('_emscripten_stack_get_current');
 
 function assignWasmExports(wasmExports) {
-  Module['_set_resolution'] = _set_resolution = createExportWrapper('set_resolution', 2);
+  Module['_initialize'] = _initialize = createExportWrapper('initialize', 2);
   Module['_render_frame'] = _render_frame = createExportWrapper('render_frame', 2);
   Module['_get_display_buffer'] = _get_display_buffer = createExportWrapper('get_display_buffer', 0);
   _fflush = createExportWrapper('fflush', 1);

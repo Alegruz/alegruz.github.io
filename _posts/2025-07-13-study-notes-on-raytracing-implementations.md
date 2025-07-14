@@ -122,7 +122,7 @@ createRaytracerModule({
   const imageData = ctx.createImageData(width, height);
 
   // ✅ Set resolution first so the buffer is correctly allocated
-  Module._set_resolution(width, height);
+  Module._initialize(width, height);
 
   // ✅ Now get the buffer pointer AFTER resolution is set
   const bufPtr = Module._get_display_buffer();

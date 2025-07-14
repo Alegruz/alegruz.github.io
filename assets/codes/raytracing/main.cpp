@@ -206,48 +206,6 @@ static constexpr Camera CAMERA =
     .Height = 0.025f
 };
 
-template<eTextureMemoryLayout MEMORY_LAYOUT = DEFAULT_MEMORY_LAYOUT>
-void initialize(Texture2D<Ray, MEMORY_LAYOUT>& rays)
-{
-    const uint32_t width = rays.GetWidth();
-    const uint32_t height = rays.GetHeight();
-
-    const float3& cameraForward = CAMERA.Direction.normalize();
-    const float3 cameraRight = cameraForward.cross(CAMERA.UpDirection).normalize();
-    const float3 cameraUp = cameraForward.cross(cameraRight).normalize();
-
-    if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
-    {
-        for (uint32_t y = 0; y < height; ++y)
-        {
-            for (uint32_t x = 0; x < width; ++x)
-            {
-                rays.GetPixel(x, y)->Origin = CAMERA.Position;
-                const float3 pixelPosition = CAMERA.Position + 
-                    (cameraRight * ((x - width / 2.0f) * CAMERA.Width / width)) +
-                    (cameraUp * ((y - height / 2.0f) * CAMERA.Height / height)) +
-                    (cameraForward * CAMERA.FocalLength);
-                rays.GetPixel(x, y)->Direction = pixelPosition - CAMERA.Position;
-            }
-        }
-    }
-    else if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::ColumnMajor)
-    {
-        for (uint32_t x = 0; x < width; ++x)
-        {
-            for (uint32_t y = 0; y < height; ++y)
-            {
-                rays.GetPixel(x, y)->Origin = CAMERA.Position;
-                const float3 pixelPosition = CAMERA.Position + 
-                    (cameraRight * ((x - width / 2.0f) * CAMERA.Width / width)) +
-                    (cameraUp * ((y - height / 2.0f) * CAMERA.Height / height)) +
-                    (cameraForward * CAMERA.FocalLength);
-                rays.GetPixel(x, y)->Direction = pixelPosition - CAMERA.Position;
-            }
-        }
-    }
-}
-
 namespace cornell_box
 {
     static Geometry FLOOR =
@@ -347,18 +305,44 @@ namespace cornell_box
     };
 };
 
-
 enum class ePixelProcessingMode
 {
+    Initialize,
     Clear,
     Render,
 };
 
+enum class eRaytracingMode
+{
+    OnlyIntersection,
+    Count,
+};
+
+struct RenderContext
+{
+    uint32_t FrameIndex;
+    eRaytracingMode Mode;
+    uint32_t Width;
+    uint32_t Height;
+    const float3& CameraForward;
+    const float3 CameraRight;
+    const float3 CameraUp;
+};
+
 template<ePixelProcessingMode MODE>
-void processPixel(const uint32_t x, const uint32_t y)
+void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const RenderContext& context)
 {
     Color& color = sPixels->GetPixel(x, y);
-    if constexpr (MODE == ePixelProcessingMode::Clear)
+    if constexpr (MODE == ePixelProcessingMode::Initialize)
+    {        
+        sRays->GetPixel(x, y).Origin = CAMERA.Position;
+        const float3 pixelPosition = CAMERA.Position + 
+            (context.CameraRight * ((static_cast<float>(x) - static_cast<float>(context.Width) / 2.0f) * CAMERA.Width / static_cast<float>(context.Width))) +
+            (context.CameraUp * ((static_cast<float>(y) - static_cast<float>(context.Height) / 2.0f) * CAMERA.Height / static_cast<float>(context.Height))) +
+            (context.CameraForward * CAMERA.FocalLength);
+        sRays->GetPixel(x, y).Direction = pixelPosition - CAMERA.Position;
+    }
+    else if constexpr (MODE == ePixelProcessingMode::Clear)
     {
         color.X = 0.0f; // Red
         color.Y = 0.0f; // Green
@@ -412,11 +396,11 @@ void processPixel(const uint32_t x, const uint32_t y)
     }
 }
 
-template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT = DEFAULT_MEMORY_LAYOUT>
-void traversePixels();
+template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
+void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode);
 
 extern "C" EMSCRIPTEN_KEEPALIVE
-void set_resolution(const uint32_t width, const uint32_t height)
+void initialize(const uint32_t width, const uint32_t height)
 {
     if (sPixels == nullptr)
     {
@@ -444,18 +428,31 @@ void set_resolution(const uint32_t width, const uint32_t height)
     {
         sRays->SetResolution(width, height);
     }
+
+    traversePixels<ePixelProcessingMode::Initialize, DEFAULT_MEMORY_LAYOUT>(0, eRaytracingMode::OnlyIntersection);
 }
 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
-void traversePixels()
+void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
 {
+    const RenderContext context =
+    {
+        .FrameIndex = frameIndex,
+        .Mode = mode,
+        .Width = sPixels->GetWidth(),
+        .Height = sPixels->GetHeight(),
+        .CameraForward = CAMERA.Direction,
+        .CameraRight = cross(CAMERA.Direction, CAMERA.UpDirection).normalize(),
+        .CameraUp = cross(CAMERA.Direction, cross(CAMERA.Direction, CAMERA.UpDirection)).normalize()
+    };
+    
     if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
     {
         for (uint32_t y = 0; y < sPixels->GetHeight(); ++y)
         {
             for (uint32_t x = 0; x < sPixels->GetWidth(); ++x)
             {
-                processPixel<MODE>(x, y);
+                processPixel<MODE>(x, y, context);
             }
         }
     }
@@ -465,17 +462,11 @@ void traversePixels()
         {
             for (uint32_t y = 0; y < sPixels->GetHeight(); ++y)
             {
-                processPixel<MODE>(x, y);
+                processPixel<MODE>(x, y, context);
             }
         }
     }
 }
-
-enum class eRaytracingMode
-{
-    OnlyIntersection,
-    Count,
-};
 
 extern "C" EMSCRIPTEN_KEEPALIVE
 void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t modeIndex)
@@ -520,8 +511,8 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
     }
 
     // Clear the pixel buffer
-    traversePixels<ePixelProcessingMode::Clear, DEFAULT_MEMORY_LAYOUT>();
-    traversePixels<ePixelProcessingMode::Render, DEFAULT_MEMORY_LAYOUT>();
+    traversePixels<ePixelProcessingMode::Clear, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
+    traversePixels<ePixelProcessingMode::Render, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE
