@@ -1,8 +1,28 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include "common.h"
 #include <algorithm>
 #include <iostream>
 #include <vector>
 
+#if defined(RT_EMSCRIPTEN)
 #include <emscripten/emscripten.h>
+#endif  // defined(RT_EMSCRIPTEN)
+
+// Emscripten/Clang: suppress sign conversion warnings if needed
+#if defined(RT_EMSCRIPTEN)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#endif  // defined(RT_EMSCRIPTEN)
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+#if defined(RT_EMSCRIPTEN)
+#pragma clang diagnostic pop
+#endif  // defined(RT_EMSCRIPTEN)
 
 #include "math.h"
 
@@ -336,10 +356,24 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
     if constexpr (MODE == ePixelProcessingMode::Initialize)
     {        
         sRays->GetPixel(x, y).Origin = CAMERA.Position;
-        const float3 pixelPosition = CAMERA.Position + 
-            (context.CameraRight * ((static_cast<float>(x) - static_cast<float>(context.Width) / 2.0f) * CAMERA.Width / static_cast<float>(context.Width))) +
-            (context.CameraUp * ((static_cast<float>(y) - static_cast<float>(context.Height) / 2.0f) * CAMERA.Height / static_cast<float>(context.Height))) +
-            (context.CameraForward * CAMERA.FocalLength);
+        const float2 pixelSize = {
+			CAMERA.Width / static_cast<float>(context.Width),
+			CAMERA.Height / static_cast<float>(context.Height)
+		};
+		const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
+			(context.CameraRight * CAMERA.Width / 2.0f) -
+			(context.CameraUp * CAMERA.Height / 2.0f);
+
+        const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
+            (context.CameraRight * CAMERA.Width / 2.0f) +
+            (context.CameraUp * CAMERA.Height / 2.0f);
+
+        const float3 pixelPosition = lerp(
+            focalLeftBottom,
+            focalRightTop,
+            float3((static_cast<float>(x) + 0.5f) / static_cast<float>(context.Width), (static_cast<float>(y) + 0.5f) / static_cast<float>(context.Height), 0.5f)
+        );
+
         sRays->GetPixel(x, y).Direction = (pixelPosition - CAMERA.Position).normalize();
     }
     else if constexpr (MODE == ePixelProcessingMode::Clear)
@@ -354,7 +388,8 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
     }
     else if constexpr (MODE == ePixelProcessingMode::Render)
     {
-        [[maybe_unused]] Ray& ray = sRays->GetPixel(x, y);
+        Ray& ray = sRays->GetPixel(x, y);
+
         // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
         // For now, we will just print the ray origin and direction
 
@@ -399,7 +434,9 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
 void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode);
 
+#if defined(RT_EMSCRIPTEN)
 extern "C" EMSCRIPTEN_KEEPALIVE
+#endif  // defined(RT_EMSCRIPTEN)
 void initialize(const uint32_t width, const uint32_t height)
 {
     if (sPixels == nullptr)
@@ -443,7 +480,7 @@ void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
         .Height = sPixels->GetHeight(),
         .CameraForward = CAMERA.Direction,
         .CameraRight = cross(CAMERA.Direction, CAMERA.UpDirection).normalize(),
-        .CameraUp = cross(CAMERA.Direction, cross(CAMERA.Direction, CAMERA.UpDirection)).normalize()
+        .CameraUp = cross(cross(CAMERA.Direction, CAMERA.UpDirection), CAMERA.Direction).normalize()
     };
     
     if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
@@ -468,7 +505,9 @@ void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
     }
 }
 
+#if defined(RT_EMSCRIPTEN)
 extern "C" EMSCRIPTEN_KEEPALIVE
+#endif  // defined(RT_EMSCRIPTEN)
 void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t modeIndex)
 {
     assert(sPixels != nullptr && "Display buffer is not initialized");
@@ -515,7 +554,10 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
     traversePixels<ePixelProcessingMode::Render, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
 }
 
+
+#if defined(RT_EMSCRIPTEN)
 extern "C" EMSCRIPTEN_KEEPALIVE
+#endif  // defined(RT_EMSCRIPTEN)
 uint8_t* get_display_buffer()
 {
     assert(s8BitColors != nullptr && "Display buffer is not initialized");
@@ -526,3 +568,30 @@ uint8_t* get_display_buffer()
     }
     return reinterpret_cast<uint8_t*>(s8BitColors->GetData());
 }
+
+#if !defined(RT_EMSCRIPTEN)
+int main()
+{
+    initialize(1280, 720); // Initialize with a default resolution
+    get_display_buffer(); // Call to ensure the display buffer is ready
+
+    uint32_t frameIndex = 0;
+    // while(true)
+    {
+        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::OnlyIntersection));
+        ++frameIndex;
+    }
+
+	stbi_write_png
+    (
+		"example_cpu.png",
+		static_cast<int>(s8BitColors->GetWidth()),
+		static_cast<int>(s8BitColors->GetHeight()),
+		static_cast<int>(CHANNELS_COUNT),
+		s8BitColors->GetData(),
+		static_cast<int>(s8BitColors->GetWidth() * static_cast<int>(CHANNELS_COUNT))
+	);
+
+    return 0;
+}
+#endif  // NOT defined(RT_EMSCRIPTEN)

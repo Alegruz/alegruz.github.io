@@ -17,6 +17,9 @@ namespace raytracing
 
 	template<ArithmeticType T, size_t N>
 	struct Vector {};
+
+	template<ArithmeticType T>
+	using Vector2 = Vector<T, 2>;
 	
 	template<ArithmeticType T>
 	using Vector3 = Vector<T, 3>;
@@ -25,13 +28,71 @@ namespace raytracing
 	using Vector4 = Vector<T, 4>;
 
 	template<ArithmeticType T>
+	constexpr T lerp(const T& a, const T& b, const float value) noexcept
+	{
+		return a + (b - a) * value;
+	}
+
+	template<ArithmeticType T>
+	constexpr float dot(const Vector2<T>& a, const Vector2<T>& b) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector2<T> cross(const Vector2<T>& a, const Vector2<T>& b) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector2<T> lerp(const Vector2<T>& a, const Vector2<T>& b, const float value) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector2<T> lerp(const Vector2<T>& a, const Vector2<T>& b, const Vector2<float>& values) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) noexcept;
 	template<ArithmeticType T>
+	constexpr Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, const float value) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, const Vector3<float>& values) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector4<T>& a, const Vector4<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector4<T> cross(const Vector4<T>& a, const Vector4<T>& b) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const float value) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const Vector4<float>& values) noexcept;
+
+	template<ArithmeticType T>
+	struct Vector<T, 2> final
+	{
+	public:
+		T X;
+		T Y;
+
+	public:
+		RT_FORCE_INLINE constexpr Vector<T, 2>() noexcept : Vector<T, 2>(0) {}
+		RT_FORCE_INLINE constexpr Vector<T, 2>(const T value) noexcept : Vector<T, 2>(value, value) {}
+		RT_FORCE_INLINE constexpr Vector<T, 2>(const T x, const T y) noexcept : X(x), Y(y) {}
+		RT_FORCE_INLINE constexpr Vector<T, 2>(const Vector<T, 2>& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 2>(Vector<T, 2>&& other) noexcept = default;
+		RT_FORCE_INLINE ~Vector<T, 2>() noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator=(const Vector<T, 2>& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator=(Vector<T, 2>&& other) noexcept = default;
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator=(const T value) noexcept { X = value; Y = value; return *this; }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator+(const Vector<T, 2>& other) const noexcept { return Vector<T, 2>(X + other.X, Y + other.Y); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator-(const Vector<T, 2>& other) const noexcept { return Vector<T, 2>(X - other.X, Y - other.Y); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator*(const float scalar) const noexcept { return Vector<T, 2>(X * scalar, Y * scalar); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator/(const float scalar) const noexcept { assert(scalar != 0.0f); return Vector<T, 2>(X / scalar, Y / scalar); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator-() const noexcept { return Vector<T, 2>(-X, -Y); }
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator+=(const Vector<T, 2>& other) noexcept { X += other.X; Y += other.Y; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator-=(const Vector<T, 2>& other) noexcept { X -= other.X; Y -= other.Y; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator*=(const float scalar) noexcept { X *= scalar; Y *= scalar; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 2>& operator/=(const float scalar) noexcept { X /= scalar; Y /= scalar; return *this; }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator*(const Vector<T, 2>& other) const noexcept { return Vector<T, 2>(X * other.X, Y * other.Y); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> operator/(const Vector<T, 2>& other) const noexcept { return Vector<T, 2>(X / other.X, Y / other.Y); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr float dot(const Vector<T, 2>& other) const noexcept { return raytracing::dot(*this, other); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> cross(const Vector<T, 2>& other) const noexcept { return raytracing::cross(*this, other); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr float length() const noexcept { return std::sqrt(X * X + Y * Y); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 2> normalize() const noexcept { const float len = length(); return Vector<T, 2>(X / len, Y / len); }
+	};
+
+	using float2 = Vector2<float>;
 
 	template<ArithmeticType T>
 	struct Vector<T, 3> final
@@ -109,6 +170,30 @@ namespace raytracing
 	using float4 = Vector4<float>;
 
 	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr float dot(const Vector2<T>& a, const Vector2<T>& b) noexcept
+	{
+		return a.X * b.X + a.Y * b.Y;
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector2<T> cross(const Vector2<T>& a, const Vector2<T>& b) noexcept
+	{
+		return Vector2<T>(a.X * b.Y - a.Y * b.X, 0.0f); // Cross product in 2D results in a vector with Z component only
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector2<T> lerp(const Vector2<T>& a, const Vector2<T>& b, const float value) noexcept
+	{
+		return Vector2<T>(a.X + (b.X - a.X) * value, a.Y + (b.Y - a.Y) * value);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector2<T> lerp(const Vector2<T>& a, const Vector2<T>& b, const Vector2<float>& values) noexcept
+	{
+		return Vector2<T>(a.X + (b.X - a.X) * values.X, a.Y + (b.Y - a.Y) * values.Y);
+	}
+
+	template<ArithmeticType T>
 	RT_FORCE_INLINE constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept
 	{
 		return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
@@ -118,6 +203,18 @@ namespace raytracing
 	RT_FORCE_INLINE constexpr Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) noexcept
 	{
 		return Vector3<T>(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, const float value) noexcept
+	{
+		return Vector3<T>(a.X + (b.X - a.X) * value, a.Y + (b.Y - a.Y) * value, a.Z + (b.Z - a.Z) * value);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, const Vector3<float>& values) noexcept
+	{
+		return Vector3<T>(a.X + (b.X - a.X) * values.X, a.Y + (b.Y - a.Y) * values.Y, a.Z + (b.Z - a.Z) * values.Z);
 	}
 
 	template<ArithmeticType T>
@@ -134,6 +231,28 @@ namespace raytracing
 			a.Z * b.X - a.X * b.Z,
 			a.X * b.Y - a.Y * b.X,
 			0.0f // W component is set to 0 for cross product
+		);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const float value) noexcept
+	{
+		return Vector4<T>(
+			a.X + (b.X - a.X) * value,
+			a.Y + (b.Y - a.Y) * value,
+			a.Z + (b.Z - a.Z) * value,
+			a.W + (b.W - a.W) * value
+		);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const Vector4<float>& values) noexcept
+	{
+		return Vector4<T>(
+			a.X + (b.X - a.X) * values.X,
+			a.Y + (b.Y - a.Y) * values.Y,
+			a.Z + (b.Z - a.Z) * values.Z,
+			a.W + (b.W - a.W) * values.W
 		);
 	}
 
@@ -224,8 +343,6 @@ namespace raytracing
 			{
 				static_assert(false, "Unknown intersection algorithm");
 			}
-
-			return std::nullopt; // Placeholder for the actual implementation
 		}
 
 		static constexpr std::optional<float3> MoellerTrumbore(const ParametricLine &ray, const Triangle &triangle, float &intersectionDistance);
@@ -238,43 +355,43 @@ namespace raytracing
 		uint32_t vertexIndex2 = 2;
 		if (triangle.VertexOrder == Triangle::eVertexOrder::CounterClockwise)
 		{
-			vertexIndex0 = 2;
+			vertexIndex0 = 0;
 			vertexIndex1 = 1;
-			vertexIndex2 = 0;
+			vertexIndex2 = 2;
 		}
 		else
 		{
 			assert(triangle.VertexOrder == Triangle::eVertexOrder::Clockwise);
 			vertexIndex0 = 0;
-			vertexIndex1 = 1;
-			vertexIndex2 = 2;
+			vertexIndex2 = 1;
+			vertexIndex1 = 2;
 		}
 
 		const float3 edge0 = triangle.Vertices[vertexIndex1] - triangle.Vertices[vertexIndex0];
 		const float3 edge1 = triangle.Vertices[vertexIndex2] - triangle.Vertices[vertexIndex0];
 		const float3 rayCrossEdge1 = cross(ray.Direction, edge1);
-		const float determinant0 = dot(edge0, rayCrossEdge1);
-		if(determinant0 > -std::numeric_limits<float>::epsilon() && determinant0 < std::numeric_limits<float>::epsilon())
+		const float determinant = dot(edge0, rayCrossEdge1);
+		if(determinant > -std::numeric_limits<float>::epsilon() && determinant < std::numeric_limits<float>::epsilon())
 		{
 			return std::nullopt; // Placeholder for the actual implementation
 		}
 
-		const float inverseDeterminant0 = 1.0f / determinant0;
+		const float inverseDeterminant = 1.0f / determinant;
 		const float3 s = ray.Origin - triangle.Vertices[vertexIndex0];
-		const float u = dot(s, rayCrossEdge1) * inverseDeterminant0;
+		const float u = dot(s, rayCrossEdge1) * inverseDeterminant;
 		if((u < 0.0f && std::abs(u) > std::numeric_limits<float>::epsilon()) || (u > 1.0f && std::abs(u - 1.0f) > std::numeric_limits<float>::epsilon()))
 		{
 			return std::nullopt;
 		}
 
-		const float3 rayCrossEdge0 = cross(ray.Direction, edge0);
-		const float v = dot(ray.Direction, rayCrossEdge0) * inverseDeterminant0;
+		const float3 sCrossEdge0 = cross(s, edge0);
+		const float v = dot(ray.Direction, sCrossEdge0) * inverseDeterminant;
 		if((v < 0.0f && std::abs(v) > std::numeric_limits<float>::epsilon()) || (u + v > 1.0f && std::abs(u + v - 1.0f) > std::numeric_limits<float>::epsilon()))
 		{
 			return std::nullopt;
 		}
 
-		intersectionDistance = dot(edge1, rayCrossEdge0) * inverseDeterminant0;
+		intersectionDistance = dot(edge1, sCrossEdge0) * inverseDeterminant;
 		if(intersectionDistance > std::numeric_limits<float>::epsilon())
 		{
 			return ray.Origin + ray.Direction * intersectionDistance;
