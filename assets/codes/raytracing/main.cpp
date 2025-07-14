@@ -167,9 +167,19 @@ private:
 using Color = Vector<float, CHANNELS_COUNT>;
 using Color8Bit = Vector<uint8_t, CHANNELS_COUNT>;
 
+static constexpr Color COLOR_WHITE = {1.0f, 1.0f, 1.0f, 1.0f};
+
+struct Geometry
+{
+    std::array<Triangle, 2> Triangles;
+    Color Color = COLOR_WHITE;
+    bool IsEmissive = false;
+};
+
 static Texture2D<Color>* sPixels = nullptr;
 static Texture2D<Color8Bit>* s8BitColors = nullptr;
 static Texture2D<Ray>* sRays = nullptr;
+static std::vector<Geometry> sGeometries;
 
 struct Camera
 {
@@ -233,20 +243,23 @@ void initialize(Texture2D<Ray, MEMORY_LAYOUT>& rays)
     }
 }
 
-struct Geometry
+namespace cornell_box
 {
-    std::array<Triangle, 2> Triangles;
-    Color Color;
-};
-
-static constexpr Color COLOR_WHITE = {1.0f, 1.0f, 1.0f, 1.0f};
-[[maybe_unused]] static constexpr Geometry FLOOR = {
-    .Triangles = {
-        Triangle({0.0f, 0.0f, 0.0f}, {559.2f, 0.0f, 0.0f}, {559.2f, 0.0f, 552.8f}),
-        Triangle({0.0f, 0.0f, 0.0f}, {559.2f, 0.0f, 552.8f}, {0.0f, 0.0f, 552.8f})
-    },
-    .Color = COLOR_WHITE,
-};
+    [[maybe_unused]] static constexpr Geometry FLOOR = {
+        .Triangles = {
+            Triangle({0.0f, 0.0f, 0.0f}, {559.2f, 0.0f, 0.0f}, {559.2f, 0.0f, 552.8f}),
+            Triangle({0.0f, 0.0f, 0.0f}, {559.2f, 0.0f, 552.8f}, {0.0f, 0.0f, 552.8f})
+        },
+        .Color = COLOR_WHITE,
+    };
+    [[maybe_unused]] static constexpr Geometry LIGHT = {
+        .Triangles = {
+            Triangle({343.0f, 548.8f, 227.0f}, {343.0f, 548.8f, 332.0f}, {213.0f, 548.8f, 332.0f}),
+            Triangle({213.0f, 548.8f, 227.0f}, {343.0f, 548.8f, 227.0f}, {213.0f, 548.8f, 332.0f})
+        },
+        .Color = COLOR_WHITE,
+    };
+}
 
 enum class ePixelProcessingMode
 {
@@ -273,14 +286,29 @@ void processPixel(const uint32_t x, const uint32_t y)
         [[maybe_unused]] Ray& ray = sRays->GetPixel(x, y);
         // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
         // For now, we will just print the ray origin and direction
-        
-        color.X = 0.0f; // Red
-        color.Y = 0.0f; // Green
-        color.Z = 0.0f; // Blue
-        if constexpr (CHANNELS_COUNT == 4)
+
+        for(const Geometry& geometry : sGeometries)
         {
-            color.W = 1.0f; // Alpha
+            for (const Triangle& triangle : geometry.Triangles)
+            {
+                float intersectionDistance = 0.0f;
+                std::optional<float3> intersectionPoint = IntersectionChecker::Intersects(ray, triangle, intersectionDistance);
+                if (intersectionPoint.has_value())
+                {
+                    // If an intersection is found, set the color based on the geometry
+                    color.X = geometry.Color.X;
+                    color.Y = geometry.Color.Y;
+                    color.Z = geometry.Color.Z;
+                    if constexpr (CHANNELS_COUNT == 4)
+                    {
+                        color.W = geometry.IsEmissive ? 1.0f : 0.0f; // Set alpha based on emissiveness
+                    }
+                    goto triangles_traversal_end; // Exit the loop early if an intersection is found
+                }
+            }
         }
+        triangles_traversal_end:
+        ;
     }
     else
     {
@@ -389,6 +417,13 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
     {
         std::cerr << "Invalid raytracing mode" << std::endl;
         return;
+    }
+
+    if(sGeometries.empty() == true)
+    {
+        // Initialize geometries only once
+        sGeometries.push_back(cornell_box::FLOOR);
+        sGeometries.push_back(cornell_box::LIGHT);
     }
 
     // Clear the pixel buffer
