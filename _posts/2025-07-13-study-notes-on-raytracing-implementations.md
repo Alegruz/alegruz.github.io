@@ -106,7 +106,7 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 ```
 
 <div id="raytracing-cpu-demo-only-intersection" style="text-align: center; margin: 20px 0;">
-  <canvas id="wasm-canvas-only-intersection" width="320" height="240" style="border:1px solid #aaa;"></canvas>
+  <canvas id="wasm-canvas-only-intersection" width="1280" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing CPU Demo - Only Intersection</p>
 </div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
@@ -118,7 +118,7 @@ createRaytracerModule({
 }).then(Module => {
   const canvas = document.getElementById("wasm-canvas-only-intersection");
   const ctx = canvas.getContext("2d");
-  const width = 320, height = 240, channels = 4;
+  const width = 1280, height = 720, channels = 4;
   const imageData = ctx.createImageData(width, height);
 
   // ✅ Set resolution first so the buffer is correctly allocated
@@ -160,7 +160,7 @@ createRaytracerModule({
     }
     imageData.data.set(buffer);
     ctx.putImageData(imageData, 0, 0);
-    requestAnimationFrame(loop);
+    <!-- requestAnimationFrame(loop); -->
   }
 
   loop();
