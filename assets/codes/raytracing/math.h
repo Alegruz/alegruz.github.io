@@ -238,16 +238,16 @@ namespace raytracing
 		uint32_t vertexIndex2 = 2;
 		if (triangle.VertexOrder == Triangle::eVertexOrder::CounterClockwise)
 		{
-			vertexIndex0 = 0;
+			vertexIndex0 = 2;
 			vertexIndex1 = 1;
-			vertexIndex2 = 2;
+			vertexIndex2 = 0;
 		}
 		else
 		{
 			assert(triangle.VertexOrder == Triangle::eVertexOrder::Clockwise);
-			vertexIndex0 = 2;
+			vertexIndex0 = 0;
 			vertexIndex1 = 1;
-			vertexIndex2 = 0;
+			vertexIndex2 = 2;
 		}
 
 		const float3 edge0 = triangle.Vertices[vertexIndex1] - triangle.Vertices[vertexIndex0];
