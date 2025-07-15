@@ -125,6 +125,7 @@ public:
     {
         std::fill(mData.begin(), mData.end(), clearValue);
     }
+
 private:
     uint32_t mWidth;
     uint32_t mHeight;
@@ -231,6 +232,8 @@ static std::unique_ptr<Texture2D<float>> sDepthBuffer = nullptr;
 static std::unique_ptr<Texture2D<GBufferPixel>> sGBuffer = nullptr;
 static std::unique_ptr<Texture2D<Color>> sDenoisedPixels = nullptr;
 static std::unique_ptr<Texture2D<Color8Bit>> s8BitColors = nullptr;
+static std::unique_ptr<Texture2D<Color>> sAccumulationBuffer = nullptr;
+static std::unique_ptr<Texture2D<Color>> sAccumulatedPixels = nullptr;
 static std::unique_ptr<Texture2D<Ray>> sRays = nullptr;
 static std::vector<Geometry> sGeometries;
 static std::vector<Geometry*> sLightGeometries;
@@ -374,6 +377,7 @@ enum class ePixelProcessingMode : uint8_t
     Clear,
     Render,
     Denoise,
+    TemporalAccumulation,
 };
 
 enum class eDenoiser : uint8_t
@@ -787,6 +791,53 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
             }
         }
     }
+    else if constexpr (MODE == ePixelProcessingMode::TemporalAccumulation)
+    {
+        if((context.Mode & eRaytracingMode::Denoise) != eRaytracingMode::None)
+        {
+            static constexpr int32_t TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS = 3;
+
+            const Color& prevColor = sAccumulationBuffer->GetPixel(x, y);
+            
+            Color neighborMinColor = COLOR_BLACK;
+            Color neighborMaxColor = COLOR_WHITE;
+            for (int32_t offsetY = -TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS; offsetY <= TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS; ++offsetY)
+            {
+                for (int32_t offsetX = -TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS; offsetX <= TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS; ++offsetX)
+                {
+                    const uint32_t neighborX = static_cast<uint32_t>(static_cast<int32_t>(x) + offsetX);
+                    const uint32_t neighborY = static_cast<uint32_t>(static_cast<int32_t>(y) + offsetY);
+
+                    if (neighborX < 0 || neighborX >= sPixels->GetWidth() ||
+                        neighborY < 0 || neighborY >= sPixels->GetHeight())
+                    {
+                        continue; // Skip out-of-bounds neighbors
+                    }
+
+                    const Color& neighborColor = sPixels->GetPixel(neighborX, neighborY);
+                    if (offsetX == -TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS && offsetY == -TEMPORAL_ACCUMULATION_NEIGHBOR_RADIUS)
+                    {
+                        neighborMinColor = neighborColor;
+                        neighborMaxColor = neighborColor;
+                    }
+                    else
+                    {
+                        neighborMinColor.XYZ() = min(neighborMinColor.XYZ(), neighborColor.XYZ());
+                        neighborMaxColor.XYZ() = max(neighborMaxColor.XYZ(), neighborColor.XYZ());
+                    }
+                }
+            }
+        
+            const Color clampedColor = Color(clamp(prevColor.XYZ(), neighborMinColor.XYZ(), neighborMaxColor.XYZ()), prevColor.W);
+            float alpha = 0.1f;
+            if(context.NumSamples > 1)
+            {
+                alpha = 1.0f / (static_cast<float>(context.NumSamples + 1));
+            }
+            color = lerp(color, clampedColor, alpha);
+        }
+        sAccumulatedPixels->GetPixel(x, y) = color;
+    }
     else
     {
         static_assert(false, "Unsupported pixel processing mode");
@@ -845,6 +896,24 @@ void initialize(const uint32_t width, const uint32_t height)
 	{
 		sDenoisedPixels->SetResolution(width, height);
 	}
+
+    if (sAccumulationBuffer == nullptr)
+    {
+        sAccumulationBuffer = std::make_unique<Texture2D<Color>>(width, height);
+    }
+    else
+    {
+        sAccumulationBuffer->SetResolution(width, height);
+    }
+
+    if(sAccumulatedPixels == nullptr)
+    {
+        sAccumulatedPixels = std::make_unique<Texture2D<Color>>(width, height);
+    }
+    else
+    {
+        sAccumulatedPixels->SetResolution(width, height);
+    }
 
     if (s8BitColors == nullptr)
     {
@@ -1017,7 +1086,11 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
     // Clear the pixel buffer
     traversePixels<ePixelProcessingMode::Clear, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
     traversePixels<ePixelProcessingMode::Render, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
+    traversePixels<ePixelProcessingMode::TemporalAccumulation, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
+    *sPixels = *sAccumulatedPixels;
     traversePixels<ePixelProcessingMode::Denoise, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
+
+    *sAccumulationBuffer = *sPixels;
 }
 
 

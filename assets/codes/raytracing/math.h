@@ -61,6 +61,12 @@ namespace raytracing
 	template<ArithmeticType T>
 	constexpr Vector3<T> pow(const Vector3<T>& vec, const float exponent) noexcept;
 	template<ArithmeticType T>
+	constexpr Vector3<T> min(const Vector3<T>& a, const Vector3<T>& b) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector3<T> max(const Vector3<T>& a, const Vector3<T>& b) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector3<T> clamp(const Vector3<T>& vec, const Vector3<T>& min, const Vector3<T>& max) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector4<T>& a, const Vector4<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector4<T> cross(const Vector4<T>& a, const Vector4<T>& b) noexcept;
@@ -177,6 +183,7 @@ namespace raytracing
 		RT_FORCE_INLINE constexpr Vector<T, 4>() noexcept : Vector<T, 4>(0) {}
 		RT_FORCE_INLINE constexpr Vector<T, 4>(const T value) noexcept : Vector<T, 4>(value, value, value, value) {}
 		RT_FORCE_INLINE constexpr Vector<T, 4>(const T x, const T y, const T z, const T w) noexcept : X(x), Y(y), Z(z), W(w) {}
+		RT_FORCE_INLINE constexpr Vector<T, 4>(const Vector<T, 3>& vec, const T w) noexcept : X(vec.X), Y(vec.Y), Z(vec.Z), W(w) {}
 		RT_FORCE_INLINE constexpr Vector<T, 4>(const Vector<T, 4>& other) noexcept = default;
 		RT_FORCE_INLINE constexpr Vector<T, 4>(Vector<T, 4>&& other) noexcept = default;
 		RT_FORCE_INLINE ~Vector<T, 4>() noexcept = default;
@@ -276,6 +283,28 @@ namespace raytracing
 	RT_FORCE_INLINE constexpr Vector3<T> pow(const Vector3<T>& vec, const float exponent) noexcept
 	{
 		return Vector3<T>(std::pow(vec.X, exponent), std::pow(vec.Y, exponent), std::pow(vec.Z, exponent));
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector3<T> min(const Vector3<T>& a, const Vector3<T>& b) noexcept
+	{
+		return Vector3<T>(std::min(a.X, b.X), std::min(a.Y, b.Y), std::min(a.Z, b.Z));
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector3<T> max(const Vector3<T>& a, const Vector3<T>& b) noexcept
+	{
+		return Vector3<T>(std::max(a.X, b.X), std::max(a.Y, b.Y), std::max(a.Z, b.Z));
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector3<T> clamp(const Vector3<T>& vec, const Vector3<T>& min, const Vector3<T>& max) noexcept
+	{
+		return Vector3<T>(
+			std::clamp(vec.X, min.X, max.X),
+			std::clamp(vec.Y, min.Y, max.Y),
+			std::clamp(vec.Z, min.Z, max.Z)
+		);
 	}
 
 	template<ArithmeticType T>
