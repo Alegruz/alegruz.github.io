@@ -343,6 +343,7 @@ enum class ePixelProcessingMode
 enum class eRaytracingMode
 {
     OnlyIntersection,
+    OnlyIntersectionWithJitter,
     Count,
 };
 
@@ -398,30 +399,33 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
     {
         Ray& ray = sRays->GetPixel(x, y);
 
-        const float2 pixelSize = {
-			CAMERA.Width / static_cast<float>(context.Width),
-			CAMERA.Height / static_cast<float>(context.Height)
-		};
-		const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
-			(context.CameraRight * CAMERA.Width / 2.0f) -
-			(context.CameraUp * CAMERA.Height / 2.0f);
+        if (context.Mode == eRaytracingMode::OnlyIntersectionWithJitter)
+        {
+            const float2 pixelSize = {
+                CAMERA.Width / static_cast<float>(context.Width),
+                CAMERA.Height / static_cast<float>(context.Height)
+            };
+            const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
+                (context.CameraRight * CAMERA.Width / 2.0f) -
+                (context.CameraUp * CAMERA.Height / 2.0f);
 
-        const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
-            (context.CameraRight * CAMERA.Width / 2.0f) +
-            (context.CameraUp * CAMERA.Height / 2.0f);
+            const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
+                (context.CameraRight * CAMERA.Width / 2.0f) +
+                (context.CameraUp * CAMERA.Height / 2.0f);
 
-        const float2 jitter = {
-            UniformRandomGenerator::GetRandomNumber(),
-            UniformRandomGenerator::GetRandomNumber()
-        };
+            const float2 jitter = {
+                UniformRandomGenerator::GetRandomNumber(),
+                UniformRandomGenerator::GetRandomNumber()
+            };
 
-        const float3 pixelPosition = lerp(
-            focalLeftBottom,
-            focalRightTop,
-            float3((static_cast<float>(x) + jitter.X) / static_cast<float>(context.Width), (static_cast<float>(y) + jitter.Y) / static_cast<float>(context.Height), 0.5f)
-        );
+            const float3 pixelPosition = lerp(
+                focalLeftBottom,
+                focalRightTop,
+                float3((static_cast<float>(x) + jitter.X) / static_cast<float>(context.Width), (static_cast<float>(y) + jitter.Y) / static_cast<float>(context.Height), 0.5f)
+            );
 
-        ray.Direction = (pixelPosition - CAMERA.Position).normalize();
+            ray.Direction = (pixelPosition - CAMERA.Position).normalize();
+        }
 
         // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
         // For now, we will just print the ray origin and direction

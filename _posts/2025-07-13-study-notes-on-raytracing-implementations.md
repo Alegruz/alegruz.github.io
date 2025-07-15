@@ -182,3 +182,84 @@ createRaytracerModule({
   console.error("Failed to initialize WebAssembly module", err);
 });
 </script>
+
+I think the scene is a bit dull. This is because the ray is tracing through the center of the pixel everytime. Pixels are in fact rectangles that cover the screen, which means that the ray that goes through the pixel doesn't intersect with everything that the pixel covers. In other words, we need to approximate the pixel area by sampling a random point inside the pixel rectangle. This is usually done by generating a random number in the range [0, 1) and multiplying it by the pixel width and height to get a random offset within the pixel rectangle. Here's how we can modify our raytracing function to include this:
+
+
+<div id="raytracing-cpu-demo-only-intersection-with-jitter" style="text-align: center; margin: 20px 0;">
+  <canvas id="wasm-canvas-only-intersection-with-jitter" width="1280" height="720" style="border:1px solid #aaa;"></canvas>
+  <p>Raytracing CPU Demo - Only Intersection</p>
+</div>
+<script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
+<script>
+createRaytracerModule({
+  locateFile: (p) => p.endsWith('.wasm')
+    ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
+    : p
+}).then(Module => {
+  const container = document.getElementById("raytracing-cpu-demo-only-intersection-with-jitter");
+  const canvas = container.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const width = 1280, height = 720, channels = 4;
+  const imageData = ctx.createImageData(width, height);
+  const label = container.querySelector("p");
+
+  const info = document.createElement("p");
+  info.style.fontSize = "0.9em";
+  info.style.color = "#666";
+  info.style.margin = "4px 0 0 0";
+  label.insertAdjacentElement("afterend", info);
+
+  Module._initialize(width, height);
+  const bufPtr = Module._get_display_buffer();
+  const render = Module.cwrap("render_frame", null, ["number", "number"]);
+
+  if (!bufPtr || !Module.HEAPU8) {
+    console.error("WASM buffer not allocated.");
+    return;
+  }
+
+  const bufferView = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+  let frame = 0;
+  let visible = false;
+  let running = false;
+
+  async function renderLoop() {
+    if (!visible) {
+      running = false;
+      return;
+    }
+
+    const t0 = performance.now();
+
+    await new Promise(r => setTimeout(r, 0)); // yield before heavy work
+
+    render(frame++, 1);
+    imageData.data.set(bufferView);
+    ctx.putImageData(imageData, 0, 0);
+
+    const t1 = performance.now();
+    info.textContent = `Frame ${frame} rendered in ${(t1 - t0).toFixed(2)} ms`;
+
+    // Schedule next frame without blocking UI
+    setTimeout(renderLoop, 0);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      visible = entry.isIntersecting;
+      if (visible && !running) {
+        running = true;
+        renderLoop();
+      }
+    }
+  }, {
+    root: null,
+    threshold: 0.1
+  });
+
+  observer.observe(container);
+}).catch(err => {
+  console.error("Failed to initialize WebAssembly module", err);
+});
+</script>
