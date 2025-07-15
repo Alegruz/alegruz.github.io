@@ -116,76 +116,68 @@ createRaytracerModule({
     ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
     : p
 }).then(Module => {
-  const canvas = document.getElementById("wasm-canvas-only-intersection");
+  const container = document.getElementById("raytracing-cpu-demo-only-intersection");
+  const canvas = container.querySelector("canvas");
   const ctx = canvas.getContext("2d");
   const width = 1280, height = 720, channels = 4;
   const imageData = ctx.createImageData(width, height);
-  const container = document.getElementById("raytracing-cpu-demo-only-intersection");
   const label = container.querySelector("p");
 
-  // Set up info element once
   const info = document.createElement("p");
   info.style.fontSize = "0.9em";
   info.style.color = "#666";
   info.style.margin = "4px 0 0 0";
   label.insertAdjacentElement("afterend", info);
 
-  // ✅ Set resolution first so the buffer is correctly allocated
   Module._initialize(width, height);
-
-  // ✅ Now get the buffer pointer AFTER resolution is set
   const bufPtr = Module._get_display_buffer();
   const render = Module.cwrap("render_frame", null, ["number", "number"]);
 
   if (!bufPtr || !Module.HEAPU8) {
-        if (!bufPtr) {
-      console.error("bufPtr is zero – buffer not allocated");
-    }
-    if (!Module.HEAPU8) {
-      console.error("Module.HEAPU8 is undefined – wasm file may have failed to load");
-    }
-    console.error("Failed to allocate buffer; WebAssembly module might not be loaded correctly");
-    const container = document.getElementById("raytracing-cpu-demo");
-    if (container) {
-      const msg = document.createElement("p");
-      msg.textContent = "Unable to start renderer. The wasm file may have failed to load.";
-      container.appendChild(msg);
-    }
+    console.error("WASM buffer not allocated.");
     return;
   }
 
   const bufferView = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
   let frame = 0;
-  let shouldRender = false;
+  let visible = false;
+  let running = false;
 
-  async function loop() {
-    if (!shouldRender) {
-      requestAnimationFrame(loop);
+  async function renderLoop() {
+    if (!visible) {
+      running = false;
       return;
     }
 
     const t0 = performance.now();
-    await new Promise(resolve => setTimeout(resolve, 0));
 
-    render(frame++, 0); // Only intersection mode
+    await new Promise(r => setTimeout(r, 0)); // yield before heavy work
+
+    render(frame++, 0);
     imageData.data.set(bufferView);
     ctx.putImageData(imageData, 0, 0);
 
     const t1 = performance.now();
     info.textContent = `Frame ${frame} rendered in ${(t1 - t0).toFixed(2)} ms`;
 
-    requestAnimationFrame(loop);
+    // Schedule next frame without blocking UI
+    setTimeout(renderLoop, 0);
   }
 
-  // 👁️ IntersectionObserver: pause/resume based on visibility
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
-      shouldRender = entry.isIntersecting;
+      visible = entry.isIntersecting;
+      if (visible && !running) {
+        running = true;
+        renderLoop();
+      }
     }
   }, {
-    root: null,          // viewport
-    threshold: 0.1       // at least 10% visible
+    root: null,
+    threshold: 0.1
   });
+
+  observer.observe(container);
 }).catch(err => {
   console.error("Failed to initialize WebAssembly module", err);
 });
