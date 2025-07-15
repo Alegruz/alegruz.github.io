@@ -325,6 +325,7 @@ namespace raytracing
 
 	public:
 		float3 Vertices[VERTICES_COUNT];
+		float3 Normal;
 		eVertexOrder VertexOrder = eVertexOrder::Clockwise; // Default vertex order
 
 	public:
@@ -360,6 +361,14 @@ namespace raytracing
 			const float u = (d11 * d20 - d01 * d21) * invDenom;
 			const float v = (d00 * d21 - d01 * d20) * invDenom;
 			return { u, v, 1.0f - u - v };
+		}
+		
+		RT_FORCE_INLINE constexpr const float3& CalculateNormal() noexcept
+		{
+			const float3 edge0 = Vertices[1] - Vertices[0];
+			const float3 edge1 = Vertices[2] - Vertices[0];
+			Normal = cross(edge0, edge1).normalize();
+			return Normal;
 		}
 	};
 

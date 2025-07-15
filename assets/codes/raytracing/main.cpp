@@ -362,7 +362,9 @@ enum class eRaytracingMode
     None = 0b0,
     Jitter = 0b1,
     Shadow = 0b10,
+    Lambertian = 0b100,
     JitterAndShadow = Jitter | Shadow,
+    DirectDiffuse = JitterAndShadow | Lambertian,
     Count,
 };
 
@@ -390,6 +392,7 @@ struct RenderContext
 struct HitResult final
 {
     const Geometry* GeometryOrNull = nullptr;
+    const Triangle* TriangleOrNull = nullptr;
     float3 IntersectionPoint;
     float IntersectionDistance = std::numeric_limits<float>::max();
 };
@@ -408,6 +411,7 @@ HitResult getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geo
             {
                 hitResult.IntersectionDistance = intersectionDistance;
                 hitResult.GeometryOrNull = &geometry;
+                hitResult.TriangleOrNull = &triangle;
                 hitResult.IntersectionPoint = intersectionPoint.value();
             }
         }
@@ -450,7 +454,8 @@ Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, 
                 if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
                 {
                     // If the shadow ray hits an emissive geometry, we can consider it lit
-                    color *= lightGeometry->Color; // Add light color
+                    const float lambertian = std::max(0.0f, dot(shadowRay.Direction, hitResult.TriangleOrNull->Normal));
+                    color *= lightGeometry->Color * lambertian; // Add light color
                     bIsInShadow = false;
                 }
             }
@@ -606,6 +611,30 @@ void initialize(const uint32_t width, const uint32_t height)
     }
 
     traversePixels<ePixelProcessingMode::Initialize, DEFAULT_MEMORY_LAYOUT>(0, eRaytracingMode::None);
+    
+    // Initialize geometries only once
+    sGeometries.push_back(cornell_box::FLOOR);
+    sGeometries.push_back(cornell_box::LIGHT);
+    sGeometries.push_back(cornell_box::CEILING);
+    sGeometries.push_back(cornell_box::BACK_WALL);
+    sGeometries.push_back(cornell_box::RIGHT_WALL);
+    sGeometries.push_back(cornell_box::LEFT_WALL);
+    sGeometries.push_back(cornell_box::SHORT_BLOCK);
+    sGeometries.push_back(cornell_box::TALL_BLOCK);
+
+    sLightGeometries.reserve(sGeometries.size());
+    for (Geometry& geometry : sGeometries)
+    {
+        for(Triangle& triangle : geometry.Triangles)
+        {
+            triangle.CalculateNormal();
+        }
+
+        if (geometry.IsEmissive)
+        {
+            sLightGeometries.push_back(&geometry);
+        }
+    }
 }
 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
@@ -675,28 +704,6 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
         return;
     }
 
-    if(sGeometries.empty() == true)
-    {
-        // Initialize geometries only once
-        sGeometries.push_back(cornell_box::FLOOR);
-        sGeometries.push_back(cornell_box::LIGHT);
-        sGeometries.push_back(cornell_box::CEILING);
-        sGeometries.push_back(cornell_box::BACK_WALL);
-        sGeometries.push_back(cornell_box::RIGHT_WALL);
-        sGeometries.push_back(cornell_box::LEFT_WALL);
-        sGeometries.push_back(cornell_box::SHORT_BLOCK);
-        sGeometries.push_back(cornell_box::TALL_BLOCK);
-
-        sLightGeometries.reserve(sGeometries.size());
-        for (Geometry& geometry : sGeometries)
-        {
-            if (geometry.IsEmissive)
-            {
-                sLightGeometries.push_back(&geometry);
-            }
-        }
-    }
-
     // Clear the pixel buffer
     traversePixels<ePixelProcessingMode::Clear, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
     traversePixels<ePixelProcessingMode::Render, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
@@ -726,7 +733,7 @@ int main()
     uint32_t frameIndex = 0;
     // while(true)
     {
-        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::JitterAndShadow));
+        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::DirectDiffuse));
         ++frameIndex;
     }
 
