@@ -415,37 +415,44 @@ Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, 
     // Handle the closest hit event
     // For example, you could store the hit information or update the pixel color
     Color color = hitResult.GeometryOrNull ? hitResult.GeometryOrNull->Color : COLOR_WHITE; // Default color for the hit point
-
-    if((context.Mode & eRaytracingMode::Shadow) != eRaytracingMode::None)
+    if(hitResult.GeometryOrNull && hitResult.GeometryOrNull->IsEmissive)
     {
-        bool bIsInShadow = true;
-        for(const Geometry* lightGeometry : sLightGeometries)
+        // If the geometry is emissive, we can consider it lit
+        color = hitResult.GeometryOrNull->Color; // Use the emissive color
+    }
+    else
+    {
+        if((context.Mode & eRaytracingMode::Shadow) != eRaytracingMode::None)
         {
-            // Check if the hit point is in shadow
-            Ray shadowRay;
-            shadowRay.Origin = hitResult.IntersectionPoint;
-            float3 randomBarycentric;
-            randomBarycentric.X = UniformRandomGenerator::GetRandomNumber();
-            randomBarycentric.Y = UniformRandomGenerator::GetRandomNumber() * (1.0f - randomBarycentric.X);
-            randomBarycentric.Z = 1.0f - (randomBarycentric.X + randomBarycentric.Y);
-
-            const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
-            const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetPointByBarycentricCoordinates(randomBarycentric);
-            shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
-            shadowRay.Origin += shadowRay.Direction * 0.1f; // Offset to avoid self-intersection
-
-            HitResult shadowHitResult = getClosestHitGeometry(shadowRay, sGeometries);
-            if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
+            bool bIsInShadow = true;
+            for(const Geometry* lightGeometry : sLightGeometries)
             {
-                // If the shadow ray hits an emissive geometry, we can consider it lit
-                color *= lightGeometry->Color; // Add light color
-                bIsInShadow = false;
-            }
-        }
+                // Check if the hit point is in shadow
+                Ray shadowRay;
+                shadowRay.Origin = hitResult.IntersectionPoint;
+                float3 randomBarycentric;
+                randomBarycentric.X = UniformRandomGenerator::GetRandomNumber();
+                randomBarycentric.Y = UniformRandomGenerator::GetRandomNumber() * (1.0f - randomBarycentric.X);
+                randomBarycentric.Z = 1.0f - (randomBarycentric.X + randomBarycentric.Y);
 
-        if (bIsInShadow)
-        {
-            color = COLOR_BLACK; // If in shadow, set color to black
+                const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
+                const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetPointByBarycentricCoordinates(randomBarycentric);
+                shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
+                shadowRay.Origin += shadowRay.Direction * 0.1f; // Offset to avoid self-intersection
+
+                HitResult shadowHitResult = getClosestHitGeometry(shadowRay, sGeometries);
+                if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
+                {
+                    // If the shadow ray hits an emissive geometry, we can consider it lit
+                    color *= lightGeometry->Color; // Add light color
+                    bIsInShadow = false;
+                }
+            }
+
+            if (bIsInShadow)
+            {
+                color = COLOR_BLACK; // If in shadow, set color to black
+            }
         }
     }
 
