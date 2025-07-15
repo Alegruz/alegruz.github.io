@@ -47,6 +47,8 @@ namespace raytracing
 	template<ArithmeticType T>
 	constexpr float distance(const Vector2<T>& a, const Vector2<T>& b) noexcept;
 	template<ArithmeticType T>
+	constexpr Vector2<T> pow(const Vector2<T>& vec, const float exponent) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) noexcept;
@@ -57,6 +59,8 @@ namespace raytracing
 	template<ArithmeticType T>
 	constexpr float distance(const Vector3<T>& a, const Vector3<T>& b) noexcept;
 	template<ArithmeticType T>
+	constexpr Vector3<T> pow(const Vector3<T>& vec, const float exponent) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector4<T>& a, const Vector4<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector4<T> cross(const Vector4<T>& a, const Vector4<T>& b) noexcept;
@@ -66,6 +70,8 @@ namespace raytracing
 	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const Vector4<float>& values) noexcept;
 	template<ArithmeticType T>
 	constexpr float distance(const Vector4<T>& a, const Vector4<T>& b) noexcept;
+	template<ArithmeticType T>
+	constexpr Vector4<T> pow(const Vector4<T>& vec, const float exponent) noexcept;
 
 	template<ArithmeticType T, T MIN, T MAX>
 	class RandomNumberGenerator
@@ -182,6 +188,7 @@ namespace raytracing
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator*(const T scalar) const noexcept { return Vector<T, 4>(X * scalar, Y * scalar, Z * scalar, W * scalar); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator/(const T scalar) const noexcept { assert(scalar != 0); return Vector<T, 4>(X / scalar, Y / scalar, Z / scalar, W / scalar); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator-() const noexcept { return Vector<T, 4>(-X, -Y, -Z, -W); }
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator+=(const Vector<T, 3>& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator+=(const Vector<T, 4>& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; W += other.W; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator-=(const Vector<T, 4>& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; W -= other.W; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator*=(const T scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; W *= scalar; return *this; }
@@ -193,6 +200,8 @@ namespace raytracing
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> cross(const Vector<T, 4>& other) const noexcept { return raytracing::cross(*this, other); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr float length() const noexcept { return std::sqrt(X * X + Y * Y + Z * Z + W * W); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> normalize() const noexcept { const float len = length(); return Vector<T, 4>(X / len, Y / len, Z / len, W / len); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3>& XYZ() noexcept { return *reinterpret_cast<Vector<T, 3>*>(this); }
+		[[nodiscard]] RT_FORCE_INLINE constexpr const Vector<T, 3>& XYZ() const noexcept { return *reinterpret_cast<const Vector<T, 3>*>(this); }
 	};
 
 	using float4 = Vector4<float>;
@@ -228,6 +237,12 @@ namespace raytracing
 	}
 
 	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector2<T> pow(const Vector2<T>& vec, const float exponent) noexcept
+	{
+		return Vector2<T>(std::pow(vec.X, exponent), std::pow(vec.Y, exponent));
+	}
+
+	template<ArithmeticType T>
 	RT_FORCE_INLINE constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept
 	{
 		return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
@@ -255,6 +270,12 @@ namespace raytracing
 	RT_FORCE_INLINE constexpr float distance(const Vector3<T>& a, const Vector3<T>& b) noexcept
 	{
 		return std::sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z));
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector3<T> pow(const Vector3<T>& vec, const float exponent) noexcept
+	{
+		return Vector3<T>(std::pow(vec.X, exponent), std::pow(vec.Y, exponent), std::pow(vec.Z, exponent));
 	}
 
 	template<ArithmeticType T>
@@ -300,6 +321,12 @@ namespace raytracing
 	RT_FORCE_INLINE constexpr float distance(const Vector4<T>& a, const Vector4<T>& b) noexcept
 	{
 		return std::sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z) + (a.W - b.W) * (a.W - b.W));
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr Vector4<T> pow(const Vector4<T>& vec, const float exponent) noexcept
+	{
+		return Vector4<T>(std::pow(vec.X, exponent), std::pow(vec.Y, exponent), std::pow(vec.Z, exponent), std::pow(vec.W, exponent));
 	}
 
 	struct ParametricLine final

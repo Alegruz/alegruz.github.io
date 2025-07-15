@@ -2,6 +2,7 @@
 #include "common.h"
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #if !defined(RT_EMSCRIPTEN)
 #include <thread>
 #endif  // NOT defined(RT_EMSCRIPTEN)
@@ -220,9 +221,10 @@ struct Geometry final
     eMaterial Material = eMaterial::SimpleDiffuse;
 };
 
-static Texture2D<Color>* sPixels = nullptr;
-static Texture2D<Color8Bit>* s8BitColors = nullptr;
-static Texture2D<Ray>* sRays = nullptr;
+static std::unique_ptr<Texture2D<Color>> sPixels = nullptr;
+static std::unique_ptr<Texture2D<Color>> sDenoisedPixels = nullptr;
+static std::unique_ptr<Texture2D<Color8Bit>> s8BitColors = nullptr;
+static std::unique_ptr<Texture2D<Ray>> sRays = nullptr;
 static std::vector<Geometry> sGeometries;
 static std::vector<Geometry*> sLightGeometries;
 
@@ -588,17 +590,17 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
 {
     context.TraceDepth = 0;
 
-    Color& color = sPixels->GetPixel(x, y);
+    Color color = sPixels->GetPixel(x, y);
     if constexpr (MODE == ePixelProcessingMode::Initialize)
-    {        
+    {
         sRays->GetPixel(x, y).Origin = CAMERA.Position;
         const float2 pixelSize = {
-			CAMERA.Width / static_cast<float>(context.Width),
-			CAMERA.Height / static_cast<float>(context.Height)
-		};
-		const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
-			(context.CameraRight * CAMERA.Width / 2.0f) -
-			(context.CameraUp * CAMERA.Height / 2.0f);
+            CAMERA.Width / static_cast<float>(context.Width),
+            CAMERA.Height / static_cast<float>(context.Height)
+        };
+        const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
+            (context.CameraRight * CAMERA.Width / 2.0f) -
+            (context.CameraUp * CAMERA.Height / 2.0f);
 
         const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
             (context.CameraRight * CAMERA.Width / 2.0f) +
@@ -621,10 +623,15 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
         {
             color.W = 1.0f; // Alpha
         }
+        sPixels->GetPixel(x, y) = color;
     }
     else if constexpr (MODE == ePixelProcessingMode::Render)
     {
         Ray& ray = sRays->GetPixel(x, y);
+        if (x > 100 && y > 100)
+        {
+            [[maybe_unused]] volatile int n = 3;
+        }
 
         std::vector<float2> jitters(context.NumSamples);
         for (uint32_t sampleIndex = 0; sampleIndex < context.NumSamples; ++sampleIndex)
@@ -648,15 +655,15 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
                     UniformRandomGenerator::GetRandomNumber()
                 };
 
-                for(uint32_t jitterIndex = 0; jitterIndex < context.NumSamples; ++jitterIndex)
+                for (uint32_t jitterIndex = 0; jitterIndex < context.NumSamples; ++jitterIndex)
                 {
-                    if(jitterIndex == sampleIndex)
+                    if (jitterIndex == sampleIndex)
                     {
                         continue;
                     }
 
-                    if(jitters[sampleIndex].X == jitters[jitterIndex].X &&
-                       jitters[sampleIndex].Y == jitters[jitterIndex].Y)
+                    if (jitters[sampleIndex].X == jitters[jitterIndex].X &&
+                        jitters[sampleIndex].Y == jitters[jitterIndex].Y)
                     {
                         jitters[sampleIndex] = {
                             UniformRandomGenerator::GetRandomNumber(),
@@ -676,37 +683,40 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
             }
 
             HitResult hitResult;
-            color += traceRay(hitResult, ray, sGeometries, context);
+            const Color tracedColor = traceRay(hitResult, ray, sGeometries, context);
+			color.XYZ() += tracedColor.XYZ();
         }
-        // color /= static_cast<float>(context.NumSamples);
+        color.XYZ() /= static_cast<float>(context.NumSamples);
+        color.XYZ() = pow(color.XYZ(), 1.0f / 2.2f); // Apply gamma correction
+        sPixels->GetPixel(x, y) = color;
     }
     else if constexpr (MODE == ePixelProcessingMode::Denoise)
     {
         if (context.Denoiser == eDenoiser::BilateralFilter)
         {
-            static constexpr uint32_t BILATERAL_FILTER_RADIUS = 4;
-            static constexpr float BILATERAL_FILTER_RANGE_SIGMA = 0.05f;
+            static constexpr uint32_t BILATERAL_FILTER_RADIUS = 5;
+            static constexpr float BILATERAL_FILTER_RANGE_SIGMA = 0.3f;
             static constexpr float BILATERAL_FILTER_SPATIAL_SIGMA = static_cast<float>(BILATERAL_FILTER_RADIUS) * 0.5f;
 
             Color denoisedColor = COLOR_BLACK;
             float totalWeight = 0.0f;
-            for(uint32_t filterY = 0; filterY < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterY)
+            for (uint32_t filterY = 0; filterY < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterY)
             {
                 for (uint32_t filterX = 0; filterX < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterX)
                 {
                     const int32_t offsetX = static_cast<int32_t>(filterX) - static_cast<int32_t>(BILATERAL_FILTER_RADIUS);
                     const int32_t offsetY = static_cast<int32_t>(filterY) - static_cast<int32_t>(BILATERAL_FILTER_RADIUS);
 
-                    const uint32_t neighborX = std::clamp(static_cast<int32_t>(x) + offsetX, 0, static_cast<int32_t>(sPixels->GetWidth() - 1));
-                    const uint32_t neighborY = std::clamp(static_cast<int32_t>(y) + offsetY, 0, static_cast<int32_t>(sPixels->GetHeight() - 1));
+                    const uint32_t neighborX = static_cast<uint32_t>(std::clamp(static_cast<int32_t>(x) + offsetX, 0, static_cast<int32_t>(sPixels->GetWidth() - 1)));
+                    const uint32_t neighborY = static_cast<uint32_t>(std::clamp(static_cast<int32_t>(y) + offsetY, 0, static_cast<int32_t>(sPixels->GetHeight() - 1)));
 
                     Color& neighborColor = sPixels->GetPixel(neighborX, neighborY);
-                    const float colorDifference = (neighborColor - color).length();
+                    const float colorDifference = (neighborColor.XYZ() - color.XYZ()).length();
                     const float pixelDistance = distance(float3(static_cast<float>(neighborX), static_cast<float>(neighborY), 0.0f), float3(static_cast<float>(x), static_cast<float>(y), 0.0f));
                     const float rangeKernel = bilateral_filter::gaussianKernel(colorDifference, BILATERAL_FILTER_RANGE_SIGMA);
                     const float spatialKernel = bilateral_filter::gaussianKernel(pixelDistance, BILATERAL_FILTER_SPATIAL_SIGMA);
                     const float weight = rangeKernel * spatialKernel;
-                    denoisedColor += neighborColor * weight;
+                    denoisedColor += neighborColor.XYZ() * weight;
                     totalWeight += weight;
                 }
             }
@@ -714,7 +724,8 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
             if (totalWeight > 0.0f)
             {
                 denoisedColor /= totalWeight;
-                color = denoisedColor;
+                color.XYZ() = denoisedColor.XYZ(); // Store denoised color
+                sDenoisedPixels->GetPixel(x, y) = color;
             }
         }
     }
@@ -722,11 +733,11 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
     {
         static_assert(false, "Unsupported pixel processing mode");
     }
-    
+
     Color8Bit& color8Bit = s8BitColors->GetPixel(x, s8BitColors->GetHeight() - 1 - y);
-    color8Bit.X = static_cast<uint8_t>(color.X * 255.0f);
-    color8Bit.Y = static_cast<uint8_t>(color.Y * 255.0f);
-    color8Bit.Z = static_cast<uint8_t>(color.Z * 255.0f);
+    color8Bit.X = static_cast<uint8_t>(std::clamp(color.X, 0.0f, 1.0f) * 255.0f);
+    color8Bit.Y = static_cast<uint8_t>(std::clamp(color.Y, 0.0f, 1.0f) * 255.0f);
+    color8Bit.Z = static_cast<uint8_t>(std::clamp(color.Z, 0.0f, 1.0f) * 255.0f);
     if constexpr (CHANNELS_COUNT == 4)
     {
         color8Bit.W = static_cast<uint8_t>(color.W * 255.0f);
@@ -743,16 +754,25 @@ void initialize(const uint32_t width, const uint32_t height)
 {
     if (sPixels == nullptr)
     {
-        sPixels = new Texture2D<Color>(width, height);
+        sPixels = std::make_unique<Texture2D<Color>>(width, height);
     }
     else
     {
         sPixels->SetResolution(width, height);
     }
 
+	if (sDenoisedPixels == nullptr)
+	{
+		sDenoisedPixels = std::make_unique<Texture2D<Color>>(width, height);
+	}
+	else
+	{
+		sDenoisedPixels->SetResolution(width, height);
+	}
+
     if (s8BitColors == nullptr)
     {
-        s8BitColors = new Texture2D<Color8Bit>(width, height);
+        s8BitColors = std::make_unique<Texture2D<Color8Bit>>(width, height);
     }
     else
     {
@@ -761,7 +781,7 @@ void initialize(const uint32_t width, const uint32_t height)
 
     if (sRays == nullptr)
     {
-        sRays = new Texture2D<Ray>(width, height);
+        sRays = std::make_unique<Texture2D<Ray>>(width, height);
     }
     else
     {
@@ -837,6 +857,15 @@ void traversePixelsInner(const uint32_t frameIndex, const eRaytracingMode mode, 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
 void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
 {
+	if constexpr (MODE == ePixelProcessingMode::Denoise)
+	{
+        if ((mode & eRaytracingMode::Denoise) == eRaytracingMode::None)
+        {
+            // If denoising is not requested, skip this processing mode
+            return;
+        }
+	}
+
 #if defined(RT_EMSCRIPTEN)
     traversePixelsInner<MODE, MEMORY_LAYOUT>(
         frameIndex,
@@ -939,7 +968,16 @@ int main()
     uint32_t frameIndex = 0;
     // while(true)
     {
-        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::IndirectDiffuse | eRaytracingMode::Denoise));
+        render_frame(
+            frameIndex
+            , static_cast<uint32_t>(
+                eRaytracingMode::Jitter
+                | eRaytracingMode::Lambertian
+                | eRaytracingMode::Shadow
+				| eRaytracingMode::IndirectIllumination
+                | eRaytracingMode::Denoise
+                )
+        );
         ++frameIndex;
     }
 
