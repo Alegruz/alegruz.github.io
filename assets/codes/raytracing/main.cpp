@@ -2,6 +2,8 @@
 #include "common.h"
 #include <algorithm>
 #include <iostream>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 #if defined(RT_EMSCRIPTEN)
@@ -487,6 +489,10 @@ Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, 
                     }
                 }
             }
+            else
+            {
+                intensity = COLOR_WHITE;
+            }
 
             if((context.Mode & eRaytracingMode::IndirectIllumination) != eRaytracingMode::None)
             {
@@ -714,7 +720,7 @@ void initialize(const uint32_t width, const uint32_t height)
 }
 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
-void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
+void traversePixelsInner(const uint32_t frameIndex, const eRaytracingMode mode, const uint32_t minX, const uint32_t maxX, const uint32_t minY, const uint32_t maxY)
 {
     RenderContext context =
     {
@@ -728,12 +734,12 @@ void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
         .TraceDepth = 0,
         .MaxTraceDepth = (mode & eRaytracingMode::IndirectIllumination) != eRaytracingMode::None ? 2u : 1u,
     };
-    
+
     if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
     {
-        for (uint32_t y = 0; y < sPixels->GetHeight(); ++y)
+        for (uint32_t y = minY; y <= maxY; ++y)
         {
-            for (uint32_t x = 0; x < sPixels->GetWidth(); ++x)
+            for (uint32_t x = minX; x <= maxX; ++x)
             {
                 processPixel<MODE>(x, y, context);
             }
@@ -741,11 +747,50 @@ void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
     }
     else if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::ColumnMajor)
     {
-        for (uint32_t x = 0; x < sPixels->GetWidth(); ++x)
+        for (uint32_t x = minX; x <= maxX; ++x)
         {
-            for (uint32_t y = 0; y < sPixels->GetHeight(); ++y)
+            for (uint32_t y = minY; y <= maxY; ++y)
             {
                 processPixel<MODE>(x, y, context);
+            }
+        }
+    }
+}
+
+template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
+void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
+{
+    static constexpr uint32_t THREADS_WIDTH = 4;
+    static constexpr uint32_t THREADS_HEIGHT = 4;
+
+    std::vector<std::thread> threads;
+    threads.reserve(THREADS_WIDTH * THREADS_HEIGHT);
+
+    for (uint32_t y = 0; y < THREADS_HEIGHT; ++y)
+    {
+        for (uint32_t x = 0; x < THREADS_WIDTH; ++x)
+        {
+            threads.push_back(std::thread(
+                traversePixelsInner<MODE, MEMORY_LAYOUT>,
+                frameIndex,
+                mode,
+                x * (sPixels->GetWidth() / THREADS_WIDTH),
+                std::min((x + 1) * (sPixels->GetWidth() / THREADS_WIDTH) - 1, sPixels->GetWidth() - 1),
+                y * (sPixels->GetHeight() / THREADS_HEIGHT),
+                std::min((y + 1) * (sPixels->GetHeight() / THREADS_HEIGHT) - 1, sPixels->GetHeight() - 1)
+            ));
+        }
+    }
+    
+    uint32_t joinCount = 0;
+    while (joinCount < threads.size())
+    {
+        for (auto& thread : threads)
+        {
+            if (thread.joinable())
+            {
+                thread.join();
+                ++joinCount;
             }
         }
     }
