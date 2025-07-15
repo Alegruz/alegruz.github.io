@@ -106,7 +106,7 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 ```
 
 <div id="raytracing-cpu-demo-only-intersection" style="text-align: center; margin: 20px 0;">
-  <canvas id="wasm-canvas-only-intersection" width="1280" height="720" style="border:1px solid #aaa;"></canvas>
+  <canvas id="wasm-canvas-only-intersection" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing CPU Demo - Only Intersection</p>
 </div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
@@ -119,7 +119,7 @@ createRaytracerModule({
   const container = document.getElementById("raytracing-cpu-demo-only-intersection");
   const canvas = container.querySelector("canvas");
   const ctx = canvas.getContext("2d");
-  const width = 1280, height = 720, channels = 4;
+  const width = 720, height = 720, channels = 4;
   const imageData = ctx.createImageData(width, height);
   const label = container.querySelector("p");
 
@@ -187,7 +187,7 @@ I think the scene is a bit dull. This is because the ray is tracing through the 
 
 
 <div id="raytracing-cpu-demo-only-intersection-with-jitter" style="text-align: center; margin: 20px 0;">
-  <canvas id="wasm-canvas-only-intersection-with-jitter" width="1280" height="720" style="border:1px solid #aaa;"></canvas>
+  <canvas id="wasm-canvas-only-intersection-with-jitter" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing CPU Demo - Only Intersection</p>
 </div>
 <script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
@@ -200,7 +200,7 @@ createRaytracerModule({
   const container = document.getElementById("raytracing-cpu-demo-only-intersection-with-jitter");
   const canvas = container.querySelector("canvas");
   const ctx = canvas.getContext("2d");
-  const width = 1280, height = 720, channels = 4;
+  const width = 720, height = 720, channels = 4;
   const imageData = ctx.createImageData(width, height);
   const label = container.querySelector("p");
 
