@@ -139,6 +139,7 @@ namespace raytracing
 		RT_FORCE_INLINE constexpr Vector<T, 3>& operator+=(const Vector<T, 3>& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 3>& operator-=(const Vector<T, 3>& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 3>& operator*=(const float scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 3>& operator*=(const Vector<T, 3>& other) noexcept { X *= other.X; Y *= other.Y; Z *= other.Z; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 3>& operator/=(const float scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; return *this; }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator*(const Vector<T, 3>& other) const noexcept { return Vector<T, 3>(X * other.X, Y * other.Y, Z * other.Z); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 3> operator/(const Vector<T, 3>& other) const noexcept { return Vector<T, 3>(X / other.X, Y / other.Y, Z / other.Z); }
@@ -177,6 +178,7 @@ namespace raytracing
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator+=(const Vector<T, 4>& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; W += other.W; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator-=(const Vector<T, 4>& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; W -= other.W; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator*=(const T scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; W *= scalar; return *this; }
+		RT_FORCE_INLINE constexpr Vector<T, 4>& operator*=(const Vector<T, 4>& other) noexcept { X *= other.X; Y *= other.Y; Z *= other.Z; W *= other.W; return *this; }
 		RT_FORCE_INLINE constexpr Vector<T, 4>& operator/=(const T scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; W /= scalar; return *this; }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator*(const Vector<T, 4>& other) const noexcept { return Vector<T, 4>(X * other.X, Y * other.Y, Z * other.Z, W * other.W); }
 		[[nodiscard]] RT_FORCE_INLINE constexpr Vector<T, 4> operator/(const Vector<T, 4>& other) const noexcept { return Vector<T, 4>(X / other.X, Y / other.Y, Z / other.Z, W / other.W); }
@@ -333,6 +335,26 @@ namespace raytracing
 		RT_FORCE_INLINE ~Triangle() noexcept = default;
 		RT_FORCE_INLINE constexpr Triangle& operator=(const Triangle& other) noexcept = default;
 		RT_FORCE_INLINE constexpr Triangle& operator=(Triangle&& other) noexcept = default;
+
+		RT_FORCE_INLINE constexpr float3 GetBarycentricCoordinates(const float3& point) const noexcept
+		{
+			const float3 edge0 = Vertices[1] - Vertices[0];
+			const float3 edge1 = Vertices[2] - Vertices[0];
+			const float3 v0 = point - Vertices[0];
+			const float d00 = dot(edge0, edge0);
+			const float d01 = dot(edge0, edge1);
+			const float d11 = dot(edge1, edge1);
+			const float d20 = dot(v0, edge0);
+			const float d21 = dot(v0, edge1);
+			const float denom = d00 * d11 - d01 * d01;
+
+			if (denom == 0.0f) { return { 0.0f, 0.0f, 0.0f }; } // Degenerate triangle
+
+			const float invDenom = 1.0f / denom;
+			const float u = (d11 * d20 - d01 * d21) * invDenom;
+			const float v = (d00 * d21 - d01 * d20) * invDenom;
+			return { u, v, 1.0f - u - v };
+		}
 	};
 
 	class IntersectionChecker final

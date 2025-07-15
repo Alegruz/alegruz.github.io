@@ -199,6 +199,7 @@ namespace raytracing
 }
 
 static constexpr raytracing::Color COLOR_WHITE = {1.0f, 1.0f, 1.0f, 1.0f};
+static constexpr raytracing::Color COLOR_BLACK = {0.0f, 0.0f, 0.0f, 1.0f};
 static constexpr raytracing::Color COLOR_RED = {1.0f, 0.0f, 0.0f, 1.0f};
 static constexpr raytracing::Color COLOR_GREEN = {0.0f, 1.0f, 0.0f, 1.0f};
 
@@ -213,6 +214,7 @@ static Texture2D<Color>* sPixels = nullptr;
 static Texture2D<Color8Bit>* s8BitColors = nullptr;
 static Texture2D<Ray>* sRays = nullptr;
 static std::vector<Geometry> sGeometries;
+static std::vector<Geometry*> sLightGeometries;
 
 struct Camera
 {
@@ -370,33 +372,74 @@ struct RenderContext
     const float3 CameraUp;
 };
 
-std::optional<Geometry> getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geometries, float& outIntersectionDistance)
+struct HitResult final
 {
-    std::optional<Geometry> closestGeometry;
-    outIntersectionDistance = std::numeric_limits<float>::max();
+    std::optional<Geometry> Geometry;
+    float3 IntersectionPoint;
+    float IntersectionDistance = std::numeric_limits<float>::max();
+};
 
+HitResult getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geometries)
+{
+    HitResult hitResult;
+    
     for (const Geometry& geometry : geometries)
     {
         for (const Triangle& triangle : geometry.Triangles)
         {
             float intersectionDistance = 0.0f;
             std::optional<float3> intersectionPoint = IntersectionChecker::Intersects(ray, triangle, intersectionDistance);
-            if (intersectionPoint.has_value() && intersectionDistance < outIntersectionDistance)
+            if (intersectionPoint.has_value() && intersectionDistance < hitResult.IntersectionDistance)
             {
-                outIntersectionDistance = intersectionDistance;
-                closestGeometry = geometry;
+                hitResult.IntersectionDistance = intersectionDistance;
+                hitResult.Geometry = geometry;
+                hitResult.IntersectionPoint = intersectionPoint.value();
             }
         }
     }
 
-    return closestGeometry;
+    return hitResult;
 }
 
-Color onClosestHit([[maybe_unused]] const Ray& ray, const Geometry& geometry, [[maybe_unused]] const float intersectionDistance, [[maybe_unused]] const RenderContext& context)
+Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, [[maybe_unused]] const RenderContext& context)
 {
     // Handle the closest hit event
     // For example, you could store the hit information or update the pixel color
-    Color color = geometry.Color;
+    Color color = hitResult.Geometry ? hitResult.Geometry->Color : COLOR_WHITE; // Default color for the hit point
+
+    if((context.Mode & eRaytracingMode::Shadow) != eRaytracingMode::None)
+    {
+        bool bIsInShadow = true;
+        for(const Geometry* lightGeometry : sLightGeometries)
+        {
+            // Check if the hit point is in shadow
+            Ray shadowRay;
+            shadowRay.Origin = hitResult.IntersectionPoint;
+            const float3 randomBarycentric = {
+                UniformRandomGenerator::GetRandomNumber(),
+                UniformRandomGenerator::GetRandomNumber(),
+                UniformRandomGenerator::GetRandomNumber()
+            };
+            const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
+            const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetBarycentricCoordinates(randomBarycentric);
+            shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
+            shadowRay.Origin += shadowRay.Direction * 0.001f; // Offset to avoid self-intersection
+
+            HitResult shadowHitResult = getClosestHitGeometry(shadowRay, sGeometries);
+            if(shadowHitResult.Geometry && &shadowHitResult.Geometry.value() == lightGeometry)
+            {
+                // If the shadow ray hits an emissive geometry, we can consider it lit
+                color *= lightGeometry->Color; // Add light color
+                bIsInShadow = false;
+            }
+        }
+
+        if (bIsInShadow)
+        {
+            color = COLOR_BLACK; // If in shadow, set color to black
+        }
+    }
+
     return color;
 }
 
@@ -479,11 +522,10 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
         // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
         // For now, we will just print the ray origin and direction
 
-        float intersectionDistance = std::numeric_limits<float>::max();
-        std::optional<Geometry> closestHitGeometry = getClosestHitGeometry(ray, sGeometries, intersectionDistance);
-        if(closestHitGeometry.has_value())
+        HitResult hitResult = getClosestHitGeometry(ray, sGeometries);
+        if(hitResult.Geometry)
         {
-            color = onClosestHit(ray, closestHitGeometry.value(), intersectionDistance, context);
+            color = onClosestHit(ray, hitResult, context);
         }
         else
         {
@@ -622,6 +664,15 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
         sGeometries.push_back(cornell_box::LEFT_WALL);
         sGeometries.push_back(cornell_box::SHORT_BLOCK);
         sGeometries.push_back(cornell_box::TALL_BLOCK);
+
+        sLightGeometries.reserve(sGeometries.size());
+        for (Geometry& geometry : sGeometries)
+        {
+            if (geometry.IsEmissive)
+            {
+                sLightGeometries.push_back(&geometry);
+            }
+        }
     }
 
     // Clear the pixel buffer
