@@ -263,3 +263,5 @@ createRaytracerModule({
   console.error("Failed to initialize WebAssembly module", err);
 });
 </script>
+
+The next step is to evaluate the lighting at the intersection point. The Cornell box has a rectangular area light source on the ceiling. What we can do is to cast another ray from the intersection point towards the light source and check if it intersects with any geometry in the scene. If it does, we can assume that the intersection point is in shadow and thus doesn't receive any light from the light source. We will simply return a black color in this case.

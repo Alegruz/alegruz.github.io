@@ -342,10 +342,22 @@ enum class ePixelProcessingMode
 
 enum class eRaytracingMode
 {
-    OnlyIntersection,
-    OnlyIntersectionWithJitter,
+    None = 0b0,
+    Jitter = 0b1,
+    Shadow = 0b10,
+    JitterAndShadow = Jitter | Shadow,
     Count,
 };
+
+RT_FORCE_INLINE constexpr eRaytracingMode operator|(eRaytracingMode lhs, eRaytracingMode rhs) noexcept
+{
+    return static_cast<eRaytracingMode>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs));
+}
+
+RT_FORCE_INLINE constexpr eRaytracingMode operator&(eRaytracingMode lhs, eRaytracingMode rhs) noexcept
+{
+    return static_cast<eRaytracingMode>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs));
+}
 
 struct RenderContext
 {
@@ -357,6 +369,43 @@ struct RenderContext
     const float3 CameraRight;
     const float3 CameraUp;
 };
+
+std::optional<Geometry> getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geometries, float& outIntersectionDistance)
+{
+    std::optional<Geometry> closestGeometry;
+    outIntersectionDistance = std::numeric_limits<float>::max();
+
+    for (const Geometry& geometry : geometries)
+    {
+        for (const Triangle& triangle : geometry.Triangles)
+        {
+            float intersectionDistance = 0.0f;
+            std::optional<float3> intersectionPoint = IntersectionChecker::Intersects(ray, triangle, intersectionDistance);
+            if (intersectionPoint.has_value() && intersectionDistance < outIntersectionDistance)
+            {
+                outIntersectionDistance = intersectionDistance;
+                closestGeometry = geometry;
+            }
+        }
+    }
+
+    return closestGeometry;
+}
+
+Color onClosestHit([[maybe_unused]] const Ray& ray, const Geometry& geometry, [[maybe_unused]] const float intersectionDistance, [[maybe_unused]] const RenderContext& context)
+{
+    // Handle the closest hit event
+    // For example, you could store the hit information or update the pixel color
+    Color color = geometry.Color;
+    return color;
+}
+
+Color onMiss([[maybe_unused]] const Ray& ray)
+{
+    // Handle the miss event
+    // For example, you could return a background color
+    return COLOR_WHITE; // Background color
+}
 
 template<ePixelProcessingMode MODE>
 void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const RenderContext& context)
@@ -399,7 +448,7 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
     {
         Ray& ray = sRays->GetPixel(x, y);
 
-        if (context.Mode == eRaytracingMode::OnlyIntersectionWithJitter)
+        if ((context.Mode & eRaytracingMode::Jitter) != eRaytracingMode::None)
         {
             const float2 pixelSize = {
                 CAMERA.Width / static_cast<float>(context.Width),
@@ -430,28 +479,17 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
         // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
         // For now, we will just print the ray origin and direction
 
-        for(const Geometry& geometry : sGeometries)
+        float intersectionDistance = std::numeric_limits<float>::max();
+        std::optional<Geometry> closestHitGeometry = getClosestHitGeometry(ray, sGeometries, intersectionDistance);
+        if(closestHitGeometry.has_value())
         {
-            for (const Triangle& triangle : geometry.Triangles)
-            {
-                float intersectionDistance = 0.0f;
-                std::optional<float3> intersectionPoint = IntersectionChecker::Intersects(ray, triangle, intersectionDistance);
-                if (intersectionPoint.has_value())
-                {
-                    // If an intersection is found, set the color based on the geometry
-                    color.X = geometry.Color.X;
-                    color.Y = geometry.Color.Y;
-                    color.Z = geometry.Color.Z;
-                    if constexpr (CHANNELS_COUNT == 4)
-                    {
-                        color.W = geometry.Color.W;
-                    }
-                    goto triangles_traversal_end; // Exit the loop early if an intersection is found
-                }
-            }
+            color = onClosestHit(ray, closestHitGeometry.value(), intersectionDistance, context);
         }
-        triangles_traversal_end:
-        ;
+        else
+        {
+            // No intersection found, set background color
+            color = onMiss(ray);
+        }
     }
     else
     {
@@ -503,7 +541,7 @@ void initialize(const uint32_t width, const uint32_t height)
         sRays->SetResolution(width, height);
     }
 
-    traversePixels<ePixelProcessingMode::Initialize, DEFAULT_MEMORY_LAYOUT>(0, eRaytracingMode::OnlyIntersection);
+    traversePixels<ePixelProcessingMode::Initialize, DEFAULT_MEMORY_LAYOUT>(0, eRaytracingMode::None);
 }
 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
