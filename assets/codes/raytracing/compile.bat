@@ -15,13 +15,11 @@ echo ========================
 
 emcc main.cpp -o main.js -std=c++20 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wshadow -s WASM=1 ^
     -g ^
-    -s USE_PTHREADS=1 ^
-    -s PTHREAD_POOL_SIZE=4 ^
     -s EXPORTED_FUNCTIONS="['_render_frame', '_get_display_buffer', '_initialize']" ^
     -s EXPORTED_RUNTIME_METHODS="['cwrap', 'getValue', 'HEAPU8']" ^
     -s MODULARIZE=1 ^
     -s EXPORT_NAME="createRaytracerModule"  ^
-    -s INITIAL_MEMORY=1073741824
+    -s ALLOW_MEMORY_GROWTH=1
 
 echo Done.
 pause
