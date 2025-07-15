@@ -205,6 +205,7 @@ static constexpr raytracing::Color COLOR_GREEN = {0.0f, 1.0f, 0.0f, 1.0f};
 
 struct Geometry final
 {
+    std::string Name;
     std::vector<Triangle> Triangles;
     Color Color = COLOR_WHITE;
     bool IsEmissive = false;
@@ -240,6 +241,7 @@ namespace cornell_box
 {
     static Geometry FLOOR =
     {
+        .Name = "Floor",
         .Triangles =
         {
             Triangle(float3(0.0f, 0.0f, 0.0f), float3(559.2f, 0.0f, 0.0f), float3(559.2f, 0.0f, 552.8f)),
@@ -249,6 +251,7 @@ namespace cornell_box
     };
     static Geometry LIGHT =
     {
+        .Name = "Light",
         .Triangles =
         {
             Triangle(float3(343.0f, 548.8f, 227.0f), float3(343.0f, 548.8f, 332.0f), float3(213.0f, 548.8f, 332.0f)),
@@ -259,6 +262,7 @@ namespace cornell_box
     };
     static Geometry CEILING =
     {
+        .Name = "Ceiling",
         .Triangles =
         {
             Triangle(float3(556.0f, 548.8f, 0.0f), float3(556.0f, 548.8f, 559.2f), float3(0.0f, 548.8f, 559.2f)),
@@ -269,6 +273,7 @@ namespace cornell_box
     // Back wall
     static Geometry BACK_WALL =
     {
+        .Name = "Back Wall",
         .Triangles =
         {
             Triangle(float3(549.6f, 0.0f, 559.2f), float3(0.0f, 0.0f, 559.2f), float3(0.0f, 548.8f, 559.2f)),
@@ -278,6 +283,7 @@ namespace cornell_box
     };
     static Geometry RIGHT_WALL =
     {
+        .Name = "Right Wall",
         .Triangles =
         {
             Triangle(float3(0.0f, 0.0f, 559.2f), float3(0.0f, 0.0f, 0.0f), float3(0.0f, 548.8f, 0.0f)),
@@ -287,6 +293,7 @@ namespace cornell_box
     };
     static Geometry LEFT_WALL =
     {
+        .Name = "Left Wall",
         .Triangles =
         {
             Triangle(float3(552.8f, 0.0f, 0.0f), float3(549.6f, 0.0f, 559.2f), float3(556.0f, 548.8f, 559.2f)),
@@ -296,6 +303,7 @@ namespace cornell_box
     };
     static Geometry SHORT_BLOCK =
     {
+        .Name = "Short Block",
         .Triangles =
         {
             Triangle(float3(130.0f, 165.0f, 65.0f), float3(82.0f, 165.0f, 225.0f), float3(240.0f, 165.0f, 272.0f)),
@@ -313,6 +321,7 @@ namespace cornell_box
     };
     static Geometry TALL_BLOCK =
     {
+        .Name = "Tall Block",
         .Triangles =
         {
             // Top
@@ -374,7 +383,7 @@ struct RenderContext
 
 struct HitResult final
 {
-    std::optional<Geometry> Geometry;
+    const Geometry* GeometryOrNull = nullptr;
     float3 IntersectionPoint;
     float IntersectionDistance = std::numeric_limits<float>::max();
 };
@@ -392,7 +401,7 @@ HitResult getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geo
             if (intersectionPoint.has_value() && intersectionDistance < hitResult.IntersectionDistance)
             {
                 hitResult.IntersectionDistance = intersectionDistance;
-                hitResult.Geometry = geometry;
+                hitResult.GeometryOrNull = &geometry;
                 hitResult.IntersectionPoint = intersectionPoint.value();
             }
         }
@@ -405,7 +414,7 @@ Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, 
 {
     // Handle the closest hit event
     // For example, you could store the hit information or update the pixel color
-    Color color = hitResult.Geometry ? hitResult.Geometry->Color : COLOR_WHITE; // Default color for the hit point
+    Color color = hitResult.GeometryOrNull ? hitResult.GeometryOrNull->Color : COLOR_WHITE; // Default color for the hit point
 
     if((context.Mode & eRaytracingMode::Shadow) != eRaytracingMode::None)
     {
@@ -415,18 +424,18 @@ Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, 
             // Check if the hit point is in shadow
             Ray shadowRay;
             shadowRay.Origin = hitResult.IntersectionPoint;
-            const float3 randomBarycentric = {
-                UniformRandomGenerator::GetRandomNumber(),
-                UniformRandomGenerator::GetRandomNumber(),
-                UniformRandomGenerator::GetRandomNumber()
-            };
+            float3 randomBarycentric;
+            randomBarycentric.X = UniformRandomGenerator::GetRandomNumber();
+            randomBarycentric.Y = UniformRandomGenerator::GetRandomNumber() * (1.0f - randomBarycentric.X);
+            randomBarycentric.Z = 1.0f - (randomBarycentric.X + randomBarycentric.Y);
+
             const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
-            const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetBarycentricCoordinates(randomBarycentric);
+            const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetPointByBarycentricCoordinates(randomBarycentric);
             shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
-            shadowRay.Origin += shadowRay.Direction * 0.001f; // Offset to avoid self-intersection
+            shadowRay.Origin += shadowRay.Direction * 0.1f; // Offset to avoid self-intersection
 
             HitResult shadowHitResult = getClosestHitGeometry(shadowRay, sGeometries);
-            if(shadowHitResult.Geometry && &shadowHitResult.Geometry.value() == lightGeometry)
+            if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
             {
                 // If the shadow ray hits an emissive geometry, we can consider it lit
                 color *= lightGeometry->Color; // Add light color
@@ -523,7 +532,7 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
         // For now, we will just print the ray origin and direction
 
         HitResult hitResult = getClosestHitGeometry(ray, sGeometries);
-        if(hitResult.Geometry)
+        if(hitResult.GeometryOrNull)
         {
             color = onClosestHit(ray, hitResult, context);
         }
@@ -538,7 +547,7 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
         static_assert(false, "Unsupported pixel processing mode");
     }
     
-    Color8Bit& color8Bit = s8BitColors->GetPixel(x, y);
+    Color8Bit& color8Bit = s8BitColors->GetPixel(x, s8BitColors->GetHeight() - 1 - y);
     color8Bit.X = static_cast<uint8_t>(color.X * 255.0f);
     color8Bit.Y = static_cast<uint8_t>(color.Y * 255.0f);
     color8Bit.Z = static_cast<uint8_t>(color.Z * 255.0f);
@@ -704,7 +713,7 @@ int main()
     uint32_t frameIndex = 0;
     // while(true)
     {
-        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::OnlyIntersection));
+        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::JitterAndShadow));
         ++frameIndex;
     }
 

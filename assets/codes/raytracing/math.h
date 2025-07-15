@@ -336,6 +336,12 @@ namespace raytracing
 		RT_FORCE_INLINE constexpr Triangle& operator=(const Triangle& other) noexcept = default;
 		RT_FORCE_INLINE constexpr Triangle& operator=(Triangle&& other) noexcept = default;
 
+		RT_FORCE_INLINE constexpr float3 GetPointByBarycentricCoordinates(const float3& barycentricCoordinates) const noexcept
+		{
+			assert(barycentricCoordinates.X >= 0.0f && barycentricCoordinates.Y >= 0.0f && barycentricCoordinates.Z >= 0.0f);
+			assert(barycentricCoordinates.X + barycentricCoordinates.Y + barycentricCoordinates.Z == 1.0f);
+			return Vertices[0] * barycentricCoordinates.X + Vertices[1] * barycentricCoordinates.Y + Vertices[2] * barycentricCoordinates.Z;
+		}
 		RT_FORCE_INLINE constexpr float3 GetBarycentricCoordinates(const float3& point) const noexcept
 		{
 			const float3 edge0 = Vertices[1] - Vertices[0];
