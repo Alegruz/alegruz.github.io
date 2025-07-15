@@ -122,6 +122,13 @@ createRaytracerModule({
   const imageData = ctx.createImageData(width, height);
   const container = document.getElementById("raytracing-cpu-demo-only-intersection");
   const label = container.querySelector("p");
+  
+  // Set up info element once
+  const info = document.createElement("p");
+  info.style.fontSize = "0.9em";
+  info.style.color = "#666";
+  info.style.margin = "4px 0 0 0";
+  label.insertAdjacentElement("afterend", info);
 
   // ✅ Set resolution first so the buffer is correctly allocated
   Module._initialize(width, height);
