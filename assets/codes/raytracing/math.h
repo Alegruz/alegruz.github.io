@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdint>
 #include <concepts>
+#include <numbers>
 #include <optional>
 #include <random> // Required for random number generation
 #include <utility>

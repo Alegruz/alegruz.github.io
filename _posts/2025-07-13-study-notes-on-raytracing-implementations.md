@@ -346,7 +346,6 @@ createRaytracerModule({
 
 Now, let's add the lighting evaluation. We will only evaluate direct illumination from the light source, and we will assume that the materials are perfectly diffuse (Lambertian reflectance). This means that the light intensity is proportional to the cosine of the angle between the surface normal and the light direction. We will also assume that the light source is a white light with a constant intensity.
 
-
 <div id="raytracing-cpu-demo-direct-diffuse" style="text-align: center; margin: 20px 0;">
   <canvas id="wasm-canvas-direct-diffuse" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing CPU Demo - Direct Diffuse Lighting</p>
@@ -396,6 +395,87 @@ createRaytracerModule({
     await new Promise(r => setTimeout(r, 0)); // yield before heavy work
 
     render(frame++, 1+2+4); // 1 for jitter, 2 for shadow ray, 4 for diffuse
+    imageData.data.set(bufferView);
+    ctx.putImageData(imageData, 0, 0);
+
+    const t1 = performance.now();
+    info.textContent = `Frame ${frame} rendered in ${(t1 - t0).toFixed(2)} ms`;
+
+    // Schedule next frame without blocking UI
+    setTimeout(renderLoop, 0);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      visible = entry.isIntersecting;
+      if (visible && !running) {
+        running = true;
+        renderLoop();
+      }
+    }
+  }, {
+    root: null,
+    threshold: 0.1
+  });
+
+  observer.observe(container);
+}).catch(err => {
+  console.error("Failed to initialize WebAssembly module", err);
+});
+</script>
+
+Now, let's improve the scene by considering the indirect illumination. This means that we will also consider the light that is reflected from the walls and the floor. We can do this by casting additional rays from the intersection point towards the walls and the floor, and checking if they intersect with any geometry in the scene. If they do, we can assume that the intersection point receives some indirect light from those surfaces.
+
+
+<div id="raytracing-cpu-demo-indirect-diffuse" style="text-align: center; margin: 20px 0;">
+  <canvas id="wasm-canvas-indirect-diffuse" width="720" height="720" style="border:1px solid #aaa;"></canvas>
+  <p>Raytracing CPU Demo - Indirect Diffuse Lighting (1 bounce)</p>
+</div>
+<script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
+<script>
+createRaytracerModule({
+  locateFile: (p) => p.endsWith('.wasm')
+    ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
+    : p
+}).then(Module => {
+  const container = document.getElementById("raytracing-cpu-demo-indirect-diffuse");
+  const canvas = container.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const width = 720, height = 720, channels = 4;
+  const imageData = ctx.createImageData(width, height);
+  const label = container.querySelector("p");
+
+  const info = document.createElement("p");
+  info.style.fontSize = "0.9em";
+  info.style.color = "#666";
+  info.style.margin = "4px 0 0 0";
+  label.insertAdjacentElement("afterend", info);
+
+  Module._initialize(width, height);
+  const bufPtr = Module._get_display_buffer();
+  const render = Module.cwrap("render_frame", null, ["number", "number"]);
+
+  if (!bufPtr || !Module.HEAPU8) {
+    console.error("WASM buffer not allocated.");
+    return;
+  }
+
+  const bufferView = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
+  let frame = 0;
+  let visible = false;
+  let running = false;
+
+  async function renderLoop() {
+    if (!visible) {
+      running = false;
+      return;
+    }
+
+    const t0 = performance.now();
+
+    await new Promise(r => setTimeout(r, 0)); // yield before heavy work
+
+    render(frame++, 1+2+4+8); // 1 for jitter, 2 for shadow ray, 4 for diffuse, 8 for indirect
     imageData.data.set(bufferView);
     ctx.putImageData(imageData, 0, 0);
 

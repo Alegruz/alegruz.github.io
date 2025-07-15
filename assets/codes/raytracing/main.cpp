@@ -203,12 +203,18 @@ static constexpr raytracing::Color COLOR_BLACK = {0.0f, 0.0f, 0.0f, 1.0f};
 static constexpr raytracing::Color COLOR_RED = {1.0f, 0.0f, 0.0f, 1.0f};
 static constexpr raytracing::Color COLOR_GREEN = {0.0f, 1.0f, 0.0f, 1.0f};
 
+enum class eMaterial : uint8_t
+{
+    SimpleDiffuse,
+};
+
 struct Geometry final
 {
     std::string Name;
     std::vector<Triangle> Triangles;
     Color Color = COLOR_WHITE;
     bool IsEmissive = false;
+    eMaterial Material = eMaterial::SimpleDiffuse;
 };
 
 static Texture2D<Color>* sPixels = nullptr;
@@ -244,8 +250,8 @@ namespace cornell_box
         .Name = "Floor",
         .Triangles =
         {
-            Triangle(float3(0.0f, 0.0f, 0.0f), float3(559.2f, 0.0f, 0.0f), float3(559.2f, 0.0f, 552.8f)),
-            Triangle(float3(0.0f, 0.0f, 0.0f), float3(559.2f, 0.0f, 552.8f), float3(0.0f, 0.0f, 552.8f))
+            Triangle(float3(0.0f, 0.0f, 0.0f), float3(559.2f, 0.0f, 552.8f), float3(559.2f, 0.0f, 0.0f)),
+            Triangle(float3(0.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 552.8f), float3(559.2f, 0.0f, 552.8f))
         },
         .Color = COLOR_WHITE,
     };
@@ -363,8 +369,10 @@ enum class eRaytracingMode
     Jitter = 0b1,
     Shadow = 0b10,
     Lambertian = 0b100,
+    IndirectIllumination = 0b1000,
     JitterAndShadow = Jitter | Shadow,
     DirectDiffuse = JitterAndShadow | Lambertian,
+    IndirectDiffuse = DirectDiffuse | IndirectIllumination,
     Count,
 };
 
@@ -387,6 +395,8 @@ struct RenderContext
     const float3& CameraForward;
     const float3 CameraRight;
     const float3 CameraUp;
+    uint32_t TraceDepth;
+    uint32_t MaxTraceDepth;
 };
 
 struct HitResult final
@@ -396,6 +406,8 @@ struct HitResult final
     float3 IntersectionPoint;
     float IntersectionDistance = std::numeric_limits<float>::max();
 };
+
+Color traceRay(HitResult& outHitResult, const Ray& ray, const std::vector<Geometry>& geometries, RenderContext& context);
 
 HitResult getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geometries)
 {
@@ -420,50 +432,105 @@ HitResult getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geo
     return hitResult;
 }
 
-Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, [[maybe_unused]] const RenderContext& context)
+Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, RenderContext& context)
 {
+    if (context.TraceDepth > 1)
+    {
+        [[maybe_unused]] volatile int n = 3;
+    }
+
     // Handle the closest hit event
     // For example, you could store the hit information or update the pixel color
-    Color color = hitResult.GeometryOrNull ? hitResult.GeometryOrNull->Color : COLOR_WHITE; // Default color for the hit point
-    if(hitResult.GeometryOrNull && hitResult.GeometryOrNull->IsEmissive)
+    Color color = COLOR_BLACK; // Default color
+    if(hitResult.GeometryOrNull)
     {
-        // If the geometry is emissive, we can consider it lit
-        color = hitResult.GeometryOrNull->Color; // Use the emissive color
-    }
-    else
-    {
-        if((context.Mode & eRaytracingMode::Shadow) != eRaytracingMode::None)
+        if(hitResult.GeometryOrNull->IsEmissive)
         {
-            bool bIsInShadow = true;
-            for(const Geometry* lightGeometry : sLightGeometries)
+            // If the geometry is emissive, we can consider it lit
+            color = hitResult.GeometryOrNull->Color; // Use the emissive color
+        }
+        else
+        {
+            Color intensity = COLOR_BLACK;
+            if((context.Mode & eRaytracingMode::Shadow) != eRaytracingMode::None)
             {
-                // Check if the hit point is in shadow
-                Ray shadowRay;
-                shadowRay.Origin = hitResult.IntersectionPoint;
-                float3 randomBarycentric;
-                randomBarycentric.X = UniformRandomGenerator::GetRandomNumber();
-                randomBarycentric.Y = UniformRandomGenerator::GetRandomNumber() * (1.0f - randomBarycentric.X);
-                randomBarycentric.Z = 1.0f - (randomBarycentric.X + randomBarycentric.Y);
-
-                const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
-                const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetPointByBarycentricCoordinates(randomBarycentric);
-                shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
-                shadowRay.Origin += shadowRay.Direction * 0.1f; // Offset to avoid self-intersection
-
-                HitResult shadowHitResult = getClosestHitGeometry(shadowRay, sGeometries);
-                if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
+                for(const Geometry* lightGeometry : sLightGeometries)
                 {
-                    // If the shadow ray hits an emissive geometry, we can consider it lit
-                    const float lambertian = std::max(0.0f, dot(shadowRay.Direction, hitResult.TriangleOrNull->Normal));
-                    color *= lightGeometry->Color * lambertian; // Add light color
-                    bIsInShadow = false;
+                    // Check if the hit point is in shadow
+                    Ray shadowRay;
+                    shadowRay.Origin = hitResult.IntersectionPoint;
+                    float3 randomBarycentric;
+                    randomBarycentric.X = UniformRandomGenerator::GetRandomNumber();
+                    randomBarycentric.Y = UniformRandomGenerator::GetRandomNumber() * (1.0f - randomBarycentric.X);
+                    randomBarycentric.Z = 1.0f - (randomBarycentric.X + randomBarycentric.Y);
+
+                    const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
+                    const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetPointByBarycentricCoordinates(randomBarycentric);
+                    shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
+                    shadowRay.Origin += shadowRay.Direction * 0.1f; // Offset to avoid self-intersection
+
+                    HitResult shadowHitResult = getClosestHitGeometry(shadowRay, sGeometries);
+                    if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
+                    {
+                        Color lightColor = lightGeometry->Color;
+                        // If the shadow ray hits an emissive geometry, we can consider it lit
+                        if((context.Mode & eRaytracingMode::Lambertian) != eRaytracingMode::None)
+                        {
+                            if(hitResult.GeometryOrNull->Material == eMaterial::SimpleDiffuse)
+                            {
+                                // Calculate Lambertian reflectance
+                                const float lambertian = std::max(0.0f, dot(shadowRay.Direction, hitResult.TriangleOrNull->Normal));
+                                lightColor *= lambertian; // Add light color
+                            }
+                        }
+                        intensity += lightColor; // Add light color
+                    }
                 }
             }
 
-            if (bIsInShadow)
+            if((context.Mode & eRaytracingMode::IndirectIllumination) != eRaytracingMode::None)
             {
-                color = COLOR_BLACK; // If in shadow, set color to black
+                Ray indirectRay;
+                indirectRay.Origin = hitResult.IntersectionPoint;
+                // Generate a random direction for indirect illumination
+                // Generate a random direction in the hemisphere oriented by the surface normal
+                float3 normal = hitResult.TriangleOrNull->Normal;
+                const float u1 = UniformRandomGenerator::GetRandomNumber();
+                const float u2 = UniformRandomGenerator::GetRandomNumber();
+                const float r = sqrtf(u1);
+                const float theta = 2.0f * static_cast<float>(std::numbers::pi) * u2;
+                const float x = r * cosf(theta);
+                const float y = r * sinf(theta);
+                const float z = sqrtf(1.0f - u1);
+
+                // Create an orthonormal basis (n, t, b)
+                const float3 n = normal.normalize();
+                const float3 t = (fabs(n.X) > 0.1f ? float3(0,1,0) : float3(1,0,0)).cross(n).normalize();
+                const float3 b = n.cross(t);
+
+                const float3 randomDirection = (t * x) + (b * y) + (n * z);
+                indirectRay.Direction = randomDirection.normalize();
+                indirectRay.Origin += indirectRay.Direction * 0.1f; // Offset to avoid self-intersection
+
+                HitResult indirectHitResult;
+                Color indirectColor = traceRay(indirectHitResult, indirectRay, sGeometries, context);
+                // If the shadow ray hits an emissive geometry, we can consider it lit
+                if (indirectHitResult.GeometryOrNull)
+                {
+                    if ((context.Mode & eRaytracingMode::Lambertian) != eRaytracingMode::None)
+                    {
+                        if (hitResult.GeometryOrNull->Material == eMaterial::SimpleDiffuse)
+                        {
+                            // Calculate Lambertian reflectance
+                            const float lambertian = std::max(0.0f, dot(indirectRay.Direction, hitResult.TriangleOrNull->Normal));
+                            indirectColor *= lambertian; // Add light color
+                        }
+                    }
+                    intensity += indirectColor; // Add indirect illumination color
+                }
             }
+
+            color = intensity * hitResult.GeometryOrNull->Color; // Use the geometry color
         }
     }
 
@@ -477,9 +544,29 @@ Color onMiss([[maybe_unused]] const Ray& ray)
     return COLOR_WHITE; // Background color
 }
 
-template<ePixelProcessingMode MODE>
-void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const RenderContext& context)
+Color traceRay(HitResult& outHitResult, const Ray& ray, const std::vector<Geometry>& geometries, RenderContext& context)
 {
+    ++context.TraceDepth;
+
+    if (context.MaxTraceDepth < context.TraceDepth)
+    {
+        return COLOR_BLACK;
+    }
+
+    outHitResult = getClosestHitGeometry(ray, geometries);
+    if(outHitResult.GeometryOrNull)
+    {
+        Color color = onClosestHit(ray, outHitResult, context);
+        return color;
+    }
+    return onMiss(ray);
+}
+
+template<ePixelProcessingMode MODE>
+void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
+{
+    context.TraceDepth = 0;
+
     Color& color = sPixels->GetPixel(x, y);
     if constexpr (MODE == ePixelProcessingMode::Initialize)
     {        
@@ -546,19 +633,8 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
             ray.Direction = (pixelPosition - CAMERA.Position).normalize();
         }
 
-        // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
-        // For now, we will just print the ray origin and direction
-
-        HitResult hitResult = getClosestHitGeometry(ray, sGeometries);
-        if(hitResult.GeometryOrNull)
-        {
-            color = onClosestHit(ray, hitResult, context);
-        }
-        else
-        {
-            // No intersection found, set background color
-            color = onMiss(ray);
-        }
+        HitResult hitResult;
+        color = traceRay(hitResult, ray, sGeometries, context);
     }
     else
     {
@@ -640,7 +716,7 @@ void initialize(const uint32_t width, const uint32_t height)
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
 void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
 {
-    const RenderContext context =
+    RenderContext context =
     {
         .FrameIndex = frameIndex,
         .Mode = mode,
@@ -648,7 +724,9 @@ void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
         .Height = sPixels->GetHeight(),
         .CameraForward = CAMERA.Direction,
         .CameraRight = cross(CAMERA.Direction, CAMERA.UpDirection).normalize(),
-        .CameraUp = cross(cross(CAMERA.Direction, CAMERA.UpDirection), CAMERA.Direction).normalize()
+        .CameraUp = cross(cross(CAMERA.Direction, CAMERA.UpDirection), CAMERA.Direction).normalize(),
+        .TraceDepth = 0,
+        .MaxTraceDepth = (mode & eRaytracingMode::IndirectIllumination) != eRaytracingMode::None ? 2u : 1u,
     };
     
     if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
@@ -733,7 +811,7 @@ int main()
     uint32_t frameIndex = 0;
     // while(true)
     {
-        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::DirectDiffuse));
+        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::IndirectDiffuse));
         ++frameIndex;
     }
 
