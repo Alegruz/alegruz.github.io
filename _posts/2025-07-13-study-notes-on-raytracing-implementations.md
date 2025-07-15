@@ -120,6 +120,8 @@ createRaytracerModule({
   const ctx = canvas.getContext("2d");
   const width = 1280, height = 720, channels = 4;
   const imageData = ctx.createImageData(width, height);
+  const container = document.getElementById("raytracing-cpu-demo-only-intersection");
+  const label = container.querySelector("p");
 
   // ✅ Set resolution first so the buffer is correctly allocated
   Module._initialize(width, height);
@@ -145,25 +147,25 @@ createRaytracerModule({
     return;
   }
 
+  const bufferView = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
   let frame = 0;
-  function loop() {
-    render(frame++, 0); // 0 for only intersection mode
-    let buffer;
-    try {
-      buffer = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
-    } catch (e) {
-      if (e instanceof RangeError) {
-        console.error("Failed to allocate buffer", e);
-        return;
-      }
-      throw e;
-    }
-    imageData.data.set(buffer);
+
+  async function loop() {
+    const t0 = performance.now();
+    await new Promise(resolve => setTimeout(resolve, 0)); // Yield to UI
+
+    render(frame++, 0); // mode 0: only intersection
+    imageData.data.set(bufferView);
     ctx.putImageData(imageData, 0, 0);
-    <!-- requestAnimationFrame(loop); -->
+
+    const t1 = performance.now();
+    const elapsed = (t1 - t0).toFixed(2);
+    info.textContent = `Frame ${frame} rendered in ${elapsed} ms`;
+
+    requestAnimationFrame(loop); // Keep looping
   }
 
-  loop();
+  loop(); // Start the async render loop
 }).catch(err => {
   console.error("Failed to initialize WebAssembly module", err);
 });
