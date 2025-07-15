@@ -584,3 +584,433 @@ createRaytracerModule({
   console.error("Failed to initialize WebAssembly module", err);
 });
 </script>
+
+## Raytracing on GPU
+
+By now, it is clear that raytracing is a very computationally intensive task, especially when we want to achieve high quality images with multiple bounces and denoising. This is where the GPU comes in handy. GPUs are designed to handle parallel computations, which makes them ideal for raytracing.
+
+<div id="raytracing-gpu-demo-simple" style="text-align: center; margin: 20px 0;">
+  <canvas id="wasm-canvas-gpu-demo-simple" width="720" height="720" style="border:1px solid #aaa;"></canvas>
+  <p>Raytracing GPU Demo - Simple Intersection</p>
+</div>
+<script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
+<script>
+createRaytracerModule({
+  locateFile: (p) => p.endsWith('.wasm')
+    ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
+    : p
+}).then(Module => {
+  const container = document.getElementById("raytracing-gpu-demo-simple");
+  const canvas = container.querySelector("canvas") as HTMLCanvasElement;
+  const adapter = await navigator.gpu.requestAdapter();
+  const device = await adapter.requestDevice();
+  const context = canvas.getContext("webgpu") as GPUCanvasContext;
+  const format = navigator.gpu.getPreferredCanvasFormat();
+  context.configure({
+    device: device,
+    format: format,
+    alphaMode: "opaque"
+  });
+  const cameraData = new Float32Array([
+    278.0, 273.0, -800.0, // Camera position
+    0.0, 0.0, 1.0, // Camera forward
+    -1.0, 0.0, 0.0, // Camera right vector
+    0.0, 1.0, 0.0, // Camera up vector
+    0.035, // Focal length
+    0.025, // Width
+    0.025  // Height
+  ]);
+  const cameraBuffer = device.createBuffer({
+    size: cameraData.byteLength,
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+  });
+  device.queue.writeBuffer(cameraBuffer, 0, cameraData);
+  const triangleData = new Float32Array([
+    // Floor
+      // triangle vertices
+      0.0, 0.0, 0.0,
+      559.2, 0.0, 552.8,
+      559.2, 0.0, 0.0,
+      // Triangle normal and emissive factor
+      0.0, 1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      0.0, 0.0, 0.0,
+      0.0, 0.0, 552.8,
+      559.2, 0.0, 552.8,
+      // Triangle normal and emissive factor
+      0.0, 1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+    // Light source
+      // Triangle vertices
+      343.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 227.0,
+      343.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 332.0,
+      213.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 332.0,
+      // Triangle normal and emissive factor
+      0.0, -1.0, 0.0, 1.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      213.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 227.0,
+      343.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 227.0,
+      213.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 332.0,
+      // Triangle normal and emissive factor
+      0.0, -1.0, 0.0, 1.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+    // Ceiling
+      // Triangle vertices
+      556.0, 548.8, 0.0,
+      556.0, 548.8, 559.2,
+      0.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      0.0, -1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      0.0, 548.8, 0.0,
+      556.0, 548.8, 0.0,
+      0.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      0.0, -1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+    // Back wall
+      // Triangle vertices
+      549.6, 0.0, 559.2,
+      549.6, 548.8, 559.2,
+      0.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      0.0, 0.0, -1.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      0.0, 0.0, 559.2,
+      549.6, 0.0, 559.2,
+      0.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      0.0, 0.0, -1.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+    // Right wall
+      // Triangle vertices
+      0.0, 0.0, 559.2,
+      0.0, 0.0, 0.0,
+      0.0, 548.8, 0.0,
+      // Triangle normal and emissive factor
+      1.0, 0.0, 0.0, 0.0,
+      // Triangle color
+      0.0, 1.0, 0.0,
+      // Triangle vertices
+      0.0, 0.0, 559.2,
+      0.0, 548.8, 0.0,
+      0.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      1.0, 0.0, 0.0, 0.0,
+      // Triangle color
+      0.0, 1.0, 0.0,
+    // Left wall
+      // Triangle vertices
+      552.8, 0.0, 0.0,
+      549.6, 0.0, 559.2,
+      556.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      -0.999915719, 0.0116608692, -0.00572199980, 0.0,
+      // Triangle color
+      1.0, 0.0, 0.0,
+      // Triangle vertices
+      556.0, 548.8, 0.0,
+      552.8, 0.0, 0.0,
+      556.0, 548.8, 559.2,
+      // Triangle normal and emissive factor
+      -0.999983013, 0.00583082717, 0.00000000, 0.0,
+      // Triangle color
+      1.0, 0.0, 0.0
+    // Short Block
+      // Triangle vertices
+      130.0, 165.0, 65.0,
+      82.0, 165.0, 225.0,
+      240.0, 165.0, 272.0,
+      // Triangle normal and emissive factor
+      0.0, 1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      290.0, 165.0, 114.0,
+      130.0, 165.0, 65.0,
+      240.0, 165.0, 272.0,
+      // Triangle normal and emissive factor
+      0.0, 1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      290.0, 0.0, 114.0,
+      290.0, 165.0, 114.0,
+      240.0, 165.0, 272.0,
+      // Triangle normal and emissive factor
+      0.953400135, -0.00000000, 0.301708907, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      240.0, 0.0, 272.0,
+      290.0, 0.0, 114.0,
+      240.0, 165.0, 272.0,
+      // Triangle normal and emissive factor
+      0.953400135, -0.00000000, 0.301708907, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      130.0, 0.0, 65.0,
+      130.0, 165.0, 65.0,
+      290.0, 165.0, 114.0,
+      // Triangle normal and emissive factor
+      0.292825788, 0.00000000, -0.956165850, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      290.0, 0.0, 114.0,
+      130.0, 0.0, 65.0,
+      290.0, 165.0, 114.0,
+      // Triangle normal and emissive factor
+      0.292825788, 0.00000000, -0.956165850, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      82.0, 0.0, 225.0,
+      82.0, 165.0, 225.0,
+      130.0, 165.0, 65.0,
+      // Triangle normal and emissive factor
+      -0.957826257, 0.00000000, -0.287347883, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      130.0, 0.0, 65.0,
+      82.0, 0.0, 225.0,
+      130.0, 165.0, 65.0,
+      // Triangle normal and emissive factor
+      -0.957826257, 0.00000000, -0.287347883, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      240.0, 0.0, 272.0,
+      240.0, 165.0, 272.0,
+      82.0, 165.0, 225.0,
+      // Triangle normal and emissive factor
+      -0.285120904, 0.00000000, 0.958491504, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      82.0, 0.0, 225.0,
+      240.0, 0.0, 272.0,
+      82.0, 165.0, 225.0,
+      // Triangle normal and emissive factor
+      -0.285120904, 0.00000000, 0.958491504, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+    // Tall Block
+      // Triangle vertices
+      423.0, 330.0, 247.0,
+      265.0, 330.0, 296.0,
+      314.0, 330.0, 456.0,
+      // Triangle normal and emissive factor
+      0.0, 1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      472.0, 330.0, 406.0,
+      423.0, 330.0, 247.0,
+      314.0, 330.0, 456.0,
+      // Triangle normal and emissive factor
+      0.0, 1.0, 0.0, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      423.0, 0.0, 247.0,
+      423.0, 330.0, 247.0,
+      472.0, 330.0, 406.0,
+      // Triangle normal and emissive factor
+      0.955648959, 0.00000000, -0.294508159, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      472.0, 0.0, 406.0,
+      423.0, 0.0, 247.0,
+      472.0, 330.0, 406.0,
+      // Triangle normal and emissive factor
+      0.955648959, 0.00000000, -0.294508159, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      472.0, 0.0, 406.0,
+      472.0, 330.0, 406.0,
+      314.0, 330.0, 456.0,
+      // Triangle normal and emissive factor
+      0.301708907, -0.00000000, 0.953400135, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      314.0, 0.0, 456.0,
+      472.0, 0.0, 406.0,
+      314.0, 330.0, 456.0,
+      // Triangle normal and emissive factor
+      0.301708907, -0.00000000, 0.953400135, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      314.0, 0.0, 456.0,
+      314.0, 330.0, 456.0,
+      265.0, 330.0, 296.0,
+      // Triangle normal and emissive factor
+      -0.956165850, 0.00000000, 0.292825788, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      265.0, 0.0, 296.0,
+      314.0, 0.0, 456.0,
+      265.0, 330.0, 296.0,
+      // Triangle normal and emissive factor
+      -0.956165850, 0.00000000, 0.292825788, 0.0,
+      // Triangle color 
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      265.0, 0.0, 296.0,
+      265.0, 330.0, 296.0,
+      423.0, 330.0, 247.0,
+      // Triangle normal and emissive factor
+      -0.296209067, 0.00000000, -0.955123127, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+      // Triangle vertices
+      423.0, 0.0, 247.0,
+      265.0, 0.0, 296.0,
+      423.0, 330.0, 247.0,
+      // Triangle normal and emissive factor
+      -0.296209067, 0.00000000, -0.955123127, 0.0,
+      // Triangle color
+      1.0, 1.0, 1.0,
+  ]);
+  const sceneBuffer = device.createBuffer({
+    size: triangleData.byteLength,
+    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+  });
+  device.queue.writeBuffer(sceneBuffer, 0, triangleData);
+  const rayOutput = device.createTexture({
+    size: [canvas.width, canvas.height],
+    format: "rgba8unorm",
+    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC
+  });
+  const computeModule = device.createShaderModule({
+    code: await fetch('{{ "/assets/codes/raytracing/raytracer.wgsl" | relative_url }}').then(res => res.text())
+  });
+  const computePipeline = device.createComputePipeline({
+    layout: "auto",
+    compute: {
+      module: computeModule,
+      entryPoint: "main"
+    }
+  });
+  const computeBindGroup = device.createBindGroup({
+    layout: computePipeline.getBindGroupLayout(0),
+    entries: [
+      { binding: 0, resource: { buffer: cameraBuffer } },
+      { binding: 1, resource: { buffer: sceneBuffer } },
+      { binding: 2, resource: rayOutput.createView() }
+    ]
+  });
+  const sampler = device.createSampler({
+    magFilter: "linear",
+    minFilter: "linear"
+  });
+  const displayModule = device.createShaderModule({
+    code: await fetch('{{ "/assets/codes/raytracing/display.wgsl" | relative_url }}').then(res => res.text())
+  });
+  const renderPipeline = device.createRenderPipeline({
+    layout: "auto",
+    vertex: {
+      module: displayModule,
+      entryPoint: "vs_main"
+    },
+    fragment: {
+      module: displayModule,
+      entryPoint: "fs_main",
+      targets: [{
+        format: format
+      }]
+    },
+    primitive: {
+      topology: "triangle-list"
+    }
+  });
+  const renderBindGroup = device.createBindGroup({
+    layout: renderPipeline.getBindGroupLayout(0),
+    entries: [
+      { binding: 0, resource: sampler },
+      { binding: 1, resource: rayOutput.createView() },
+    ]
+  });
+  const info = document.createElement("p");
+  info.style.fontSize = "0.9em";
+  info.style.color = "#666";
+  info.style.margin = "4px 0 0 0";
+  label.insertAdjacentElement("afterend", info);
+  let frame = 0;
+  let visible = false;
+  let running = false;
+  function frame() {
+    const commandEncoder = device.createCommandEncoder();
+    const computePass = commandEncoder.beginComputePass();
+    computePass.setPipeline(computePipeline);
+    computePass.setBindGroup(0, computeBindGroup);
+    computePass.dispatchWorkgroups(Math.ceil(canvas.width / 8), Math.ceil(canvas.height / 8));
+    computePass.end();
+    const textureView = context.getCurrentTexture().createView();
+    const renderPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: textureView,
+        loadOp: "clear",
+        storeOp: "store",
+        clearValue: { r: 0, g: 0, b: 0, a: 1 }
+      }]
+    });
+    renderPass.setPipeline(renderPipeline);
+    renderPass.setBindGroup(0, renderBindGroup);
+    renderPass.draw(6, 1, 0, 0);
+    renderPass.end();
+    device.queue.submit([commandEncoder.finish()]);
+  }
+  async function renderLoop() {
+    if (!visible) {
+      running = false;
+      return;
+    }
+    const t0 = performance.now();
+    await new Promise(r => setTimeout(r, 0)); // yield before heavy work
+
+    frame();
+    const t1 = performance.now();
+    info.textContent = `Frame ${frame} rendered in ${(t1 - t0).toFixed(2)} ms`;
+
+    // Schedule next frame without blocking UI
+    setTimeout(renderLoop, 0);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      visible = entry.isIntersecting;
+      if (visible && !running) {
+        running = true;
+        renderLoop();
+      }
+    }
+  }, {
+    root: null,
+    threshold: 0.1
+  });
+
+  observer.observe(container);
+}).catch(err => {
+  console.error("Failed to initialize WebAssembly module", err);
+});
+</script>
