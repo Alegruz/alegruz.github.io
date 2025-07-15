@@ -254,8 +254,14 @@ namespace cornell_box
         .Name = "Light",
         .Triangles =
         {
-            Triangle(float3(343.0f, 548.8f, 227.0f), float3(343.0f, 548.8f, 332.0f), float3(213.0f, 548.8f, 332.0f)),
-            Triangle(float3(213.0f, 548.8f, 227.0f), float3(343.0f, 548.8f, 227.0f), float3(213.0f, 548.8f, 332.0f))
+            Triangle(
+                float3(343.0f, 548.8f - std::numeric_limits<float>::epsilon() - std::numeric_limits<float>::epsilon(), 227.0f)
+                , float3(343.0f, 548.8f - std::numeric_limits<float>::epsilon() - std::numeric_limits<float>::epsilon(), 332.0f)
+                , float3(213.0f, 548.8f - std::numeric_limits<float>::epsilon() - std::numeric_limits<float>::epsilon(), 332.0f)),
+            Triangle(
+                float3(213.0f, 548.8f - std::numeric_limits<float>::epsilon() - std::numeric_limits<float>::epsilon(), 227.0f)
+                , float3(343.0f, 548.8f - std::numeric_limits<float>::epsilon() - std::numeric_limits<float>::epsilon(), 227.0f)
+                , float3(213.0f, 548.8f - std::numeric_limits<float>::epsilon() - std::numeric_limits<float>::epsilon(), 332.0f))
         },
         .Color = COLOR_WHITE,
         .IsEmissive = true
@@ -714,7 +720,7 @@ uint8_t* get_display_buffer()
 #if !defined(RT_EMSCRIPTEN)
 int main()
 {
-    initialize(1280, 720); // Initialize with a default resolution
+    initialize(720, 720); // Initialize with a default resolution
     get_display_buffer(); // Call to ensure the display buffer is ready
 
     uint32_t frameIndex = 0;
