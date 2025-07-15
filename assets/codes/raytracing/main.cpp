@@ -359,20 +359,29 @@ namespace cornell_box
     };
 };
 
-enum class ePixelProcessingMode
+enum class ePixelProcessingMode : uint8_t
 {
     Initialize,
     Clear,
     Render,
+    Denoise,
 };
 
-enum class eRaytracingMode
+enum class eDenoiser : uint8_t
+{
+    BilateralFilter,
+    Count,
+    Default = BilateralFilter,
+};
+
+enum class eRaytracingMode : uint8_t
 {
     None = 0b0,
     Jitter = 0b1,
-    Shadow = 0b10,
-    Lambertian = 0b100,
-    IndirectIllumination = 0b1000,
+    Shadow = Jitter << 1,
+    Lambertian = Shadow << 1,
+    IndirectIllumination = Lambertian << 1,
+    Denoise = IndirectIllumination << 1,
     JitterAndShadow = Jitter | Shadow,
     DirectDiffuse = JitterAndShadow | Lambertian,
     IndirectDiffuse = DirectDiffuse | IndirectIllumination,
@@ -401,6 +410,7 @@ struct RenderContext
     uint32_t TraceDepth;
     uint32_t MaxTraceDepth;
     uint32_t NumSamples;
+    eDenoiser Denoiser = eDenoiser::Default;
 };
 
 struct HitResult final
@@ -565,6 +575,14 @@ Color traceRay(HitResult& outHitResult, const Ray& ray, const std::vector<Geomet
     return onMiss(ray);
 }
 
+namespace bilateral_filter
+{
+    RT_FORCE_INLINE float gaussianKernel(const float distance, const float sigma)
+    {
+        return expf(-(distance * distance) / (2.0f * sigma * sigma));
+    }
+}
+
 template<ePixelProcessingMode MODE>
 void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
 {
@@ -661,6 +679,44 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
             color += traceRay(hitResult, ray, sGeometries, context);
         }
         // color /= static_cast<float>(context.NumSamples);
+    }
+    else if constexpr (MODE == ePixelProcessingMode::Denoise)
+    {
+        if (context.Denoiser == eDenoiser::BilateralFilter)
+        {
+            static constexpr uint32_t BILATERAL_FILTER_RADIUS = 4;
+            static constexpr float BILATERAL_FILTER_RANGE_SIGMA = 0.05f;
+            static constexpr float BILATERAL_FILTER_SPATIAL_SIGMA = static_cast<float>(BILATERAL_FILTER_RADIUS) * 0.5f;
+
+            Color denoisedColor = COLOR_BLACK;
+            float totalWeight = 0.0f;
+            for(uint32_t filterY = 0; filterY < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterY)
+            {
+                for (uint32_t filterX = 0; filterX < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterX)
+                {
+                    const int32_t offsetX = static_cast<int32_t>(filterX) - static_cast<int32_t>(BILATERAL_FILTER_RADIUS);
+                    const int32_t offsetY = static_cast<int32_t>(filterY) - static_cast<int32_t>(BILATERAL_FILTER_RADIUS);
+
+                    const uint32_t neighborX = std::clamp(static_cast<int32_t>(x) + offsetX, 0, static_cast<int32_t>(sPixels->GetWidth() - 1));
+                    const uint32_t neighborY = std::clamp(static_cast<int32_t>(y) + offsetY, 0, static_cast<int32_t>(sPixels->GetHeight() - 1));
+
+                    Color& neighborColor = sPixels->GetPixel(neighborX, neighborY);
+                    const float colorDifference = (neighborColor - color).length();
+                    const float pixelDistance = distance(float3(static_cast<float>(neighborX), static_cast<float>(neighborY), 0.0f), float3(static_cast<float>(x), static_cast<float>(y), 0.0f));
+                    const float rangeKernel = bilateral_filter::gaussianKernel(colorDifference, BILATERAL_FILTER_RANGE_SIGMA);
+                    const float spatialKernel = bilateral_filter::gaussianKernel(pixelDistance, BILATERAL_FILTER_SPATIAL_SIGMA);
+                    const float weight = rangeKernel * spatialKernel;
+                    denoisedColor += neighborColor * weight;
+                    totalWeight += weight;
+                }
+            }
+
+            if (totalWeight > 0.0f)
+            {
+                denoisedColor /= totalWeight;
+                color = denoisedColor;
+            }
+        }
     }
     else
     {
@@ -852,16 +908,11 @@ void render_frame([[maybe_unused]] const uint32_t frameIndex, const uint32_t mod
         return;
     }
     const eRaytracingMode mode = static_cast<const eRaytracingMode>(modeIndex);
-    assert(mode < eRaytracingMode::Count && "Invalid raytracing mode");
-    if (mode >= eRaytracingMode::Count)
-    {
-        std::cerr << "Invalid raytracing mode" << std::endl;
-        return;
-    }
 
     // Clear the pixel buffer
     traversePixels<ePixelProcessingMode::Clear, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
     traversePixels<ePixelProcessingMode::Render, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
+    traversePixels<ePixelProcessingMode::Denoise, DEFAULT_MEMORY_LAYOUT>(frameIndex, mode);
 }
 
 
@@ -888,19 +939,19 @@ int main()
     uint32_t frameIndex = 0;
     // while(true)
     {
-        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::IndirectDiffuse));
+        render_frame(frameIndex, static_cast<uint32_t>(eRaytracingMode::IndirectDiffuse | eRaytracingMode::Denoise));
         ++frameIndex;
     }
 
-	stbi_write_png
+    stbi_write_png
     (
-		"example_cpu.png",
-		static_cast<int>(s8BitColors->GetWidth()),
-		static_cast<int>(s8BitColors->GetHeight()),
-		static_cast<int>(CHANNELS_COUNT),
-		s8BitColors->GetData(),
-		static_cast<int>(s8BitColors->GetWidth() * static_cast<int>(CHANNELS_COUNT))
-	);
+        "example_cpu.png",
+        static_cast<int>(s8BitColors->GetWidth()),
+        static_cast<int>(s8BitColors->GetHeight()),
+        static_cast<int>(CHANNELS_COUNT),
+        s8BitColors->GetData(),
+        static_cast<int>(s8BitColors->GetWidth() * static_cast<int>(CHANNELS_COUNT))
+    );
 
     return 0;
 }

@@ -45,6 +45,8 @@ namespace raytracing
 	template<ArithmeticType T>
 	constexpr Vector2<T> lerp(const Vector2<T>& a, const Vector2<T>& b, const Vector2<float>& values) noexcept;
 	template<ArithmeticType T>
+	constexpr float distance(const Vector2<T>& a, const Vector2<T>& b) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) noexcept;
@@ -53,6 +55,8 @@ namespace raytracing
 	template<ArithmeticType T>
 	constexpr Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, const Vector3<float>& values) noexcept;
 	template<ArithmeticType T>
+	constexpr float distance(const Vector3<T>& a, const Vector3<T>& b) noexcept;
+	template<ArithmeticType T>
 	constexpr float dot(const Vector4<T>& a, const Vector4<T>& b) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector4<T> cross(const Vector4<T>& a, const Vector4<T>& b) noexcept;
@@ -60,6 +64,8 @@ namespace raytracing
 	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const float value) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const Vector4<float>& values) noexcept;
+	template<ArithmeticType T>
+	constexpr float distance(const Vector4<T>& a, const Vector4<T>& b) noexcept;
 
 	template<ArithmeticType T, T MIN, T MAX>
 	class RandomNumberGenerator
@@ -216,6 +222,12 @@ namespace raytracing
 	}
 
 	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr float distance(const Vector2<T>& a, const Vector2<T>& b) noexcept
+	{
+		return std::sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+	}
+
+	template<ArithmeticType T>
 	RT_FORCE_INLINE constexpr float dot(const Vector3<T>& a, const Vector3<T>& b) noexcept
 	{
 		return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
@@ -237,6 +249,12 @@ namespace raytracing
 	RT_FORCE_INLINE constexpr Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, const Vector3<float>& values) noexcept
 	{
 		return Vector3<T>(a.X + (b.X - a.X) * values.X, a.Y + (b.Y - a.Y) * values.Y, a.Z + (b.Z - a.Z) * values.Z);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr float distance(const Vector3<T>& a, const Vector3<T>& b) noexcept
+	{
+		return std::sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z));
 	}
 
 	template<ArithmeticType T>
@@ -276,6 +294,12 @@ namespace raytracing
 			a.Z + (b.Z - a.Z) * values.Z,
 			a.W + (b.W - a.W) * values.W
 		);
+	}
+
+	template<ArithmeticType T>
+	RT_FORCE_INLINE constexpr float distance(const Vector4<T>& a, const Vector4<T>& b) noexcept
+	{
+		return std::sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z) + (a.W - b.W) * (a.W - b.W));
 	}
 
 	struct ParametricLine final
