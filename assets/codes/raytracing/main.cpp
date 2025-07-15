@@ -400,6 +400,7 @@ struct RenderContext
     const float3 CameraUp;
     uint32_t TraceDepth;
     uint32_t MaxTraceDepth;
+    uint32_t NumSamples;
 };
 
 struct HitResult final
@@ -437,11 +438,6 @@ HitResult getClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geo
 
 Color onClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, RenderContext& context)
 {
-    if (context.TraceDepth > 1)
-    {
-        [[maybe_unused]] volatile int n = 3;
-    }
-
     // Handle the closest hit event
     // For example, you could store the hit information or update the pixel color
     Color color = COLOR_BLACK; // Default color
@@ -612,36 +608,59 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
     {
         Ray& ray = sRays->GetPixel(x, y);
 
-        if ((context.Mode & eRaytracingMode::Jitter) != eRaytracingMode::None)
+        std::vector<float2> jitters(context.NumSamples);
+        for (uint32_t sampleIndex = 0; sampleIndex < context.NumSamples; ++sampleIndex)
         {
-            const float2 pixelSize = {
-                CAMERA.Width / static_cast<float>(context.Width),
-                CAMERA.Height / static_cast<float>(context.Height)
-            };
-            const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
-                (context.CameraRight * CAMERA.Width / 2.0f) -
-                (context.CameraUp * CAMERA.Height / 2.0f);
+            if ((context.Mode & eRaytracingMode::Jitter) != eRaytracingMode::None)
+            {
+                const float2 pixelSize = {
+                    CAMERA.Width / static_cast<float>(context.Width),
+                    CAMERA.Height / static_cast<float>(context.Height)
+                };
+                const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
+                    (context.CameraRight * CAMERA.Width / 2.0f) -
+                    (context.CameraUp * CAMERA.Height / 2.0f);
 
-            const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
-                (context.CameraRight * CAMERA.Width / 2.0f) +
-                (context.CameraUp * CAMERA.Height / 2.0f);
+                const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
+                    (context.CameraRight * CAMERA.Width / 2.0f) +
+                    (context.CameraUp * CAMERA.Height / 2.0f);
 
-            const float2 jitter = {
-                UniformRandomGenerator::GetRandomNumber(),
-                UniformRandomGenerator::GetRandomNumber()
-            };
+                jitters[sampleIndex] = {
+                    UniformRandomGenerator::GetRandomNumber(),
+                    UniformRandomGenerator::GetRandomNumber()
+                };
 
-            const float3 pixelPosition = lerp(
-                focalLeftBottom,
-                focalRightTop,
-                float3((static_cast<float>(x) + jitter.X) / static_cast<float>(context.Width), (static_cast<float>(y) + jitter.Y) / static_cast<float>(context.Height), 0.5f)
-            );
+                for(uint32_t jitterIndex = 0; jitterIndex < context.NumSamples; ++jitterIndex)
+                {
+                    if(jitterIndex == sampleIndex)
+                    {
+                        continue;
+                    }
 
-            ray.Direction = (pixelPosition - CAMERA.Position).normalize();
+                    if(jitters[sampleIndex].X == jitters[jitterIndex].X &&
+                       jitters[sampleIndex].Y == jitters[jitterIndex].Y)
+                    {
+                        jitters[sampleIndex] = {
+                            UniformRandomGenerator::GetRandomNumber(),
+                            UniformRandomGenerator::GetRandomNumber()
+                        };
+                        jitterIndex = 0; // Restart the loop to check against all other jitters
+                    }
+                }
+
+                const float3 pixelPosition = lerp(
+                    focalLeftBottom,
+                    focalRightTop,
+                    float3((static_cast<float>(x) + jitters[sampleIndex].X) / static_cast<float>(context.Width), (static_cast<float>(y) + jitters[sampleIndex].Y) / static_cast<float>(context.Height), 0.5f)
+                );
+
+                ray.Direction = (pixelPosition - CAMERA.Position).normalize();
+            }
+
+            HitResult hitResult;
+            color += traceRay(hitResult, ray, sGeometries, context);
         }
-
-        HitResult hitResult;
-        color = traceRay(hitResult, ray, sGeometries, context);
+        // color /= static_cast<float>(context.NumSamples);
     }
     else
     {
@@ -734,6 +753,7 @@ void traversePixelsInner(const uint32_t frameIndex, const eRaytracingMode mode, 
         .CameraUp = cross(cross(CAMERA.Direction, CAMERA.UpDirection), CAMERA.Direction).normalize(),
         .TraceDepth = 0,
         .MaxTraceDepth = (mode & eRaytracingMode::IndirectIllumination) != eRaytracingMode::None ? 2u : 1u,
+        .NumSamples = 1,
     };
 
     if constexpr (MEMORY_LAYOUT == eTextureMemoryLayout::RowMajor)
