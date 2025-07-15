@@ -2,8 +2,9 @@
 #include "common.h"
 #include <algorithm>
 #include <iostream>
-#include <mutex>
+#if !defined(RT_EMSCRIPTEN)
 #include <thread>
+#endif  // NOT defined(RT_EMSCRIPTEN)
 #include <vector>
 
 #if defined(RT_EMSCRIPTEN)
@@ -760,6 +761,16 @@ void traversePixelsInner(const uint32_t frameIndex, const eRaytracingMode mode, 
 template<ePixelProcessingMode MODE, eTextureMemoryLayout MEMORY_LAYOUT>
 void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
 {
+#if defined(RT_EMSCRIPTEN)
+    traversePixelsInner<MODE, MEMORY_LAYOUT>(
+        frameIndex,
+        mode,
+        0,
+        sPixels->GetWidth() - 1,
+        0,
+        sPixels->GetHeight() - 1
+    );
+#else   // NOT defined(RT_EMSCRIPTEN)
     static constexpr uint32_t THREADS_WIDTH = 4;
     static constexpr uint32_t THREADS_HEIGHT = 4;
 
@@ -794,6 +805,7 @@ void traversePixels(const uint32_t frameIndex, const eRaytracingMode mode)
             }
         }
     }
+#endif  // NOT defined(RT_EMSCRIPTEN)
 }
 
 #if defined(RT_EMSCRIPTEN)

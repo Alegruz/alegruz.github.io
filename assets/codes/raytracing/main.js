@@ -1719,63 +1719,6 @@ async function createWasm() {
       assert(false, 'Exception thrown, but exception catching is not enabled. Compile with -sNO_DISABLE_EXCEPTION_CATCHING or -sEXCEPTION_CATCHING_ALLOWED=[..] to catch.');
     };
 
-  
-  
-  
-  
-  function pthreadCreateProxied(pthread_ptr, attr, startRoutine, arg) {
-  if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(2, 0, 1, pthread_ptr, attr, startRoutine, arg);
-  return ___pthread_create_js(pthread_ptr, attr, startRoutine, arg)
-  }
-  
-  
-  var _emscripten_has_threading_support = () => typeof SharedArrayBuffer != 'undefined';
-  
-  var ___pthread_create_js = (pthread_ptr, attr, startRoutine, arg) => {
-      if (!_emscripten_has_threading_support()) {
-        dbg('pthread_create: environment does not support SharedArrayBuffer, pthreads are not available');
-        return 6;
-      }
-  
-      // List of JS objects that will transfer ownership to the Worker hosting the thread
-      var transferList = [];
-      var error = 0;
-  
-      // Synchronously proxy the thread creation to main thread if possible. If we
-      // need to transfer ownership of objects, then proxy asynchronously via
-      // postMessage.
-      if (ENVIRONMENT_IS_PTHREAD && (transferList.length === 0 || error)) {
-        return pthreadCreateProxied(pthread_ptr, attr, startRoutine, arg);
-      }
-  
-      // If on the main thread, and accessing Canvas/OffscreenCanvas failed, abort
-      // with the detected error.
-      if (error) return error;
-  
-      var threadParams = {
-        startRoutine,
-        pthread_ptr,
-        arg,
-        transferList,
-      };
-  
-      if (ENVIRONMENT_IS_PTHREAD) {
-        // The prepopulated pool of web workers that can host pthreads is stored
-        // in the main JS thread. Therefore if a pthread is attempting to spawn a
-        // new thread, the thread creation must be deferred to the main JS thread.
-        threadParams.cmd = 'spawnThread';
-        postMessage(threadParams, transferList);
-        // When we defer thread creation this way, we have no way to detect thread
-        // creation synchronously today, so we have to assume success and return 0.
-        return 0;
-      }
-  
-      // We are the main thread, so we have the pthread warmup pool in this
-      // thread and can fire off JS thread creation directly ourselves.
-      return spawnThread(threadParams);
-    };
-
   var __abort_js = () =>
       abort('native code called abort()');
 
@@ -2167,7 +2110,7 @@ async function createWasm() {
   
   function _environ_get(__environ, environ_buf) {
   if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(3, 0, 1, __environ, environ_buf);
+    return proxyToMainThread(2, 0, 1, __environ, environ_buf);
   
       var bufSize = 0;
       var envp = 0;
@@ -2187,7 +2130,7 @@ async function createWasm() {
   
   function _environ_sizes_get(penviron_count, penviron_buf_size) {
   if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(4, 0, 1, penviron_count, penviron_buf_size);
+    return proxyToMainThread(3, 0, 1, penviron_count, penviron_buf_size);
   
       var strings = getEnvStrings();
       HEAPU32[((penviron_count)>>2)] = strings.length;
@@ -4808,7 +4751,7 @@ async function createWasm() {
   
   function _fd_close(fd) {
   if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(5, 0, 1, fd);
+    return proxyToMainThread(4, 0, 1, fd);
   
   try {
   
@@ -4845,7 +4788,7 @@ async function createWasm() {
   
   function _fd_read(fd, iov, iovcnt, pnum) {
   if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(6, 0, 1, fd, iov, iovcnt, pnum);
+    return proxyToMainThread(5, 0, 1, fd, iov, iovcnt, pnum);
   
   try {
   
@@ -4866,7 +4809,7 @@ async function createWasm() {
   
   function _fd_seek(fd, offset, whence, newOffset) {
   if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(7, 0, 1, fd, offset, whence, newOffset);
+    return proxyToMainThread(6, 0, 1, fd, offset, whence, newOffset);
   
     offset = bigintToI53Checked(offset);
   
@@ -4913,7 +4856,7 @@ async function createWasm() {
   
   function _fd_write(fd, iov, iovcnt, pnum) {
   if (ENVIRONMENT_IS_PTHREAD)
-    return proxyToMainThread(8, 0, 1, fd, iov, iovcnt, pnum);
+    return proxyToMainThread(7, 0, 1, fd, iov, iovcnt, pnum);
   
   try {
   
@@ -5505,7 +5448,6 @@ unexportedSymbols.forEach(unexportedRuntimeSymbol);
 var proxiedFunctionTable = [
   _proc_exit,
   exitOnMainThread,
-  pthreadCreateProxied,
   _environ_get,
   _environ_sizes_get,
   _fd_close,
@@ -5571,8 +5513,6 @@ function assignWasmExports(wasmExports) {
     __assert_fail: ___assert_fail,
     /** @export */
     __cxa_throw: ___cxa_throw,
-    /** @export */
-    __pthread_create_js: ___pthread_create_js,
     /** @export */
     _abort_js: __abort_js,
     /** @export */
