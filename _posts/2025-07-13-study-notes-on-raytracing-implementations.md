@@ -593,13 +593,7 @@ By now, it is clear that raytracing is a very computationally intensive task, es
   <canvas id="wasm-canvas-gpu-demo-simple" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing GPU Demo - Simple Intersection</p>
 </div>
-<script src="{{ '/assets/codes/raytracing/main.js' | relative_url }}"></script>
 <script>
-createRaytracerModule({
-  locateFile: (p) => p.endsWith('.wasm')
-    ? '{{ "/assets/codes/raytracing/main.wasm" | relative_url }}'
-    : p
-}).then(Module => {
   const container = document.getElementById("raytracing-gpu-demo-simple");
   const canvas = container.querySelector("canvas") as HTMLCanvasElement;
   const adapter = await navigator.gpu.requestAdapter();
@@ -987,15 +981,12 @@ createRaytracerModule({
     }
     const t0 = performance.now();
     await new Promise(r => setTimeout(r, 0)); // yield before heavy work
-
     frame();
     const t1 = performance.now();
     info.textContent = `Frame ${frame} rendered in ${(t1 - t0).toFixed(2)} ms`;
-
     // Schedule next frame without blocking UI
     setTimeout(renderLoop, 0);
   }
-
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
       visible = entry.isIntersecting;
@@ -1008,9 +999,5 @@ createRaytracerModule({
     root: null,
     threshold: 0.1
   });
-
   observer.observe(container);
-}).catch(err => {
-  console.error("Failed to initialize WebAssembly module", err);
-});
 </script>
