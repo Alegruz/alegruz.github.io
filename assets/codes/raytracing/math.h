@@ -1,11 +1,13 @@
 #pragma once
 
 #include <cassert>
+#include <chrono>
 #include <climits>
 #include <cmath>
 #include <cstdint>
 #include <concepts>
 #include <optional>
+#include <random> // Required for random number generation
 #include <utility>
 
 #include "common.h"
@@ -57,6 +59,23 @@ namespace raytracing
 	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const float value) noexcept;
 	template<ArithmeticType T>
 	constexpr Vector4<T> lerp(const Vector4<T>& a, const Vector4<T>& b, const Vector4<float>& values) noexcept;
+
+	template<ArithmeticType T, T MIN, T MAX>
+	class RandomNumberGenerator
+	{
+	public:
+		static T GetRandomNumber()
+		{
+			return smDistribution(smGenerator);
+		}
+
+	private:
+		static uint32_t smGeneratorSeed;
+    	static std::mt19937 smGenerator;
+		static std::uniform_real_distribution<T> smDistribution;
+	};
+
+	using UniformRandomGenerator = RandomNumberGenerator<float, 0.0f, 1.0f>;
 
 	template<ArithmeticType T>
 	struct Vector<T, 2> final

@@ -28,6 +28,14 @@
 
 using namespace raytracing;
 
+// math
+template<ArithmeticType T, T MIN, T MAX>
+uint32_t RandomNumberGenerator<T, MIN, MAX>::smGeneratorSeed(static_cast<uint32_t>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
+template<ArithmeticType T, T MIN, T MAX>
+std::mt19937 RandomNumberGenerator<T, MIN, MAX>::smGenerator(smGeneratorSeed);
+template<ArithmeticType T, T MIN, T MAX>
+std::uniform_real_distribution<T> RandomNumberGenerator<T, MIN, MAX>::smDistribution(MIN, MAX);
+
 static constexpr uint32_t CHANNELS_COUNT = 4; // RGBA
 
 enum class eTextureMemoryLayout
@@ -389,6 +397,31 @@ void processPixel(const uint32_t x, const uint32_t y, [[maybe_unused]] const Ren
     else if constexpr (MODE == ePixelProcessingMode::Render)
     {
         Ray& ray = sRays->GetPixel(x, y);
+
+        const float2 pixelSize = {
+			CAMERA.Width / static_cast<float>(context.Width),
+			CAMERA.Height / static_cast<float>(context.Height)
+		};
+		const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
+			(context.CameraRight * CAMERA.Width / 2.0f) -
+			(context.CameraUp * CAMERA.Height / 2.0f);
+
+        const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
+            (context.CameraRight * CAMERA.Width / 2.0f) +
+            (context.CameraUp * CAMERA.Height / 2.0f);
+
+        const float2 jitter = {
+            UniformRandomGenerator::GetRandomNumber(),
+            UniformRandomGenerator::GetRandomNumber()
+        };
+
+        const float3 pixelPosition = lerp(
+            focalLeftBottom,
+            focalRightTop,
+            float3((static_cast<float>(x) + jitter.X) / static_cast<float>(context.Width), (static_cast<float>(y) + jitter.Y) / static_cast<float>(context.Height), 0.5f)
+        );
+
+        ray.Direction = (pixelPosition - CAMERA.Position).normalize();
 
         // Here you would typically perform ray tracing logic, such as checking for intersections with geometry
         // For now, we will just print the ray origin and direction
