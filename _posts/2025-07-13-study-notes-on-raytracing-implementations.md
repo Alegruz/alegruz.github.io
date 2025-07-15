@@ -122,7 +122,7 @@ createRaytracerModule({
   const imageData = ctx.createImageData(width, height);
   const container = document.getElementById("raytracing-cpu-demo-only-intersection");
   const label = container.querySelector("p");
-  
+
   // Set up info element once
   const info = document.createElement("p");
   info.style.fontSize = "0.9em";
@@ -156,63 +156,37 @@ createRaytracerModule({
 
   const bufferView = new Uint8Array(Module.HEAPU8.buffer, bufPtr, width * height * channels);
   let frame = 0;
+  let shouldRender = false;
 
   async function loop() {
-    const t0 = performance.now();
-    await new Promise(resolve => setTimeout(resolve, 0)); // Yield to UI
+    if (!shouldRender) {
+      requestAnimationFrame(loop);
+      return;
+    }
 
-    render(frame++, 0); // mode 0: only intersection
+    const t0 = performance.now();
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    render(frame++, 0); // Only intersection mode
     imageData.data.set(bufferView);
     ctx.putImageData(imageData, 0, 0);
 
     const t1 = performance.now();
-    const elapsed = (t1 - t0).toFixed(2);
-    info.textContent = `Frame ${frame} rendered in ${elapsed} ms`;
+    info.textContent = `Frame ${frame} rendered in ${(t1 - t0).toFixed(2)} ms`;
 
-    requestAnimationFrame(loop); // Keep looping
+    requestAnimationFrame(loop);
   }
 
-  loop(); // Start the async render loop
+  // 👁️ IntersectionObserver: pause/resume based on visibility
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      shouldRender = entry.isIntersecting;
+    }
+  }, {
+    root: null,          // viewport
+    threshold: 0.1       // at least 10% visible
+  });
 }).catch(err => {
   console.error("Failed to initialize WebAssembly module", err);
 });
 </script>
-
-## Appendix
-
-```cpp
-struct float3 final
-{
-public:
-  float X;
-  float Y;
-  float Z;
-
-public:
-  inline constexpr float3() noexcept : float3(0.0f) {}
-  inline constexpr float3(const float value) noexcept : float3(value, value, value) {}
-  inline constexpr float3(const float x, const float y, const float z) noexcept : X(x), Y(y), Z(z) {}
-  inline constexpr float3(const float3& other) noexcept = default;
-  inline constexpr float3(float3&& other) noexcept = default;
-  inline constexpr ~float3() noexcept = default;
-  inline constexpr float3& operator=(const float3& other) noexcept = default;
-  inline constexpr float3& operator=(float3&& other) noexcept = default;
-  inline constexpr float3& operator=(const float x, const float y, const float z) noexcept { X = x; Y = y; Z = z; return *this; }
-  inline constexpr float3& operator=(const float value) noexcept { X = value; Y = value; Z = value; return *this; }
-  inline constexpr float3 operator+(const float3& other) const noexcept { return float3(X + other.X, Y + other.Y, Z + other.Z); }
-  inline constexpr float3 operator-(const float3& other) const noexcept { return float3(X - other.X, Y - other.Y, Z - other.Z); }
-  inline constexpr float3 operator*(const float scalar) const noexcept { return float3(X * scalar, Y * scalar, Z * scalar); }
-  inline constexpr float3 operator/(const float scalar) const noexcept { return float3(X / scalar, Y / scalar, Z / scalar); }
-  inline constexpr float3 operator-() const noexcept { return float3(-X, -Y, -Z); }
-  inline constexpr float3& operator+=(const float3& other) noexcept { X += other.X; Y += other.Y; Z += other.Z; return *this; }
-  inline constexpr float3& operator-=(const float3& other) noexcept { X -= other.X; Y -= other.Y; Z -= other.Z; return *this; }
-  inline constexpr float3& operator*=(const float scalar) noexcept { X *= scalar; Y *= scalar; Z *= scalar; return *this; }
-  inline constexpr float3& operator/=(const float scalar) noexcept { X /= scalar; Y /= scalar; Z /= scalar; return *this; }
-  inline constexpr float3 operator*(const float3& other) const noexcept { return float3(X * other.X, Y * other.Y, Z * other.Z); }
-  inline constexpr float3 operator/(const float3& other) const noexcept { return float3(X / other.X, Y / other.Y, Z / other.Z); }
-  inline constexpr float dot(const float3& other) const noexcept { return X * other.X + Y * other.Y + Z * other.Z; }
-  inline constexpr float3 cross(const float3& other) const noexcept { return float3( Y * other.Z - Z * other.Y, Z * other.X - X * other.Z, X * other.Y - Y * other.X); }
-  inline constexpr float length() const noexcept { return std::sqrt(X * X + Y * Y + Z * Z); }
-  inline constexpr float3 normalize() const noexcept { const float len = length(); return float3(X / len, Y / len, Z / len); }
-};
-```
