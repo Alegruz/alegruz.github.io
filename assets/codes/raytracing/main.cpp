@@ -221,7 +221,14 @@ struct Geometry final
     eMaterial Material = eMaterial::SimpleDiffuse;
 };
 
+struct GBufferPixel final
+{
+	float3 Normal; // Normal vector
+};
+
 static std::unique_ptr<Texture2D<Color>> sPixels = nullptr;
+static std::unique_ptr<Texture2D<float>> sDepthBuffer = nullptr;
+static std::unique_ptr<Texture2D<GBufferPixel>> sGBuffer = nullptr;
 static std::unique_ptr<Texture2D<Color>> sDenoisedPixels = nullptr;
 static std::unique_ptr<Texture2D<Color8Bit>> s8BitColors = nullptr;
 static std::unique_ptr<Texture2D<Ray>> sRays = nullptr;
@@ -372,8 +379,9 @@ enum class ePixelProcessingMode : uint8_t
 enum class eDenoiser : uint8_t
 {
     BilateralFilter,
+    CrossBilateralFilter,
     Count,
-    Default = BilateralFilter,
+    Default = CrossBilateralFilter,
 };
 
 enum class eRaytracingMode : uint8_t
@@ -590,7 +598,8 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
 {
     context.TraceDepth = 0;
 
-    Color color = sPixels->GetPixel(x, y);
+	Color color = sPixels->GetPixel(x, y);
+	float depth = sDepthBuffer->GetPixel(x, y);
     if constexpr (MODE == ePixelProcessingMode::Initialize)
     {
         sRays->GetPixel(x, y).Origin = CAMERA.Position;
@@ -624,15 +633,13 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
             color.W = 1.0f; // Alpha
         }
         sPixels->GetPixel(x, y) = color;
+        sDepthBuffer->GetPixel(x, y) = std::numeric_limits<float>::max(); // Reset depth value
     }
     else if constexpr (MODE == ePixelProcessingMode::Render)
     {
         Ray& ray = sRays->GetPixel(x, y);
-        if (x > 100 && y > 100)
-        {
-            [[maybe_unused]] volatile int n = 3;
-        }
 
+        float3 normal;
         std::vector<float2> jitters(context.NumSamples);
         for (uint32_t sampleIndex = 0; sampleIndex < context.NumSamples; ++sampleIndex)
         {
@@ -685,19 +692,25 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
             HitResult hitResult;
             const Color tracedColor = traceRay(hitResult, ray, sGeometries, context);
 			color.XYZ() += tracedColor.XYZ();
+			depth += hitResult.IntersectionDistance;
+			normal += hitResult.TriangleOrNull ? hitResult.TriangleOrNull->Normal : float3(0.0f, 0.0f, 0.0f);
         }
         color.XYZ() /= static_cast<float>(context.NumSamples);
+		depth /= static_cast<float>(context.NumSamples);
+		normal /= static_cast<float>(context.NumSamples);
         color.XYZ() = pow(color.XYZ(), 1.0f / 2.2f); // Apply gamma correction
-        sPixels->GetPixel(x, y) = color;
+		sPixels->GetPixel(x, y) = color;
+        sDepthBuffer->GetPixel(x, y) = depth; // Store the average depth value
+		sGBuffer->GetPixel(x, y).Normal = normal.normalize(); // Store the average normal vector
     }
     else if constexpr (MODE == ePixelProcessingMode::Denoise)
     {
+        static constexpr uint32_t BILATERAL_FILTER_RADIUS = 5;
+        static constexpr float BILATERAL_FILTER_RANGE_SIGMA = 0.3f;
+        static constexpr float BILATERAL_FILTER_SPATIAL_SIGMA = static_cast<float>(BILATERAL_FILTER_RADIUS) * 0.5f;
+
         if (context.Denoiser == eDenoiser::BilateralFilter)
         {
-            static constexpr uint32_t BILATERAL_FILTER_RADIUS = 5;
-            static constexpr float BILATERAL_FILTER_RANGE_SIGMA = 0.3f;
-            static constexpr float BILATERAL_FILTER_SPATIAL_SIGMA = static_cast<float>(BILATERAL_FILTER_RADIUS) * 0.5f;
-
             Color denoisedColor = COLOR_BLACK;
             float totalWeight = 0.0f;
             for (uint32_t filterY = 0; filterY < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterY)
@@ -716,6 +729,51 @@ void processPixel(const uint32_t x, const uint32_t y, RenderContext& context)
                     const float rangeKernel = bilateral_filter::gaussianKernel(colorDifference, BILATERAL_FILTER_RANGE_SIGMA);
                     const float spatialKernel = bilateral_filter::gaussianKernel(pixelDistance, BILATERAL_FILTER_SPATIAL_SIGMA);
                     const float weight = rangeKernel * spatialKernel;
+                    denoisedColor += neighborColor.XYZ() * weight;
+                    totalWeight += weight;
+                }
+            }
+
+            if (totalWeight > 0.0f)
+            {
+                denoisedColor /= totalWeight;
+                color.XYZ() = denoisedColor.XYZ(); // Store denoised color
+                sDenoisedPixels->GetPixel(x, y) = color;
+            }
+        }
+        else if (context.Denoiser == eDenoiser::CrossBilateralFilter)
+        {
+            static constexpr float BILATERAL_FILTER_NORMAL_SIGMA = 0.1f;
+            static constexpr float BILATERAL_FILTER_DEPTH_SIGMA = 0.5f;
+
+            Color denoisedColor = COLOR_BLACK;
+            float totalWeight = 0.0f;
+            const float3& pixelNormal = sGBuffer->GetPixel(x, y).Normal;
+            for (uint32_t filterY = 0; filterY < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterY)
+            {
+                for (uint32_t filterX = 0; filterX < BILATERAL_FILTER_RADIUS * 2 + 1; ++filterX)
+                {
+                    const int32_t offsetX = static_cast<int32_t>(filterX) - static_cast<int32_t>(BILATERAL_FILTER_RADIUS);
+                    const int32_t offsetY = static_cast<int32_t>(filterY) - static_cast<int32_t>(BILATERAL_FILTER_RADIUS);
+
+                    const uint32_t neighborX = static_cast<uint32_t>(std::clamp(static_cast<int32_t>(x) + offsetX, 0, static_cast<int32_t>(sPixels->GetWidth() - 1)));
+                    const uint32_t neighborY = static_cast<uint32_t>(std::clamp(static_cast<int32_t>(y) + offsetY, 0, static_cast<int32_t>(sPixels->GetHeight() - 1)));
+
+                    const Color& neighborColor = sPixels->GetPixel(neighborX, neighborY);
+                    const float colorDifference = (neighborColor.XYZ() - color.XYZ()).length();
+                    const float pixelDistance = distance(float3(static_cast<float>(neighborX), static_cast<float>(neighborY), 0.0f), float3(static_cast<float>(x), static_cast<float>(y), 0.0f));
+                    const float rangeKernel = bilateral_filter::gaussianKernel(colorDifference, BILATERAL_FILTER_RANGE_SIGMA);
+                    const float spatialKernel = bilateral_filter::gaussianKernel(pixelDistance, BILATERAL_FILTER_SPATIAL_SIGMA);
+
+                    const float3& neighborNormal = sGBuffer->GetPixel(neighborX, neighborY).Normal;
+					const float normalDistance = distance(neighborNormal, pixelNormal);
+                    const float normalWeight = bilateral_filter::gaussianKernel(normalDistance, BILATERAL_FILTER_NORMAL_SIGMA);
+
+                    const float neighborDepth = sDepthBuffer->GetPixel(neighborX, neighborY);
+					const float depthDifference = std::abs(neighborDepth - depth);
+					const float depthWeight = bilateral_filter::gaussianKernel(depthDifference, BILATERAL_FILTER_DEPTH_SIGMA);
+
+                    const float weight = rangeKernel * spatialKernel * normalWeight * depthWeight;
                     denoisedColor += neighborColor.XYZ() * weight;
                     totalWeight += weight;
                 }
@@ -760,6 +818,24 @@ void initialize(const uint32_t width, const uint32_t height)
     {
         sPixels->SetResolution(width, height);
     }
+
+	if (sDepthBuffer == nullptr)
+	{
+		sDepthBuffer = std::make_unique<Texture2D<float>>(width, height);
+	}
+	else
+	{
+		sDepthBuffer->SetResolution(width, height);
+	}
+
+	if (sGBuffer == nullptr)
+	{
+		sGBuffer = std::make_unique<Texture2D<GBufferPixel>>(width, height);
+	}
+	else
+	{
+		sGBuffer->SetResolution(width, height);
+	}
 
 	if (sDenoisedPixels == nullptr)
 	{
