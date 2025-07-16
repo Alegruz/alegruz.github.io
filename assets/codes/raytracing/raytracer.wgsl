@@ -183,7 +183,7 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
         // If focal length is zero, just store the ray direction
         textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 0.0f, 1.0));
     }
-    else if (camera.forward.x != 0.0 || camera.forward.y != 0.0 || camera.forward.z == 1.0)
+    else if (camera.forward.x != 0.0 || camera.forward.y != 0.0 || camera.forward.z != 1.0)
     {
         // If focal length is zero, just store the ray direction
         textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 0.0f, 1.0));
