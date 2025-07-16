@@ -650,17 +650,17 @@ By now, it is clear that raytracing is a very computationally intensive task, es
       1.0, 1.0, 1.0,
     // Light source
       // Triangle vertices
-      343.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 227.0,
-      343.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 332.0,
-      213.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 332.0,
+      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0,
+      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0,
+      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0,
       // Triangle normal and emissive factor
       0.0, -1.0, 0.0, 1.0,
       // Triangle color
       1.0, 1.0, 1.0,
       // Triangle vertices
-      213.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 227.0,
-      343.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 227.0,
-      213.0, 548.8 - Math.ulp(1.0) - Math.ulp(1.0), 332.0,
+      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0,
+      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0,
+      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0,
       // Triangle normal and emissive factor
       0.0, -1.0, 0.0, 1.0,
       // Triangle color
