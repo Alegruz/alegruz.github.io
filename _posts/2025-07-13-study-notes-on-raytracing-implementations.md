@@ -620,6 +620,7 @@ By now, it is clear that raytracing is a very computationally intensive task, es
     0.025,                // Width
     0.025,                // Height
     0.0,                   // Padding
+    0.0, 0.0, 0.0, 1.0    // Padding
   ]);
   const cameraBuffer = device.createBuffer({
     size: cameraData.byteLength,
