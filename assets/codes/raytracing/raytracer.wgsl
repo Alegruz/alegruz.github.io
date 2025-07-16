@@ -92,11 +92,50 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     let pixel = vec2<f32>(f32(globalId.x), f32(globalId.y));
     let uv = pixel / resolution;
 
-    let x = (2.0 * uv.x - 1.0) * camera.width / camera.focalLength;
-    let y = (1.0 - 2.0 * uv.y) * camera.height / camera.focalLength;
+    let pixelSize = vec2<f32>(camera.width / resolution.x, camera.height / resolution.y);
+    let focalLeftBottom = camera.position + (camera.forward * camera.focalLength) -
+        (camera.right * camera.width / 2.0) -
+        (camera.up * camera.height / 2.0);
+    let focalRightTop = camera.position + (camera.forward * camera.focalLength) +
+        (camera.right * camera.width / 2.0) +
+        (camera.up * camera.height / 2.0);
+
+    let jitter = vec2<f32>(
+        0.5,
+        0.5
+    );
+
+    // jitters[sampleIndex] = {
+    //     UniformRandomGenerator::GetRandomNumber(),
+    //     UniformRandomGenerator::GetRandomNumber()
+    // };
+
+    // for (uint32_t jitterIndex = 0; jitterIndex < context.NumSamples; ++jitterIndex)
+    // {
+    //     if (jitterIndex == sampleIndex)
+    //     {
+    //         continue;
+    //     }
+
+    //     if (jitters[sampleIndex].X == jitters[jitterIndex].X &&
+    //         jitters[sampleIndex].Y == jitters[jitterIndex].Y)
+    //     {
+    //         jitters[sampleIndex] = {
+    //             UniformRandomGenerator::GetRandomNumber(),
+    //             UniformRandomGenerator::GetRandomNumber()
+    //         };
+    //         jitterIndex = 0; // Restart the loop to check against all other jitters
+    //     }
+    // }
+
+    let pixelPosition = vec3<f32>(
+        lerp(focalLeftBottom.x, focalRightTop.x, (pixel.x + jitter.x) / resolution.x),
+        lerp(focalLeftBottom.y, focalRightTop.y, (pixel.y + jitter.y) / resolution.y),
+        lerp(focalLeftBottom.z, focalRightTop.z, 0.5f),
+    );
 
     // Generate primary ray
-    let rayDirection = normalize(x * camera.right + y * camera.up + camera.forward);
+    let rayDirection = normalize(pixelPosition - camera.position);
     let ray: Ray = Ray(
         camera.position,
         rayDirection
