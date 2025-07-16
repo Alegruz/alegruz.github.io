@@ -43,8 +43,8 @@ fn intersect(ray: Ray, triangle: Triangle) -> IntersectionResult
 {
     var result: IntersectionResult = IntersectionResult(false, -1.0, vec3<f32>(0.0, 0.0, 0.0));
 
-    let edge0 = triangle.Vertices[1] - triangle.Vertices[0];
-    let edge1 = triangle.Vertices[2] - triangle.Vertices[0];
+    let edge0 = triangle.vertices[1] - triangle.vertices[0];
+    let edge1 = triangle.vertices[2] - triangle.vertices[0];
     let rayCrossEdge1 = cross(ray.direction, edge1);
     let determinant = dot(edge0, rayCrossEdge1);
     if(determinant > -FLT_EPSILON && determinant < FLT_EPSILON)
