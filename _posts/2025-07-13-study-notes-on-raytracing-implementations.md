@@ -612,15 +612,14 @@ By now, it is clear that raytracing is a very computationally intensive task, es
 
   // Camera buffer
   const cameraData = new Float32Array([
-    278.0, 273.0, -800.0, 1.0, // Camera position + padding
-    0.0, 0.0, 1.0, 0.0,        // Camera forward + padding
-    -1.0, 0.0, 0.0, 0.0,       // Camera right + padding
-    0.0, 1.0, 0.0, 0.0,        // Camera up + padding
+    278.0, 273.0, -800.0, // Camera position
+    0.0, 0.0, 1.0,       // Camera forward + padding
+    -1.0, 0.0, 0.0,       // Camera right + padding
+    0.0, 1.0, 0.0,        // Camera up + padding
     0.035,                // Focal length
     0.025,                // Width
     0.025,                // Height
-    0.0                   // Padding
-    
+    0.0,                   // Padding
   ]);
   const cameraBuffer = device.createBuffer({
     size: cameraData.byteLength,
