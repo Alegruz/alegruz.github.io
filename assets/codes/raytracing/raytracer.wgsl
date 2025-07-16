@@ -96,9 +96,10 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     let y = (1.0 - 2.0 * uv.y) * camera.height / camera.focalLength;
 
     // Generate primary ray
+    let rayDirection = normalize(x * camera.right + y * camera.up + camera.forward);
     let ray: Ray = Ray(
         camera.position,
-        normalize(x * camera.right + y * camera.up + camera.forward)
+        rayDirection
     );
 
     // Initialize pixel color
@@ -138,5 +139,5 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // Write the final pixel color to the output texture
     // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
-    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(uv.x, uv.y, 0.0f, 1.0));
+    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(rayDirection.x, rayDirection.y, rayDirection.z, 1.0));
 }
