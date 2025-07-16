@@ -127,11 +127,10 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     //         jitterIndex = 0; // Restart the loop to check against all other jitters
     //     }
     // }
-
     let pixelPosition = vec3<f32>(
-        lerp(focalLeftBottom.x, focalRightTop.x, (pixel.x + jitter.x) / resolution.x),
-        lerp(focalLeftBottom.y, focalRightTop.y, (pixel.y + jitter.y) / resolution.y),
-        lerp(focalLeftBottom.z, focalRightTop.z, 0.5f),
+        mix(focalLeftBottom.x, focalRightTop.x, (pixel.x + jitter.x) / resolution.x),
+        mix(focalLeftBottom.y, focalRightTop.y, (pixel.y + jitter.y) / resolution.y),
+        mix(focalLeftBottom.z, focalRightTop.z, 0.5f),
     );
 
     // Generate primary ray
@@ -178,14 +177,15 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // Write the final pixel color to the output texture
     // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
-    if(camera.focalLength <= FLT_EPSILON)
-    {
-        // If focal length is zero, just store the ray direction
-        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 0.0f, 1.0));
-    }
-    else
-    {
-        // Store the pixel color
-        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(rayDirection.x, rayDirection.y, rayDirection.z, 1.0));
-    }
+    // if(camera.forward.x == 0.0 && camera.forward.y == 0.0 && camera.forward.z == 1.0)
+    // {
+    //     // If focal length is zero, just store the ray direction
+    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 0.0f, 1.0));
+    // }
+    // else
+    // {
+    //     // Store the pixel color
+    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(rayDirection.x, rayDirection.y, rayDirection.z, 1.0));
+    // }
+    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(rayDirection.x, rayDirection.y, rayDirection.z, 1.0));
 }
