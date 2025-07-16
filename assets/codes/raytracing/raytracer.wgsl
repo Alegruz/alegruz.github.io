@@ -198,20 +198,21 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     //     // If focal length is zero, just store the ray direction
     //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 1.0f, 1.0f, 1.0));
     // }
-    // else if(abs(focalLeftBottom.x - 278.012512) > FLT_EPSILON || abs(focalLeftBottom.y - 272.987488) > FLT_EPSILON || abs(focalLeftBottom.z + 799.965027) > FLT_EPSILON)
-    // {
-    //     // If focal length is zero, just store the ray direction
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 1.0f, 1.0));
-    // }
-    // else if (abs(focalRightTop.x - 277.987488) > FLT_EPSILON || abs(focalRightTop.y - 273.012512) > FLT_EPSILON || abs(focalRightTop.z + 799.965027) > FLT_EPSILON)
-    // {
-    //     // If focal length is zero, just store the ray direction
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 1.0f, 1.0));
-    // }
     // else
+     if(abs(focalLeftBottom.x - 278.012512) > 0.1f || abs(focalLeftBottom.y - 272.987488) > 0.1f || abs(focalLeftBottom.z + 799.965027) > 0.1f)
+    {
+        // If focal length is zero, just store the ray direction
+        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 1.0f, 1.0));
+    }
+    else if (abs(focalRightTop.x - 277.987488) > 0.1f || abs(focalRightTop.y - 273.012512) > 0.1f || abs(focalRightTop.z + 799.965027) > 0.1f)
+    {
+        // If focal length is zero, just store the ray direction
+        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 1.0f, 1.0));
+    }
+    else
     // {
-    //     let debugColor = normalize(pixelSize);
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor.x, debugColor.y, 0.0, 1.0));
+        // let debugColor = normalize(pixelSize);
+        // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor.x, debugColor.y, 0.0, 1.0));
     // }
     
     {
