@@ -27,7 +27,8 @@ var<uniform> camera: Camera;
 @group(0) @binding(1)
 var<storage, read> scene: array<Triangle>;
 @group(0) @binding(2)
-var<storage, write> output: texture_storage_2d<rgba8unorm, write>;
+@group(0) @binding(2)
+var output: texture_storage_2d<rgba8unorm, write>;
 
 const FLT_EPSILON: f32 = 1.19209290e-07f;
 const FLT_MAX: f32 = 1e20;

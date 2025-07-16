@@ -14,6 +14,6 @@ fn vs_main(@builtin(vertex_index) index: u32) -> @builtin(position) vec4<f32> {
 fn fs_main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
     let dims = vec2<f32>(textureDimensions(texture0));
     let uv = fragCoord.xy / dims;
-    let color = textureSample(texture0, sam, uv);
+    let color = textureSample(texture0, sampler0, uv);
     return vec4<f32>(pow(color.rgb, vec3<f32>(1.0 / 2.2)), 1.0);
 }
