@@ -218,7 +218,7 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     {
         // Store the pixel color
         // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>((rayDirection.x + 1.0f) * 0.5f, (rayDirection.y + 1.0f) * 0.5f, (rayDirection.z + 1.0f) * 0.5f, 1.0));
-        let normalizedPixelPosition = normalize(pixelPosition);
+        let normalizedPixelPosition = normalize(camera.position);
         textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(normalizedPixelPosition.x, normalizedPixelPosition.y, normalizedPixelPosition.z, 1.0));
     }
 }
