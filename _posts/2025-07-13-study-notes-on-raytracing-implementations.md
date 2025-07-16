@@ -732,7 +732,7 @@ By now, it is clear that raytracing is a very computationally intensive task, es
       // Triangle normal and emissive factor
       -0.999983013, 0.00583082717, 0.00000000, 0.0,
       // Triangle color
-      1.0, 0.0, 0.0
+      1.0, 0.0, 0.0,
     // Short Block
       // Triangle vertices
       130.0, 165.0, 65.0,
