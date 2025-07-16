@@ -123,7 +123,7 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     if(closestDistance < FLT_MAX)
     {
         let triangle = scene[closestTriangleIndex];
-        let normal = triangle.normal;
+        let normal = triangle.normal.xyz; // Extract normal from the triangle
         let lightDirection = normalize(vec3<f32>(1.0, -1.0, -1.0)); // Example light direction
         let color = triangle.color; // Get the color from the triangle
 
