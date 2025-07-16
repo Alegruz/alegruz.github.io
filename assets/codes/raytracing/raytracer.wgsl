@@ -135,85 +135,85 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // Generate primary ray
     let rayDirection = normalize(pixelPosition - camera.position);
-    let ray: Ray = Ray(
-        camera.position,
-        rayDirection
-    );
+    // let ray: Ray = Ray(
+    //     camera.position,
+    //     rayDirection
+    // );
 
-    // Initialize pixel color
-    var closestDistance = FLT_MAX;
-    var closestTriangleIndex: u32 = 0;
-    var pixelColor = vec3<f32>(0.0, 0.0, 0.0);
+    // // Initialize pixel color
+    // var closestDistance = FLT_MAX;
+    // var closestTriangleIndex: u32 = 0;
+    // var pixelColor = vec3<f32>(0.0, 0.0, 0.0);
 
-    // Ray generation and scene intersection logic goes here
-    // For each triangle in the scene, perform intersection tests
-    for(var i: u32 = 0u; i < arrayLength(&scene); i++)
-    {
-        let triangle = scene[i];
-        let intersection = intersect(ray, triangle);
-        if(intersection.hit && intersection.distance < closestDistance)
-        {
-            closestDistance = intersection.distance;
-            closestTriangleIndex = u32(i);
-        }
-    }
-
-    // If a triangle was hit, calculate the color
-    if(closestDistance < FLT_MAX)
-    {
-        let triangle = scene[closestTriangleIndex];
-        let normal = triangle.normal.xyz; // Extract normal from the triangle
-        let lightDirection = normalize(vec3<f32>(1.0, -1.0, -1.0)); // Example light direction
-        let color = triangle.color; // Get the color from the triangle
-
-        // Evaluate Lambertian shading
-        pixelColor = evaluateLambert(normal, lightDirection, color);
-    }
-    else
-    {
-        // Background color if no intersection
-        pixelColor = vec3<f32>(0.0, 0.0, 0.0); // Black background
-    }
-
-    // Write the final pixel color to the output texture
-    // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
-    
-    // if(abs(camera.position.x - 278.0) > FLT_EPSILON || abs(camera.position.y - 273.0) > FLT_EPSILON || abs(camera.position.z + 800.0) > FLT_EPSILON)
+    // // Ray generation and scene intersection logic goes here
+    // // For each triangle in the scene, perform intersection tests
+    // for(var i: u32 = 0u; i < arrayLength(&scene); i++)
     // {
-    //     // If focal length is zero, just store the ray direction
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 0.0f, 1.0));
+    //     let triangle = scene[i];
+    //     let intersection = intersect(ray, triangle);
+    //     if(intersection.hit && intersection.distance < closestDistance)
+    //     {
+    //         closestDistance = intersection.distance;
+    //         closestTriangleIndex = u32(i);
+    //     }
     // }
-    // else if (camera.forward.x != 0.0 || camera.forward.y != 0.0 || camera.forward.z != 1.0)
+
+    // // If a triangle was hit, calculate the color
+    // if(closestDistance < FLT_MAX)
     // {
-    //     // If focal length is zero, just store the ray direction
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 0.0f, 1.0));
-    // }
-    // else if (camera.right.x != -1.0 || camera.right.y != 0.0 || camera.right.z != 0.0)
-    // {
-    //     // If focal length is zero, just store the ray direction
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 0.0f, 1.0f, 1.0));
-    // }
-    // else if (camera.up.x != 0.0 || camera.up.y != 1.0 || camera.up.z != 0.0)
-    // {
-    //     // If focal length is zero, just store the ray direction
-    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 1.0f, 1.0f, 1.0));
+    //     let triangle = scene[closestTriangleIndex];
+    //     let normal = triangle.normal.xyz; // Extract normal from the triangle
+    //     let lightDirection = normalize(vec3<f32>(1.0, -1.0, -1.0)); // Example light direction
+    //     let color = triangle.color; // Get the color from the triangle
+
+    //     // Evaluate Lambertian shading
+    //     pixelColor = evaluateLambert(normal, lightDirection, color);
     // }
     // else
-     if(abs(focalLeftBottom.x - 278.012512) > 0.1f || abs(focalLeftBottom.y - 272.987488) > 0.1f || abs(focalLeftBottom.z + 799.965027) > 0.1f)
-    {
-        // If focal length is zero, just store the ray direction
-        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 1.0f, 1.0));
-    }
-    else if (abs(focalRightTop.x - 277.987488) > 0.1f || abs(focalRightTop.y - 273.012512) > 0.1f || abs(focalRightTop.z + 799.965027) > 0.1f)
-    {
-        // If focal length is zero, just store the ray direction
-        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 1.0f, 1.0));
-    }
-    else
     // {
-        // let debugColor = normalize(pixelSize);
-        // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor.x, debugColor.y, 0.0, 1.0));
+    //     // Background color if no intersection
+    //     pixelColor = vec3<f32>(0.0, 0.0, 0.0); // Black background
     // }
+
+    // // Write the final pixel color to the output texture
+    // // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
+    
+    // // if(abs(camera.position.x - 278.0) > FLT_EPSILON || abs(camera.position.y - 273.0) > FLT_EPSILON || abs(camera.position.z + 800.0) > FLT_EPSILON)
+    // // {
+    // //     // If focal length is zero, just store the ray direction
+    // //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 0.0f, 1.0));
+    // // }
+    // // else if (camera.forward.x != 0.0 || camera.forward.y != 0.0 || camera.forward.z != 1.0)
+    // // {
+    // //     // If focal length is zero, just store the ray direction
+    // //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 0.0f, 1.0));
+    // // }
+    // // else if (camera.right.x != -1.0 || camera.right.y != 0.0 || camera.right.z != 0.0)
+    // // {
+    // //     // If focal length is zero, just store the ray direction
+    // //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 0.0f, 1.0f, 1.0));
+    // // }
+    // // else if (camera.up.x != 0.0 || camera.up.y != 1.0 || camera.up.z != 0.0)
+    // // {
+    // //     // If focal length is zero, just store the ray direction
+    // //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 1.0f, 1.0f, 1.0));
+    // // }
+    // // else
+    //  if(abs(focalLeftBottom.x - 278.012512) > 0.1f || abs(focalLeftBottom.y - 272.987488) > 0.1f || abs(focalLeftBottom.z + 799.965027) > 0.1f)
+    // {
+    //     // If focal length is zero, just store the ray direction
+    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 1.0f, 1.0));
+    // }
+    // else if (abs(focalRightTop.x - 277.987488) > 0.1f || abs(focalRightTop.y - 273.012512) > 0.1f || abs(focalRightTop.z + 799.965027) > 0.1f)
+    // {
+    //     // If focal length is zero, just store the ray direction
+    //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 1.0f, 1.0));
+    // }
+    // else
+    // // {
+    //     // let debugColor = normalize(pixelSize);
+    //     // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor.x, debugColor.y, 0.0, 1.0));
+    // // }
     
     {
         // Store the pixel color
