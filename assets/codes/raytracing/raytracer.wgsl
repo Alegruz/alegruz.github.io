@@ -147,33 +147,33 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // // Ray generation and scene intersection logic goes here
     // // For each triangle in the scene, perform intersection tests
-    // for(var i: u32 = 0u; i < arrayLength(&scene); i++)
-    // {
-    //     let triangle = scene[i];
+    for(var i: u32 = 0u; i < arrayLength(&scene); i++)
+    {
+        let triangle = scene[i];
     //     let intersection = intersect(ray, triangle);
     //     if(intersection.hit && intersection.distance < closestDistance)
     //     {
     //         closestDistance = intersection.distance;
-    //         closestTriangleIndex = u32(i);
+            closestTriangleIndex = u32(i);
     //     }
-    // }
+    }
 
-    // // If a triangle was hit, calculate the color
-    // if(closestDistance < FLT_MAX)
-    // {
-    //     let triangle = scene[closestTriangleIndex];
-    //     let normal = triangle.normal.xyz; // Extract normal from the triangle
-    //     let lightDirection = normalize(vec3<f32>(1.0, -1.0, -1.0)); // Example light direction
-    //     let color = triangle.color; // Get the color from the triangle
+    // If a triangle was hit, calculate the color
+    if(closestDistance < FLT_MAX)
+    {
+        let triangle = scene[closestTriangleIndex];
+        let normal = triangle.normal.xyz; // Extract normal from the triangle
+        let lightDirection = normalize(vec3<f32>(1.0, -1.0, -1.0)); // Example light direction
+        let color = triangle.color; // Get the color from the triangle
 
-    //     // Evaluate Lambertian shading
-    //     pixelColor = evaluateLambert(normal, lightDirection, color);
-    // }
-    // else
-    // {
-    //     // Background color if no intersection
-    //     pixelColor = vec3<f32>(0.0, 0.0, 0.0); // Black background
-    // }
+        // Evaluate Lambertian shading
+        pixelColor = evaluateLambert(normal, lightDirection, color);
+    }
+    else
+    {
+        // Background color if no intersection
+        pixelColor = vec3<f32>(0.0, 0.0, 0.0); // Black background
+    }
 
     // // Write the final pixel color to the output texture
     // // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
