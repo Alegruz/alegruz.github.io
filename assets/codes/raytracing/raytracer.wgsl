@@ -108,7 +108,7 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // Ray generation and scene intersection logic goes here
     // For each triangle in the scene, perform intersection tests
-    for(var i = 0; i < arrayLength(&scene); i++)
+    for(var i: u32 = 0u; i < arrayLength(&scene); i++)
     {
         let triangle = scene[i];
         let intersection = intersect(ray, triangle);
