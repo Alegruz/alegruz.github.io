@@ -642,7 +642,10 @@ By now, it is clear that raytracing is a very computationally intensive task, es
   const rayOutput = device.createTexture({
     size: [canvas.width, canvas.height],
     format: "rgba8unorm",
-    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC
+    usage: GPUTextureUsage.RENDER_ATTACHMENT |
+          GPUTextureUsage.STORAGE_BINDING |       // if used in compute write
+          GPUTextureUsage.TEXTURE_BINDING |       // ✅ required for sampling
+          GPUTextureUsage.COPY_SRC
   });
 
   // Compute shader
