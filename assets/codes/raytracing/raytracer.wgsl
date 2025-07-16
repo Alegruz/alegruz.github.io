@@ -142,7 +142,7 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // // Initialize pixel color
     // var closestDistance = FLT_MAX;
-    // var closestTriangleIndex: u32 = 0;
+    var closestTriangleIndex: u32 = 0;
     // var pixelColor = vec3<f32>(0.0, 0.0, 0.0);
 
     // // Ray generation and scene intersection logic goes here
