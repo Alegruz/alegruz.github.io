@@ -137,5 +137,5 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     }
 
     // Write the final pixel color to the output texture
-    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(hitColor, 1.0));
+    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
 }
