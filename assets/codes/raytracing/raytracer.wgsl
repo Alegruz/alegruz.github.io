@@ -178,10 +178,20 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     // Write the final pixel color to the output texture
     // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
     // if(camera.forward.x == 0.0 && camera.forward.y == 0.0 && camera.forward.z == 1.0)
-    if(abs(camera.width - 0.035) < FLT_EPSILON && abs(camera.height - 0.035) < FLT_EPSILON)
+    if(abs(camera.width - 0.025) > FLT_EPSILON || abs(camera.height - 0.025) > FLT_EPSILON)
     {
         // If focal length is zero, just store the ray direction
         textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(1.0f, 0.0f, 0.0f, 1.0));
+    }
+    else if (camera.forward.x == 0.0 && camera.forward.y == 0.0 && camera.forward.z == 1.0)
+    {
+        // If focal length is zero, just store the ray direction
+        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 1.0f, 0.0f, 1.0));
+    }
+    else if (abs(camera.focalLength - 0.035) > FLT_EPSILON)
+    {
+        // If focal length is zero, just store the ray direction
+        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(0.0f, 0.0f, 1.0f, 1.0));
     }
     // else
     // {
