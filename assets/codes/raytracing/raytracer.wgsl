@@ -30,6 +30,7 @@ var<storage, read> scene: array<Triangle>;
 var<storage, write> output: texture_storage_2d<rgba8unorm, write>;
 
 const FLT_EPSILON: f32 = 1.19209290e-07f;
+const FLT_MAX: f32 = 1e20;
 
 struct IntersectionResult
 {
@@ -95,9 +96,9 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     let y = (1.0 - 2.0 * uv.y) * camera.height / camera.focalLength;
 
     // Generate primary ray
-    let ray = Ray(
-        origin: camera.position,
-        direction: normalize(x * camera.right + y * camera.up + camera.forward)
+    let ray: Ray = Ray(
+        camera.position,
+        normalize(x * camera.right + y * camera.up + camera.forward)
     );
 
     // Initialize pixel color
@@ -107,7 +108,7 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
 
     // Ray generation and scene intersection logic goes here
     // For each triangle in the scene, perform intersection tests
-    for(var i = 0; i < scene.length(); i++)
+    for(var i = 0; i < arrayLength(&scene); i++)
     {
         let triangle = scene[i];
         let intersection = intersect(ray, triangle);
@@ -136,5 +137,5 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     }
 
     // Write the final pixel color to the output texture
-    output.write(globalId.xy, vec4<f32>(pixelColor, 1.0));
+    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(hitColor, 1.0));
 }
