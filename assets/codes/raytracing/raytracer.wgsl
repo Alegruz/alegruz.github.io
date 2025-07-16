@@ -188,5 +188,5 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     //     textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(rayDirection.x, rayDirection.y, rayDirection.z, 1.0));
     // }
     let debugColor = normalize(pixelSize);
-    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor, 1.0));
+    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor.x, debugColor.y, 0.0, 1.0));
 }
