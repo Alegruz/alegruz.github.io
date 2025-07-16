@@ -220,6 +220,6 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
         // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(clamp((rayDirection.x + 1.0f) * 0.5f, 0.0f, 1.0f), clamp((rayDirection.y + 1.0f) * 0.5f, 0.0f, 1.0f), 0.0f, 1.0));
         // let normalizedPixelPosition = normalize(camera.position);
         // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(normalizedPixelPosition.x, normalizedPixelPosition.y, normalizedPixelPosition.z, 1.0));
-        textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(uv.x, uv.y, 0.0, 1.0));
+        textureStore(output, vec2<i32>(globalId.x, resolution.y - 1 - globalId.y), vec4<f32>(uv.x, uv.y, 0.0, 1.0));
     }
 }
