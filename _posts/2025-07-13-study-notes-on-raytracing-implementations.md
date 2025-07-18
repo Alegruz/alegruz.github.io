@@ -953,6 +953,43 @@ By now, it is clear that raytracing is a very computationally intensive task, es
     ]
   });
 
+  // Temporal accumulation
+  const accumulationBufferToRead = device.createTexture({
+    size: [canvas.width, canvas.height],
+    format: "rgba8unorm",
+    usage: GPUTextureUsage.STORAGE_BINDING |       // if used in compute write
+          GPUTextureUsage.TEXTURE_BINDING |       // ✅ required for sampling
+          GPUTextureUsage.COPY_SRC |
+          GPUTextureUsage.COPY_DST
+  });
+  const accumulationBufferToWrite = device.createTexture({
+    size: [canvas.width, canvas.height],
+    format: "rgba8unorm",
+    usage: GPUTextureUsage.STORAGE_BINDING |       // if used in compute write
+          GPUTextureUsage.TEXTURE_BINDING |       // ✅ required for sampling
+          GPUTextureUsage.COPY_SRC |
+          GPUTextureUsage.COPY_DST
+  });
+
+  const accumulationModule = device.createShaderModule({
+    code: await fetch('{{ "/assets/codes/raytracing/temporal_accumulation.wgsl" | relative_url }}').then(res => res.text())
+  });
+  const accumulationPipeline = device.createComputePipeline({
+    layout: "auto",
+    compute: {
+      module: accumulationModule,
+      entryPoint: "main"
+    }
+  });
+  const accumulationBindGroup = device.createBindGroup({
+    layout: accumulationPipeline.getBindGroupLayout(0),
+    entries: [
+      { binding: 0, resource: rayOutput.createView() },
+      { binding: 1, resource: accumulationBufferToRead.createView() },
+      { binding: 2, resource: accumulationBufferToWrite.createView() },
+    ]
+  });
+
   // Display pipeline
   const sampler = device.createSampler({
     magFilter: "linear",
@@ -1006,6 +1043,21 @@ By now, it is clear that raytracing is a very computationally intensive task, es
       Math.ceil(canvas.height / 8)
     );
     computePass.end();
+
+    const accumulationPass = commandEncoder.beginComputePass();
+    accumulationPass.setPipeline(accumulationPipeline);
+    accumulationPass.setBindGroup(0, accumulationBindGroup);
+    accumulationPass.dispatchWorkgroups(
+      Math.ceil(canvas.width / 8),
+      Math.ceil(canvas.height / 8)
+    );
+    accumulationPass.end();
+
+    commandEncoder.copyTextureToTexture(
+      { texture: accumulationBufferToWrite },
+      { texture: accumulationBufferToRead },
+      [canvas.width, canvas.height]
+    );
 
     const textureView = context.getCurrentTexture().createView();
     const renderPass = commandEncoder.beginRenderPass({
