@@ -238,7 +238,12 @@ fn onClosestHit(ray: Ray, hitResult: HitResult, renderContext: ptr<function, Ren
 
                 // Create an orthonormal basis (n, t, b)
                 let n = normalize(normal);
-                let t = normalize(cross((abs(n.x) > 0.1 ? vec3(0,1,0) : vec3(1,0,0)), n));
+                var axis = vec3<f32>(1.0, 0.0, 0.0);
+                if (abs(n.x) > 0.1)
+                {
+                    axis = vec3<f32>(0.0, 1.0, 0.0);
+                }
+                let t = normalize(cross(axis, n));
                 let b = cross(n, t);
 
                 let randomDirection = (t * x) + (b * y) + (n * z);
