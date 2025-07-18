@@ -615,12 +615,11 @@ By now, it is clear that raytracing is a very computationally intensive task, es
     278.0, 273.0, -800.0, 1.0, // Camera position + padding
     0.0, 0.0, 1.0, 0.0,        // Camera forward + padding
     -1.0, 0.0, 0.0, 0.0,       // Camera right + padding
-    0.0, 1.0, 0.0, 0.0,        // Camera up + padding
+    0.0, 1.0, 0.0,        // Camera up
     0.035,                // Focal length
     0.025,                // Width
     0.025,                // Height
-    0.0                   // Padding
-    
+    0.0, 0.0              // Padding
   ]);
   const cameraBuffer = device.createBuffer({
     size: cameraData.byteLength,
@@ -628,279 +627,299 @@ By now, it is clear that raytracing is a very computationally intensive task, es
   });
   device.queue.writeBuffer(cameraBuffer, 0, cameraData);
 
+  const frameInputBuffer = device.createBuffer({
+    size: 4, // Single integer for frame index
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+  });
+
+  function updateFrameInput(seed) {
+    const data = new Uint32Array([
+      seed
+    ]);
+    device.queue.writeBuffer(frameInputBuffer, 0, data.buffer);
+  }
+
   // Scene buffer
   const triangleData = new Float32Array([
 
     // Floor
       // triangle vertices
-      0.0, 0.0, 0.0,
-      559.2, 0.0, 552.8,
-      559.2, 0.0, 0.0,
+      0.0, 0.0, 0.0, 1.0,
+      559.2, 0.0, 552.8, 1.0,
+      559.2, 0.0, 0.0, 1.0,
       // Triangle normal and emissive factor
       0.0, 1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      0.0, 0.0, 0.0,
-      0.0, 0.0, 552.8,
-      559.2, 0.0, 552.8,
+      0.0, 0.0, 0.0, 1.0,
+      0.0, 0.0, 552.8, 1.0,
+      559.2, 0.0, 552.8, 1.0,
       // Triangle normal and emissive factor
       0.0, 1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
-    // Light source
-      // Triangle vertices
-      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0,
-      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0,
-      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0,
-      // Triangle normal and emissive factor
-      0.0, -1.0, 0.0, 1.0,
-      // Triangle color
-      1.0, 1.0, 1.0,
-      // Triangle vertices
-      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0,
-      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0,
-      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0,
-      // Triangle normal and emissive factor
-      0.0, -1.0, 0.0, 1.0,
-      // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
     // Ceiling
       // Triangle vertices
-      556.0, 548.8, 0.0,
-      556.0, 548.8, 559.2,
-      0.0, 548.8, 559.2,
+      556.0, 548.8, 0.0, 1.0,
+      556.0, 548.8, 559.2, 1.0,
+      0.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       0.0, -1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      0.0, 548.8, 0.0,
-      556.0, 548.8, 0.0,
-      0.0, 548.8, 559.2,
+      0.0, 548.8, 0.0, 1.0,
+      556.0, 548.8, 0.0, 1.0,
+      0.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       0.0, -1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
     // Back wall
       // Triangle vertices
-      549.6, 0.0, 559.2,
-      549.6, 548.8, 559.2,
-      0.0, 548.8, 559.2,
+      549.6, 0.0, 559.2, 1.0,
+      549.6, 548.8, 559.2, 1.0,
+      0.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       0.0, 0.0, -1.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      0.0, 0.0, 559.2,
-      549.6, 0.0, 559.2,
-      0.0, 548.8, 559.2,
+      0.0, 0.0, 559.2, 1.0,
+      549.6, 0.0, 559.2, 1.0,
+      0.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       0.0, 0.0, -1.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
     // Right wall
       // Triangle vertices
-      0.0, 0.0, 559.2,
-      0.0, 0.0, 0.0,
-      0.0, 548.8, 0.0,
+      0.0, 0.0, 559.2, 1.0,
+      0.0, 0.0, 0.0, 1.0,
+      0.0, 548.8, 0.0, 1.0,
       // Triangle normal and emissive factor
       1.0, 0.0, 0.0, 0.0,
       // Triangle color
-      0.0, 1.0, 0.0,
+      0.0, 1.0, 0.0, 1.0,
       // Triangle vertices
-      0.0, 0.0, 559.2,
-      0.0, 548.8, 0.0,
-      0.0, 548.8, 559.2,
+      0.0, 0.0, 559.2, 1.0,
+      0.0, 548.8, 0.0, 1.0,
+      0.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       1.0, 0.0, 0.0, 0.0,
       // Triangle color
-      0.0, 1.0, 0.0,
+      0.0, 1.0, 0.0, 1.0,
     // Left wall
       // Triangle vertices
-      552.8, 0.0, 0.0,
-      549.6, 0.0, 559.2,
-      556.0, 548.8, 559.2,
+      552.8, 0.0, 0.0, 1.0,
+      549.6, 0.0, 559.2, 1.0,
+      556.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       -0.999915719, 0.0116608692, -0.00572199980, 0.0,
       // Triangle color
-      1.0, 0.0, 0.0,
+      1.0, 0.0, 0.0, 1.0,
       // Triangle vertices
-      556.0, 548.8, 0.0,
-      552.8, 0.0, 0.0,
-      556.0, 548.8, 559.2,
+      556.0, 548.8, 0.0, 1.0,
+      552.8, 0.0, 0.0, 1.0,
+      556.0, 548.8, 559.2, 1.0,
       // Triangle normal and emissive factor
       -0.999983013, 0.00583082717, 0.00000000, 0.0,
       // Triangle color
-      1.0, 0.0, 0.0,
+      1.0, 0.0, 0.0, 1.0,
     // Short Block
       // Triangle vertices
-      130.0, 165.0, 65.0,
-      82.0, 165.0, 225.0,
-      240.0, 165.0, 272.0,
+      130.0, 165.0, 65.0, 1.0,
+      82.0, 165.0, 225.0, 1.0,
+      240.0, 165.0, 272.0, 1.0,
       // Triangle normal and emissive factor
       0.0, 1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      290.0, 165.0, 114.0,
-      130.0, 165.0, 65.0,
-      240.0, 165.0, 272.0,
+      290.0, 165.0, 114.0, 1.0,
+      130.0, 165.0, 65.0, 1.0,
+      240.0, 165.0, 272.0, 1.0,
       // Triangle normal and emissive factor
       0.0, 1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      290.0, 0.0, 114.0,
-      290.0, 165.0, 114.0,
-      240.0, 165.0, 272.0,
+      290.0, 0.0, 114.0, 1.0,
+      290.0, 165.0, 114.0, 1.0,
+      240.0, 165.0, 272.0, 1.0,
       // Triangle normal and emissive factor
       0.953400135, -0.00000000, 0.301708907, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      240.0, 0.0, 272.0,
-      290.0, 0.0, 114.0,
-      240.0, 165.0, 272.0,
+      240.0, 0.0, 272.0, 1.0,
+      290.0, 0.0, 114.0, 1.0,
+      240.0, 165.0, 272.0, 1.0,
       // Triangle normal and emissive factor
       0.953400135, -0.00000000, 0.301708907, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      130.0, 0.0, 65.0,
-      130.0, 165.0, 65.0,
-      290.0, 165.0, 114.0,
+      130.0, 0.0, 65.0, 1.0,
+      130.0, 165.0, 65.0, 1.0,
+      290.0, 165.0, 114.0, 1.0,
       // Triangle normal and emissive factor
       0.292825788, 0.00000000, -0.956165850, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      290.0, 0.0, 114.0,
-      130.0, 0.0, 65.0,
-      290.0, 165.0, 114.0,
+      290.0, 0.0, 114.0, 1.0,
+      130.0, 0.0, 65.0, 1.0,
+      290.0, 165.0, 114.0, 1.0,
       // Triangle normal and emissive factor
       0.292825788, 0.00000000, -0.956165850, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      82.0, 0.0, 225.0,
-      82.0, 165.0, 225.0,
-      130.0, 165.0, 65.0,
+      82.0, 0.0, 225.0, 1.0,
+      82.0, 165.0, 225.0, 1.0,
+      130.0, 165.0, 65.0, 1.0,
       // Triangle normal and emissive factor
       -0.957826257, 0.00000000, -0.287347883, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      130.0, 0.0, 65.0,
-      82.0, 0.0, 225.0,
-      130.0, 165.0, 65.0,
+      130.0, 0.0, 65.0, 1.0,
+      82.0, 0.0, 225.0, 1.0,
+      130.0, 165.0, 65.0, 1.0,
       // Triangle normal and emissive factor
       -0.957826257, 0.00000000, -0.287347883, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      240.0, 0.0, 272.0,
-      240.0, 165.0, 272.0,
-      82.0, 165.0, 225.0,
+      240.0, 0.0, 272.0, 1.0,
+      240.0, 165.0, 272.0, 1.0,
+      82.0, 165.0, 225.0, 1.0,
       // Triangle normal and emissive factor
       -0.285120904, 0.00000000, 0.958491504, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      82.0, 0.0, 225.0,
-      240.0, 0.0, 272.0,
-      82.0, 165.0, 225.0,
+      82.0, 0.0, 225.0, 1.0,
+      240.0, 0.0, 272.0, 1.0,
+      82.0, 165.0, 225.0, 1.0,
       // Triangle normal and emissive factor
       -0.285120904, 0.00000000, 0.958491504, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
     // Tall Block
       // Triangle vertices
-      423.0, 330.0, 247.0,
-      265.0, 330.0, 296.0,
-      314.0, 330.0, 456.0,
+      423.0, 330.0, 247.0, 1.0,
+      265.0, 330.0, 296.0, 1.0,
+      314.0, 330.0, 456.0, 1.0,
       // Triangle normal and emissive factor
       0.0, 1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      472.0, 330.0, 406.0,
-      423.0, 330.0, 247.0,
-      314.0, 330.0, 456.0,
+      472.0, 330.0, 406.0, 1.0,
+      423.0, 330.0, 247.0, 1.0,
+      314.0, 330.0, 456.0, 1.0,
       // Triangle normal and emissive factor
       0.0, 1.0, 0.0, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      423.0, 0.0, 247.0,
-      423.0, 330.0, 247.0,
-      472.0, 330.0, 406.0,
+      423.0, 0.0, 247.0, 1.0,
+      423.0, 330.0, 247.0, 1.0,
+      472.0, 330.0, 406.0, 1.0,
       // Triangle normal and emissive factor
       0.955648959, 0.00000000, -0.294508159, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      472.0, 0.0, 406.0,
-      423.0, 0.0, 247.0,
-      472.0, 330.0, 406.0,
+      472.0, 0.0, 406.0, 1.0,
+      423.0, 0.0, 247.0, 1.0,
+      472.0, 330.0, 406.0, 1.0,
       // Triangle normal and emissive factor
       0.955648959, 0.00000000, -0.294508159, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      472.0, 0.0, 406.0,
-      472.0, 330.0, 406.0,
-      314.0, 330.0, 456.0,
+      472.0, 0.0, 406.0, 1.0,
+      472.0, 330.0, 406.0, 1.0,
+      314.0, 330.0, 456.0, 1.0,
       // Triangle normal and emissive factor
       0.301708907, -0.00000000, 0.953400135, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      314.0, 0.0, 456.0,
-      472.0, 0.0, 406.0,
-      314.0, 330.0, 456.0,
+      314.0, 0.0, 456.0, 1.0,
+      472.0, 0.0, 406.0, 1.0,
+      314.0, 330.0, 456.0, 1.0,
       // Triangle normal and emissive factor
       0.301708907, -0.00000000, 0.953400135, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      314.0, 0.0, 456.0,
-      314.0, 330.0, 456.0,
-      265.0, 330.0, 296.0,
+      314.0, 0.0, 456.0, 1.0,
+      314.0, 330.0, 456.0, 1.0,
+      265.0, 330.0, 296.0, 1.0,
       // Triangle normal and emissive factor
       -0.956165850, 0.00000000, 0.292825788, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      265.0, 0.0, 296.0,
-      314.0, 0.0, 456.0,
-      265.0, 330.0, 296.0,
+      265.0, 0.0, 296.0, 1.0,
+      314.0, 0.0, 456.0, 1.0,
+      265.0, 330.0, 296.0, 1.0,
       // Triangle normal and emissive factor
       -0.956165850, 0.00000000, 0.292825788, 0.0,
-      // Triangle color 
-      1.0, 1.0, 1.0,
+      // Triangle color
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      265.0, 0.0, 296.0,
-      265.0, 330.0, 296.0,
-      423.0, 330.0, 247.0,
+      265.0, 0.0, 296.0, 1.0,
+      265.0, 330.0, 296.0, 1.0,
+      423.0, 330.0, 247.0, 1.0,
       // Triangle normal and emissive factor
       -0.296209067, 0.00000000, -0.955123127, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0,
       // Triangle vertices
-      423.0, 0.0, 247.0,
-      265.0, 0.0, 296.0,
-      423.0, 330.0, 247.0,
+      423.0, 0.0, 247.0, 1.0,
+      265.0, 0.0, 296.0, 1.0,
+      423.0, 330.0, 247.0, 1.0,
       // Triangle normal and emissive factor
       -0.296209067, 0.00000000, -0.955123127, 0.0,
       // Triangle color
-      1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0
   ]);
   const sceneBuffer = device.createBuffer({
     size: triangleData.byteLength,
     usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
   });
   device.queue.writeBuffer(sceneBuffer, 0, triangleData);
+  // Emissive buffer
+  const emissiveData = new Float32Array([
+    // Light source
+      // Triangle vertices
+      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0, 1.0,
+      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0, 1.0,
+      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0, 1.0,
+      // Triangle normal and emissive factor
+      0.0, -1.0, 0.0, 1.0,
+      // Triangle color
+      1.0, 1.0, 1.0, 1.0,
+      // Triangle vertices
+      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0, 1.0,
+      343.0, 548.8 - Number.EPSILON - Number.EPSILON, 227.0, 1.0,
+      213.0, 548.8 - Number.EPSILON - Number.EPSILON, 332.0, 1.0,
+      // Triangle normal and emissive factor
+      0.0, -1.0, 0.0, 1.0,
+      // Triangle color
+      1.0, 1.0, 1.0, 1.0
+  ]);
+  const emissiveBuffer = device.createBuffer({
+    size: emissiveData.byteLength,
+    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+  });
+  device.queue.writeBuffer(emissiveBuffer, 0, emissiveData);
 
   // Output texture
   const rayOutput = device.createTexture({
@@ -927,8 +946,10 @@ By now, it is clear that raytracing is a very computationally intensive task, es
     layout: computePipeline.getBindGroupLayout(0),
     entries: [
       { binding: 0, resource: { buffer: cameraBuffer } },
-      { binding: 1, resource: { buffer: sceneBuffer } },
-      { binding: 2, resource: rayOutput.createView() }
+      { binding: 1, resource: { buffer: frameInputBuffer } },
+      { binding: 2, resource: { buffer: sceneBuffer } },
+      { binding: 3, resource: { buffer: emissiveBuffer } },
+      { binding: 4, resource: rayOutput.createView() }
     ]
   });
 
@@ -973,6 +994,9 @@ By now, it is clear that raytracing is a very computationally intensive task, es
   let running = false;
 
   function renderFrame() {
+    const seed = Math.floor(Math.random() * 0xFFFFFFFF);
+    updateFrameInput(seed);
+
     const commandEncoder = device.createCommandEncoder();
     const computePass = commandEncoder.beginComputePass();
     computePass.setPipeline(computePipeline);
