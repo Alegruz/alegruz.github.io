@@ -589,6 +589,308 @@ createRaytracerModule({
 
 By now, it is clear that raytracing is a very computationally intensive task, especially when we want to achieve high quality images with multiple bounces and denoising. This is where the GPU comes in handy. GPUs are designed to handle parallel computations, which makes them ideal for raytracing.
 
+The following is the simple raytracer shader code:
+
+```wgsl
+struct Ray
+{
+  origin: vec3<f32>,
+  direction: vec3<f32>,
+};
+
+struct Triangle
+{
+  vertices: array<vec4<f32>, 3>,
+  normal: vec4<f32>,  // 4th component is emissive factor. If 0, then not emissive, if > 0, then emissive
+  color: vec4<f32>, // Color of the triangle for shading
+};
+
+struct Camera
+{
+  position: vec3<f32>,
+  forward: vec3<f32>,
+  right: vec3<f32>,
+  up: vec3<f32>,
+  focalLength: f32,
+  width: f32,
+  height: f32,
+};
+
+struct FrameInput
+{
+  randomSeed: u32, // Seed for random number generation
+}
+
+@group(0) @binding(0)
+var<uniform> gCamera: Camera;
+@group(0) @binding(1)
+var<uniform> gFrameInput: FrameInput; // Frame input for random seed
+@group(0) @binding(2)
+var<storage, read> gScene: array<Triangle>;
+@group(0) @binding(3)
+var<storage, read> gEmissives: array<Triangle>;
+@group(0) @binding(4)
+var gOutput: texture_storage_2d<rgba8unorm, write>;
+
+const FLT_EPSILON: f32 = 1.19209290e-07f;
+const FLT_MAX: f32 = 1e20;
+
+struct IntersectionResult
+{
+  distance: f32,
+  position: vec3<f32>,
+  result: u32,
+}
+
+struct HitResult
+{
+  color: vec3<f32>,
+  triangleIndex: i32,
+  bIsEmissive: bool,
+  position: vec3<f32>,
+  normal: vec3<f32>,
+  distance: f32
+}
+
+struct RenderContext
+{
+  traceDepth: u32,
+  maxTraceDepth: u32,
+  seed: u32,
+}
+
+fn intersect(ray: Ray, triangle: Triangle) -> IntersectionResult
+{
+  var result: IntersectionResult = IntersectionResult(-1.0, vec3<f32>(0.0, 0.0, 0.0), 0u);
+
+  let edge0 = triangle.vertices[1].xyz - triangle.vertices[0].xyz;
+  let edge1 = triangle.vertices[2].xyz - triangle.vertices[0].xyz;
+  let rayCrossEdge1 = cross(ray.direction, edge1);
+  let determinant = dot(edge0, rayCrossEdge1);
+  if(determinant > -FLT_EPSILON && determinant < FLT_EPSILON)
+  {
+    result.result = 1u; // Ray is parallel to the triangle
+    return result; // Ray is parallel to the triangle
+  }
+
+  let inverseDeterminant = 1.0 / determinant;
+  let s = ray.origin - triangle.vertices[0].xyz;
+  let u = dot(s, rayCrossEdge1) * inverseDeterminant;
+  if((u < 0.0 && abs(u) > FLT_EPSILON) || (u > 1.0 && abs(u - 1.0) > FLT_EPSILON))
+  {
+    result.result = 2u; // Intersection is outside the triangle
+    return result;
+  }
+
+  let sCrossEdge0 = cross(s, edge0);
+  let v = dot(ray.direction, sCrossEdge0) * inverseDeterminant;
+  if((v < 0.0 && abs(v) > FLT_EPSILON) || (u + v > 1.0 && abs(u + v - 1.0) > FLT_EPSILON))
+  {
+    result.result = 3u; // Intersection is outside the triangle
+    return result;
+  }
+
+  result.distance = dot(edge1, sCrossEdge0) * inverseDeterminant;
+  if(result.distance > FLT_EPSILON)
+  {
+    // Return the intersection point
+    result.position = ray.origin + ray.direction * result.distance;
+    return result;
+  }
+
+  result.distance = -1.0; // No intersection found
+  result.result = 4u; // No intersection found
+  return result;
+}
+
+fn evaluateLambert(normal: vec3<f32>, lightDirection: vec3<f32>, color: vec3<f32>) -> vec3<f32>
+{
+  let diffuseIntensity = max(dot(normal, lightDirection), 0.0);
+  return color * diffuseIntensity;
+}
+
+fn getClosestHitTriangle(ray: Ray) -> HitResult
+{
+  var hitResult = HitResult(vec3<f32>(0.0, 0.0, 0.0), -1, false, vec3<f32>(0.0, 0.0, 0.0), vec3<f32>(0.0, 0.0, 0.0), -1.0);
+  var closestDistance = FLT_MAX;
+  var closestTriangleIndex: i32 = -1;
+
+  for(var i: u32 = 0u; i < arrayLength(&gScene); i++)
+  {
+    let triangle = gScene[i];
+    let intersection = intersect(ray, triangle);
+    if(intersection.distance > 0.0 && intersection.distance < closestDistance)
+    {
+      closestDistance = intersection.distance;
+      closestTriangleIndex = i32(i);
+      hitResult.position = intersection.position;
+      hitResult.normal = triangle.normal.xyz; // Extract normal from the triangle
+      hitResult.distance = intersection.distance;
+      hitResult.color = triangle.color.xyz; // Use the color from the triangle
+    }
+  }
+
+  for(var i: u32 = 0u; i < arrayLength(&gEmissives); i++)
+  {
+    let triangle = gEmissives[i];
+    let intersection = intersect(ray, triangle);
+    if(intersection.distance > 0.0 && intersection.distance < closestDistance)
+    {
+      closestDistance = intersection.distance;
+      closestTriangleIndex = i32(i);
+      hitResult.bIsEmissive = true; // Mark as emissive
+      hitResult.position = intersection.position;
+      hitResult.normal = triangle.normal.xyz; // Extract normal from the triangle
+      hitResult.distance = intersection.distance;
+      hitResult.color = triangle.color.xyz; // Use the color from the triangle
+    }
+  }
+
+  if(closestTriangleIndex >= 0)
+  {
+      hitResult.triangleIndex = closestTriangleIndex;
+  }
+
+  return hitResult;
+}
+
+fn wang_hash(seed: ptr<function, u32>) -> u32
+{
+  *seed = (*seed ^ 61u) ^ (*seed >> 16u);
+  *seed *= 9u;
+  *seed = *seed ^ (*seed >> 4u);
+  *seed *= 0x27d4eb2du;
+  *seed = *seed ^ (*seed >> 15u);
+  return *seed;
+}
+
+fn float_from_u32(x: u32) -> f32
+{
+  return f32(x) / 4294967296.0; // 2^32
+}
+
+fn random(seed: ptr<function, u32>) -> f32
+{
+  let result = float_from_u32(wang_hash(seed));
+  *seed = *seed + 1u; // Increment seed for next random number
+  return result;
+}
+
+fn getPointByBarycentricCoordinates(triangle: Triangle, barycentric: vec3<f32>) -> vec3<f32>
+{
+  return triangle.vertices[0].xyz * barycentric.x + triangle.vertices[1].xyz * barycentric.y + triangle.vertices[2].xyz * barycentric.z;
+}
+
+fn onClosestHit(ray: Ray, hitResult: HitResult, renderContext: ptr<function, RenderContext>) -> vec3<f32>
+{
+  var color = vec3<f32>(0.0, 0.0, 0.0);
+  if(hitResult.triangleIndex >= 0)
+  {
+    if(hitResult.bIsEmissive)
+    {
+        color = hitResult.color; // Use the color from the triangle
+    }
+    else
+    {
+      var intensity: vec3<f32> = vec3<f32>(0.0, 0.0, 0.0);
+      for(var i: u32 = 0u; i < arrayLength(&gEmissives); i++)
+      {
+        let triangle = gEmissives[i];
+        var shadowRay: Ray;
+        shadowRay.origin = hitResult.position;
+        var randomBarycentric: vec3<f32> = vec3<f32>(random(&renderContext.seed), 0.0, 0.0);
+        randomBarycentric.y = random(&renderContext.seed) * (1.0 - randomBarycentric.x);
+        randomBarycentric.z = 1.0 - (randomBarycentric.x + randomBarycentric.y); // Ensure barycentric coordinates sum to 1.0
+        var pointOnLightTriangle = getPointByBarycentricCoordinates(triangle, randomBarycentric);
+        shadowRay.direction = normalize(pointOnLightTriangle - hitResult.position);
+        shadowRay.origin += shadowRay.direction * 0.1f; // Offset to avoid self-intersection
+
+        var shadowHitResult = getClosestHitTriangle(shadowRay);
+        if(shadowHitResult.triangleIndex >= 0 && shadowHitResult.bIsEmissive == true && shadowHitResult.triangleIndex == i32(i))
+        {
+          var lightColor = shadowHitResult.color; // Use the color from the emissive triangle   
+          // If the shadow ray hits an emissive geometry, we can consider it lit
+          let lambertian = max(dot(shadowRay.direction, hitResult.normal), 0.0);
+          lightColor *= lambertian; // Scale light color by Lambertian reflectance
+          intensity += lightColor; // Add light color
+        }
+      }    
+    }
+  }
+  return color;
+}
+
+fn onMiss() -> vec3<f32>
+{
+    // Handle ray miss logic here, e.g., return background color
+    return vec3<f32>(1.0, 1.0, 1.0); // Background color (white)
+}
+
+fn traceRay(ray: Ray, renderContext: ptr<function, RenderContext>) -> vec3<f32>
+{
+    renderContext.traceDepth += 1;
+    if(renderContext.traceDepth > renderContext.maxTraceDepth)
+    {
+        return vec3<f32>(0.0, 0.0, 0.0); // Return early if max trace depth is reached
+    }
+
+    var hitResult = getClosestHitTriangle(ray);
+    if(hitResult.triangleIndex >= 0)
+    {
+        hitResult.color = onClosestHit(ray, hitResult, renderContext);
+    }
+    else
+    {
+        hitResult.color = onMiss(); // Handle ray miss logic
+    }
+
+    return hitResult.color;
+}
+
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
+{
+    let resolution = vec2<f32>(textureDimensions(gOutput).xy);
+    let pixel = vec2<f32>(f32(globalId.x), f32(globalId.y));
+    let uv = pixel / resolution;
+    let textureStoreUv: vec2<i32> = vec2<i32>(i32(globalId.x), i32(resolution.y) - 1 - i32(globalId.y));
+
+    let pixelSize = vec2<f32>(gCamera.width / resolution.x, gCamera.height / resolution.y);
+    let focalLeftBottom = gCamera.position + (gCamera.forward * gCamera.focalLength) -
+        (gCamera.right * gCamera.width / 2.0) -
+        (gCamera.up * gCamera.height / 2.0);
+    let focalRightTop = gCamera.position + (gCamera.forward * gCamera.focalLength) +
+        (gCamera.right * gCamera.width / 2.0) +
+        (gCamera.up * gCamera.height / 2.0);
+
+    var seed: u32 = (globalId.x + globalId.y * u32(resolution.x)) ^ gFrameInput.randomSeed; // Use frame input seed for randomness
+    
+    let jitter = vec2<f32>(
+        random(&seed),
+        random(&seed) // Use a different seed for the second component to avoid identical jitters
+    );
+    
+    let pixelPosition = vec3<f32>(
+        mix(focalLeftBottom.x, focalRightTop.x, (pixel.x + jitter.x) / resolution.x),
+        mix(focalLeftBottom.y, focalRightTop.y, (pixel.y + jitter.y) / resolution.y),
+        mix(focalLeftBottom.z, focalRightTop.z, 0.5f),
+    );
+
+    // Generate primary ray
+    let rayDirection = normalize(pixelPosition - gCamera.position);
+    let ray: Ray = Ray(
+        gCamera.position,
+        rayDirection
+    );
+
+    var renderContext: RenderContext = RenderContext(0u, 1u, seed); // Example max trace depth of 1
+    var pixelColor: vec3<f32> = traceRay(ray, &renderContext);
+
+    // Write the final pixel color to the gOutput texture
+    textureStore(gOutput, textureStoreUv, vec4<f32>(pixelColor, 1.0));
+}
+```
+
 <div id="raytracing-gpu-demo-simple" style="text-align: center; margin: 20px 0;">
   <canvas id="wasm-canvas-gpu-demo-simple" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing GPU Demo - Simple Intersection</p>

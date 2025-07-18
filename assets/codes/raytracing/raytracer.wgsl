@@ -221,47 +221,8 @@ fn onClosestHit(ray: Ray, hitResult: HitResult, renderContext: ptr<function, Ren
                     intensity += lightColor; // Add light color
                 }
             }
-
-        //     {
-        //         var indirectRay: Ray;
-        //         indirectRay.origin = hitResult.position;
-        //         // Generate a random direction for indirect illumination
-        //         // Generate a random direction in the hemisphere oriented by the surface normal
-        //         let normal = hitResult.normal;
-        //         let u1 = random(&renderContext.seed);
-        //         let u2 = random(&renderContext.seed);
-        //         let r = sqrt(u1);
-        //         let theta = 2.0 * 3.14159265359 * u2;
-        //         let x = r * cos(theta);
-        //         let y = r * sin(theta);
-        //         let z = sqrt(1.0 - u1);
-
-        //         // Create an orthonormal basis (n, t, b)
-        //         let n = normalize(normal);
-        //         var axis = vec3<f32>(1.0, 0.0, 0.0);
-        //         if (abs(n.x) > 0.1)
-        //         {
-        //             axis = vec3<f32>(0.0, 1.0, 0.0);
-        //         }
-        //         let t = normalize(cross(axis, n));
-        //         let b = cross(n, t);
-
-        //         let randomDirection = (t * x) + (b * y) + (n * z);
-        //         indirectRay.direction = normalize(randomDirection);
-        //         indirectRay.origin += indirectRay.direction * 0.1; // Offset to avoid self-intersection
-
-        //         var indirectHitResult: HitResult = traceRay(indirectRay, context);
-        //         // If the shadow ray hits an emissive geometry, we can consider it lit
-        //         if (indirectHitResult.triangleIndex >= 0)
-        //         {
-        //             // Calculate Lambertian reflectance
-        //             let lambertian = max(0.0f, dot(indirectRay.direction, hitResult.normal));
-        //             indirectColor *= lambertian; // Add light color
-        //             intensity += indirectColor; // Add indirect illumination color
-        //         }
-        //     }
-        //     color = intensity * hitResult.color; // Scale the triangle color by the intensity from the emissive triangles
-        // }
+            color = intensity * hitResult.color; // Scale the triangle color by the intensity from the emissive triangles
+        }
     }
     return color;
 }
@@ -269,7 +230,7 @@ fn onClosestHit(ray: Ray, hitResult: HitResult, renderContext: ptr<function, Ren
 fn onMiss() -> vec3<f32>
 {
     // Handle ray miss logic here, e.g., return background color
-    return vec3<f32>(1.0, 1.0, 1.0); // Background color (white)
+    return vec3<f32>(0.0, 0.0, 0.0); // Background color (black)
 }
 
 fn traceRay(ray: Ray, renderContext: ptr<function, RenderContext>) -> vec3<f32>
