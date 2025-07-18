@@ -175,9 +175,13 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
         pixelColor = vec3<f32>(0.0, 0.0, 0.0); // Black background
     }
 
-    // // Write the final pixel color to the output texture
-    // // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
+    // Write the final pixel color to the output texture
+    // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(pixelColor, 1.0));
     
+    // DEBUGGING
+    // 1. uv
+    textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(uv.x, uv.y, 0.0, 1.0));
+
     // // if(abs(camera.position.x - 278.0) > FLT_EPSILON || abs(camera.position.y - 273.0) > FLT_EPSILON || abs(camera.position.z + 800.0) > FLT_EPSILON)
     // // {
     // //     // If focal length is zero, just store the ray direction
@@ -215,11 +219,11 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
     //     // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(debugColor.x, debugColor.y, 0.0, 1.0));
     // // }
     
-    {
-        // Store the pixel color
-        textureStore(output, vec2<i32>(i32(globalId.x), i32(resolution.y) - 1 - i32(globalId.y)), vec4<f32>(clamp((rayDirection.x + 1.0f) * 0.5f, 0.0f, 1.0f), clamp((rayDirection.y + 1.0f) * 0.5f, 0.0f, 1.0f), 0.0f, 1.0));
-        // let normalizedPixelPosition = normalize(camera.position);
-        // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(normalizedPixelPosition.x, normalizedPixelPosition.y, normalizedPixelPosition.z, 1.0));
-        // textureStore(output, vec2<i32>(globalId.x, i32(resolution.y) - 1 - globalId.y), vec4<f32>(uv.x, uv.y, 0.0, 1.0));
-    }
+    // {
+    //     // Store the pixel color
+    //     textureStore(output, vec2<i32>(i32(globalId.x), i32(resolution.y) - 1 - i32(globalId.y)), vec4<f32>(clamp((rayDirection.x + 1.0f) * 0.5f, 0.0f, 1.0f), clamp((rayDirection.y + 1.0f) * 0.5f, 0.0f, 1.0f), 0.0f, 1.0));
+    //     // let normalizedPixelPosition = normalize(camera.position);
+    //     // textureStore(output, vec2<i32>(globalId.xy), vec4<f32>(normalizedPixelPosition.x, normalizedPixelPosition.y, normalizedPixelPosition.z, 1.0));
+    //     // textureStore(output, vec2<i32>(globalId.x, i32(resolution.y) - 1 - globalId.y), vec4<f32>(uv.x, uv.y, 0.0, 1.0));
+    // }
 }
