@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alegruz.github.io/sitemap.xml
