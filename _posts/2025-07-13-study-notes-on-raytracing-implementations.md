@@ -105,6 +105,110 @@ constexpr std::optional<float3> IntersectionChecker::MoellerTrumbore(const Param
 }
 ```
 
+In order to trace a ray through the scene, we need to determine the ray's origin and direction for each pixel. Imagine that we have a camera in a scene that is facing a certain direction.
+
+```cpp
+sRays->GetPixel(x, y).Origin = CAMERA.Position;
+```
+
+From here, imagine a pyramid with the camera at the apex and the base of the pyramid being the screen. The rays will be cast from the camera through each pixel on the screen, forming a grid of rays that cover the entire view frustum. Let's imagine that this pyramid is has a square base because the parameters of camera's width and height are equal in Cornell box. One of the parameters of Cornell box's camera is the focal length, which is the distance from the camera to the base of the pyramid. The focal length is used to calculate the direction of the rays. This means that the base of this pyramid is the screen that we will be rendering to. If we divide this screen by a certain width and height, we can get the position of each pixel on the screen. The position of each pixel can be calculated by interpolating between the left bottom and right top corners of the screen based on the pixel's coordinates.
+
+```cpp
+const float2 pixelSize = {
+    CAMERA.Width / static_cast<float>(context.Width),
+    CAMERA.Height / static_cast<float>(context.Height)
+};
+const float3 focalLeftBottom = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) -
+    (context.CameraRight * CAMERA.Width / 2.0f) -
+    (context.CameraUp * CAMERA.Height / 2.0f);
+
+const float3 focalRightTop = CAMERA.Position + (context.CameraForward * CAMERA.FocalLength) +
+    (context.CameraRight * CAMERA.Width / 2.0f) +
+    (context.CameraUp * CAMERA.Height / 2.0f);
+
+const float3 pixelPosition = lerp(
+    focalLeftBottom,
+    focalRightTop,
+    float3((static_cast<float>(x) + 0.5f) / static_cast<float>(context.Width), (static_cast<float>(y) + 0.5f) / static_cast<float>(context.Height), 0.5f)
+);
+
+sRays->GetPixel(x, y).Direction = (pixelPosition - CAMERA.Position).normalize();
+```
+
+We are adding an additional 0.5f to the pixel coordinates to sample the center of the pixel. The x and y values are used as the coordinates or the indices of the pixel in the screen space. The `lerp` function is used to interpolate between the left bottom and right top corners of the screen based on the pixel's coordinates. The `focalLength` is used to calculate the direction of the rays, which is the vector from the camera position to the pixel position.
+
+Now, let's trace the ray through the scene:
+
+```cpp
+HitResult hitResult;
+const Color tracedColor = TraceRay(hitResult, ray, sGeometries, context);
+```
+
+When we trace a ray, we need to check if the ray is intersecting with any geometry in the scene. We can do this by iterating through all the geometries and checking for intersections. If we find an intersection, we can return the color of the geometry at that intersection point. If we don't find any intersections, we can return a background color.
+
+```cpp
+HitResult GetClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geometries)
+{
+    HitResult hitResult;
+    
+    for (const Geometry& geometry : geometries)
+    {
+        for (const Triangle& triangle : geometry.Triangles)
+        {
+            float intersectionDistance = 0.0f;
+            std::optional<float3> intersectionPoint = IntersectionChecker::Intersects(ray, triangle, intersectionDistance);
+            if (intersectionPoint.has_value() && intersectionDistance < hitResult.IntersectionDistance)
+            {
+                hitResult.IntersectionDistance = intersectionDistance;
+                hitResult.GeometryOrNull = &geometry;
+                hitResult.TriangleOrNull = &triangle;
+                hitResult.IntersectionPoint = intersectionPoint.value();
+            }
+        }
+    }
+
+    return hitResult;
+}
+
+Color OnClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, RenderContext& context)
+{
+    // Handle the closest hit event
+    // For example, you could store the hit information or update the pixel color
+    Color color = COLOR_BLACK; // Default color
+    if(hitResult.GeometryOrNull)
+    {
+        color = hitResult.GeometryOrNull->Color; // Use the geometry color
+    }
+
+    return color;
+}
+
+Color OnMiss([[maybe_unused]] const Ray& ray)
+{
+    // Handle the miss event
+    // For example, you could return a background color
+    return COLOR_BLACK; // Background color
+}
+
+Color TraceRay(HitResult& outHitResult, const Ray& ray, const std::vector<Geometry>& geometries, RenderContext& context)
+{
+    ++context.TraceDepth;
+
+    if (context.MaxTraceDepth < context.TraceDepth)
+    {
+        return COLOR_BLACK;
+    }
+
+    outHitResult = GetClosestHitGeometry(ray, geometries);
+    if(outHitResult.GeometryOrNull)
+    {
+        Color color = OnClosestHit(ray, outHitResult, context);
+        return color;
+    }
+    return OnMiss(ray);
+}
+```
+
 <div id="raytracing-cpu-demo-only-intersection" style="text-align: center; margin: 20px 0;">
   <canvas id="wasm-canvas-only-intersection" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing CPU Demo - Only Intersection</p>
@@ -183,7 +287,22 @@ createRaytracerModule({
 });
 </script>
 
-I think the scene is a bit dull. This is because the ray is tracing through the center of the pixel everytime. Pixels are in fact rectangles that cover the screen, which means that the ray that goes through the pixel doesn't intersect with everything that the pixel covers. In other words, we need to approximate the pixel area by sampling a random point inside the pixel rectangle. This is usually done by generating a random number in the range [0, 1) and multiplying it by the pixel width and height to get a random offset within the pixel rectangle. Here's how we can modify our raytracing function to include this:
+I think the scene is a bit dull. This is because the ray is tracing through the center of the pixel everytime. Pixels are in fact rectangles that cover the screen, which means that the ray that goes through the pixel doesn't intersect with everything that the pixel covers. In other words, we need to approximate the pixel area by sampling a random point inside the pixel rectangle. This is usually done by generating a random number in the range [0, 1) and multiplying it by the pixel width and height to get a random offset within the pixel rectangle.
+
+```cpp
+float2 jitter = {
+    UniformRandomGenerator::GetRandomNumber(),
+    UniformRandomGenerator::GetRandomNumber()
+};
+
+const float3 pixelPosition = lerp(
+    context.FocalLeftBottom,
+    context.FocalRightTop,
+    float3((static_cast<float>(x) + jitter.X) / static_cast<float>(context.Width), (static_cast<float>(y) + jitter.Y) / static_cast<float>(context.Height), 0.5f)
+);
+```
+
+Here's how we can modify our raytracing function to include this:
 
 
 <div id="raytracing-cpu-demo-only-intersection-with-jitter" style="text-align: center; margin: 20px 0;">
@@ -266,6 +385,52 @@ createRaytracerModule({
 
 The next step is to evaluate the lighting at the intersection point. The Cornell box has a rectangular area light source on the ceiling. What we can do is to cast another ray from the intersection point towards the light source and check if it intersects with any geometry in the scene. If it does, we can assume that the intersection point is in shadow and thus doesn't receive any light from the light source. We will simply return a black color in this case.
 
+```cpp
+Color OnClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, RenderContext& context)
+{
+    // Handle the closest hit event
+    // For example, you could store the hit information or update the pixel color
+    Color color = COLOR_BLACK; // Default color
+    if(hitResult.GeometryOrNull)
+    {
+        if(hitResult.GeometryOrNull->IsEmissive)
+        {
+            // If the geometry is emissive, we can consider it lit
+            color = hitResult.GeometryOrNull->Color; // Use the emissive color
+        }
+        else
+        {
+            Color intensity = COLOR_BLACK;
+            for(const Geometry* lightGeometry : sLightGeometries)
+            {
+                // Check if the hit point is in shadow
+                Ray shadowRay;
+                shadowRay.Origin = hitResult.IntersectionPoint;
+                float3 randomBarycentric;
+                randomBarycentric.X = UniformRandomGenerator::GetRandomNumber();
+                randomBarycentric.Y = UniformRandomGenerator::GetRandomNumber() * (1.0f - randomBarycentric.X);
+                randomBarycentric.Z = 1.0f - (randomBarycentric.X + randomBarycentric.Y);
+
+                const uint32_t triangleIndex = static_cast<uint32_t>(UniformRandomGenerator::GetRandomNumber() * (static_cast<float>(lightGeometry->Triangles.size() - 1)));
+                const float3 pointOnLightTriangle = lightGeometry->Triangles[triangleIndex].GetPointByBarycentricCoordinates(randomBarycentric);
+                shadowRay.Direction = (pointOnLightTriangle - hitResult.IntersectionPoint).normalize();
+                shadowRay.Origin += shadowRay.Direction * 0.1f; // Offset to avoid self-intersection
+
+                HitResult shadowHitResult = GetClosestHitGeometry(shadowRay, sGeometries);
+                if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
+                {
+                    Color lightColor = lightGeometry->Color;
+                    intensity += lightColor; // Add light color
+                }
+            }
+            color = intensity * hitResult.GeometryOrNull->Color; // Use the geometry color
+        }
+    }
+
+    return color;
+}
+```
+
 <div id="raytracing-cpu-demo-only-intersection-with-jitter-with-shadow-ray" style="text-align: center; margin: 20px 0;">
   <canvas id="wasm-canvas-only-intersection-with-jitter-with-shadow-ray" width="720" height="720" style="border:1px solid #aaa;"></canvas>
   <p>Raytracing CPU Demo - Shadow Ray</p>
@@ -345,6 +510,23 @@ createRaytracerModule({
 </script>
 
 Now, let's add the lighting evaluation. We will only evaluate direct illumination from the light source, and we will assume that the materials are perfectly diffuse (Lambertian reflectance). This means that the light intensity is proportional to the cosine of the angle between the surface normal and the light direction. We will also assume that the light source is a white light with a constant intensity.
+
+```cpp
+Color OnClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, RenderContext& context)
+{
+    ...
+                if(shadowHitResult.GeometryOrNull && shadowHitResult.GeometryOrNull == lightGeometry)
+                {
+                    Color lightColor = lightGeometry->Color;
+                    // If the shadow ray hits an emissive geometry, we can consider it lit
+                    // Calculate Lambertian reflectance
+                    const float lambertian = std::max(0.0f, dot(shadowRay.Direction, hitResult.TriangleOrNull->Normal));
+                    lightColor *= lambertian; // Add light color
+                    intensity += lightColor; // Add light color
+                }
+    ...
+}
+```
 
 <div id="raytracing-cpu-demo-direct-diffuse" style="text-align: center; margin: 20px 0;">
   <canvas id="wasm-canvas-direct-diffuse" width="720" height="720" style="border:1px solid #aaa;"></canvas>
@@ -426,6 +608,65 @@ createRaytracerModule({
 
 Now, let's improve the scene by considering the indirect illumination. This means that we will also consider the light that is reflected from the walls and the floor. We can do this by casting additional rays from the intersection point towards the walls and the floor, and checking if they intersect with any geometry in the scene. If they do, we can assume that the intersection point receives some indirect light from those surfaces.
 
+```cpp
+Color OnClosestHit([[maybe_unused]] const Ray& ray, const HitResult& hitResult, RenderContext& context)
+{
+    // Handle the closest hit event
+    // For example, you could store the hit information or update the pixel color
+    Color color = COLOR_BLACK; // Default color
+    if(hitResult.GeometryOrNull)
+    {
+        if(hitResult.GeometryOrNull->IsEmissive)
+        {
+            // If the geometry is emissive, we can consider it lit
+            color = hitResult.GeometryOrNull->Color; // Use the emissive color
+        }
+        else
+        {
+            Color intensity = COLOR_BLACK;
+            ...
+            {
+                Ray indirectRay;
+                indirectRay.Origin = hitResult.IntersectionPoint;
+                // Generate a random direction for indirect illumination
+                // Generate a random direction in the hemisphere oriented by the surface normal
+                float3 normal = hitResult.TriangleOrNull->Normal;
+                const float u1 = UniformRandomGenerator::GetRandomNumber();
+                const float u2 = UniformRandomGenerator::GetRandomNumber();
+                const float r = sqrtf(u1);
+                const float theta = 2.0f * static_cast<float>(std::numbers::pi) * u2;
+                const float x = r * cosf(theta);
+                const float y = r * sinf(theta);
+                const float z = sqrtf(1.0f - u1);
+
+                // Create an orthonormal basis (n, t, b)
+                const float3 n = normal.normalize();
+                const float3 t = (fabs(n.X) > 0.1f ? float3(0,1,0) : float3(1,0,0)).cross(n).normalize();
+                const float3 b = n.cross(t);
+
+                const float3 randomDirection = (t * x) + (b * y) + (n * z);
+                indirectRay.Direction = randomDirection.normalize();
+                indirectRay.Origin += indirectRay.Direction * 0.1f; // Offset to avoid self-intersection
+
+                HitResult indirectHitResult;
+                Color indirectColor = TraceRay(indirectHitResult, indirectRay, sGeometries, context);
+                // If the shadow ray hits an emissive geometry, we can consider it lit
+                if (indirectHitResult.GeometryOrNull)
+                {
+                    // Calculate Lambertian reflectance
+                    const float lambertian = std::max(0.0f, dot(indirectRay.Direction, hitResult.TriangleOrNull->Normal));
+                    indirectColor *= lambertian; // Add light color
+                    intensity += indirectColor; // Add indirect illumination color
+                }
+            }
+
+            color = intensity * hitResult.GeometryOrNull->Color; // Use the geometry color
+        }
+    }
+
+    return color;
+}
+```
 
 <div id="raytracing-cpu-demo-indirect-diffuse" style="text-align: center; margin: 20px 0;">
   <canvas id="wasm-canvas-indirect-diffuse" width="720" height="720" style="border:1px solid #aaa;"></canvas>
