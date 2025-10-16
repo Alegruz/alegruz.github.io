@@ -23,8 +23,9 @@ permalink: /cv/
 ## Summary
 
 * Game engine/graphics engineer with experience in real-time rendering, Direct3D 12, Vulkan, and shader compilation.
-* Currently working at Pearl Abyss on game engine systems.
-* Passionate about real-time path tracing and developing advanced rendering techniques
+* Currently working at Pearl Abyss on game engine system
+* Passionate about real-time path tracing, developing advanced rendering techniques, and rendering systems.
+* Interested in old consoles such as NES, SNES, GBA, etc.
 
 ## Skills
 
