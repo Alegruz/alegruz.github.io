@@ -88,6 +88,10 @@ permalink: /cv/
 
 ## Personal Projects & Research
 
+* **[Direct3D 12 Based Renderer](https://github.com/Alegruz/ComputerGraphicsStudies/)** (Side Project, 2025.09 - Present)
+    * Off-work project
+    * Minimal use of standard libraries
+    * Current focus is on implementing ReSTIR and ReSTIR GI
 * **Farming Horror Game in Unreal Engine 5** (Game Jam Team Project, 2025)
     * Primary goal is to familiarize myself with UE5 and its GAS system
 * **2D Tile-Based Platformer Puzzle Game in Unity 6** (Side Project, 2024)
@@ -95,11 +99,6 @@ permalink: /cv/
     * Used compute shader to create a 3D color distance field to mask the materials rendered
 * **2D Tile-Based Topdown Adventure Game in Unity 5** (Side Project, 2024)
     * Developed dialogue systems, combat AI systems, URP, cooking systems
-* **Direct3D 12/Vulkan Based Renderer** (Side Project, 2023 - Present)
-    * Off-work project
-    * Minimal use of standard libraries
-    * Current focus is on creating Vulkan real-time path tracer
-    * The goal is to implement state-of-the-art path tracing technologies (ReSTIR, etc.)
 * [**NES Emulator**](https://github.com/Alegruz/NintendoMuseum) (Side Project, 2023 - Present)
 * [**Screen Space ReSTIR GI**](https://github.com/Alegruz/Screen-Space-ReSTIR-GI) (Graduation Project, 2022)
     * My *attempt* at trying to implement ReSTIR GI
