@@ -68,7 +68,7 @@ This argument is <span class="invalid">invalid</span>. If it is **sunny** (S is 
 ### **Example 3: An Invalid Argument (Affirming the Consequent)**
 
 <div class="argument-box">
-Premise 1: If it is raining, then the ground is wet. (R → W)
+Premise 1: If it is raining, then the ground is wet. (R $\rightarrow$ W)
 Premise 2: The ground is wet. (W)
 Conclusion: Therefore, it is raining. (R)
 </div>
@@ -95,7 +95,7 @@ We can assign:
 The argument becomes:
 <div class="argument-box">
 Premise 1: R ∨ S
-Premise 2: ¬S
+Premise 2: $\neg$S
 Conclusion: Therefore, R
 </div>
 This is a **valid** form known as **Disjunctive Syllogism**.
@@ -106,26 +106,26 @@ The operations like "or" and "not" are called **logical connectives**—the fund
 
 | Logical Connective | Name | Connective Symbol | Description |
 | :--- | :--- | :--- | :--- |
-| **Negation** | Not | **$\neg$** | Before a statement (e.g., $\neg P$) |
-| **Conjunction** | And | **$\wedge$** | Between two statements (e.g., $P \wedge Q$) |
-| **Disjunction** | Or | **$\vee$** | Between two statements (e.g., $P \vee Q$) |
+| **Negation** | Not | **$\neg$** | Before a statement (e.g., $\neg$P) |
+| **Conjunction** | And | **$\wedge$** | Between two statements (e.g., P $\wedge$ Q) |
+| **Disjunction** | Or | **$\vee$** | Between two statements (e.g., P $\vee$ Q) |
 
 ---
 
 ### **Applying Connective Symbols**
 
-1.  Let **P** be "It is raining," and **Q** be "It is sunny."
-    * Negation: $\neg P$ ($\rightarrow$ It is **not** raining.)
-    * Conjunction: $P \wedge Q$ ($\rightarrow$ It is raining **and** it is sunny.)
-    * Disjunction: $P \vee Q$ ($\rightarrow$ It is raining **or** it is sunny.)
+1.  Let **P** be "It is raining," and **Q** be "It is sunny."
+    * Negation: $\neg$P ($\rightarrow$ It is **not** raining.)
+    * Conjunction: P $\wedge$ Q ($\rightarrow$ It is raining **and** it is sunny.)
+    * Disjunction: P $\vee$ Q ($\rightarrow$ It is raining **or** it is sunny.)
 
-2.  Grouping with Parentheses:
-    Just like in arithmetic, we use parentheses to group statements and define the order of operations.
-    * $(P \vee Q) \wedge \neg R$ means "Either it is raining or it is sunny, **and** it is not windy."
+2.  Grouping with Parentheses:
+    Just like in arithmetic, we use parentheses to group statements and define the order of operations.
+    * (P $\vee$ Q) $\wedge$ $\neg$R means "Either it is raining or it is sunny, **and** it is not windy."
 
 ---
 
-> Statements that correctly use connective symbols and parentheses (e.g., $(P \vee Q) \wedge \neg R$) are called **well-formed formulas** (or simply **formulas**).
+> Statements that correctly use connective symbols and parentheses (e.g., (P $\vee$ Q) $\wedge$ $\neg$R) are called **well-formed formulas** (or simply **formulas**).
 
 ---
 
