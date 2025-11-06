@@ -56,21 +56,21 @@ If both <span class="key-term">premises</span> are true, the <span class="key-te
 It is crucial to differentiate between an argument where the conclusion *might* be true and one where it *must* be true.
 
 <div class="argument-box">
-Premise 1: Either it is raining or it is sunny. (R ∨ S)
-Premise 2: Either it is sunny or it is cloudy. (S ∨ C)
-Conclusion: Therefore, it is raining or it is cloudy. (R ∨ C)
+Premise 1: Either it is raining or it is sunny. ($$R \vee S$$)
+Premise 2: Either it is sunny or it is cloudy. ($$S \vee C$$)
+Conclusion: Therefore, it is raining or it is cloudy. ($$R \vee C$$)
 </div>
 
-This argument is <span class="invalid">invalid</span>. If it is **sunny** (S is true, R and C are false), both premises are true, but the conclusion (R ∨ C) is false.
+This argument is <span class="invalid">invalid</span>. If it is **sunny** ($$S$$is true,$$R$$and$$C$$ are false), both premises are true, but the conclusion ($$R \vee C$$) is false.
 
 ---
 
 ### **Example 3: An Invalid Argument (Affirming the Consequent)**
 
 <div class="argument-box">
-Premise 1: If it is raining, then the ground is wet. (R $\rightarrow$ W)
-Premise 2: The ground is wet. (W)
-Conclusion: Therefore, it is raining. (R)
+Premise 1: If it is raining, then the ground is wet. ($$R \rightarrow W$$)
+Premise 2: The ground is wet. ($$W$$)
+Conclusion: Therefore, it is raining. ($$R$$)
 </div>
 
 This is also <span class="invalid">invalid</span>. The ground could be wet because of a sprinkler—the conclusion does not **necessarily** follow. This specific flaw is known as **Affirming the Consequent**.
@@ -89,14 +89,14 @@ For the argument:
 > Conclusion: Therefore, it is raining.
 
 We can assign:
-* **R** $\rightarrow$ "It is raining."
-* **S** $\rightarrow$ "It is sunny."
+* **R** $$\rightarrow$$ "It is raining."
+* **S** $$\rightarrow$$ "It is sunny."
 
 The argument becomes:
 <div class="argument-box">
-Premise 1: R ∨ S
-Premise 2: $\neg$S
-Conclusion: Therefore, R
+Premise 1: $$R \vee S$$
+Premise 2: $$\neg S$$
+Conclusion: Therefore, $$R$$
 </div>
 This is a **valid** form known as **Disjunctive Syllogism**.
 
@@ -106,33 +106,13 @@ The operations like "or" and "not" are called **logical connectives**—the fund
 
 | Logical Connective | Name | Connective Symbol | Description |
 | :--- | :--- | :--- | :--- |
-| **Negation** | Not | **$\neg$** | Before a statement (e.g., $\neg$P) |
-| **Conjunction** | And | **$\wedge$** | Between two statements (e.g., P $\wedge$ Q) |
-| **Disjunction** | Or | **$\vee$** | Between two statements (e.g., P $\vee$ Q) |
+| **Negation** | Not | **$$\neg$$** | Before a statement (e.g., $$\neg P$$) |
+| **Conjunction** | And | **$$\wedge$$** | Between two statements (e.g., $$P \wedge Q$$) |
+| **Disjunction** | Or | **$$\vee$$** | Between two statements (e.g., $$P \vee Q$$) |
 
 ---
 
 ### **Applying Connective Symbols**
 
 1.  Let **P** be "It is raining," and **Q** be "It is sunny."
-    * Negation: $\neg$P ($\rightarrow$ It is **not** raining.)
-    * Conjunction: P $\wedge$ Q ($\rightarrow$ It is raining **and** it is sunny.)
-    * Disjunction: P $\vee$ Q ($\rightarrow$ It is raining **or** it is sunny.)
-
-2.  Grouping with Parentheses:
-    Just like in arithmetic, we use parentheses to group statements and define the order of operations.
-    * (P $\vee$ Q) $\wedge$ $\neg$R means "Either it is raining or it is sunny, **and** it is not windy."
-
----
-
-> Statements that correctly use connective symbols and parentheses (e.g., (P $\vee$ Q) $\wedge$ $\neg$R) are called **well-formed formulas** (or simply **formulas**).
-
----
-
-## 1.2. Truth Tables ✅❌
-
-**(This section is currently empty, but the heading structure is ready.)*
-
-## 1.3. Variables and Sets 🏷️
-
-**(This section is currently empty, but the heading structure is ready.)*
+    * Negation:
