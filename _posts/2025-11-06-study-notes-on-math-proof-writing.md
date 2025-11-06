@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 📚 Study Notes on Math: Proof Writing (Part 1 - Sentential Logic)
+title: Study Notes on Math - Proof Writing
 date: 2025-11-06 16:05:00 +0900
 categories: math logic
 lang: "en"
