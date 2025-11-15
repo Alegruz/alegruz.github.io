@@ -50,9 +50,93 @@ permalink: /portfolio/
 
 
     .ba-board {
-      background: radial-gradient(circle at top left, #1f2937, #020617 60%);
-      padding: 0.75rem;
-      border-radius: 0.9rem;
+        background: radial-gradient(circle at top left, #1f2937, #020617 60%);
+        padding: 0.75rem;
+        border-radius: 0.9rem;
+
+        /* 중앙 패널용 */
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* 중앙 상세 패널 오버레이 */
+    .ba-hidden {
+    display: none !important;
+    }
+
+    .ba-tile-detail {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.7);
+    z-index: 10;
+    }
+
+    .ba-tile-detail-inner {
+    width: min(480px, 90%);
+    max-height: 80%;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    background: #020617;
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.7);
+    overflow: auto;
+    }
+
+    .ba-tile-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    }
+
+    .ba-tile-detail-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    }
+
+    .ba-tile-detail-close {
+    border: none;
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    font-size: 1.2rem;
+    line-height: 1;
+    background: rgba(15, 23, 42, 0.95);
+    color: #e5e7eb;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.08s;
+    }
+
+    .ba-tile-detail-close:hover {
+    background: rgba(248, 113, 113, 0.95);
+    color: #fff;
+    transform: translateY(-1px);
+    }
+
+    .ba-tile-detail-body {
+    font-size: 0.85rem;
+    color: #cbd5f5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    }
+
+    .ba-tile-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    }
+
+    .ba-tile-detail-label {
+    color: #9ca3af;
+    }
+
+    .ba-tile-detail-value {
+    font-weight: 500;
     }
 
     .ba-board-grid {
@@ -483,9 +567,31 @@ permalink: /portfolio/
 
   <div id="ba-game" style="display:none;">
     <div class="ba-layout">
-      <div class="ba-board">
-        <div id="ba-board-grid" class="ba-board-grid"></div>
-      </div>
+        <div class="ba-board">
+            <div id="ba-board-grid" class="ba-board-grid"></div>
+            <!-- 타일 상세 패널 -->
+            <div id="ba-tile-detail" class="ba-tile-detail ba-hidden">
+            <div class="ba-tile-detail-inner">
+                <div class="ba-tile-detail-header">
+                <div id="ba-tile-detail-title" class="ba-tile-detail-title">
+                    타일 정보
+                </div>
+                <button
+                    type="button"
+                    id="ba-tile-detail-close"
+                    class="ba-tile-detail-close"
+                    aria-label="닫기"
+                >
+                    ×
+                </button>
+                </div>
+                <div id="ba-tile-detail-body" class="ba-tile-detail-body">
+                <!-- JS가 내용 채움 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
       <div class="ba-sidebar">
         <div class="ba-panel">
           <div class="ba-panel-title">
@@ -494,7 +600,6 @@ permalink: /portfolio/
           </div>
           <div class="ba-turn-main" id="ba-current-tile">현재 위치: -</div>
           <div class="ba-turn-sub" id="ba-turn-sub">-</div>
-
           <div class="ba-dice-row">
             <div class="ba-die" id="ba-die-1">-</div>
             <div class="ba-die" id="ba-die-2">-</div>
@@ -502,7 +607,6 @@ permalink: /portfolio/
               합계: <span id="ba-die-sum">-</span>
             </div>
           </div>
-
           <div id="ba-space-row" class="ba-space-row">
             <label>
               우주여행 목적지
@@ -512,7 +616,6 @@ permalink: /portfolio/
               이동
             </button>
           </div>
-
           <div class="ba-control-row">
             <button id="ba-roll-btn" class="ba-btn">주사위</button>
             <button id="ba-buy-btn" class="ba-btn secondary">구입</button>
@@ -520,7 +623,6 @@ permalink: /portfolio/
               턴 종료
             </button>
           </div>
-
           <div class="ba-message" id="ba-message"></div>
           <div class="ba-note">
             · 자신의 턴 시작 시, <b>아직 주사위를 굴리기 전에</b> 소유 도시를 클릭하면
@@ -1215,6 +1317,12 @@ permalink: /portfolio/
 
       var elPlayers = document.getElementById("ba-players");
       var elLog = document.getElementById("ba-log");
+
+      // ▼ 타일 상세 패널 요소
+      var elTileDetail = document.getElementById("ba-tile-detail");
+      var elTileDetailTitle = document.getElementById("ba-tile-detail-title");
+      var elTileDetailBody = document.getElementById("ba-tile-detail-body");
+      var elTileDetailClose = document.getElementById("ba-tile-detail-close");
 
       // ---------- Helpers for state --------------------------------------
       function currentPlayer() {
@@ -1957,6 +2065,162 @@ permalink: /portfolio/
         }
         return type;
       }
+      
+      function hideTileDetail() {
+        if (!elTileDetail) return;
+        elTileDetail.classList.add("ba-hidden");
+      }
+
+      function showTileDetail(boardIndex) {
+        if (!elTileDetail) return;
+        var tile = tileAt(boardIndex);
+        if (!tile) return;
+
+        elTileDetailTitle.textContent = tile.name || "타일 정보";
+
+        // 소유자 / 건물 단계 계산
+        var owner = null;
+        for (var i = 0; i < state.players.length; i++) {
+          var p = state.players[i];
+          if (!p.bankrupt && playerOwnsTile(p, boardIndex)) {
+            owner = p;
+            break;
+          }
+        }
+
+        var lvl = owner ? propertyLevel(owner, boardIndex) : 0;
+        var lvlLabel =
+          lvl === 0
+            ? "없음"
+            : lvl === 1
+            ? "별장"
+            : lvl === 2
+            ? "빌딩"
+            : "호텔";
+
+        var typeText = typeLabel(tile.type);
+
+        // 본문 HTML 구성 (타입에 따라 필요한 정보만)
+        var html = "";
+
+        html +=
+          '<div class="ba-tile-detail-row">' +
+          '<div class="ba-tile-detail-label">종류</div>' +
+          '<div class="ba-tile-detail-value">' +
+          typeText +
+          "</div></div>";
+
+        if (tile.type === "city" || tile.type === "vehicle") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">증서 가격</div>' +
+            '<div class="ba-tile-detail-value">' +
+            formatMoney(tile.landPrice || 0) +
+            "</div></div>";
+        }
+
+        if (tile.type === "city") {
+          if (tile.tollLand) {
+            html +=
+              '<div class="ba-tile-detail-row">' +
+              '<div class="ba-tile-detail-label">기본 통행료</div>' +
+              '<div class="ba-tile-detail-value">' +
+              formatMoney(tile.tollLand) +
+              "</div></div>";
+          }
+          if (tile.tollVilla) {
+            html +=
+              '<div class="ba-tile-detail-row">' +
+              '<div class="ba-tile-detail-label">별장 통행료</div>' +
+              '<div class="ba-tile-detail-value">' +
+              formatMoney(tile.tollVilla) +
+              "</div></div>";
+          }
+          if (tile.tollBuilding) {
+            html +=
+              '<div class="ba-tile-detail-row">' +
+              '<div class="ba-tile-detail-label">빌딩 통행료</div>' +
+              '<div class="ba-tile-detail-value">' +
+              formatMoney(tile.tollBuilding) +
+              "</div></div>";
+          }
+          if (tile.tollHotel) {
+            html +=
+              '<div class="ba-tile-detail-row">' +
+              '<div class="ba-tile-detail-label">호텔 통행료</div>' +
+              '<div class="ba-tile-detail-value">' +
+              formatMoney(tile.tollHotel) +
+              "</div></div>";
+          }
+        } else if (tile.type === "vehicle" && tile.tollLand) {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">통행료</div>' +
+            '<div class="ba-tile-detail-value">' +
+            formatMoney(tile.tollLand) +
+            "</div></div>";
+        } else if (tile.type === "start") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">효과</div>' +
+            '<div class="ba-tile-detail-value">지날 때마다 20만 획득</div></div>';
+        } else if (tile.type === "island") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">효과</div>' +
+            '<div class="ba-tile-detail-value">무인도에 ' +
+            ISLAND_TURNS +
+            "턴 동안 갇힘 (더블 시 탈출)</div></div>";
+        } else if (tile.type === "welfare") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">효과</div>' +
+            '<div class="ba-tile-detail-value">적립된 사회복지기금을 모두 가져감</div></div>';
+        } else if (tile.type === "space") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">효과</div>' +
+            '<div class="ba-tile-detail-value">다음 턴에 원하는 목적지로 이동</div></div>';
+        } else if (tile.type === "golden") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">효과</div>' +
+            '<div class="ba-tile-detail-value">황금열쇠 카드를 한 장 뽑음</div></div>';
+        }
+
+        html +=
+          '<div class="ba-tile-detail-row">' +
+          '<div class="ba-tile-detail-label">현재 소유자</div>' +
+          '<div class="ba-tile-detail-value">' +
+          (owner ? owner.name : "없음") +
+          "</div></div>";
+
+        if (tile.type === "city") {
+          html +=
+            '<div class="ba-tile-detail-row">' +
+            '<div class="ba-tile-detail-label">건물 단계</div>' +
+            '<div class="ba-tile-detail-value">' +
+            lvlLabel +
+            "</div></div>";
+        }
+
+        elTileDetailBody.innerHTML = html;
+        elTileDetail.classList.remove("ba-hidden");
+      }
+
+      // 닫기 이벤트
+      if (elTileDetailClose) {
+        elTileDetailClose.addEventListener("click", hideTileDetail);
+      }
+      if (elTileDetail) {
+        elTileDetail.addEventListener("click", function (ev) {
+          if (ev.target === elTileDetail) hideTileDetail();
+        });
+      }
+      document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape") hideTileDetail();
+      });
+
 
       function populateSpaceSelect(player) {
         elSpaceSelect.innerHTML = "";
@@ -2173,15 +2437,23 @@ permalink: /portfolio/
       }
 
       // Build buildings by clicking your own city before rolling
-      function handleBoardClick(e) {
+    function handleBoardClick(e) {
         var cell = e.target.closest(".ba-tile");
         if (!cell) return;
         var idxStr = cell.dataset.boardIndex;
         if (typeof idxStr === "undefined") return;
 
         var idx = parseInt(idxStr, 10);
+
+        // ✅ 항상 상세 패널은 띄운다 (다른 타일 클릭하면 내용만 교체)
+        showTileDetail(idx);
+
         var tile = tileAt(idx);
-        if (tile.type !== "city") return;
+        if (tile.type !== "city") {
+          // 건물 짓기 로직은 도시만 해당
+          return;
+        }
+
 
         var p = currentPlayer();
         if (!p || state.gameOver || p.bankrupt) return;
