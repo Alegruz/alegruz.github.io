@@ -166,6 +166,12 @@ permalink: /portfolio/
       border: none;
     }
 
+    .ba-tile.donate {
+        border-color: #fb923c; /* 주황색 */
+        box-shadow: 0 0 0 1px rgba(251, 146, 60, 0.4);
+    }
+
+
     .ba-tile-header {
       display: flex;
       justify-content: space-between;
@@ -841,6 +847,13 @@ permalink: /portfolio/
           type: "welfare",
         },
 
+        donate: {
+            id: "donate",
+            name: "사회복지기금 기부",
+            type: "donate"
+        },
+
+
         buenos_aires: {
           id: "buenos_aires",
           name: "부에노스아이레스",
@@ -1068,8 +1081,8 @@ permalink: /portfolio/
         "rome",           // 35
         "london",         // 36
         "newyork",        // 37
-        "seoul",          // 38
-        "golden",         // 39
+        "donate",         // 38 사회복지기금 기부
+        "seoul",          // 39
     ];
 
 
@@ -1346,12 +1359,14 @@ permalink: /portfolio/
       }
 
       function setPropertyLevel(player, tileIndex, level) {
-        if (level <= 0) {
-          delete player.properties[tileIndex];
+        // level < 0 인 경우만 소유권 삭제
+        if (level < 0) {
+            delete player.properties[tileIndex];
         } else {
-          player.properties[tileIndex] = level;
+            player.properties[tileIndex] = level; // 0도 유효한 소유 상태
         }
-      }
+    }
+
 
       function nextAlivePlayerIndex(fromIndex) {
         var len = state.players.length;
@@ -1724,7 +1739,24 @@ permalink: /portfolio/
               state.welfareFund
             );
             state.welfareFund = 0;
-          } else {
+          } else if (tile.type === "donate") {
+            var amt = tile.donateAmount || 50000;
+
+            player.money -= amt;
+            state.welfareFund += amt;
+
+            logEvent(
+            player,
+            "사회복지기금 기부: " + formatMoney(amt) + " 적립",
+            -amt
+            );
+
+            if (player.money < 0) {
+                player.bankrupt = true;
+                player.money = 0;
+                logEvent(player, "자금 부족으로 파산", 0);
+            }
+        } else {
             logEvent(
               player,
               "사회복지기금: 적립된 금액이 없습니다.",
@@ -1777,6 +1809,7 @@ permalink: /portfolio/
             div.className = "ba-tile";
             if (tile.type === "start") div.className += " special";
             if (tile.type === "welfare") div.className += " special";
+            if (tile.type === "donate") div.className += " donate";
             if (tile.type === "space") div.className += " special";
             if (tile.type === "golden") div.className += " golden";
             div.dataset.boardIndex = idx;
@@ -1806,7 +1839,10 @@ permalink: /portfolio/
               priceSpan.textContent = "목적지 선택";
             } else if (tile.type === "island") {
               priceSpan.textContent = "3턴 휴식";
+            } else if (tile.type === "donate") {
+                priceSpan.textContent = "-" + formatMoney(tile.donateAmount || 50000);
             }
+
 
             header.appendChild(priceSpan);
             div.appendChild(header);
