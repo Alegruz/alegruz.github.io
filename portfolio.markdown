@@ -516,6 +516,61 @@ permalink: /portfolio/
       gap: 0.25rem;
       flex: 1;
     }
+
+    /* Golden Key Popup Container */
+    .ba-golden-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* board보다 위 */
+    }
+
+    /* Golden Key Card */
+    .ba-golden-card {
+    width: 360px;
+    padding: 25px 30px;
+    background: #fffbea;
+    border-radius: 14px;
+    border: 2px solid #facc15;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    transform: scale(0.6);
+    opacity: 0;
+    animation: ba-golden-pop 0.35s ease-out forwards;
+    }
+
+    .ba-golden-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ca8a04;
+    text-align: center;
+    margin-bottom: 12px;
+    }
+
+    .ba-golden-text {
+    font-size: 18px;
+    color: #4a3000;
+    white-space: pre-line;
+    margin-bottom: 20px;
+    }
+
+    .ba-btn.golden-btn {
+    width: 100%;
+    background: #facc15;
+    color: #4a3000;
+    font-weight: bold;
+    border-radius: 8px;
+    }
+
+    /* Popup animation */
+    @keyframes ba-golden-pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    70% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+    }
+
   </style>
 
   <div class="ba-header">
@@ -571,7 +626,16 @@ permalink: /portfolio/
     </div>
   </div>
 
-  <div id="ba-game" style="display:none;">
+  <div id="ba-game" style="display:none;"><!-- Golden Key Popup -->
+    <div id="ba-golden-popup" class="ba-golden-popup">
+        <div class="ba-golden-card">
+            <div class="ba-golden-title">황금 열쇠</div>
+            <div id="ba-golden-text" class="ba-golden-text">카드 내용</div>
+
+            <button id="ba-golden-continue" class="ba-btn golden-btn">계속</button>
+        </div>
+    </div>
+
     <div class="ba-layout">
         <div class="ba-board">
             <div id="ba-board-grid" class="ba-board-grid"></div>
@@ -1337,6 +1401,21 @@ permalink: /portfolio/
       var elTileDetailBody = document.getElementById("ba-tile-detail-body");
       var elTileDetailClose = document.getElementById("ba-tile-detail-close");
 
+    function showGoldenKeyPopup(text, callback) {
+        var popup = document.getElementById("ba-golden-popup");
+        var txt = document.getElementById("ba-golden-text");
+        var btn = document.getElementById("ba-golden-continue");
+
+        txt.textContent = text;
+
+        popup.style.display = "flex";
+
+        btn.onclick = function () {
+            popup.style.display = "none";
+            if (callback) callback();
+        };
+    }
+    
       // ---------- Helpers for state --------------------------------------
       function currentPlayer() {
         return state.players[state.currentTurn];
@@ -1770,7 +1849,13 @@ permalink: /portfolio/
           logEvent(player, "우주여행 도착: 다음 턴에 목적지를 선택", 0);
         } else if (tile.type === "golden") {
           var card = drawGoldenCard();
-          applyGoldenCard(player, card);
+          showGoldenKeyPopup(
+            "황금열쇠!\n" + card.text,
+            function () {
+                // 기존 황금열쇠 후속 처리(기부, 이동, 벌금 등) 여기에
+                applyGoldenCard(player, card);
+            }
+            );
         }
       }
 
