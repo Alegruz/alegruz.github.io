@@ -1415,7 +1415,7 @@ permalink: /portfolio/
             if (callback) callback();
         };
     }
-    
+
       // ---------- Helpers for state --------------------------------------
       function currentPlayer() {
         return state.players[state.currentTurn];
@@ -1724,7 +1724,10 @@ permalink: /portfolio/
       }
 
       function handleLanding(player, tile) {
-        if (state.gameOver || player.bankrupt) return;
+        if (state.gameOver || player.bankrupt) 
+        {
+            return;
+        }
 
         if (tile.type === "start") {
           logEvent(player, "출발 칸에 도착", 0);
@@ -2423,7 +2426,12 @@ permalink: /portfolio/
 
       function rollDice() {
         var p = currentPlayer();
-        if (!p || state.gameOver || p.bankrupt) return;
+        if (!p || state.gameOver || p.bankrupt) 
+        {
+            endTurn();
+            checkGameOver();
+            return;
+        }
 
         if (p.spacePending) return; // 우주여행 먼저 처리해야 함
 
@@ -2465,7 +2473,12 @@ permalink: /portfolio/
           return;
         }
 
-        if (state.hasRolled && state.extraRolls <= 0) return;
+        if (state.hasRolled && state.extraRolls <= 0 || p.bankrupt) 
+        {
+            endTurn();
+            checkGameOver();
+            return;
+        }
 
         var d1 = randomDie();
         var d2 = randomDie();
@@ -2496,6 +2509,10 @@ permalink: /portfolio/
         }
 
         renderAll();
+        if(p.bankrupt)
+        {
+            endTurn();
+        }
         checkGameOver();
       }
 
@@ -2505,7 +2522,12 @@ permalink: /portfolio/
 
       function buyCurrentTile() {
         var p = currentPlayer();
-        if (!p || state.gameOver || p.bankrupt) return;
+        if (!p || state.gameOver || p.bankrupt) 
+        {
+            endTurn();
+            checkGameOver();
+            return;
+        }
         if (!state.hasRolled) return;
 
         var idx = p.position;
@@ -2577,7 +2599,12 @@ permalink: /portfolio/
 
 
         var p = currentPlayer();
-        if (!p || state.gameOver || p.bankrupt) return;
+        if (!p || state.gameOver || p.bankrupt) 
+        {
+            endTurn();
+            checkGameOver();
+            return;
+        }
         if (state.hasRolled) {
           elMessage.textContent =
             "건물은 주사위를 굴리기 전에만 지을 수 있습니다.";
