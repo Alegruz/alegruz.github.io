@@ -953,8 +953,6 @@ permalink: /portfolio/
         </div>
       </div>
     </div>
-  </div>
-
   <script>
     (function () {
       // ---------- DATA ----------------------------------------------------
