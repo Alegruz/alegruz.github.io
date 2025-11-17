@@ -248,6 +248,25 @@ permalink: /portfolio/
       color: #020617;
       font-weight: 700;
       outline: 1px solid rgba(15, 23, 42, 0.75);
+      transition: transform 0.2s ease;
+    }
+
+    .ba-token-current {
+      transform: scale(1.15);
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.8), 0 0 18px rgba(255, 255, 255, 0.35);
+      animation: baTokenPulse 1.4s infinite;
+    }
+
+    @keyframes baTokenPulse {
+      0% {
+        transform: scale(1.05);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1.05);
+      }
     }
 
     .ba-tile-index {
@@ -305,6 +324,37 @@ permalink: /portfolio/
       font-weight: 400;
     }
 
+    .ba-turn-alert {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      background: rgba(59, 130, 246, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #e5e7eb;
+      margin-bottom: 0.4rem;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .ba-turn-alert.is-active {
+      opacity: 1;
+      transform: translateY(0);
+      animation: baTurnAlertPulse 1.4s infinite;
+    }
+
+    .ba-turn-dot {
+      width: 0.6rem;
+      height: 0.6rem;
+      border-radius: 999px;
+      background: #3b82f6;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.65);
+    }
+
     .ba-turn-main {
       font-size: 0.8rem;
       margin-bottom: 0.18rem;
@@ -314,6 +364,18 @@ permalink: /portfolio/
       font-size: 0.7rem;
       color: #9ca3af;
       margin-bottom: 0.25rem;
+    }
+
+    @keyframes baTurnAlertPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35);
+      }
+      70% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      }
     }
 
     .ba-dice-row {
@@ -408,11 +470,26 @@ permalink: /portfolio/
       padding: 0.25rem 0.35rem;
       border-radius: 0.45rem;
       background: radial-gradient(circle at top left, #020617, #020617 55%);
+      transition: transform 0.2s ease, border 0.2s ease;
     }
 
     .ba-player-row.ba-player-current {
       border: 1px solid rgba(59, 130, 246, 0.9);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.45);
+      transform: scale(1.015);
+      animation: baPlayerPulse 1.6s infinite;
+    }
+
+    @keyframes baPlayerPulse {
+      0% {
+        box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+      }
+      50% {
+        box-shadow: 0 0 18px rgba(96, 165, 250, 0.6);
+      }
+      100% {
+        box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+      }
     }
 
     .ba-player-main {
@@ -684,6 +761,10 @@ permalink: /portfolio/
                 <span id="ba-turn-title">-</span>
                 <span id="ba-welfare">복지기금: 0원</span>
               </div>
+              <div class="ba-turn-alert" id="ba-turn-alert">
+                <div class="ba-turn-dot" id="ba-turn-dot"></div>
+                <div id="ba-turn-alert-text">턴 대기 중</div>
+              </div>
               <div class="ba-turn-main" id="ba-current-tile">현재 위치: -</div>
               <div class="ba-turn-sub" id="ba-turn-sub">-</div>
               <div class="ba-dice-row">
@@ -707,6 +788,9 @@ permalink: /portfolio/
                 <button id="ba-buy-btn" class="ba-btn secondary">구입</button>
                 <button id="ba-endturn-btn" class="ba-btn secondary">
                   턴 종료
+                </button>
+                <button id="ba-reset-game-btn" class="ba-btn danger">
+                  새 게임
                 </button>
               </div>
               <div class="ba-message" id="ba-message"></div>
@@ -1241,6 +1325,25 @@ permalink: /portfolio/
         return sign + out + "원";
       }
 
+      function hexToRgba(hex, alpha) {
+        if (!hex) return "rgba(59, 130, 246, " + (alpha || 1) + ")";
+        var value = hex.replace("#", "");
+        if (value.length === 3) {
+          value = value
+            .split("")
+            .map(function (c) {
+              return c + c;
+            })
+            .join("");
+        }
+        var intVal = parseInt(value, 16);
+        if (isNaN(intVal)) return "rgba(59, 130, 246, " + (alpha || 1) + ")";
+        var r = (intVal >> 16) & 255;
+        var g = (intVal >> 8) & 255;
+        var b = intVal & 255;
+        return "rgba(" + r + ", " + g + ", " + b + ", " + (alpha || 1) + ")";
+      }
+
       function shuffle(arr) {
         for (var i = arr.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1));
@@ -1462,6 +1565,9 @@ permalink: /portfolio/
       var elTurnSub = document.getElementById("ba-turn-sub");
       var elWelfare = document.getElementById("ba-welfare");
       var elMessage = document.getElementById("ba-message");
+      var elTurnAlert = document.getElementById("ba-turn-alert");
+      var elTurnAlertText = document.getElementById("ba-turn-alert-text");
+      var elTurnDot = document.getElementById("ba-turn-dot");
 
       var elDie1 = document.getElementById("ba-die-1");
       var elDie2 = document.getElementById("ba-die-2");
@@ -1470,6 +1576,7 @@ permalink: /portfolio/
       var elRollBtn = document.getElementById("ba-roll-btn");
       var elBuyBtn = document.getElementById("ba-buy-btn");
       var elEndTurnBtn = document.getElementById("ba-endturn-btn");
+      var elResetGameBtn = document.getElementById("ba-reset-game-btn");
 
       var elSpaceRow = document.getElementById("ba-space-row");
       var elSpaceSelect = document.getElementById("ba-space-select");
@@ -2074,6 +2181,9 @@ permalink: /portfolio/
                 tok.className = "ba-token";
                 tok.style.background = p.color;
                 tok.textContent = p.name.charAt(0);
+                if (curr && p === curr && !state.gameOver) {
+                  tok.className += " ba-token-current";
+                }
                 playersDiv.appendChild(tok);
               }
             });
@@ -2172,15 +2282,49 @@ permalink: /portfolio/
         });
       }
 
+      function updateTurnAlert(player) {
+        if (!elTurnAlert || !elTurnAlertText || !elTurnDot) return;
+        if (state.gameOver) {
+          elTurnAlertText.textContent = "게임이 종료되었습니다.";
+          elTurnAlert.style.background = "rgba(148, 163, 184, 0.18)";
+          elTurnAlert.style.borderColor = "rgba(148, 163, 184, 0.5)";
+          elTurnDot.style.background = "#94a3b8";
+          elTurnDot.style.boxShadow = "0 0 12px rgba(148, 163, 184, 0.7)";
+          elTurnAlert.classList.add("is-active");
+          return;
+        }
+
+        if (!player) {
+          elTurnAlertText.textContent = "턴 대기 중";
+          elTurnDot.style.background = "#3b82f6";
+          elTurnDot.style.boxShadow = "0 0 12px rgba(59, 130, 246, 0.65)";
+          elTurnAlert.classList.remove("is-active");
+          return;
+        }
+
+        elTurnAlertText.textContent = player.name + "님의 차례입니다.";
+        var bg = hexToRgba(player.color, 0.2);
+        elTurnAlert.style.background = bg;
+        elTurnAlert.style.borderColor = player.color;
+        elTurnDot.style.background = player.color;
+        elTurnDot.style.boxShadow = "0 0 12px " + hexToRgba(player.color, 0.75);
+        elTurnAlert.classList.add("is-active");
+      }
+
       function renderTurnInfo() {
         var p = currentPlayer();
-        if (!p) return;
+        if (!p) {
+          updateTurnAlert(null);
+          return;
+        }
 
         if (state.gameOver) {
           elTurnTitle.textContent = "게임 종료";
         } else {
           elTurnTitle.textContent = p.name + "님의 차례";
         }
+
+        updateTurnAlert(p);
 
         var tile = tileAt(p.position);
         elCurrentTile.textContent =
@@ -2527,6 +2671,8 @@ permalink: /portfolio/
         elSetup.style.display = "block";
         elResetBtn.style.display = "none";
         elLog.innerHTML = "";
+        elMessage.textContent = "";
+        updateTurnAlert(null);
       }
 
       function rollDice() {
@@ -2830,6 +2976,9 @@ permalink: /portfolio/
       // ---------- Event binding ------------------------------------------
       elStartBtn.addEventListener("click", startGame);
       elResetBtn.addEventListener("click", resetGame);
+      if (elResetGameBtn) {
+        elResetGameBtn.addEventListener("click", resetGame);
+      }
       elRollBtn.addEventListener("click", rollDice);
       elBuyBtn.addEventListener("click", buyCurrentTile);
       elEndTurnBtn.addEventListener("click", endTurn);
