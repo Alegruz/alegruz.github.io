@@ -76,6 +76,30 @@ permalink: /portfolio/
         <li>Turn on RLS for both tables, then add policies such as “Authenticated users can insert/select/update rows where <code>room_id</code> matches their session”. For a prototype, enable <em>Authenticated access</em> and sign clients in anonymously using <code>supabase.auth.signInWithOtp({ email })</code> or <code>signInAnonymously()</code>.</li>
         <li>In <em>Database &gt; Replication</em> enable Realtime for the <code>rooms</code> and <code>players</code> tables so updates are broadcast to clients.</li>
       </ul>
+      <pre><code>-- Allow authenticated clients (including anonymous auth) to insert lobby rows
+CREATE POLICY rooms_insert_authenticated
+ON public.rooms
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() IS NOT NULL);
+
+-- Only users that joined the room may read or update its state blob
+CREATE POLICY rooms_joined_rw
+ON public.rooms
+FOR SELECT USING (EXISTS (
+  SELECT 1 FROM public.players
+  WHERE players.room_id = rooms.id AND players.user_id = auth.uid()
+))
+WITH CHECK (EXISTS (
+  SELECT 1 FROM public.players
+  WHERE players.room_id = rooms.id AND players.user_id = auth.uid()
+));
+
+-- players table: each user may only read/write their own row
+CREATE POLICY players_self_access
+ON public.players
+FOR ALL TO authenticated
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());</code></pre>
     </li>
     <li>
       <strong>Wire your GitHub Pages UI</strong>
@@ -979,7 +1003,8 @@ async function commitMove(patch) {
     <div class="ba-note">
       · 호스트는 위 설정으로 방을 만든 뒤, 로비 코드를 친구에게 공유합니다.<br />
       · 참가자는 같은 코드를 입력하고 참가 버튼을 누르면 동일한 게임 상태를 실시간으로 공유할 수 있습니다.<br />
-      · Supabase Auth 설정에서 Anonymous Sign-ins를 반드시 활성화해야 브라우저에서 인증이 진행됩니다.
+      · Supabase Auth 설정에서 Anonymous Sign-ins를 반드시 활성화해야 브라우저에서 인증이 진행됩니다.<br />
+      · “new row violates row-level security policy” 오류가 보이면 위 SQL 정책을 적용했는지 다시 확인하세요.
     </div>
   </div>
 

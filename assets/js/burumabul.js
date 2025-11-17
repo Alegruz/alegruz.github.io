@@ -828,15 +828,39 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
         elOnlineStatus.style.color = isError ? "#f87171" : "#9ca3af";
       }
 
+      var RLS_HELPERS = {
+        rooms:
+          "rooms 테이블에 INSERT 정책이 없어서 거부되었습니다. SQL Editor에서\n" +
+          "CREATE POLICY rooms_insert_authenticated ON public.rooms\n" +
+          "FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL);",
+        players:
+          "players 테이블에 대한 RLS 정책을 추가해야 합니다. SQL 예시:\n" +
+          "CREATE POLICY players_self_access ON public.players\n" +
+          "FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());",
+      };
+
       function formatSupabaseError(err, fallback) {
         if (!err) return fallback || "알 수 없는 오류";
+        var message = err.message || "";
         if (err.code === "anon-disabled") {
           return (
             "Anonymous Sign-ins가 비활성화되어 있습니다. Supabase Authentication > Providers > Anonymous에서" +
             " Anonymous Sign-ins를 켜 주세요."
           );
         }
-        return err.message || fallback || "알 수 없는 오류";
+        if (/row-level security/i.test(message)) {
+          if (message.includes('"rooms"')) {
+            return RLS_HELPERS.rooms;
+          }
+          if (message.includes('"players"')) {
+            return RLS_HELPERS.players;
+          }
+          return (
+            "Row Level Security 정책으로 인해 거부되었습니다. rooms/players 테이블에 " +
+            "authenticated 사용자를 위한 INSERT/SELECT 정책을 추가하세요."
+          );
+        }
+        return message || fallback || "알 수 없는 오류";
       }
 
       function renderOnlineRoster() {
