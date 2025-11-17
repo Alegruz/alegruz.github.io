@@ -248,25 +248,13 @@ permalink: /portfolio/
       color: #020617;
       font-weight: 700;
       outline: 1px solid rgba(15, 23, 42, 0.75);
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .ba-token-current {
       transform: scale(1.15);
-      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.8), 0 0 18px rgba(255, 255, 255, 0.35);
-      animation: baTokenPulse 1.4s infinite;
-    }
-
-    @keyframes baTokenPulse {
-      0% {
-        transform: scale(1.05);
-      }
-      50% {
-        transform: scale(1.2);
-      }
-      100% {
-        transform: scale(1.05);
-      }
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.8),
+        0 0 16px rgba(255, 255, 255, 0.4);
     }
 
     .ba-tile-index {
@@ -332,7 +320,7 @@ permalink: /portfolio/
       border-radius: 999px;
       font-weight: 600;
       font-size: 0.8rem;
-      background: rgba(59, 130, 246, 0.18);
+      background: rgba(59, 130, 246, 0.15);
       border: 1px solid rgba(59, 130, 246, 0.4);
       color: #e5e7eb;
       margin-bottom: 0.4rem;
@@ -352,7 +340,19 @@ permalink: /portfolio/
       height: 0.6rem;
       border-radius: 999px;
       background: #3b82f6;
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.65);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.55);
+    }
+
+    @keyframes baTurnAlertPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+      }
     }
 
     .ba-turn-main {
@@ -364,18 +364,6 @@ permalink: /portfolio/
       font-size: 0.7rem;
       color: #9ca3af;
       margin-bottom: 0.25rem;
-    }
-
-    @keyframes baTurnAlertPulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35);
-      }
-      70% {
-        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-      }
     }
 
     .ba-dice-row {
@@ -470,25 +458,31 @@ permalink: /portfolio/
       padding: 0.25rem 0.35rem;
       border-radius: 0.45rem;
       background: radial-gradient(circle at top left, #020617, #020617 55%);
-      transition: transform 0.2s ease, border 0.2s ease;
+      border: 1px solid rgba(15, 23, 42, 0.8);
+      transition: transform 0.2s ease, box-shadow 0.2s ease,
+        border-color 0.2s ease;
     }
 
     .ba-player-row.ba-player-current {
-      border: 1px solid rgba(59, 130, 246, 0.9);
-      box-shadow: 0 0 15px rgba(37, 99, 235, 0.45);
-      transform: scale(1.015);
-      animation: baPlayerPulse 1.6s infinite;
+      border-color: var(--player-color, rgba(59, 130, 246, 0.9));
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.85),
+        0 0 14px var(--player-color, rgba(59, 130, 246, 0.55));
+      transform: translateY(-1px);
+      animation: baPlayerPulse 1.5s infinite;
     }
 
     @keyframes baPlayerPulse {
       0% {
-        box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.85),
+          0 0 10px var(--player-color, rgba(59, 130, 246, 0.4));
       }
       50% {
-        box-shadow: 0 0 18px rgba(96, 165, 250, 0.6);
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.85),
+          0 0 18px var(--player-color, rgba(96, 165, 250, 0.65));
       }
       100% {
-        box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.85),
+          0 0 10px var(--player-color, rgba(59, 130, 246, 0.4));
       }
     }
 
@@ -1561,13 +1555,13 @@ permalink: /portfolio/
 
       var elBoardGrid = document.getElementById("ba-board-grid");
       var elTurnTitle = document.getElementById("ba-turn-title");
+      var elTurnAlert = document.getElementById("ba-turn-alert");
+      var elTurnAlertText = document.getElementById("ba-turn-alert-text");
+      var elTurnDot = document.getElementById("ba-turn-dot");
       var elCurrentTile = document.getElementById("ba-current-tile");
       var elTurnSub = document.getElementById("ba-turn-sub");
       var elWelfare = document.getElementById("ba-welfare");
       var elMessage = document.getElementById("ba-message");
-      var elTurnAlert = document.getElementById("ba-turn-alert");
-      var elTurnAlertText = document.getElementById("ba-turn-alert-text");
-      var elTurnDot = document.getElementById("ba-turn-dot");
 
       var elDie1 = document.getElementById("ba-die-1");
       var elDie2 = document.getElementById("ba-die-2");
@@ -1590,6 +1584,8 @@ permalink: /portfolio/
       var elTileDetailTitle = document.getElementById("ba-tile-detail-title");
       var elTileDetailBody = document.getElementById("ba-tile-detail-body");
       var elTileDetailClose = document.getElementById("ba-tile-detail-close");
+
+      updateTurnAlert(null);
 
       function tilePolicyLabel(policy) {
         if (!elTilePolicy) return policy || "";
@@ -1698,6 +1694,7 @@ permalink: /portfolio/
             "게임 종료! 우승자는 " + alive[0].name + "님입니다 🎉";
           elTurnTitle.textContent = "우승: " + alive[0].name;
           logEvent(alive[0], "게임 승리!", 0);
+          updateTurnAlert(null);
         }
       }
 
@@ -2213,8 +2210,10 @@ permalink: /portfolio/
         state.players.forEach(function (p, idx) {
           var row = document.createElement("div");
           row.className = "ba-player-row";
+          row.style.removeProperty("--player-color");
           if (idx === state.currentTurn && !state.gameOver) {
             row.className += " ba-player-current";
+            row.style.setProperty("--player-color", p.color);
           }
 
           var main = document.createElement("div");
@@ -2283,32 +2282,25 @@ permalink: /portfolio/
       }
 
       function updateTurnAlert(player) {
-        if (!elTurnAlert || !elTurnAlertText || !elTurnDot) return;
-        if (state.gameOver) {
-          elTurnAlertText.textContent = "게임이 종료되었습니다.";
-          elTurnAlert.style.background = "rgba(148, 163, 184, 0.18)";
-          elTurnAlert.style.borderColor = "rgba(148, 163, 184, 0.5)";
-          elTurnDot.style.background = "#94a3b8";
-          elTurnDot.style.boxShadow = "0 0 12px rgba(148, 163, 184, 0.7)";
-          elTurnAlert.classList.add("is-active");
-          return;
-        }
-
-        if (!player) {
-          elTurnAlertText.textContent = "턴 대기 중";
-          elTurnDot.style.background = "#3b82f6";
-          elTurnDot.style.boxShadow = "0 0 12px rgba(59, 130, 246, 0.65)";
+        if (!elTurnAlert) return;
+        if (!player || state.gameOver) {
           elTurnAlert.classList.remove("is-active");
+          elTurnAlertText.textContent = state.gameOver
+            ? "게임이 종료되었습니다."
+            : "턴 대기 중";
+          elTurnAlert.style.background = "rgba(148, 163, 184, 0.15)";
+          elTurnAlert.style.borderColor = "rgba(148, 163, 184, 0.4)";
+          elTurnDot.style.background = "#94a3b8";
+          elTurnDot.style.boxShadow = "0 0 10px rgba(148, 163, 184, 0.4)";
           return;
         }
 
+        elTurnAlert.classList.add("is-active");
         elTurnAlertText.textContent = player.name + "님의 차례입니다.";
-        var bg = hexToRgba(player.color, 0.2);
-        elTurnAlert.style.background = bg;
+        elTurnAlert.style.background = hexToRgba(player.color, 0.2);
         elTurnAlert.style.borderColor = player.color;
         elTurnDot.style.background = player.color;
-        elTurnDot.style.boxShadow = "0 0 12px " + hexToRgba(player.color, 0.75);
-        elTurnAlert.classList.add("is-active");
+        elTurnDot.style.boxShadow = "0 0 10px " + hexToRgba(player.color, 0.7);
       }
 
       function renderTurnInfo() {
@@ -2319,12 +2311,17 @@ permalink: /portfolio/
         }
 
         if (state.gameOver) {
-          elTurnTitle.textContent = "게임 종료";
+          var winner = state.players.find(function (pl) {
+            return !pl.bankrupt;
+          });
+          elTurnTitle.textContent = winner
+            ? "우승: " + winner.name
+            : "게임 종료";
+          updateTurnAlert(null);
         } else {
           elTurnTitle.textContent = p.name + "님의 차례";
+          updateTurnAlert(p);
         }
-
-        updateTurnAlert(p);
 
         var tile = tileAt(p.position);
         elCurrentTile.textContent =
@@ -2667,6 +2664,13 @@ permalink: /portfolio/
       function resetGame() {
         state.players = [];
         state.gameOver = false;
+        state.currentTurn = 0;
+        state.hasRolled = false;
+        state.extraRolls = 0;
+        state.lastRoll = [null, null, null];
+        state.welfareFund = 0;
+        state.turnCounter = 1;
+        state.goldenDeck = [];
         elGame.style.display = "none";
         elSetup.style.display = "block";
         elResetBtn.style.display = "none";
