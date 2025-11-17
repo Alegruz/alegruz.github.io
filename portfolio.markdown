@@ -1493,6 +1493,16 @@ permalink: /portfolio/
         return boardTile(index);
       }
 
+      function ownerOfTile(index) {
+        for (var i = 0; i < state.players.length; i++) {
+          var candidate = state.players[i];
+          if (!candidate.bankrupt && playerOwnsTile(candidate, index)) {
+            return candidate;
+          }
+        }
+        return null;
+      }
+
       function tileById(id) {
         return TILE_DEFS[id];
       }
@@ -2190,14 +2200,19 @@ permalink: /portfolio/
         // Buttons
         if (state.gameOver || p.bankrupt) {
           elRollBtn.disabled = true;
-          if (elActionBtn) elActionBtn.disabled = true;
+          if (elActionBtn) {
+            elActionBtn.textContent = "타일 행동";
+            elActionBtn.disabled = true;
+          }
           elEndTurnBtn.disabled = true;
           elSpaceRow.style.display = "none";
           return;
         }
 
         if (elActionBtn) {
-          elActionBtn.disabled = false;
+          var actionState = determineActionButtonState(p);
+          elActionBtn.textContent = actionState.label;
+          elActionBtn.disabled = actionState.disabled;
         }
 
         // 우주여행 선택 UI
@@ -2243,6 +2258,58 @@ permalink: /portfolio/
         }
         return type;
       }
+
+      function determineActionButtonState(player) {
+        var defaultState = { label: "타일 행동", disabled: true };
+        if (!player || state.gameOver || player.bankrupt) {
+          return defaultState;
+        }
+
+        var boardIndex = player.position;
+        var tile = tileAt(boardIndex);
+        if (!tile) return defaultState;
+
+        var owner = ownerOfTile(boardIndex);
+
+        var canBuy =
+          (tile.type === "city" || tile.type === "vehicle") &&
+          tile.landPrice &&
+          !owner &&
+          state.hasRolled &&
+          player.money >= tile.landPrice;
+
+        if (canBuy) {
+          return { label: "타일 구매", disabled: false };
+        }
+
+        if (
+          tile.type === "city" &&
+          owner === player &&
+          !state.hasRolled
+        ) {
+          var level = propertyLevel(player, boardIndex);
+          if (level < 3) {
+            var nextLevel = level + 1;
+            var cost =
+              nextLevel === 1
+                ? tile.villaCost || 0
+                : nextLevel === 2
+                ? tile.buildingCost || 0
+                : tile.hotelCost || 0;
+            if (cost && player.money >= cost) {
+              var label =
+                nextLevel === 1
+                  ? "별장"
+                  : nextLevel === 2
+                  ? "빌딩"
+                  : "호텔";
+              return { label: label + " 건설", disabled: false };
+            }
+          }
+        }
+
+        return defaultState;
+      }
       
       function setTileDetailMessage(text) {
         if (!elTileDetailMessage) return;
@@ -2270,14 +2337,7 @@ permalink: /portfolio/
         elTileDetailTitle.textContent = tile.name || "타일 정보";
 
         // 소유자 / 건물 단계 계산
-        var owner = null;
-        for (var i = 0; i < state.players.length; i++) {
-          var p = state.players[i];
-          if (!p.bankrupt && playerOwnsTile(p, boardIndex)) {
-            owner = p;
-            break;
-          }
-        }
+        var owner = ownerOfTile(boardIndex);
 
         var lvl = owner ? propertyLevel(owner, boardIndex) : 0;
         var lvlLabel =
@@ -2411,12 +2471,7 @@ permalink: /portfolio/
 
         var p = currentPlayer();
         var helperTexts = [];
-        var owner = null;
-        state.players.forEach(function (pp) {
-          if (!pp.bankrupt && playerOwnsTile(pp, boardIndex)) {
-            owner = pp;
-          }
-        });
+        var owner = ownerOfTile(boardIndex);
 
         var canAct = !!(p && !state.gameOver && !p.bankrupt);
 
@@ -2733,12 +2788,7 @@ permalink: /portfolio/
           return;
         }
 
-        var owner = null;
-        state.players.forEach(function (pp) {
-          if (!pp.bankrupt && playerOwnsTile(pp, boardIndex)) {
-            owner = pp;
-          }
-        });
+        var owner = ownerOfTile(boardIndex);
         if (owner) {
           setTileDetailMessage(owner.name + "님이 이미 소유 중입니다.");
           return;
@@ -2860,14 +2910,7 @@ permalink: /portfolio/
           return id === "columbia";
         });
         if (!p.spaceFree && colIdx >= 0) {
-          var owner = null;
-          state.players.forEach(function (pp) {
-            if (
-              !pp.bankrupt &&
-              playerOwnsTile(pp, colIdx)
-            )
-              owner = pp;
-          });
+          var owner = ownerOfTile(colIdx);
           if (owner && owner !== p) {
             var fee = 200000;
             p.money -= fee;
