@@ -1426,6 +1426,7 @@ permalink: /portfolio/
         turnCounter: 1,
         goldenDeck: [],
         tileDetailIndex: null,
+        lastArrivalIndex: null,
       };
 
       // ---------- DOM refs -----------------------------------------------
@@ -1798,6 +1799,7 @@ permalink: /portfolio/
         }
 
         player.position = targetIndex;
+        state.lastArrivalIndex = targetIndex;
         handleLanding(player, tileAt(targetIndex));
       }
 
@@ -2270,12 +2272,13 @@ permalink: /portfolio/
         if (!tile) return defaultState;
 
         var owner = ownerOfTile(boardIndex);
+        var justArrived = state.lastArrivalIndex === boardIndex;
 
         var canBuy =
           (tile.type === "city" || tile.type === "vehicle") &&
           tile.landPrice &&
           !owner &&
-          state.hasRolled &&
+          justArrived &&
           player.money >= tile.landPrice;
 
         if (canBuy) {
@@ -2651,6 +2654,7 @@ permalink: /portfolio/
         state.turnCounter = 1;
         elLog.innerHTML = "";
         initGoldenDeck();
+        state.lastArrivalIndex = null;
 
         elSetup.style.display = "none";
         elGame.style.display = "block";
@@ -2664,6 +2668,7 @@ permalink: /portfolio/
         state.players = [];
         state.gameOver = false;
         state.tileDetailIndex = null;
+        state.lastArrivalIndex = null;
         elGame.style.display = "none";
         elSetup.style.display = "block";
         elResetBtn.style.display = "none";
@@ -2783,8 +2788,10 @@ permalink: /portfolio/
           setTileDetailMessage("해당 칸에 있을 때만 증서를 구입할 수 있습니다.");
           return;
         }
-        if (!state.hasRolled) {
-          setTileDetailMessage("증서는 그 칸에 도착한 턴에만 구입할 수 있습니다.");
+        if (state.lastArrivalIndex !== boardIndex) {
+          setTileDetailMessage(
+            "증서는 해당 칸에 도착한 직후에만 구입할 수 있습니다."
+          );
           return;
         }
 
@@ -2870,6 +2877,7 @@ permalink: /portfolio/
         state.hasRolled = false;
         state.extraRolls = 0;
         state.lastRoll = [null, null, null];
+        state.lastArrivalIndex = null;
         state.turnCounter += 1;
 
         // 다음 플레이어
