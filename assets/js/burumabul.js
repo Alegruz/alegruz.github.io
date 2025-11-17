@@ -2495,9 +2495,14 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
         var initialState = createStateFromConfig(config);
         try {
           var payload = serializeStateForStorage(initialState);
+          const { data: roleData, error: roleError } = await supabase.rpc('get_my_role');
+          console.log(roleData); // Should return { role: 'authenticated' } if signed in
+
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          console.log(user); // Should show a user object with id, email, etc.; if null or error, you're not authenticated
           var roomResp = await supabase
             .from("rooms")
-            .insert({ code: code, state: payload })
+            .insert({ code: code, state: payload, created_by: currentUserId })  // Add created_by here
             .select()
             .single();
           if (roomResp.error) throw roomResp.error;
@@ -2566,6 +2571,11 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
           if (!playerRow) {
             var defaultCash =
               (room.state?.players && room.state.players[0]?.money) || 0;
+          const { data: roleData, error: roleError } = await supabase.rpc('get_my_role');
+          console.log(roleData); // Should return { role: 'authenticated' } if signed in
+
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          console.log(user); // Should show a user object with id, email, etc.; if null or error, you're not authenticated
             var insertResp = await supabase
               .from("players")
               .insert({
