@@ -90,68 +90,98 @@ permalink: /portfolio/
 
     /* 중앙 상세 패널 오버레이 */
     .ba-hidden {
-    display: none !important;
+      display: none !important;
     }
 
     .ba-tile-detail {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(15, 23, 42, 0.7);
-    z-index: 10;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.7);
+      z-index: 10;
     }
 
     .ba-tile-detail-inner {
-    width: min(480px, 90%);
-    max-height: 80%;
-    padding: 1.25rem 1.5rem;
-    border-radius: 1rem;
-    background: #020617;
-    border: 1px solid rgba(148, 163, 184, 0.7);
-    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.7);
-    overflow: auto;
+      width: min(480px, 90%);
+      max-height: 80%;
+      padding: 1.25rem 1.5rem;
+      border-radius: 1rem;
+      background: #020617;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.7);
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
     }
 
     .ba-tile-detail-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
     }
 
     .ba-tile-detail-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #e5e7eb;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e5e7eb;
     }
 
     .ba-tile-detail-close {
-    border: none;
-    border-radius: 999px;
-    padding: 0.2rem 0.7rem;
-    font-size: 1.2rem;
-    line-height: 1;
-    background: rgba(15, 23, 42, 0.95);
-    color: #e5e7eb;
-    cursor: pointer;
-    transition: background 0.12s ease, color 0.12s ease, transform 0.08s;
+      border: none;
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 1.2rem;
+      line-height: 1;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease, transform 0.08s;
     }
 
     .ba-tile-detail-close:hover {
-    background: rgba(248, 113, 113, 0.95);
-    color: #fff;
-    transform: translateY(-1px);
+      background: rgba(248, 113, 113, 0.95);
+      color: #fff;
+      transform: translateY(-1px);
     }
 
     .ba-tile-detail-body {
-    font-size: 0.85rem;
-    color: #cbd5f5;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+      font-size: 0.85rem;
+      color: #cbd5f5;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .ba-tile-detail-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .ba-tile-detail-actions .ba-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .ba-tile-detail-helper {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .ba-tile-detail-message {
+      font-size: 0.78rem;
+      color: #fcd34d;
+      line-height: 1.4;
+    }
+
+    .ba-tile-detail-message.ba-hidden {
+      display: none;
     }
 
     .ba-tile-detail-row {
@@ -704,7 +734,9 @@ permalink: /portfolio/
               </div>
               <div class="ba-control-row">
                 <button id="ba-roll-btn" class="ba-btn">주사위</button>
-                <button id="ba-buy-btn" class="ba-btn secondary">구입</button>
+                <button id="ba-action-btn" class="ba-btn secondary">
+                  타일 행동
+                </button>
                 <button id="ba-endturn-btn" class="ba-btn secondary">
                   턴 종료
                 </button>
@@ -719,25 +751,34 @@ permalink: /portfolio/
 
             <!-- 타일 상세 패널 -->
             <div id="ba-tile-detail" class="ba-tile-detail ba-hidden">
-            <div class="ba-tile-detail-inner">
+              <div class="ba-tile-detail-inner">
                 <div class="ba-tile-detail-header">
-                <div id="ba-tile-detail-title" class="ba-tile-detail-title">
+                  <div id="ba-tile-detail-title" class="ba-tile-detail-title">
                     타일 정보
-                </div>
-                <button
+                  </div>
+                  <button
                     type="button"
                     id="ba-tile-detail-close"
                     class="ba-tile-detail-close"
                     aria-label="닫기"
-                >
+                  >
                     ×
-                </button>
+                  </button>
                 </div>
                 <div id="ba-tile-detail-body" class="ba-tile-detail-body">
-                <!-- JS가 내용 채움 -->
+                  <!-- JS가 내용 채움 -->
                 </div>
+                <div
+                  id="ba-tile-detail-actions"
+                  class="ba-tile-detail-actions"
+                ></div>
+                <div
+                  id="ba-tile-detail-message"
+                  class="ba-tile-detail-message ba-hidden"
+                ></div>
+              </div>
             </div>
-        </div>
+          </div>
     </div>
 
       <div class="ba-sidebar">
@@ -1445,7 +1486,8 @@ permalink: /portfolio/
         gameOver: false,
         turnCounter: 1,
         goldenDeck: [],
-        boardPolicy: "vanilla",
+        tileDetailIndex: null,
+        lastArrivalIndex: null,
       };
 
       // ---------- DOM refs -----------------------------------------------
@@ -1468,7 +1510,7 @@ permalink: /portfolio/
       var elDieSum = document.getElementById("ba-die-sum");
 
       var elRollBtn = document.getElementById("ba-roll-btn");
-      var elBuyBtn = document.getElementById("ba-buy-btn");
+      var elActionBtn = document.getElementById("ba-action-btn");
       var elEndTurnBtn = document.getElementById("ba-endturn-btn");
 
       var elSpaceRow = document.getElementById("ba-space-row");
@@ -1482,6 +1524,12 @@ permalink: /portfolio/
       var elTileDetail = document.getElementById("ba-tile-detail");
       var elTileDetailTitle = document.getElementById("ba-tile-detail-title");
       var elTileDetailBody = document.getElementById("ba-tile-detail-body");
+      var elTileDetailActions = document.getElementById(
+        "ba-tile-detail-actions"
+      );
+      var elTileDetailMessage = document.getElementById(
+        "ba-tile-detail-message"
+      );
       var elTileDetailClose = document.getElementById("ba-tile-detail-close");
 
       function tilePolicyLabel(policy) {
@@ -1515,6 +1563,16 @@ permalink: /portfolio/
 
       function tileAt(index) {
         return boardTile(index);
+      }
+
+      function ownerOfTile(index) {
+        for (var i = 0; i < state.players.length; i++) {
+          var candidate = state.players[i];
+          if (!candidate.bankrupt && playerOwnsTile(candidate, index)) {
+            return candidate;
+          }
+        }
+        return null;
       }
 
       function tileById(id) {
@@ -1812,6 +1870,7 @@ permalink: /portfolio/
         }
 
         player.position = targetIndex;
+        state.lastArrivalIndex = targetIndex;
         handleLanding(player, tileAt(targetIndex));
       }
 
@@ -2214,10 +2273,19 @@ permalink: /portfolio/
         // Buttons
         if (state.gameOver || p.bankrupt) {
           elRollBtn.disabled = true;
-          elBuyBtn.disabled = true;
+          if (elActionBtn) {
+            elActionBtn.textContent = "타일 행동";
+            elActionBtn.disabled = true;
+          }
           elEndTurnBtn.disabled = true;
           elSpaceRow.style.display = "none";
           return;
+        }
+
+        if (elActionBtn) {
+          var actionState = determineActionButtonState(p);
+          elActionBtn.textContent = actionState.label;
+          elActionBtn.disabled = actionState.disabled;
         }
 
         // 우주여행 선택 UI
@@ -2238,24 +2306,6 @@ permalink: /portfolio/
           elRollBtn.disabled =
             state.hasRolled && state.extraRolls <= 0;
         }
-
-        // buy button
-        var canBuy = false;
-        if (tile.type === "city" || tile.type === "vehicle") {
-          var idx = p.position;
-          var owner = null;
-          state.players.forEach(function (pp) {
-            if (
-              !pp.bankrupt &&
-              playerOwnsTile(pp, idx)
-            )
-              owner = pp;
-          });
-          if (!owner && tile.landPrice) {
-            canBuy = p.money >= tile.landPrice;
-          }
-        }
-        elBuyBtn.disabled = !canBuy || !state.hasRolled;
 
         // end turn
         elEndTurnBtn.disabled =
@@ -2281,9 +2331,75 @@ permalink: /portfolio/
         }
         return type;
       }
+
+      function determineActionButtonState(player) {
+        var defaultState = { label: "타일 행동", disabled: true };
+        if (!player || state.gameOver || player.bankrupt) {
+          return defaultState;
+        }
+
+        var boardIndex = player.position;
+        var tile = tileAt(boardIndex);
+        if (!tile) return defaultState;
+
+        var owner = ownerOfTile(boardIndex);
+        var justArrived = state.lastArrivalIndex === boardIndex;
+
+        var canBuy =
+          (tile.type === "city" || tile.type === "vehicle") &&
+          tile.landPrice &&
+          !owner &&
+          justArrived &&
+          player.money >= tile.landPrice;
+
+        if (canBuy) {
+          return { label: "타일 구매", disabled: false };
+        }
+
+        if (
+          tile.type === "city" &&
+          owner === player &&
+          !state.hasRolled
+        ) {
+          var level = propertyLevel(player, boardIndex);
+          if (level < 3) {
+            var nextLevel = level + 1;
+            var cost =
+              nextLevel === 1
+                ? tile.villaCost || 0
+                : nextLevel === 2
+                ? tile.buildingCost || 0
+                : tile.hotelCost || 0;
+            if (cost && player.money >= cost) {
+              var label =
+                nextLevel === 1
+                  ? "별장"
+                  : nextLevel === 2
+                  ? "빌딩"
+                  : "호텔";
+              return { label: label + " 건설", disabled: false };
+            }
+          }
+        }
+
+        return defaultState;
+      }
       
+      function setTileDetailMessage(text) {
+        if (!elTileDetailMessage) return;
+        if (text) {
+          elTileDetailMessage.textContent = text;
+          elTileDetailMessage.classList.remove("ba-hidden");
+        } else {
+          elTileDetailMessage.textContent = "";
+          elTileDetailMessage.classList.add("ba-hidden");
+        }
+      }
+
       function hideTileDetail() {
         if (!elTileDetail) return;
+        state.tileDetailIndex = null;
+        setTileDetailMessage("");
         elTileDetail.classList.add("ba-hidden");
       }
 
@@ -2295,14 +2411,7 @@ permalink: /portfolio/
         elTileDetailTitle.textContent = tile.name || "타일 정보";
 
         // 소유자 / 건물 단계 계산
-        var owner = null;
-        for (var i = 0; i < state.players.length; i++) {
-          var p = state.players[i];
-          if (!p.bankrupt && playerOwnsTile(p, boardIndex)) {
-            owner = p;
-            break;
-          }
-        }
+        var owner = ownerOfTile(boardIndex);
 
         var lvl = owner ? propertyLevel(owner, boardIndex) : 0;
         var lvlLabel =
@@ -2421,7 +2530,110 @@ permalink: /portfolio/
         }
 
         elTileDetailBody.innerHTML = html;
+        state.tileDetailIndex = boardIndex;
+        setTileDetailMessage("");
+        renderTileDetailActions(boardIndex);
         elTileDetail.classList.remove("ba-hidden");
+      }
+
+      function renderTileDetailActions(boardIndex) {
+        if (!elTileDetailActions) return;
+        elTileDetailActions.innerHTML = "";
+
+        var tile = tileAt(boardIndex);
+        if (!tile) return;
+
+        var p = currentPlayer();
+        var helperTexts = [];
+        var owner = ownerOfTile(boardIndex);
+
+        var canAct = !!(p && !state.gameOver && !p.bankrupt);
+
+        function appendHelper(text) {
+          if (!text) return;
+          helperTexts.push(text);
+        }
+
+        if (!canAct) {
+          appendHelper("현재 플레이어가 행동할 수 없습니다.");
+        } else {
+          if (
+            (tile.type === "city" || tile.type === "vehicle") &&
+            !owner &&
+            tile.landPrice
+          ) {
+            if (p.position !== boardIndex) {
+              appendHelper("해당 타일에 서 있을 때만 증서를 구입할 수 있습니다.");
+            } else if (!state.hasRolled) {
+              appendHelper("주사위를 굴려 도착한 턴에만 증서를 구입할 수 있습니다.");
+            } else {
+              var buyBtn = document.createElement("button");
+              buyBtn.type = "button";
+              buyBtn.className = "ba-btn";
+              buyBtn.dataset.action = "buy";
+              buyBtn.dataset.index = boardIndex;
+              buyBtn.textContent =
+                "증서 구입 (" + formatMoney(tile.landPrice) + ")";
+              if (p.money < tile.landPrice) {
+                buyBtn.disabled = true;
+                appendHelper(
+                  "구입에는 " + formatMoney(tile.landPrice) + "이 필요합니다."
+                );
+              }
+              elTileDetailActions.appendChild(buyBtn);
+            }
+          } else if (owner && owner !== p) {
+            appendHelper(owner.name + "님이 이미 소유 중입니다.");
+          }
+
+          if (tile.type === "city" && owner === p) {
+            var level = propertyLevel(p, boardIndex);
+            if (level >= 3) {
+              appendHelper("이미 호텔까지 건설했습니다.");
+            } else if (state.hasRolled) {
+              appendHelper("건물은 주사위를 굴리기 전에만 지을 수 있습니다.");
+            } else {
+              var nextLevel = level + 1;
+              var cost =
+                nextLevel === 1
+                  ? tile.villaCost || 0
+                  : nextLevel === 2
+                  ? tile.buildingCost || 0
+                  : tile.hotelCost || 0;
+              var label =
+                nextLevel === 1
+                  ? "별장"
+                  : nextLevel === 2
+                  ? "빌딩"
+                  : "호텔";
+              var buildBtn = document.createElement("button");
+              buildBtn.type = "button";
+              buildBtn.className = "ba-btn";
+              buildBtn.dataset.action = "build";
+              buildBtn.dataset.index = boardIndex;
+              buildBtn.textContent =
+                label + " 건설 (" + formatMoney(cost || 0) + ")";
+              if (!cost || p.money < cost) {
+                buildBtn.disabled = true;
+                appendHelper(
+                  "건설에는 " + formatMoney(cost || 0) + "이 필요합니다."
+                );
+              }
+              elTileDetailActions.appendChild(buildBtn);
+            }
+          }
+        }
+
+        if (elTileDetailActions.children.length === 0) {
+          appendHelper("선택 가능한 행동이 없습니다.");
+        }
+
+        helperTexts.forEach(function (text) {
+          var helper = document.createElement("div");
+          helper.className = "ba-tile-detail-helper";
+          helper.textContent = text;
+          elTileDetailActions.appendChild(helper);
+        });
       }
 
       // 닫기 이벤트
@@ -2454,6 +2666,21 @@ permalink: /portfolio/
         renderBoard();
         renderPlayers();
         renderTurnInfo();
+        if (
+          elTileDetail &&
+          !elTileDetail.classList.contains("ba-hidden") &&
+          typeof state.tileDetailIndex === "number"
+        ) {
+          var existingMessage =
+            elTileDetailMessage &&
+            !elTileDetailMessage.classList.contains("ba-hidden")
+              ? elTileDetailMessage.textContent
+              : "";
+          showTileDetail(state.tileDetailIndex);
+          if (existingMessage) {
+            setTileDetailMessage(existingMessage);
+          }
+        }
       }
 
       // ---------- Actions -------------------------------------------------
@@ -2502,6 +2729,7 @@ permalink: /portfolio/
         state.turnCounter = 1;
         elLog.innerHTML = "";
         initGoldenDeck();
+        state.lastArrivalIndex = null;
 
         elSetup.style.display = "none";
         elGame.style.display = "block";
@@ -2523,10 +2751,13 @@ permalink: /portfolio/
       function resetGame() {
         state.players = [];
         state.gameOver = false;
+        state.tileDetailIndex = null;
+        state.lastArrivalIndex = null;
         elGame.style.display = "none";
         elSetup.style.display = "block";
         elResetBtn.style.display = "none";
         elLog.innerHTML = "";
+        hideTileDetail();
       }
 
       function rollDice() {
@@ -2625,46 +2856,102 @@ permalink: /portfolio/
         return Math.floor(Math.random() * 6) + 1;
       }
 
-      function buyCurrentTile() {
+      function openCurrentTileDetail() {
         var p = currentPlayer();
-        if (!p || state.gameOver || p.bankrupt) 
-        {
-            endTurn();
-            checkGameOver();
-            return;
-        }
-        if (!state.hasRolled) return;
+        if (!p || state.gameOver) return;
+        showTileDetail(p.position);
+      }
 
-        var idx = p.position;
-        var tile = tileAt(idx);
-        if (
-          tile.type !== "city" &&
-          tile.type !== "vehicle"
-        )
+      function attemptPurchase(boardIndex) {
+        var p = currentPlayer();
+        var tile = tileAt(boardIndex);
+        if (!p || !tile || state.gameOver || p.bankrupt) return;
+        if (tile.type !== "city" && tile.type !== "vehicle") return;
+
+        if (p.position !== boardIndex) {
+          setTileDetailMessage("해당 칸에 있을 때만 증서를 구입할 수 있습니다.");
           return;
+        }
+        if (state.lastArrivalIndex !== boardIndex) {
+          setTileDetailMessage(
+            "증서는 해당 칸에 도착한 직후에만 구입할 수 있습니다."
+          );
+          return;
+        }
 
-        var owner = null;
-        state.players.forEach(function (pp) {
-          if (
-            !pp.bankrupt &&
-            playerOwnsTile(pp, idx)
-          )
-            owner = pp;
-        });
-        if (owner) return;
+        var owner = ownerOfTile(boardIndex);
+        if (owner) {
+          setTileDetailMessage(owner.name + "님이 이미 소유 중입니다.");
+          return;
+        }
 
         var price = tile.landPrice || 0;
-        if (price <= 0 || p.money < price) return;
+        if (price <= 0) return;
+        if (p.money < price) {
+          setTileDetailMessage(
+            "구입에는 " + formatMoney(price) + "이 필요합니다."
+          );
+          return;
+        }
 
         p.money -= price;
-        setPropertyLevel(p, idx, 0);
-        logEvent(
-          p,
-          tile.name + " 증서 구입",
-          -price
-        );
-
+        setPropertyLevel(p, boardIndex, 0);
+        logEvent(p, tile.name + " 증서 구입", -price);
         renderAll();
+        showTileDetail(boardIndex);
+        setTileDetailMessage(tile.name + " 증서를 구입했습니다!");
+        elMessage.textContent = tile.name + " 증서를 구입했습니다.";
+      }
+
+      function attemptBuild(boardIndex) {
+        var p = currentPlayer();
+        var tile = tileAt(boardIndex);
+        if (!p || !tile || state.gameOver || p.bankrupt) return;
+        if (tile.type !== "city") return;
+
+        if (!playerOwnsTile(p, boardIndex)) {
+          setTileDetailMessage("자신의 도시에서만 건설할 수 있습니다.");
+          return;
+        }
+        if (state.hasRolled) {
+          setTileDetailMessage("건물은 주사위를 굴리기 전에만 지을 수 있습니다.");
+          return;
+        }
+
+        var level = propertyLevel(p, boardIndex);
+        if (level >= 3) {
+          setTileDetailMessage("이미 호텔까지 건설했습니다.");
+          return;
+        }
+
+        var nextLevel = level + 1;
+        var cost =
+          nextLevel === 1
+            ? tile.villaCost || 0
+            : nextLevel === 2
+            ? tile.buildingCost || 0
+            : tile.hotelCost || 0;
+        if (!cost || p.money < cost) {
+          setTileDetailMessage(
+            "건설에는 " + formatMoney(cost || 0) + "이 필요합니다."
+          );
+          return;
+        }
+
+        var label =
+          nextLevel === 1
+            ? "별장"
+            : nextLevel === 2
+            ? "빌딩"
+            : "호텔";
+
+        p.money -= cost;
+        setPropertyLevel(p, boardIndex, nextLevel);
+        logEvent(p, tile.name + "에 " + label + " 건설", -cost);
+        renderAll();
+        showTileDetail(boardIndex);
+        setTileDetailMessage(tile.name + "에 " + label + "를 지었습니다!");
+        elMessage.textContent = tile.name + "에 " + label + " 건설 완료";
       }
 
       function endTurn() {
@@ -2674,6 +2961,7 @@ permalink: /portfolio/
         state.hasRolled = false;
         state.extraRolls = 0;
         state.lastRoll = [null, null, null];
+        state.lastArrivalIndex = null;
         state.turnCounter += 1;
 
         // 다음 플레이어
@@ -2685,85 +2973,14 @@ permalink: /portfolio/
       }
 
       // Build buildings by clicking your own city before rolling
-    function handleBoardClick(e) {
+      function handleBoardClick(e) {
         var cell = e.target.closest(".ba-tile");
         if (!cell) return;
         var idxStr = cell.dataset.boardIndex;
         if (typeof idxStr === "undefined") return;
 
         var idx = parseInt(idxStr, 10);
-
-        // ✅ 항상 상세 패널은 띄운다 (다른 타일 클릭하면 내용만 교체)
         showTileDetail(idx);
-
-        var tile = tileAt(idx);
-        if (tile.type !== "city") {
-          // 건물 짓기 로직은 도시만 해당
-          return;
-        }
-
-
-        var p = currentPlayer();
-        if (!p || state.gameOver || p.bankrupt) 
-        {
-            endTurn();
-            checkGameOver();
-            return;
-        }
-        if (state.hasRolled) {
-          elMessage.textContent =
-            "건물은 주사위를 굴리기 전에만 지을 수 있습니다.";
-          return;
-        }
-        if (!playerOwnsTile(p, idx)) return;
-
-        var level = propertyLevel(p, idx);
-        if (level >= 3) {
-          elMessage.textContent =
-            tile.name + "에는 이미 호텔이 있습니다.";
-          return;
-        }
-
-        var nextLevel = level + 1;
-        var cost =
-          nextLevel === 1
-            ? tile.villaCost || 0
-            : nextLevel === 2
-            ? tile.buildingCost || 0
-            : tile.hotelCost || 0;
-
-        if (!cost || p.money < cost) {
-          elMessage.textContent =
-            "건설 비용이 부족합니다. 필요 금액: " +
-            formatMoney(cost || 0);
-          return;
-        }
-
-        var label =
-          nextLevel === 1
-            ? "별장"
-            : nextLevel === 2
-            ? "빌딩"
-            : "호텔";
-
-        var ok = window.confirm(
-          tile.name +
-            "에 " +
-            label +
-            "을(를) " +
-            formatMoney(cost) +
-            "에 짓겠습니까?"
-        );
-        if (!ok) return;
-
-        p.money -= cost;
-        setPropertyLevel(p, idx, nextLevel);
-        logEvent(
-          p,
-          tile.name + "에 " + label + " 건설",
-          -cost
-        );
-        renderAll();
       }
 
       function handleSpaceGo() {
@@ -2785,14 +3002,7 @@ permalink: /portfolio/
           return id === "columbia";
         });
         if (!p.spaceFree && colIdx >= 0) {
-          var owner = null;
-          state.players.forEach(function (pp) {
-            if (
-              !pp.bankrupt &&
-              playerOwnsTile(pp, colIdx)
-            )
-              owner = pp;
-          });
+          var owner = ownerOfTile(colIdx);
           if (owner && owner !== p) {
             var fee = 200000;
             p.money -= fee;
@@ -2831,10 +3041,24 @@ permalink: /portfolio/
       elStartBtn.addEventListener("click", startGame);
       elResetBtn.addEventListener("click", resetGame);
       elRollBtn.addEventListener("click", rollDice);
-      elBuyBtn.addEventListener("click", buyCurrentTile);
+      if (elActionBtn) {
+        elActionBtn.addEventListener("click", openCurrentTileDetail);
+      }
       elEndTurnBtn.addEventListener("click", endTurn);
       elBoardGrid.addEventListener("click", handleBoardClick);
       elSpaceGoBtn.addEventListener("click", handleSpaceGo);
+      if (elTileDetailActions) {
+        elTileDetailActions.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-action]");
+          if (!btn) return;
+          var idx = parseInt(btn.dataset.index, 10);
+          if (btn.dataset.action === "buy") {
+            attemptPurchase(idx);
+          } else if (btn.dataset.action === "build") {
+            attemptBuild(idx);
+          }
+        });
+      }
     })();
   </script>
 </div>
