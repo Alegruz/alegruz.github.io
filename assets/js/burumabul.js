@@ -828,6 +828,17 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
         elOnlineStatus.style.color = isError ? "#f87171" : "#9ca3af";
       }
 
+      function formatSupabaseError(err, fallback) {
+        if (!err) return fallback || "알 수 없는 오류";
+        if (err.code === "anon-disabled") {
+          return (
+            "Anonymous Sign-ins가 비활성화되어 있습니다. Supabase Authentication > Providers > Anonymous에서" +
+            " Anonymous Sign-ins를 켜 주세요."
+          );
+        }
+        return err.message || fallback || "알 수 없는 오류";
+      }
+
       function renderOnlineRoster() {
         if (!elOnlineRoster) return;
         elOnlineRoster.innerHTML = "";
@@ -2445,7 +2456,9 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
           currentUserId = await ensureAuth();
         } catch (err) {
           console.error(err);
-          alert("Supabase 인증 실패: " + err.message);
+          var authMessage = formatSupabaseError(err, "Supabase 인증 실패");
+          setOnlineStatus(authMessage, true);
+          alert(authMessage);
           return;
         }
         await cleanupRealtime();
@@ -2482,8 +2495,9 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
           await subscribeToRoom(room.id);
         } catch (err) {
           console.error(err);
-          alert("Supabase 방 생성 실패: " + err.message);
-          setOnlineStatus("방 생성 실패", true);
+          var message = formatSupabaseError(err, "Supabase 방 생성 실패");
+          alert("Supabase 방 생성 실패: " + message);
+          setOnlineStatus("방 생성 실패: " + message, true);
         }
       }
 
@@ -2498,7 +2512,9 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
           currentUserId = await ensureAuth();
         } catch (err) {
           console.error(err);
-          alert("Supabase 인증 실패: " + err.message);
+          var authMessage = formatSupabaseError(err, "Supabase 인증 실패");
+          setOnlineStatus(authMessage, true);
+          alert(authMessage);
           return;
         }
         await cleanupRealtime();
@@ -2546,8 +2562,9 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
           await subscribeToRoom(room.id);
         } catch (err) {
           console.error(err);
-          alert("방 참가 실패: " + err.message);
-          setOnlineStatus("방 참가 실패", true);
+          var message = formatSupabaseError(err, "방 참가 실패");
+          alert("방 참가 실패: " + message);
+          setOnlineStatus("방 참가 실패: " + message, true);
         }
       }
 

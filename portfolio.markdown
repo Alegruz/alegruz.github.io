@@ -978,7 +978,8 @@ async function commitMove(patch) {
     <div id="ba-online-roster" class="ba-player-list" style="margin:0.4rem 0;"></div>
     <div class="ba-note">
       · 호스트는 위 설정으로 방을 만든 뒤, 로비 코드를 친구에게 공유합니다.<br />
-      · 참가자는 같은 코드를 입력하고 참가 버튼을 누르면 동일한 게임 상태를 실시간으로 공유할 수 있습니다.
+      · 참가자는 같은 코드를 입력하고 참가 버튼을 누르면 동일한 게임 상태를 실시간으로 공유할 수 있습니다.<br />
+      · Supabase Auth 설정에서 Anonymous Sign-ins를 반드시 활성화해야 브라우저에서 인증이 진행됩니다.
     </div>
   </div>
 
