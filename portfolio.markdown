@@ -80,13 +80,15 @@ permalink: /portfolio/
 ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.players ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated clients (including anonymous auth) to insert lobby rows
+-- (Re)create lobby insert policy
+DROP POLICY IF EXISTS rooms_insert_authenticated ON public.rooms;
 CREATE POLICY rooms_insert_authenticated
 ON public.rooms
 FOR INSERT TO authenticated
 WITH CHECK (auth.uid() IS NOT NULL);
 
 -- Only users that joined the room may read or update its state blob
+DROP POLICY IF EXISTS rooms_joined_rw ON public.rooms;
 CREATE POLICY rooms_joined_rw
 ON public.rooms
 FOR SELECT USING (EXISTS (
@@ -99,6 +101,7 @@ WITH CHECK (EXISTS (
 ));
 
 -- players table: each user may only read/write their own row
+DROP POLICY IF EXISTS players_self_access ON public.players;
 CREATE POLICY players_self_access
 ON public.players
 FOR ALL TO authenticated
@@ -1015,12 +1018,16 @@ async function commitMove(patch) {
       “rooms 테이블에 INSERT 정책이 없어서 거부되었습니다” 메시지가 뜨면 Supabase 대시보드 &gt; SQL Editor에서 아래 구문을
       실행해 RLS를 켠 뒤 다시 시도하세요.
       <pre style="margin-top:0.35rem;"><code>ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rooms_insert_authenticated ON public.rooms;
 CREATE POLICY rooms_insert_authenticated ON public.rooms
 FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL);
 
 ALTER TABLE public.players ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS players_self_access ON public.players;
 CREATE POLICY players_self_access ON public.players
 FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());</code></pre>
+      이미 같은 이름의 정책이 있다면 SQL Editor에서 <code>DROP POLICY ...</code> 후 다시 생성하거나, 정책 편집기에서
+      <em>Policy SQL Preview</em> 영역에 위 구문을 붙여 넣고 <strong>Update Policy</strong>를 눌러 내용을 갱신하면 됩니다.<br />
       Auth &gt; Providers에서 Anonymous Sign-ins가 꺼져 있어도 같은 오류가 날 수 있으니 함께 확인하세요.
     </div>
   </div>
