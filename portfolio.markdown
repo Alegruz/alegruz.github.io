@@ -141,7 +141,7 @@ permalink: /portfolio/
 
     .ba-board-grid {
       display: grid;
-      grid-template-columns: repeat(11, minmax(40px, 1fr));
+      grid-template-columns: repeat(9, minmax(40px, 1fr));
       grid-auto-rows: minmax(40px, 1fr);
       gap: 0.25rem;
       width: 100%;
@@ -1104,54 +1104,44 @@ permalink: /portfolio/
         },
       };
 
-      // Board path: 40 tiles around 11x11 edge (clockwise).
+      // Board path: 32 tiles around a 9x9 edge (clockwise).
       // We don't try to replicate real physical order perfectly; it's a reasonable loop.
-    const BOARD_PATH_IDS = [
-        "start",          // 0
-        "taipei",         // 1
-        "golden",         // 2
-        "beijing",        // 3
-        "manila",         // 4
-        "jeju",           // 5
-        "golden",         // 6
-        "singapore",      // 7
-        "cairo",          // 8
-        "istanbul",       // 9
-        "island",         // 10 무인도
-        "athens",         // 11
-        "golden",         // 12
-        "copenhagen",     // 13
-        "stockholm",      // 14
-        "concorde",       // 15
-        "bern",           // 16
-        "golden",         // 17  ✅ 베른-베를린 사이 황금열쇠
-        "berlin",         // 18
-        "ottawa",         // 19
-        "welfare",        // 20 사회복지기금 접수처
-        "golden",         // 21
-        "buenos_aires",   // 22
-        "sao_paulo",      // 23
-        "sydney",         // 24
-        "busan",          // 25
-        "hawaii",         // 26
-        "lisbon",         // 27
-        "queen_elizabeth",// 28
-        "madrid",         // 29
-        "space_travel",   // 30 우주여행
-        "tokyo",          // 31
-        "columbia",       // 32
-        "golden",         // 33
-        "paris",          // 34
-        "rome",           // 35
-        "london",         // 36
-        "newyork",        // 37
-        "donate",         // 38 사회복지기금 기부
-        "seoul",          // 39
-    ];
+      const BOARD_PATH_IDS = [
+        "island", // 0 (corner)
+        "taipei",
+        "beijing",
+        "manila",
+        "jeju",
+        "singapore",
+        "cairo",
+        "istanbul",
+        "island", // 8 (corner)
+        "athens",
+        "copenhagen",
+        "stockholm",
+        "concorde",
+        "bern",
+        "berlin",
+        "ottawa",
+        "island", // 16 (corner)
+        "buenos_aires",
+        "sao_paulo",
+        "sydney",
+        "busan",
+        "hawaii",
+        "lisbon",
+        "madrid",
+        "island", // 24 (corner)
+        "tokyo",
+        "columbia",
+        "paris",
+        "rome",
+        "london",
+        "newyork",
+        "seoul",
+      ];
 
-
-
-      var BOARD_LEN = BOARD_PATH_IDS.length; // 40
+      var BOARD_LEN = BOARD_PATH_IDS.length; // 32
 
       function boardTile(i) {
         var id = BOARD_PATH_IDS[i];
@@ -1164,17 +1154,17 @@ permalink: /portfolio/
       }
 
       function indexToRowCol(idx) {
-        // 11x11 ring; indices 0-39 clockwise starting top-left corner
-        var size = 11;
-        if (idx < size) return { r: 0, c: idx }; // top row 0..10
+        // 9x9 ring; indices 0-31 clockwise starting top-left corner
+        var size = 9;
+        if (idx < size) return { r: 0, c: idx }; // top row 0..8
         if (idx < size + (size - 2))
-          return { r: idx - (size - 1), c: size - 1 }; // right col 11..19
+          return { r: idx - (size - 1), c: size - 1 }; // right col 9..15
         if (idx < size + (size - 2) + size)
           return {
             r: size - 1,
             c: size - 1 - (idx - (size + (size - 2))),
-          }; // bottom row 20..30
-        // left col 31..39
+          }; // bottom row 16..24
+        // left col 25..31
         return {
           r: size - 1 - (idx - (size + (size - 2) + size)),
           c: 0,
@@ -1182,7 +1172,7 @@ permalink: /portfolio/
       }
 
       function rowColToIndex(r, c) {
-        var size = 11;
+        var size = 9;
         if (r === 0) return c;
         if (c === size - 1) return size - 1 + r;
         if (r === size - 1)
@@ -1878,7 +1868,7 @@ permalink: /portfolio/
       // ---------- Rendering ----------------------------------------------
       function renderBoard() {
         elBoardGrid.innerHTML = "";
-        var size = 11;
+        var size = 9;
 
         var curr = currentPlayer();
 
