@@ -43,20 +43,49 @@ permalink: /portfolio/
     }
 
     .ba-layout {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
 
     .ba-board {
-        background: radial-gradient(circle at top left, #1f2937, #020617 60%);
-        padding: 0.75rem;
-        border-radius: 0.9rem;
+      background: radial-gradient(circle at top left, #1f2937, #020617 60%);
+      padding: 0.75rem;
+      border-radius: 0.9rem;
 
-        /* 중앙 패널용 */
-        position: relative;
-        overflow: hidden;
+      /* 중앙 패널용 */
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ba-board-center-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(360px, 85%);
+      background: rgba(2, 6, 23, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      z-index: 2;
+      pointer-events: auto;
+      backdrop-filter: blur(5px);
+    }
+
+    .ba-board-center-panel .ba-panel-title span {
+      color: #cbd5f5;
+    }
+
+    .ba-board-center-panel .ba-note {
+      color: #94a3b8;
+    }
+
+    @media (max-width: 640px) {
+      .ba-board-center-panel {
+        width: 92%;
+        padding: 0.75rem;
+      }
     }
 
     /* 중앙 상세 패널 오버레이 */
@@ -639,6 +668,45 @@ permalink: /portfolio/
     <div class="ba-layout">
         <div class="ba-board">
             <div id="ba-board-grid" class="ba-board-grid"></div>
+
+            <div class="ba-panel ba-board-center-panel">
+              <div class="ba-panel-title">
+                <span id="ba-turn-title">-</span>
+                <span id="ba-welfare">복지기금: 0원</span>
+              </div>
+              <div class="ba-turn-main" id="ba-current-tile">현재 위치: -</div>
+              <div class="ba-turn-sub" id="ba-turn-sub">-</div>
+              <div class="ba-dice-row">
+                <div class="ba-die" id="ba-die-1">-</div>
+                <div class="ba-die" id="ba-die-2">-</div>
+                <div class="ba-dice-sum">
+                  합계: <span id="ba-die-sum">-</span>
+                </div>
+              </div>
+              <div id="ba-space-row" class="ba-space-row">
+                <label>
+                  우주여행 목적지
+                  <select id="ba-space-select" class="ba-select"></select>
+                </label>
+                <button id="ba-space-go-btn" class="ba-btn secondary">
+                  이동
+                </button>
+              </div>
+              <div class="ba-control-row">
+                <button id="ba-roll-btn" class="ba-btn">주사위</button>
+                <button id="ba-buy-btn" class="ba-btn secondary">구입</button>
+                <button id="ba-endturn-btn" class="ba-btn secondary">
+                  턴 종료
+                </button>
+              </div>
+              <div class="ba-message" id="ba-message"></div>
+              <div class="ba-note">
+                · 자신의 턴 시작 시, <b>아직 주사위를 굴리기 전에</b> 소유 도시를 클릭하면
+                건물을 지을 수 있습니다.<br />
+                · 무인도에 갇힌 경우 더블이 나오면 탈출합니다.
+              </div>
+            </div>
+
             <!-- 타일 상세 패널 -->
             <div id="ba-tile-detail" class="ba-tile-detail ba-hidden">
             <div class="ba-tile-detail-inner">
@@ -663,44 +731,6 @@ permalink: /portfolio/
     </div>
 
       <div class="ba-sidebar">
-        <div class="ba-panel">
-          <div class="ba-panel-title">
-            <span id="ba-turn-title">-</span>
-            <span id="ba-welfare">복지기금: 0원</span>
-          </div>
-          <div class="ba-turn-main" id="ba-current-tile">현재 위치: -</div>
-          <div class="ba-turn-sub" id="ba-turn-sub">-</div>
-          <div class="ba-dice-row">
-            <div class="ba-die" id="ba-die-1">-</div>
-            <div class="ba-die" id="ba-die-2">-</div>
-            <div class="ba-dice-sum">
-              합계: <span id="ba-die-sum">-</span>
-            </div>
-          </div>
-          <div id="ba-space-row" class="ba-space-row">
-            <label>
-              우주여행 목적지
-              <select id="ba-space-select" class="ba-select"></select>
-            </label>
-            <button id="ba-space-go-btn" class="ba-btn secondary">
-              이동
-            </button>
-          </div>
-          <div class="ba-control-row">
-            <button id="ba-roll-btn" class="ba-btn">주사위</button>
-            <button id="ba-buy-btn" class="ba-btn secondary">구입</button>
-            <button id="ba-endturn-btn" class="ba-btn secondary">
-              턴 종료
-            </button>
-          </div>
-          <div class="ba-message" id="ba-message"></div>
-          <div class="ba-note">
-            · 자신의 턴 시작 시, <b>아직 주사위를 굴리기 전에</b> 소유 도시를 클릭하면
-            건물을 지을 수 있습니다.<br />
-            · 무인도에 갇힌 경우 더블이 나오면 탈출합니다.
-          </div>
-        </div>
-
         <div class="ba-panel">
           <div class="ba-panel-title">플레이어</div>
           <div id="ba-players" class="ba-player-list"></div>
