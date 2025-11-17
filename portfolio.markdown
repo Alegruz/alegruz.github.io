@@ -259,6 +259,63 @@ permalink: /portfolio/
       min-height: 0.7rem;
     }
 
+    .ba-tile-owned {
+      border-color: var(--ba-owner-color, #38bdf8);
+      box-shadow: 0 0 0 2px var(--ba-owner-color-soft, rgba(56, 189, 248, 0.45));
+    }
+
+    .ba-tile-owned::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        140deg,
+        var(--ba-owner-color-tint, rgba(56, 189, 248, 0.2)),
+        transparent 65%
+      );
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .ba-tile-owner-badge {
+      position: absolute;
+      top: 0.2rem;
+      right: 0.2rem;
+      padding: 0.05rem 0.35rem 0.08rem;
+      border-radius: 999px;
+      font-size: 0.48rem;
+      font-weight: 700;
+      color: #020617;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(15, 23, 42, 0.35);
+      background: var(--ba-owner-color, #38bdf8);
+      z-index: 2;
+      letter-spacing: 0.02em;
+    }
+
+    .ba-tile-owner-badge .ba-tile-owner-initial {
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 50%;
+      background: rgba(248, 250, 252, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.45rem;
+      color: #0f172a;
+      box-shadow: inset 0 0 4px rgba(15, 23, 42, 0.25);
+    }
+
+    .ba-tile-owner-badge .ba-tile-owner-name {
+      max-width: 2.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .ba-tile-players {
       display: flex;
       flex-wrap: wrap;
@@ -1385,6 +1442,27 @@ permalink: /portfolio/
         return sign + out + "원";
       }
 
+      function colorWithAlpha(hex, alpha) {
+        if (!hex) return "rgba(255, 255, 255, " + alpha + ")";
+        var value = hex.replace("#", "");
+        if (value.length === 3) {
+          value =
+            value[0] +
+            value[0] +
+            value[1] +
+            value[1] +
+            value[2] +
+            value[2];
+        }
+        var r = parseInt(value.slice(0, 2), 16);
+        var g = parseInt(value.slice(2, 4), 16);
+        var b = parseInt(value.slice(4, 6), 16);
+        if (isNaN(r) || isNaN(g) || isNaN(b)) {
+          return "rgba(255, 255, 255, " + alpha + ")";
+        }
+        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+      }
+
       function shuffle(arr) {
         for (var i = arr.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1));
@@ -2202,10 +2280,7 @@ permalink: /portfolio/
             if (tile.type === "city" || tile.type === "vehicle") {
               for (var i = 0; i < state.players.length; i++) {
                 var p = state.players[i];
-                if (
-                  !p.bankrupt &&
-                  playerOwnsTile(p, idx)
-                ) {
+                if (!p.bankrupt && playerOwnsTile(p, idx)) {
                   owner = p;
                   break;
                 }
@@ -2222,8 +2297,25 @@ permalink: /portfolio/
                   : lvl === 2
                   ? " · 빌딩"
                   : " · 호텔";
-              ownerDiv.textContent =
-                "소유: " + owner.name + lvlText;
+              ownerDiv.textContent = "소유: " + owner.name + lvlText;
+              div.className += " ba-tile-owned";
+              var soft = colorWithAlpha(owner.color, 0.45);
+              var tint = colorWithAlpha(owner.color, 0.2);
+              div.style.setProperty("--ba-owner-color", owner.color);
+              div.style.setProperty("--ba-owner-color-soft", soft);
+              div.style.setProperty("--ba-owner-color-tint", tint);
+              var badge = document.createElement("div");
+              badge.className = "ba-tile-owner-badge";
+              badge.style.background = owner.color;
+              var badgeInitial = document.createElement("span");
+              badgeInitial.className = "ba-tile-owner-initial";
+              badgeInitial.textContent = owner.name.charAt(0);
+              var badgeName = document.createElement("span");
+              badgeName.className = "ba-tile-owner-name";
+              badgeName.textContent = owner.name;
+              badge.appendChild(badgeInitial);
+              badge.appendChild(badgeName);
+              div.appendChild(badge);
             } else if (tile.type === "city" || tile.type === "vehicle") {
               ownerDiv.textContent = "미소유";
             } else {
