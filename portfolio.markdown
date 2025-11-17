@@ -280,6 +280,12 @@ permalink: /portfolio/
       outline: 1px solid rgba(15, 23, 42, 0.75);
     }
 
+    .ba-token.current {
+      outline: 2px solid rgba(248, 250, 252, 0.9);
+      box-shadow: 0 0 10px rgba(248, 250, 252, 0.65);
+      transform: scale(1.1);
+    }
+
     .ba-tile-index {
       position: absolute;
       bottom: 0.1rem;
@@ -346,6 +352,67 @@ permalink: /portfolio/
       margin-bottom: 0.25rem;
     }
 
+    .ba-turn-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 0.8rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.25);
+      margin-bottom: 0.45rem;
+      animation: ba-turn-pulse 1.6s ease-in-out infinite;
+    }
+
+    .ba-turn-indicator-ended {
+      animation: none;
+      border-color: rgba(148, 163, 184, 0.35);
+      box-shadow: none;
+      opacity: 0.85;
+    }
+
+    .ba-turn-indicator-dot {
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 999px;
+      border: 2px solid rgba(15, 23, 42, 0.9);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+      flex-shrink: 0;
+      background: #475569;
+    }
+
+    .ba-turn-indicator-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .ba-turn-indicator-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+    }
+
+    .ba-turn-indicator-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #f9fafb;
+    }
+
+    @keyframes ba-turn-pulse {
+      0% {
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+      }
+      100% {
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
+      }
+    }
+
     .ba-dice-row {
       display: flex;
       align-items: center;
@@ -377,6 +444,12 @@ permalink: /portfolio/
       display: flex;
       flex-wrap: wrap;
       gap: 0.35rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .ba-reset-row {
+      display: flex;
+      justify-content: flex-end;
       margin-bottom: 0.25rem;
     }
 
@@ -442,7 +515,21 @@ permalink: /portfolio/
 
     .ba-player-row.ba-player-current {
       border: 1px solid rgba(59, 130, 246, 0.9);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+      background: radial-gradient(circle at top left, #0f172a, #020617 60%);
+      animation: ba-current-glow 1.8s ease-in-out infinite;
+    }
+
+    @keyframes ba-current-glow {
+      0% {
+        box-shadow: 0 0 6px rgba(37, 99, 235, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 16px rgba(37, 99, 235, 0.55);
+      }
+      100% {
+        box-shadow: 0 0 6px rgba(37, 99, 235, 0.2);
+      }
     }
 
     .ba-player-main {
@@ -714,6 +801,17 @@ permalink: /portfolio/
                 <span id="ba-turn-title">-</span>
                 <span id="ba-welfare">복지기금: 0원</span>
               </div>
+              <div id="ba-turn-indicator" class="ba-turn-indicator">
+                <div id="ba-turn-indicator-dot" class="ba-turn-indicator-dot"></div>
+                <div class="ba-turn-indicator-text">
+                  <span class="ba-turn-indicator-label">현재 턴</span>
+                  <span
+                    id="ba-turn-indicator-name"
+                    class="ba-turn-indicator-name"
+                    >-</span
+                  >
+                </div>
+              </div>
               <div class="ba-turn-main" id="ba-current-tile">현재 위치: -</div>
               <div class="ba-turn-sub" id="ba-turn-sub">-</div>
               <div class="ba-dice-row">
@@ -739,6 +837,11 @@ permalink: /portfolio/
                 </button>
                 <button id="ba-endturn-btn" class="ba-btn secondary">
                   턴 종료
+                </button>
+              </div>
+              <div class="ba-reset-row">
+                <button id="ba-reset-game-btn" class="ba-btn danger">
+                  처음 화면으로
                 </button>
               </div>
               <div class="ba-message" id="ba-message"></div>
@@ -1502,6 +1605,11 @@ permalink: /portfolio/
       var elTurnTitle = document.getElementById("ba-turn-title");
       var elCurrentTile = document.getElementById("ba-current-tile");
       var elTurnSub = document.getElementById("ba-turn-sub");
+      var elTurnIndicator = document.getElementById("ba-turn-indicator");
+      var elTurnIndicatorDot = document.getElementById("ba-turn-indicator-dot");
+      var elTurnIndicatorName = document.getElementById(
+        "ba-turn-indicator-name"
+      );
       var elWelfare = document.getElementById("ba-welfare");
       var elMessage = document.getElementById("ba-message");
 
@@ -1512,6 +1620,7 @@ permalink: /portfolio/
       var elRollBtn = document.getElementById("ba-roll-btn");
       var elActionBtn = document.getElementById("ba-action-btn");
       var elEndTurnBtn = document.getElementById("ba-endturn-btn");
+      var elInGameResetBtn = document.getElementById("ba-reset-game-btn");
 
       var elSpaceRow = document.getElementById("ba-space-row");
       var elSpaceSelect = document.getElementById("ba-space-select");
@@ -2130,7 +2239,11 @@ permalink: /portfolio/
               if (p.bankrupt) return;
               if (p.position === idx) {
                 var tok = document.createElement("div");
-                tok.className = "ba-token";
+                var tokenClass = "ba-token";
+                if (curr && p === curr && !state.gameOver) {
+                  tokenClass += " current";
+                }
+                tok.className = tokenClass;
                 tok.style.background = p.color;
                 tok.textContent = p.name.charAt(0);
                 playersDiv.appendChild(tok);
@@ -2237,8 +2350,18 @@ permalink: /portfolio/
 
         if (state.gameOver) {
           elTurnTitle.textContent = "게임 종료";
+          if (elTurnIndicatorName && elTurnIndicatorDot && elTurnIndicator) {
+            elTurnIndicatorName.textContent = "게임 종료";
+            elTurnIndicatorDot.style.background = "#475569";
+            elTurnIndicator.classList.add("ba-turn-indicator-ended");
+          }
         } else {
           elTurnTitle.textContent = p.name + "님의 차례";
+          if (elTurnIndicatorName && elTurnIndicatorDot && elTurnIndicator) {
+            elTurnIndicatorName.textContent = p.name + "님의 차례";
+            elTurnIndicatorDot.style.background = p.color;
+            elTurnIndicator.classList.remove("ba-turn-indicator-ended");
+          }
         }
 
         var tile = tileAt(p.position);
@@ -3040,6 +3163,9 @@ permalink: /portfolio/
       // ---------- Event binding ------------------------------------------
       elStartBtn.addEventListener("click", startGame);
       elResetBtn.addEventListener("click", resetGame);
+      if (elInGameResetBtn) {
+        elInGameResetBtn.addEventListener("click", resetGame);
+      }
       elRollBtn.addEventListener("click", rollDice);
       if (elActionBtn) {
         elActionBtn.addEventListener("click", openCurrentTileDetail);
