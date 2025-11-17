@@ -76,7 +76,11 @@ permalink: /portfolio/
         <li>Turn on RLS for both tables, then add policies such as “Authenticated users can insert/select/update rows where <code>room_id</code> matches their session”. For a prototype, enable <em>Authenticated access</em> and sign clients in anonymously using <code>supabase.auth.signInWithOtp({ email })</code> or <code>signInAnonymously()</code>.</li>
         <li>In <em>Database &gt; Replication</em> enable Realtime for the <code>rooms</code> and <code>players</code> tables so updates are broadcast to clients.</li>
       </ul>
-      <pre><code>-- Allow authenticated clients (including anonymous auth) to insert lobby rows
+      <pre><code>-- Enable Row Level Security on both tables
+ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.players ENABLE ROW LEVEL SECURITY;
+
+-- Allow authenticated clients (including anonymous auth) to insert lobby rows
 CREATE POLICY rooms_insert_authenticated
 ON public.rooms
 FOR INSERT TO authenticated
@@ -1005,6 +1009,19 @@ async function commitMove(patch) {
       · 참가자는 같은 코드를 입력하고 참가 버튼을 누르면 동일한 게임 상태를 실시간으로 공유할 수 있습니다.<br />
       · Supabase Auth 설정에서 Anonymous Sign-ins를 반드시 활성화해야 브라우저에서 인증이 진행됩니다.<br />
       · “new row violates row-level security policy” 오류가 보이면 위 SQL 정책을 적용했는지 다시 확인하세요.
+    </div>
+    <div class="ba-note" style="margin-top:0.35rem;">
+      <strong>자주 발생하는 Supabase 오류:</strong><br />
+      “rooms 테이블에 INSERT 정책이 없어서 거부되었습니다” 메시지가 뜨면 Supabase 대시보드 &gt; SQL Editor에서 아래 구문을
+      실행해 RLS를 켠 뒤 다시 시도하세요.
+      <pre style="margin-top:0.35rem;"><code>ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
+CREATE POLICY rooms_insert_authenticated ON public.rooms
+FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL);
+
+ALTER TABLE public.players ENABLE ROW LEVEL SECURITY;
+CREATE POLICY players_self_access ON public.players
+FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());</code></pre>
+      Auth &gt; Providers에서 Anonymous Sign-ins가 꺼져 있어도 같은 오류가 날 수 있으니 함께 확인하세요.
     </div>
   </div>
 

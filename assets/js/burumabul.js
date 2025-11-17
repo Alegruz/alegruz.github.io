@@ -830,11 +830,13 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
 
       var RLS_HELPERS = {
         rooms:
-          "rooms 테이블에 INSERT 정책이 없어서 거부되었습니다. SQL Editor에서\n" +
+          "rooms 테이블에 INSERT 정책이 없어서 거부되었습니다. Supabase 대시보드 > SQL Editor에서 아래 구문을 실행한 뒤 다시 시도하세요:\n" +
+          "ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;\n" +
           "CREATE POLICY rooms_insert_authenticated ON public.rooms\n" +
           "FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL);",
         players:
-          "players 테이블에 대한 RLS 정책을 추가해야 합니다. SQL 예시:\n" +
+          "players 테이블에 대한 RLS 정책을 추가해야 합니다. Supabase SQL Editor에서 다음 정책을 실행하세요:\n" +
+          "ALTER TABLE public.players ENABLE ROW LEVEL SECURITY;\n" +
           "CREATE POLICY players_self_access ON public.players\n" +
           "FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());",
       };
@@ -848,7 +850,7 @@ import { supabase, ensureAuth, getCurrentUserId } from './supabaseClient.js';
             " Anonymous Sign-ins를 켜 주세요."
           );
         }
-        if (/row-level security/i.test(message)) {
+        if (/row-level security/i.test(message) || /permission denied/i.test(message)) {
           if (message.includes('"rooms"')) {
             return RLS_HELPERS.rooms;
           }
