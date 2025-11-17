@@ -627,6 +627,15 @@ permalink: /portfolio/
         </select>
       </div>
       <div class="ba-label">
+        <span>타일 세트</span>
+        <select id="ba-tile-policy" class="ba-select">
+          <option value="vanilla" selected>바닐라 (기본 순서)</option>
+          <option value="random">랜덤 (매 게임 새 배열)</option>
+          <option value="reversed">역순 (반대 방향 순회)</option>
+          <option value="luxury">럭셔리 파도 (땅값 높은 순)</option>
+        </select>
+      </div>
+      <div class="ba-label">
         <span>플레이어 1 이름</span>
         <input id="ba-name-1" class="ba-input" value="플레이어 1" />
       </div>
@@ -651,7 +660,8 @@ permalink: /portfolio/
     </div>
     <div class="ba-note">
       · 3~4인: 시작 자금 300만 / 2인: 600만<br />
-      · 건물은 각 차례 시작에 자신의 땅을 클릭해 지을 수 있습니다.
+      · 건물은 각 차례 시작에 자신의 땅을 클릭해 지을 수 있습니다.<br />
+      · 출발/무인도 위치만 고정되고, 나머지 타일은 정책에 따라 재배치됩니다.
     </div>
   </div>
 
@@ -1136,7 +1146,7 @@ permalink: /portfolio/
 
       // Board path: 32 tiles around a 9x9 edge (clockwise).
       // We don't try to replicate real physical order perfectly; it's a reasonable loop.
-      const BOARD_PATH_IDS = [
+      const BOARD_TEMPLATE = [
         "start", // 0 (corner)
         "taipei",
         "beijing",
@@ -1171,6 +1181,7 @@ permalink: /portfolio/
         "seoul",
       ];
 
+      var BOARD_PATH_IDS = BOARD_TEMPLATE.slice();
       var BOARD_LEN = BOARD_PATH_IDS.length; // 32
 
       function boardTile(i) {
@@ -1238,6 +1249,56 @@ permalink: /portfolio/
           arr[j] = tmp;
         }
         return arr;
+      }
+
+      function isFixedTileId(id) {
+        return id === "start" || id === "island";
+      }
+
+      function policyTileValue(id) {
+        var def = TILE_DEFS[id] || {};
+        return def.landPrice || def.tollLand || 0;
+      }
+
+      function buildBoardForPolicy(policy) {
+        var movable = [];
+        for (var i = 0; i < BOARD_TEMPLATE.length; i++) {
+          if (!isFixedTileId(BOARD_TEMPLATE[i])) movable.push(BOARD_TEMPLATE[i]);
+        }
+
+        var arranged;
+        var mode = policy || "vanilla";
+        if (mode === "random") {
+          arranged = shuffle(movable.slice());
+        } else if (mode === "reversed") {
+          arranged = movable.slice().reverse();
+        } else if (mode === "luxury") {
+          arranged = movable
+            .slice()
+            .sort(function (a, b) {
+              var diff = policyTileValue(b) - policyTileValue(a);
+              if (diff !== 0) return diff;
+              return a.localeCompare(b);
+            });
+        } else {
+          arranged = movable.slice();
+        }
+
+        var next = [];
+        var cursor = 0;
+        for (var j = 0; j < BOARD_TEMPLATE.length; j++) {
+          if (isFixedTileId(BOARD_TEMPLATE[j])) {
+            next.push(BOARD_TEMPLATE[j]);
+          } else {
+            next.push(arranged[cursor++] || BOARD_TEMPLATE[j]);
+          }
+        }
+        return next;
+      }
+
+      function applyBoardPolicy(policy) {
+        BOARD_PATH_IDS = buildBoardForPolicy(policy);
+        BOARD_LEN = BOARD_PATH_IDS.length;
       }
 
       // ---------- Golden Key ---------------------------------------------
@@ -1384,12 +1445,14 @@ permalink: /portfolio/
         gameOver: false,
         turnCounter: 1,
         goldenDeck: [],
+        boardPolicy: "vanilla",
       };
 
       // ---------- DOM refs -----------------------------------------------
       var elSetup = document.getElementById("ba-setup");
       var elGame = document.getElementById("ba-game");
       var elPlayerCount = document.getElementById("ba-player-count");
+      var elTilePolicy = document.getElementById("ba-tile-policy");
       var elStartBtn = document.getElementById("ba-start-btn");
       var elResetBtn = document.getElementById("ba-reset-btn");
 
@@ -1420,6 +1483,15 @@ permalink: /portfolio/
       var elTileDetailTitle = document.getElementById("ba-tile-detail-title");
       var elTileDetailBody = document.getElementById("ba-tile-detail-body");
       var elTileDetailClose = document.getElementById("ba-tile-detail-close");
+
+      function tilePolicyLabel(policy) {
+        if (!elTilePolicy) return policy || "";
+        for (var i = 0; i < elTilePolicy.options.length; i++) {
+          if (elTilePolicy.options[i].value === policy)
+            return elTilePolicy.options[i].textContent;
+        }
+        return policy || "";
+      }
 
     function showGoldenKeyPopup(text, callback) {
         var popup = document.getElementById("ba-golden-popup");
@@ -2394,6 +2466,10 @@ permalink: /portfolio/
           document.getElementById("ba-name-4").value || "플레이어 4",
         ];
 
+        var policyValue = elTilePolicy ? elTilePolicy.value : "vanilla";
+        state.boardPolicy = policyValue;
+        applyBoardPolicy(policyValue);
+
         var chosenNames = names.slice(0, count);
         var colorIdx = shuffle([0, 1, 2, 3]).slice(0, count);
 
@@ -2432,7 +2508,16 @@ permalink: /portfolio/
         elResetBtn.style.display = "inline-flex";
 
         renderAll();
-        elMessage.textContent = "게임 시작! 첫 번째 플레이어가 주사위를 굴리세요.";
+        var policyLabel = tilePolicyLabel(policyValue);
+        elMessage.textContent =
+          "게임 시작! 타일 정책: " +
+          (policyLabel || policyValue) +
+          ". 첫 번째 플레이어가 주사위를 굴리세요.";
+        logEvent(
+          null,
+          "타일 정책 적용: " + (policyLabel || policyValue),
+          0
+        );
       }
 
       function resetGame() {
