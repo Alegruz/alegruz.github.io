@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Implementing ReSTIR Variants in a Direct3D 12 Path Tracer: A Practical Study in Spatio-Temporal Resampling
+title: Implementing ReSTIR Variants in a Direct3D 12 Path Tracer - A Practical Study in Spatio-Temporal Resam
 date: 2025-12-05 18:40:00 +0900
 categories: graphics
 lang: "en"
