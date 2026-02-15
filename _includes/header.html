@@ -25,7 +25,9 @@
             <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
             {%- endif -%}
           {%- endfor -%}
-          <div class="page-link" id="toggle-language">Switch to Korean</div>
+          <button class="page-link language-toggle-btn" id="toggle-language" type="button">
+            Switch to Korean
+          </button>
         </div>
       </nav>
     {%- endif -%}

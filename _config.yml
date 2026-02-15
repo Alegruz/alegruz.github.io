@@ -28,6 +28,11 @@ url: "https://alegruz.github.io" # the base hostname & protocol for your site, e
 # twitter_username: jekyllrb
 github_username:  Alegruz
 linkedin_username: alegruz
+header_pages:
+  - portfolio.markdown
+  - cv.markdown
+  - about.markdown
+
 
 # Build settings
 theme: minima
