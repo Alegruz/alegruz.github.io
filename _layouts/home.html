@@ -10,43 +10,40 @@ layout: default
   {{ content }}
 
   <section class="archive-shell" aria-label="Post archive">
-    <div class="archive-heading">
-      <div>
-        <h2 data-lang="en">Posts</h2>
-        <h2 data-lang="ko">글</h2>
-      </div>
-      <div class="feed-stats" aria-label="Archive statistics">
-        <article class="stat-card">
-          <p class="stat-label" data-lang="en">Total</p>
-          <p class="stat-label" data-lang="ko">전체</p>
-          <p class="stat-value">{{ total_count }}</p>
-        </article>
-        <article class="stat-card">
-          <p class="stat-label" data-lang="en">English</p>
-          <p class="stat-label" data-lang="ko">영어</p>
-          <p class="stat-value">{{ en_count }}</p>
-        </article>
-        <article class="stat-card">
-          <p class="stat-label" data-lang="en">Korean</p>
-          <p class="stat-label" data-lang="ko">한국어</p>
-          <p class="stat-value">{{ ko_count }}</p>
-        </article>
-        <article class="stat-card">
-          <p class="stat-label" data-lang="en">Visible</p>
-          <p class="stat-label" data-lang="ko">표시 중</p>
-          <p class="stat-value" id="visible-count">{{ en_count }}</p>
-        </article>
-      </div>
-    </div>
+    <header class="archive-heading">
+      <h2 data-lang="en">Posts</h2>
+      <h2 data-lang="ko">글</h2>
+      <p class="archive-count">
+        <span id="visible-count">{{ en_count }}</span>
+        <span data-lang="en">shown</span>
+        <span data-lang="ko">개 표시</span>
+        <span aria-hidden="true">/</span>
+        <span>{{ total_count }}</span>
+      </p>
+    </header>
 
-    <div class="feed-controls">
-      <div class="chip-group" role="group" aria-label="Topic filters">
-        <button class="chip active" type="button" data-topic="all" aria-pressed="true">All</button>
-        <button class="chip" type="button" data-topic="rendering" aria-pressed="false">Rendering</button>
-        <button class="chip" type="button" data-topic="api" aria-pressed="false">Graphics API</button>
-        <button class="chip" type="button" data-topic="theory" aria-pressed="false">Theory / Math</button>
-        <button class="chip" type="button" data-topic="engine" aria-pressed="false">Engine</button>
+    <div class="feed-controls" aria-label="Archive filters">
+      <div class="filter-block">
+        <p class="filter-label" data-lang="en">Topic</p>
+        <p class="filter-label" data-lang="ko">주제</p>
+        <div class="chip-group" role="group" aria-label="Topic filters">
+          <button class="chip active" type="button" data-topic="all" aria-pressed="true">All</button>
+          {%- for topic in site.data.topics -%}
+            <button class="chip" type="button" data-topic="{{ topic[0] }}" aria-pressed="false">{{ topic[1].label }}</button>
+          {%- endfor -%}
+        </div>
       </div>
+
+      <div class="filter-block">
+        <p class="filter-label" data-lang="en">Language</p>
+        <p class="filter-label" data-lang="ko">언어</p>
+        <div class="chip-group" role="group" aria-label="Language filters">
+          <button class="chip" type="button" data-lang-filter="all" aria-pressed="false">All</button>
+          <button class="chip active" type="button" data-lang-filter="en" aria-pressed="true">EN</button>
+          <button class="chip" type="button" data-lang-filter="ko" aria-pressed="false">KO</button>
+        </div>
+      </div>
+
       <label class="search-shell" for="post-search">
         <span data-lang="en">Search</span>
         <span data-lang="ko">검색</span>
@@ -62,53 +59,32 @@ layout: default
       </label>
     </div>
 
-    <ul id="post-feed" class="post-grid">
-      {%- for post in site.posts -%}
-        {%- assign title_l = post.title | downcase -%}
-        {%- assign topic = "engine" -%}
-        {%- if title_l contains "restir" or title_l contains "ray" or title_l contains "path tracing" or title_l contains "gaussian splatting" -%}
-          {%- assign topic = "rendering" -%}
-        {%- elsif title_l contains "vulkan" or title_l contains "direct3d" or title_l contains "d3d" or title_l contains "command submission" -%}
-          {%- assign topic = "api" -%}
-        {%- elsif title_l contains "math" or title_l contains "monte carlo" or title_l contains "radiometry" or title_l contains "brdf" -%}
-          {%- assign topic = "theory" -%}
-        {%- elsif title_l contains "pipeline" or title_l contains "rhi" or title_l contains "engine" -%}
-          {%- assign topic = "engine" -%}
-        {%- endif -%}
-
-        {%- assign topic_label = "Engine" -%}
-        {%- if topic == "rendering" -%}
-          {%- assign topic_label = "Rendering" -%}
-        {%- elsif topic == "api" -%}
-          {%- assign topic_label = "Graphics API" -%}
-        {%- elsif topic == "theory" -%}
-          {%- assign topic_label = "Theory / Math" -%}
-        {%- endif -%}
-
-        {%- assign post_lang = post.lang | default: "en" -%}
-        <li
-          class="post-card"
-          data-lang="{{ post_lang }}"
-          data-topic="{{ topic }}"
-          data-title="{{ post.title | downcase | escape }}"
-          data-year="{{ post.date | date: '%Y' }}"
-        >
-          <article>
-            <div class="post-card-top">
-              <span class="topic-signal" aria-hidden="true"></span>
-              <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
-            </div>
-            <h3><a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
-            <p class="post-excerpt">{{ post.excerpt | strip_html | strip_newlines | truncate: 160 }}</p>
-            <div class="post-meta-row">
-              <span class="badge">{{ topic_label }}</span>
-              <span class="badge">{{ post_lang | upcase }}</span>
-              <span class="badge">{{ post.date | date: "%Y" }}</span>
-            </div>
-          </article>
-        </li>
+    {%- assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" -%}
+    <div id="post-feed" class="post-years">
+      {%- for year in posts_by_year -%}
+        <section class="post-year-group" data-year-group>
+          <h3>{{ year.name }}</h3>
+          <ol class="post-list">
+            {%- for post in year.items -%}
+              {%- assign post_topic = post.topic | default: "engine" -%}
+              {%- assign topic_data = site.data.topics[post_topic] -%}
+              {%- assign topic_label = topic_data.label | default: post_topic -%}
+              {%- assign post_lang = post.lang | default: "en" -%}
+              <li
+                class="post-row"
+                data-post-lang="{{ post_lang }}"
+                data-topic="{{ post_topic }}"
+                data-title="{{ post.title | downcase | escape }}"
+              >
+                <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+                <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                <span class="post-row-meta">{{ topic_label }} / {{ post_lang | upcase }}</span>
+              </li>
+            {%- endfor -%}
+          </ol>
+        </section>
       {%- endfor -%}
-    </ul>
+    </div>
 
     <p id="feed-empty" class="feed-empty" hidden data-msg-en="No posts match the current filters." data-msg-ko="현재 필터 조건에 맞는 글이 없습니다.">No posts match the current filters.</p>
     <p class="rss-subscribe"><a href="{{ "/feed.xml" | relative_url }}">RSS feed</a></p>

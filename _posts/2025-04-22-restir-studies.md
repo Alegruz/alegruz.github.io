@@ -4,6 +4,7 @@ title:  ReSTIR Study Notes
 date:   2025-04-22 20:49:00 +0900
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 ReSTIR was the theme for my graduation project. I wanted to understand the state-of-the-art real-time/interactive global illumination technique, but I have failed to do so. This is largely due to the lack of background knowledges. Now, I am starting again to study ReSTIR, but this time properly, to the level where I can try to come up with my own research ideas.

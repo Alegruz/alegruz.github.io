@@ -4,6 +4,7 @@ title:  ReSTIR and Collective Intelligence
 date:   2025-06-28 20:55:00 +0900
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 Lately, I’ve been studying real-time global illumination techniques—particularly ReSTIR and its extensions. As I dug deeper into how the algorithm works, I began to see a curious and compelling analogy: ReSTIR resembles how humans learn from each other.

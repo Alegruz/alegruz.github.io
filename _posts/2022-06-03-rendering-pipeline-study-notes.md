@@ -4,6 +4,7 @@ title:  Rendering Pipeline Study Notes
 date:   2022-06-03 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 # References

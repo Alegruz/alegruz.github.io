@@ -4,6 +4,7 @@ title:  Study Notes on Raytracing Implementations
 date:   2025-07-13 17:01:00 +0900
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 Raytracing is basically computing intersections of parametric lines from the camera with the scene geometry, and then evaluating the lighting at those intersection points. This doesn't require any special hardware, just a lot of computation. However, the naive approach of checking every pixel against every triangle in the scene is too slow for real-time applications. There are several techniques to speed this up, such as bounding volume hierarchies (BVH), spatial partitioning, and acceleration structures. In this post, I will go through several ways to implement raytracing, focusing on the most common ones used in real-time graphics.

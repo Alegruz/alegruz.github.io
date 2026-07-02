@@ -4,6 +4,7 @@ title:  Efficient Rendering Study Notes
 date:   2022-07-19 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 # Forward Rendering
@@ -4654,7 +4655,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="Bentley14" href="https://www.gdcvault.com/play/1020399/Engine-Postmortem-of-inFAMOUS-Second">inFAMOUS Second Son Engine Postmortem</a>. [Adrian Bentley](https://twitter.com/adrianb3000), [Sucker Punch Productions](https://www.suckerpunch.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
 <a id="Bezrati14" href="http://advances.realtimerendering.com/s2014/#_REAL-TIME_LIGHTING_VIA">Real-Time Lighting via Light Linked List</a>. [Abdul Bezrati](https://www.linkedin.com/in/abdulbezrati/), [Insomniac Games](https://insomniac.games/). [SIGGRAPH 2014: Advances in Real-Time Rendering in 3D Graphics and Games Course](http://advances.realtimerendering.com/s2014/).<br>
 <a id="Dufresne14" href="https://www.intel.com/content/www/us/en/developer/articles/technical/forward-clustered-shading.html">Forward Clustered Shading</a>. Marc Fauconneau Dufresne, [Intel Corporation](https://www.intel.com/content/www/us/en/homepage.html). [Intel Software Developer Zone](https://www.intel.com/content/www/us/en/developer/overview.html).<br>
-<a id="Leadbetter14" href="https://www.eurogamer.net/digitalfoundry-2014-the-making-of-forza-horizon-2">The Making of Forza Horizon 2</a>. [Richard Leadbetter](Richard Leadbetter), [Digital Foundary](https://www.eurogamer.net/digital-foundry). [Eurogamer.net](https://www.eurogamer.net/).<br>
+<a id="Leadbetter14" href="https://www.eurogamer.net/digitalfoundry-2014-the-making-of-forza-horizon-2">The Making of Forza Horizon 2</a>. Richard Leadbetter, [Digital Foundary](https://www.eurogamer.net/digital-foundry). [Eurogamer.net](https://www.eurogamer.net/).<br>
 <a id="NeubeltPettineo14" href="https://www.gdcvault.com/play/1020162/Crafting-a-Next-Gen-Material">Crafting a Next-Gen Material Pipeline for The Order: 1886</a>. [David Neubelt](https://www.linkedin.com/in/coderdave/), [Ready at Dawn](http://www.readyatdawn.com/). [Matt Pettineo](https://therealmjp.github.io/), [Ready at Dawn](http://www.readyatdawn.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>
 <a id="Pesce14" href="http://c0de517e.blogspot.com/2014/09/notes-on-real-time-renderers.html">Notes on Real-Time Renderers</a>. [Angelo Pesce](http://c0de517e.blogspot.com/), [Activision](https://www.activision.com/) / [Roblox](https://www.roblox.com/). [C0DE517E Blog](http://c0de517e.blogspot.com/).<br>
 <a id="Schulz14" href="https://www.gdcvault.com/play/1020432/Moving-to-the-Next-Generation">Moving to the Next Generation—The Rendering Technology of Ryse</a>. Nicolas Schulz, [Crytek](https://www.crytek.com/). [GDC 2014](https://www.gdcvault.com/free/gdc-14).<br>

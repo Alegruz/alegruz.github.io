@@ -1,0 +1,8 @@
+rendering:
+  label: Rendering
+api:
+  label: Graphics API
+theory:
+  label: Theory / Math
+engine:
+  label: Engine

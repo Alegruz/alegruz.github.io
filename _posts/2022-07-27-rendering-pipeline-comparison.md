@@ -4,6 +4,7 @@ title:  Rendering Pipeline Comparison
 date:   2022-07-27 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 # Environment

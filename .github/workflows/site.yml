@@ -1,0 +1,25 @@
+name: Site
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - run: bundle exec jekyll build
+      - run: python scripts/validate_site.py

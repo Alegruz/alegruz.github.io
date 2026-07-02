@@ -4,6 +4,7 @@ title:  Smoothed Particle Hydrodynamics by CUDA
 date:   2021-11-27 00:00:00 +0000
 categories: simulation
 lang: "en"
+topic: engine
 ---
 
 ## Smoothed Particle Hydrodynamics
@@ -147,7 +148,7 @@ We can deep dive into all the discussions and theories about dirac functions and
 
 If there exists a function A(**x**<sub>i</sub>), the function can be discretized into:
 
-![SphDiscretization](/assets/images/Sph/SphDiscretization.png)
+![SphDiscretization](/assets/images/Sph/SphDifferentialOperatorDiscretization.png)
 
 The discretization of differential operator would be:
 
@@ -155,11 +156,11 @@ The discretization of differential operator would be:
 
 For improved readability, we will drop the second argument of the kernel function and use the abbreviation: 
 
-![KernelFunctionAbbreviation](/assets/images/Sph/SKernelFunctionAbbreviation.gif)
+![KernelFunctionAbbreviation](/assets/images/Sph/KernelFunctionAbbreviation.gif)
 
 In order to ensure symmetry, the equation is then rearranged into:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/MonaghanSphDerivative.png)
 
 The discretization of laplace operator would be:
 
@@ -171,24 +172,24 @@ In order to cope with very poor estimate of the 2<sup>nd</sup>-order differentia
 
 However, the resulting 2<sup>nd</sup>-order derivatives has problems that in the context of physics simulations, the forces derived using this operator are not conserving momentum. By a little bit of mathematical magic, the formula can be rearranged into:
 
-![SphLaplaceOperatorDiscretizationImproved](/assets/images/Sph/SphLaplaceOperatorDiscretizationImproved.png)
+![SphLaplaceOperatorDiscretizationImproved](/assets/images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png)
 
 ##### Kernel Functions
 
 Images and equations from [Staubach. 2010.]<sup>[16](#footnote_16)</sup>.
 
 * 6th degree polynomial kernel (default kernel)
-    * ![Poly6](/assets/images/Sph/Poly6.png)
+    * ![Poly6](/assets/images/Sph/Poly6Graph.png)
     * ![Poly6Gradient](/assets/images/Sph/Poly6Gradient.png)
     * ![Poly6Laplacian](/assets/images/Sph/Poly6Laplacian.png)
     * ![Poly6Graph](/assets/images/Sph/Poly6Graph.png)
 * Spiky kernel (pressure kernel)
-    * ![Spiky](/assets/images/Sph/Spiky.png)
+    * ![Spiky](/assets/images/Sph/SpikyGraph.png)
     * ![SpikyGradient](/assets/images/Sph/SpikyGradient.png)
     * ![SpikyLaplacian](/assets/images/Sph/SpikyLaplacian.png)
     * ![SpikyGraph](/assets/images/Sph/SpikyGraph.png)
 * Viscosity kernel
-    * ![Viscosity](/assets/images/Sph/Viscosity.png)
+    * ![Viscosity](/assets/images/Sph/ViscosityGraph.png)
     * ![ViscosityGradient](/assets/images/Sph/ViscosityGradient.png)
     * ![ViscosityLaplacian](/assets/images/Sph/ViscosityLaplacian.png)
     * ![ViscosityGraph](/assets/images/Sph/ViscosityGraph.png)
@@ -211,15 +212,15 @@ Let us go back to the basic structure of the algorithm:
 Now we can calculate each elements using SPH techniques.
 
 1. Viscosity
-    * ![ViscosityBodyForce](\Images\Sph\ViscosityBodyForce.gif)
+    * ![ViscosityBodyForce](/assets/images/Sph/ViscosityBodyForce.gif)
 2. External Body Force
-    * ![ExternalBodyForce](\Images\Sph\ExternalBodyForce.gif)
+    * ![ExternalBodyForce](/assets/images/Sph/ExternalBodyForce.gif)
 3. Pressure
-    * ![Pressure](\Images\Sph\Pressure.gif)
+    * ![Pressure](/assets/images/Sph/Pressure.gif)
 4. State Equation
-    * ![StateEquation0](\Images\Sph\StateEquation0.gif)
-    * ![StateEquation1](\Images\Sph\StateEquation1.gif)
-    * ![StateEquation2](\Images\Sph\StateEquation2.gif)
+    * ![StateEquation0](/assets/images/Sph/StateEquation0.gif)
+    * ![StateEquation1](/assets/images/Sph/StateEquation1.gif)
+    * ![StateEquation2](/assets/images/Sph/StateEquation1.gif)
 
 Based on the knowledge that we have acquired up to this point, we are now able to implement a simple state-equation based simulator for weakly compressible fluids with operator splitting using SPH and symplectic Euler integration.
 
@@ -240,13 +241,13 @@ Following is a simulation loop for SPH simulation of weakly compressible fluids:
 Let us break down each components into equations:
 
 1. Density &rho;<sub>i</sub>
-    * ![MassDensity](\Images\Sph\MassDensity.gif)
+    * ![MassDensity](/assets/images/Sph/MassDensityFunction.png)
 2. Viscosity Force
-    * ![ViscosityForce](\Images\Sph\ViscosityForce.gif)
+    * ![ViscosityForce](/assets/images/Sph/ViscosityForce.gif)
 3. External Force
-    * ![ExternalForce](\Images\Sph\ExternalForce.gif)
+    * ![ExternalForce](/assets/images/Sph/ExternalForce.gif)
 4. Pressure Force
-    * ![PressureForce](\Images\Sph\PressureForce.gif)
+    * ![PressureForce](/assets/images/Sph/PressureForce.gif)
 
 ### Neighborhood Search
 
@@ -761,7 +762,7 @@ void ParticleSystem::Update(float DeltaTime)
 
 ##### Densities
 
-![MassDensity](\Images\Sph\MassDensity.gif)
+![MassDensity](/assets/images/Sph/MassDensityFunction.png)
 
 ```cpp
 void ComputeDensities(float* OutDensities, float* SortedPositions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
@@ -864,9 +865,9 @@ float ComputeDensitiesByCell(int3 Gridpositionition,
 ##### Non Pressure Forces
 
 * Viscosity Force
-    * ![ViscosityForce](\Images\Sph\ViscosityForce.gif)
+    * ![ViscosityForce](/assets/images/Sph/ViscosityForce.gif)
 * External Force
-    * ![ExternalForce](\Images\Sph\ExternalForce.gif)
+    * ![ExternalForce](/assets/images/Sph/ExternalForce.gif)
 
 In order to approximate the Laplacian of the velocityocity field we
 combine an SPH derivative with a finite difference derivative which
@@ -1031,7 +1032,7 @@ Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -1/ρ ∇<i>p
 
 Discretization of differential operator:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/SphDifferentialOperatorDiscretizationSymmetricFormula.png)
+![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/MonaghanSphDerivative.png)
 
 As for state equations, it requires density values, thus it would be efficient to compute them with densities altogether:
 

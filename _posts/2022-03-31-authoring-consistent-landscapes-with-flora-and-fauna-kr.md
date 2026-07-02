@@ -4,6 +4,7 @@ title:  지형에 일관된 식물상과 동물상 저작하기 (논문 번역)
 date:   2022-03-31 00:00:00 +0000
 categories: simulation
 lang: "ko"
+topic: rendering
 ---
 
 저자:
@@ -339,7 +340,7 @@ s<sub>j</sub><sup>i</sup> ∈ FCL<sup>i</sup>인 각 종마다 s<sub>j</sub><sup
 <div id="cordonnier2017">Guillaume Cordonnier, Eric Galin, James Gain, Bedrich Benes, Eric Guérin, Adrien Peytavie, and Marie-Paule Cani. 2017. <a href="https://hal.archives-ouvertes.fr/hal-01518967">Authoring landscapes by combining ecosystem and terrain erosion simulation</a>. ACM Trans. Graph. 36, 4 (2017), 134</div><br>
 <div id="courchamp2008">Franck Courchamp, Ludek Berec, and Joanna Gascoigne. 2008. <a href="https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780198570301.001.0001/acprof-9780198570301#:~:text=of%20many%20...-,Allee%20effects%20are%20broadly%20defined%20as%20a%20decline%20in%20individual,which%20populations%20crash%20to%20extinction.">Allee effects in ecology and conservation</a>. Oxford University Press.</div><br>
 <div id="deussen1998">Oliver Deussen, Pat Hanrahan, Bernd Lintermann, Radomir Měch, Matt Pharr, and Przemyslaw Prusinkiewicz. 1998. <a href="https://graphics.stanford.edu/papers/ecosys/">Realistic Modeling and Rendering of Plant Ecosystems</a>. In Proc. of Sigg. (SIGGRAPH ’98). ACM, 275ś286.</div><br>
-<div id="ecormier_nocca2019">Pierre Ecormier-Nocca, Julien Pettré, Pooran Memari, and Marie-Paule Cani. 2019. <a href="Image-based Authoring of Herd Animations">Image-based authoring of herd animations</a>. Computer Animation and Virtual Worlds 30, 3-4 (2019).</div><br>
+<div id="ecormier_nocca2019">Pierre Ecormier-Nocca, Julien Pettré, Pooran Memari, and Marie-Paule Cani. 2019. Image-based authoring of herd animations. Computer Animation and Virtual Worlds 30, 3-4 (2019).</div><br>
 <div id="gain2017">James Gain, Harry Long, Guillaume Cordonnier, and Marie-Paule Cani. 2017. <a href="https://hal.archives-ouvertes.fr/hal-01519852">EcoBrush: Interactive Control of Visually Consistent Large-Scale Ecosystems</a>. Eurographics 36 (2017).</div><br>
 <div id="galin2019">Eric Galin, Eric Guérin, Adrien Peytavie, Guillaume Cordonnier, Marie-Paule Cani, Bedrich Benes, and James Gain. 2019. <a href="https://hal.archives-ouvertes.fr/hal-02097510">A Review of Digital Terrain Modeling</a>. Computer Graphics Forum 38, 2 (2019).</div><br>
 <div id="kapp2020">Konrad Kapp, James Gain, Eric Guérin, Eric Galin, and Adrien Peytavie. 2020. <A href="https://hal.archives-ouvertes.fr/hal-03007259">Data-driven authoring of large-scale ecosystems</a>. ACM TOG 39, 6 (2020), 1-14.</div><br>

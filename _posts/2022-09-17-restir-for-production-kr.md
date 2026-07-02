@@ -4,6 +4,7 @@ title:  실무에서의 ReSTIR
 date:   2022-09-17 00:00:00 +0000
 categories: graphics
 lang: "ko"
+topic: rendering
 ---
 
 # 공부 노트
@@ -16,13 +17,13 @@ lang: "ko"
 
 * [Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting](https://cs.dartmouth.edu/wjarosz/publications/bitterli20spatiotemporal.html). Benedikt Bitterli, Chris Wyman, Matt Pharr, Peter Shirley, Aaron Lefohn, Wojciech Jarosz. ACM ToG. SIGGRAPH. 2020.07.19.
   * 일명 ReSTIR 논문
-  * [블로그 정리본](/_posts/2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.md)
+  * [블로그 정리본]({% post_url 2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr %})
 * [Part 1: Rendering Games With Millions of Ray Traced Lights](https://youtu.be/QWsfohf0Bqk). 2021.01.12.
 * [Part 2: Light Resampling In Practice with RTXDI](https://youtu.be/56tkm95gfFI). 2021.01.12.
 * [RTXDI: Details on Achieving Real Time Performance](https://youtu.be/EgxPL4VKCps). Chris Wyman. Microsoft Game Stack Live. 2021. 04.21.
 * [ReSTIR GI: Path Resampling for Real-Time Path Tracing](https://research.nvidia.com/publication/2021-06_restir-gi-path-resampling-real-time-path-tracing). Yaobin Ouyang, Shiqiu Liu, Markus Kettunen, Matt Pharr, Jacopo Pantaleoni. CGF. HPG. 2021.06.24.
   * 일명 ReSTIR GI 논문
-  * [블로그 정리본](/_posts/2022-10-20-restir-gi-path-resampling-for-real-time-path-tracing-revisited-kr.md)
+  * [블로그 정리본]({% post_url 2022-10-20-restir-gi-path-resampling-for-real-time-path-tracing-revisited-kr %})
 * [Rearchitecturing Spatiotemporal Resampling for Production](https://research.nvidia.com/publication/2021-07_rearchitecting-spatiotemporal-resampling-production). Chris Wyman, Alexey Panteleev. HPG. 2021.07.06.
   * 일명 RTXDI 논문
 * [Rendering Many Lights with Grid-Based Reservoirs](https://link.springer.com/chapter/10.1007/978-1-4842-7185-8_23). 2021.08.04.
@@ -34,14 +35,14 @@ lang: "ko"
   * 일명 DDGI ReSTIR 논문
 * [World-Space Spatiotemporal Reservoir Reuse for Ray-Traced Global Illumination](https://dl.acm.org/doi/10.1145/3478512.3488613). Guillaume Boissé. SIGGRAPH Asia. 2021.12.14.
   * 일명 WS ReSTIR 논문
-  * [블로그 정리본](/_posts/2022-10-24-world=space-spatio-temporal-reservoir-reuse-for-ray-traced-global-illumination-kr.md)
+  * [블로그 정리본]({% post_url 2022-10-24-world-space-spatio-temporal-reservoir-reuse-for-ray-traced-global-illumination-kr %})
 * [How to add thousands of lights to your renderer and not die in the process](http://www.zyanidelab.com/how-to-add-thousands-of-lights-to-your-renderer/). 2022.03.13.
 * [ReSTIR GI for Specular Bounces](http://www.zyanidelab.com/restir-gi-for-specular-bounces/). 2022.04.12.
 * [ReSTIR El-Cheapo](http://www.zyanidelab.com/restir-el-cheapo/). 2022.05.04.
 * [GI Overview](https://github.com/EmbarkStudios/kajiya/blob/main/docs/gi-overview.md). 2022.06.04.
 * [Generalized Resampled Importance Sampling Foundations of ReSTIR](https://graphics.cs.utah.edu/research/projects/gris/). Daqi Lin, Markus Kettunen, Benedikt Bitterli, Jacopo Pantaleoni, Cem Yuksel, Chris Wyman. ACM ToG. SIGGRAPH. 2022.07.24.
   * 일명 GRIS 혹은 ReSTIR PT 논문
-  * [블로그 정리본](/_posts/2022-10-22-generalized-resampled-importance-sampling-foundations-of-restir-kr.md)
+  * [블로그 정리본]({% post_url 2022-10-22-generalized-resampled-importance-sampling-foundations-of-restir-kr %})
 
 ### 초록
 

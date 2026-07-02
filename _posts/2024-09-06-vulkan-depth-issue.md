@@ -4,6 +4,7 @@ title:  Why My Depth Buffer Only Writes 0 or 1?
 date:   2024-09-06 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: api
 ---
 
 ## Issue

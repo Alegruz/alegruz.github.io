@@ -4,6 +4,7 @@ title:  Why Vulkan Warns about GalaxyOverlayVkLayer when Creating an Instance wi
 date:   2025-03-22 13:02:00 +0900
 categories: graphics
 lang: "en"
+topic: api
 ---
 
 ## Issue

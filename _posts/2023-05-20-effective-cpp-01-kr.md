@@ -4,9 +4,10 @@ title:  "이펙티브 C++: 01 C++에 익숙해지기"
 date:   2023-05-20 00:00:00 +0000
 categories: programming cpp effective_cpp
 lang: "ko"
+topic: engine
 ---
 
-[목차](/_posts/2023-05-20-effective-cpp-kr.md)
+[목차]({% post_url 2023-05-20-effective-cpp-kr %})
 
 ## 01 언어의 집합체로서의 C++
 

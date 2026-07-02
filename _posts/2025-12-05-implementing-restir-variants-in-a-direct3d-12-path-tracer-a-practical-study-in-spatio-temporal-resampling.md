@@ -4,9 +4,10 @@ title: Implementing ReSTIR Variants in a Direct3D 12 Path Tracer - A Practical S
 date: 2025-12-05 18:40:00 +0900
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
-My informal report on implementing ReSTIR variants in a Direct3D 12 path tracer is [here](/_posts/2025-11-06-implementing-restir-and-restir-gi-on-d3d12.md).
+My informal report on implementing ReSTIR variants in a Direct3D 12 path tracer is [here]({% post_url 2025-11-06-implementing-restir-and-restir-gi-on-d3d12 %}).
 
 ## Overview
 
@@ -30,7 +31,7 @@ The goal of this report is to describe my implementation, the system around it, 
 
 ### 2.1 Monte Carlo Path Tracing
 
-For more details on path tracing, see my previous report [here](/_posts/2025-06-28-study-notes-on-monte-carlo-integration.md).
+For more details on path tracing, see my previous report [here]({% post_url 2025-06-28-study-notes-on-monte-carlo-integration %}).
 
 Path tracing estimates incoming radiance by tracing random paths from the camera. Each sample contributes
 
@@ -48,7 +49,7 @@ The main idea is simple, but many details affect the final image. My project foc
 
 ## 3. Renderer Architecture
 
-Before implementing ReSTIR, I did a simple Web-based path tracer using WebGPU and WGSL to explain how to implement path tracing on the GPU. The blog post is [here](/_posts/2025-07-13-study-notes-on-raytracing-implementations.md).
+Before implementing ReSTIR, I did a simple Web-based path tracer using WebGPU and WGSL to explain how to implement path tracing on the GPU. The blog post is [here]({% post_url 2025-07-13-study-notes-on-raytracing-implementations %}).
 
 The source code for this Direct3D 12 path tracer is available [here](https://github.com/Alegruz/ComputerGraphicsStudies/).
 

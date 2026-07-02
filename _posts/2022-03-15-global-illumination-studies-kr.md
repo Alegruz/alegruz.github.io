@@ -4,6 +4,7 @@ title:  전역 조명 공부 노트
 date:   2022-03-15 00:00:00 +0000
 categories: graphics
 lang: "ko"
+topic: rendering
 ---
 
 이 노트는 Real-Time Rendering 책 등을 읽고 한국어로 정리한 책입니다.

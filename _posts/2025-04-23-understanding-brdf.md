@@ -4,6 +4,7 @@ title:  Understanding BRDF
 date:   2025-04-23 21:16:00 +0900
 categories: graphics
 lang: "en"
+topic: theory
 ---
 
 This is my first note on studying ReSTIR: Understanding BRDF.

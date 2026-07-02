@@ -4,9 +4,10 @@ title:  "익셉셔널 C++: 01 제너릭 프로그래밍 및 C++ 표준 라이브
 date:   2023-05-20 00:00:00 +0000
 categories: programming cpp exceptional_cpp
 lang: "ko"
+topic: engine
 ---
 
-[목차](/_posts/2023-05-20-exceptional-cpp-kr.md)
+[목차]({% post_url 2023-05-20-exceptional-cpp-kr %})
 
 ## 01 `vector`의 사용법과 남용
 

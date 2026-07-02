@@ -4,6 +4,7 @@ title:  광선 추적 전역 조명을 위한 세계 공간 시공간 저장소 
 date:   2022-10-24 00:00:00 +0000
 categories: graphics
 lang: "ko"
+topic: rendering
 ---
 
 * [Guillaume Boissé](https://github.com/gboisse), AMD.
@@ -19,9 +20,9 @@ lang: "ko"
 
 # 1. 도입
 
-[ReSTIR](/_posts/2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.md) 잘 됨. 여기에 RTXDI에 의해 좀 더 최적화가 되어 게임 같은 실시간 어플리케이션에서도 적용할 수 있음.
+[ReSTIR]({% post_url 2022-10-16-spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr %}) 잘 됨. 여기에 RTXDI에 의해 좀 더 최적화가 되어 게임 같은 실시간 어플리케이션에서도 적용할 수 있음.
 
-[ReSTIR GI](/_posts/2022-10-20-restir-gi-path-resampling-for-real-time-path-tracing-revisited-kr.md)는 이 방법을 전역 조명으로 확장함. 근데 이건 ReSTIR가 직접광에 대해서 해주는 것만큼이나 이차적인 정점에 대한 조명 분포를 잘 표집해주지 않음. 이거만 해주면 노이즈를 더 줄여줄 텐데.
+[ReSTIR GI]({% post_url 2022-10-20-restir-gi-path-resampling-for-real-time-path-tracing-revisited-kr %})는 이 방법을 전역 조명으로 확장함. 근데 이건 ReSTIR가 직접광에 대해서 해주는 것만큼이나 이차적인 정점에 대한 조명 분포를 잘 표집해주지 않음. 이거만 해주면 노이즈를 더 줄여줄 텐데.
 
 빠른 경로 공간 필터링 방법[Binder et al. 2018]의 경우 공간 해싱을 통해서 그리드 룩업 한 방에 세계 공간에서 이웃 경로 정점을 효율적으로 찾을 수 있게 해줌.
 

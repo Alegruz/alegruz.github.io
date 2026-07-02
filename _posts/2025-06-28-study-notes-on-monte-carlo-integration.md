@@ -4,6 +4,7 @@ title:  Study Notes on Monte Carlo Integration
 date:   2025-06-28 20:55:00 +0900
 categories: graphics
 lang: "en"
+topic: theory
 ---
 
 When learning new concepts, I often ask the following questions to keep myself focused:

@@ -4,6 +4,7 @@ title:  Why vkAcquireNextImageKHR Returns VK_NOT_READY?
 date:   2025-03-17 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: api
 ---
 
 ## Issue

@@ -4,6 +4,7 @@ title:  Study Notes on Performance-Aware Programming
 date:   2025-07-22 19:00:00 +0900
 categories: graphics
 lang: "en"
+topic: engine
 ---
 
 <div id="instruction-decoding-on-the-8086" style="text-align: center; margin: 20px 0;">

@@ -4,6 +4,7 @@ title:  "Game Engine RHI System Analysis Series 0: Introduction"
 date:   2024-11-25 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: engine
 ---
 
 - [Game Engine RHI System Analysis Series 0: Introduction (2024.11.25)](#game-engine-rhi-system-analysis-series-0-introduction-20241125)

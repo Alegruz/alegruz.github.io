@@ -2,20 +2,18 @@
 layout: default
 ---
 
+{%- assign page_topic = page.topic | default: "engine" -%}
+{%- assign topic_data = site.data.topics[page_topic] -%}
+{%- assign topic_label = topic_data.label | default: page_topic -%}
+
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
     <a class="post-back" href="{{ "/" | relative_url }}">Archive</a>
-    <p class="post-kicker">
-      {%- if page.categories -%}
-        {{ page.categories | join: " / " }}
-      {%- else -%}
-        Field Note
-      {%- endif -%}
-    </p>
+    <p class="post-kicker">{{ topic_label }}</p>
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+        {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
         {{ page.date | date: date_format }}
       </time>
       {%- if page.lang -%}
@@ -29,8 +27,15 @@ layout: default
     </p>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    {{ content }}
+  <div class="post-layout">
+    <nav class="post-toc" id="post-toc" aria-label="Table of contents" hidden>
+      <p>Contents</p>
+      <ol id="post-toc-list"></ol>
+    </nav>
+
+    <div class="post-content e-content" id="post-content" itemprop="articleBody">
+      {{ content }}
+    </div>
   </div>
 
   <footer class="post-footer">
@@ -44,14 +49,4 @@ layout: default
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
 
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [["$", "$"], ["\\(", "\\)"]]
-    },
-    svg: {
-      fontCache: "global"
-    }
-  };
-</script>
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="{{ '/assets/js/post-enhancements.js' | relative_url }}" defer></script>

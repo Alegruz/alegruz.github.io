@@ -4,6 +4,7 @@ title:  Marching Cube Study Note
 date:   2021-11-12 00:00:00 +0000
 categories: graphics
 lang: "en"
+topic: rendering
 ---
 
 ## Explicit Surface and Implicit Surface<sup>[1](#footnote_1)</sup>
