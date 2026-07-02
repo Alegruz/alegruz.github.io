@@ -4,6 +4,11 @@ title:  SPH Visualization through Marching Cubes
 date:   2021-12-12 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on SPH Visualization through Marching Cubes."
+status: "notes"
+difficulty: "intermediate"
+series: "sph"
+series_order: 2
 topic: rendering
 ---
 

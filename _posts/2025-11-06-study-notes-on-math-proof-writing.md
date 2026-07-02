@@ -4,6 +4,11 @@ title: Study Notes on Math - Proof Writing
 date: 2025-11-06 16:05:00 +0900
 categories: math logic
 lang: "en"
+description: "Notes on Study Notes on Math - Proof Writing."
+status: "notes"
+difficulty: "intermediate"
+series: "math-notes"
+series_order: 5
 topic: theory
 ---
 

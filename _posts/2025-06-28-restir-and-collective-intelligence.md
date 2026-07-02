@@ -4,6 +4,11 @@ title:  ReSTIR and Collective Intelligence
 date:   2025-06-28 20:55:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on ReSTIR and Collective Intelligence."
+status: "notes"
+difficulty: "advanced"
+series: "restir"
+series_order: 9
 topic: rendering
 ---
 

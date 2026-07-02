@@ -4,6 +4,11 @@ title:  수학 처음부터 끝까지 공부해보기
 date:   2022-10-28 00:00:00 +0000
 categories: math
 lang: "ko"
+description: "Notes on 수학 처음부터 끝까지 공부해보기."
+status: "notes"
+difficulty: "intermediate"
+series: "math-notes"
+series_order: 2
 topic: theory
 ---
 

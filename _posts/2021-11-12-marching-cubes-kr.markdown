@@ -4,6 +4,11 @@ title:  마칭 큐브 공부 노트
 date:   2021-11-12 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 마칭 큐브 공부 노트."
+status: "notes"
+difficulty: "intermediate"
+series: "marching-cubes"
+series_order: 2
 topic: rendering
 ---
 

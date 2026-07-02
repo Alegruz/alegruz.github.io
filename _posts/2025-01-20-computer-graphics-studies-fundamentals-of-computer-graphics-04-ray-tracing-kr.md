@@ -4,6 +4,11 @@ title:  "그래픽스 공부: Fundamentals of Computer Graphics. 04. 레이 트�
 date:   2025-01-20 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 그래픽스 공부: Fundamentals of Computer Graphics. 04. 레이 트레이싱."
+status: "notes"
+difficulty: "advanced"
+series: "fundamentals-computer-graphics"
+series_order: 6
 topic: rendering
 ---
 

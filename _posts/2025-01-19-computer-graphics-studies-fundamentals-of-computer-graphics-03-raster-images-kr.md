@@ -4,6 +4,11 @@ title:  "그래픽스 공부: Fundamentals of Computer Graphics. 03. 래스터 �
 date:   2025-01-19 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 그래픽스 공부: Fundamentals of Computer Graphics. 03. 래스터 이미지."
+status: "notes"
+difficulty: "beginner"
+series: "fundamentals-computer-graphics"
+series_order: 5
 topic: rendering
 ---
 

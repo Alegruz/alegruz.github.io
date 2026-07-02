@@ -4,6 +4,11 @@ title:  Understanding Command Submission in Modern Graphics
 date:   2024-07-24 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Understanding Command Submission in Modern Graphics."
+status: "notes"
+difficulty: "intermediate"
+series: "vulkan-notes"
+series_order: 1
 topic: api
 ---
 

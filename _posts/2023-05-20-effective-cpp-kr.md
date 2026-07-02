@@ -4,6 +4,11 @@ title:  이펙티브 C++
 date:   2023-05-20 00:00:00 +0000
 categories: programming cpp effective_cpp
 lang: "ko"
+description: "Notes on 이펙티브 C++."
+status: "notes"
+difficulty: "intermediate"
+series: "effective-cpp"
+series_order: 1
 topic: engine
 ---
 

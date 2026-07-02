@@ -1,0 +1,27 @@
+---
+layout: null
+permalink: /search.json
+---
+[
+  {%- for post in site.posts -%}
+    {%- assign post_topic = post.topic | default: "engine" -%}
+    {%- assign topic_data = site.data.topics[post_topic] -%}
+    {%- assign series_data = site.data.series[post.series] -%}
+    {
+      "title": {{ post.title | jsonify }},
+      "url": {{ post.url | relative_url | jsonify }},
+      "date": {{ post.date | date: "%Y-%m-%d" | jsonify }},
+      "year": {{ post.date | date: "%Y" | jsonify }},
+      "lang": {{ post.lang | default: "en" | jsonify }},
+      "topic": {{ post_topic | jsonify }},
+      "topic_label": {{ topic_data.label | default: post_topic | jsonify }},
+      "series": {{ post.series | default: "" | jsonify }},
+      "series_label": {{ series_data.label | default: "" | jsonify }},
+      "status": {{ post.status | default: "" | jsonify }},
+      "difficulty": {{ post.difficulty | default: "" | jsonify }},
+      "description": {{ post.description | default: "" | jsonify }},
+      "excerpt": {{ post.excerpt | strip_html | normalize_whitespace | jsonify }},
+      "content": {{ post.content | strip_html | normalize_whitespace | truncate: 2400 | jsonify }}
+    }{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+]

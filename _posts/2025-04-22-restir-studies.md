@@ -4,6 +4,11 @@ title:  ReSTIR Study Notes
 date:   2025-04-22 20:49:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on ReSTIR Study Notes."
+status: "notes"
+difficulty: "advanced"
+series: "restir"
+series_order: 8
 topic: rendering
 ---
 

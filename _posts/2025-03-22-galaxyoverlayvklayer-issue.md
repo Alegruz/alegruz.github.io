@@ -4,6 +4,11 @@ title:  Why Vulkan Warns about GalaxyOverlayVkLayer when Creating an Instance wi
 date:   2025-03-22 13:02:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on Why Vulkan Warns about GalaxyOverlayVkLayer when Creating an Instance with Zero Layer Enabled?."
+status: "report"
+difficulty: "advanced"
+series: "vulkan-notes"
+series_order: 5
 topic: api
 ---
 

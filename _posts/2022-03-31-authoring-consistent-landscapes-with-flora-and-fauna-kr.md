@@ -4,6 +4,9 @@ title:  지형에 일관된 식물상과 동물상 저작하기 (논문 번역)
 date:   2022-03-31 00:00:00 +0000
 categories: simulation
 lang: "ko"
+description: "Notes on 지형에 일관된 식물상과 동물상 저작하기 (논문 번역)."
+status: "notes"
+difficulty: "intermediate"
 topic: rendering
 ---
 

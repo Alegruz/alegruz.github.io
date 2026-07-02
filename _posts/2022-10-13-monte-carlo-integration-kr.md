@@ -4,6 +4,11 @@ title:  몬테 카를로 적분법이란?
 date:   2022-10-13 00:00:00 +0000
 categories: math
 lang: "ko"
+description: "Notes on 몬테 카를로 적분법이란?."
+status: "notes"
+difficulty: "advanced"
+series: "math-notes"
+series_order: 1
 topic: theory
 ---
 

@@ -4,6 +4,9 @@ title:  실시간 광선 추적법 공부 노트
 date:   2022-04-03 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 실시간 광선 추적법 공부 노트."
+status: "notes"
+difficulty: "advanced"
 topic: rendering
 ---
 

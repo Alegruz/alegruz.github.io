@@ -4,6 +4,9 @@ title:  "Gaussian Splatting Study Notes"
 date:   2025-02-21 09:26:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on Gaussian Splatting Study Notes."
+status: "notes"
+difficulty: "intermediate"
 topic: rendering
 ---
 

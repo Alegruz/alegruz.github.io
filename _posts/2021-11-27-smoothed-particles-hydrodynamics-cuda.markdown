@@ -4,6 +4,11 @@ title:  Smoothed Particle Hydrodynamics by CUDA
 date:   2021-11-27 00:00:00 +0000
 categories: simulation
 lang: "en"
+description: "Notes on Smoothed Particle Hydrodynamics by CUDA."
+status: "notes"
+difficulty: "intermediate"
+series: "sph"
+series_order: 1
 topic: engine
 ---
 

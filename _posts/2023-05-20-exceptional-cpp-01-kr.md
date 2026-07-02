@@ -4,6 +4,11 @@ title:  "익셉셔널 C++: 01 제너릭 프로그래밍 및 C++ 표준 라이브
 date:   2023-05-20 00:00:00 +0000
 categories: programming cpp exceptional_cpp
 lang: "ko"
+description: "Notes on 익셉셔널 C++: 01 제너릭 프로그래밍 및 C++ 표준 라이브러리."
+status: "notes"
+difficulty: "intermediate"
+series: "exceptional-cpp"
+series_order: 2
 topic: engine
 ---
 

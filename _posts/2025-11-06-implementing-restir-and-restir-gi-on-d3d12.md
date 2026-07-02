@@ -4,6 +4,11 @@ title:  Implementing ReSTIR and ReSTIR-GI on D3D12
 date:   2025-11-06 00:13:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on Implementing ReSTIR and ReSTIR-GI on D3D12."
+status: "report"
+difficulty: "advanced"
+series: "restir"
+series_order: 10
 topic: rendering
 ---
 

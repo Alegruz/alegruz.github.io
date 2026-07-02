@@ -4,6 +4,11 @@ title:  "컴퓨터 그래픽스 기초: 02 사소한 수학"
 date:   2023-05-18 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 컴퓨터 그래픽스 기초: 02 사소한 수학."
+status: "notes"
+difficulty: "beginner"
+series: "fundamentals-computer-graphics"
+series_order: 3
 topic: theory
 ---
 

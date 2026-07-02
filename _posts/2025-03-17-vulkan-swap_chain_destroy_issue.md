@@ -4,6 +4,11 @@ title:  Why Exception Occurs at vkDestroySwapchainKHR?
 date:   2025-03-17 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Why Exception Occurs at vkDestroySwapchainKHR?."
+status: "report"
+difficulty: "advanced"
+series: "vulkan-notes"
+series_order: 3
 topic: api
 ---
 

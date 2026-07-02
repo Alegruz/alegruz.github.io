@@ -4,6 +4,9 @@ title:  게임공학 공부 노트
 date:   2022-06-03 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 게임공학 공부 노트."
+status: "notes"
+difficulty: "intermediate"
 topic: engine
 ---
 

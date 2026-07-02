@@ -4,6 +4,11 @@ title:  실무에서의 ReSTIR
 date:   2022-09-17 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 실무에서의 ReSTIR."
+status: "notes"
+difficulty: "advanced"
+series: "restir"
+series_order: 2
 topic: rendering
 ---
 

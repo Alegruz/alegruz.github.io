@@ -4,6 +4,11 @@ title:  "ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집"
 date:   2022-04-09 00:00:00 +0000
 categories: simulation
 lang: "ko"
+description: "Notes on ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집."
+status: "notes"
+difficulty: "advanced"
+series: "restir"
+series_order: 1
 topic: rendering
 ---
 
@@ -494,17 +499,17 @@ void execute(const uint2 pixel)
 8:              continue
 9:          R<sub>n</sub> ← TemporalReservoirBuffer[q<sub>n</sub>]
 10:         |J<sub>q<sub>n</sub> → q</sub>| 계산  (<a href="#eq_11">식 11</a>)  
-11:         <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>| 
-12:         <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|  
+11:         <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>| 
+12:         <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|  
 13:         if R<sub>n</sub>의 표본점이 q의 x<sub>v</sub>에서 보이지 않는다면 then
-14:             <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← 0  
-15:         R<sub>s</sub>.Merge(R<sub>n</sub>, <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub>)
+14:             <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← 0  
+15:         R<sub>s</sub>.Merge(R<sub>n</sub>, <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub>)
 16:         Q ← Q ∩ q<sub>n</sub>
 17:     Z ← 0
 18:     for each q<sub>n</sub> in Q do
-19:         if <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q<sub>n</sub></sub> &gt; 0 then
+19:         if <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q<sub>n</sub></sub> &gt; 0 then
 20:             Z ← Z + R<sub>n</sub>.M   (편향 정정)  
-21:     R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>s</sub>.z))   (<a href="#eq_7">식 7</a>)
+21:     R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>s</sub>.z))   (<a href="#eq_7">식 7</a>)
 22:     SpatialReservoirBuffer[q] ← R<sub>s</sub>
 </code></pre>
 

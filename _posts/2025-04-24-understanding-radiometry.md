@@ -4,6 +4,9 @@ title:  Understanding Radiometry
 date:   2025-04-24 20:55:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on Understanding Radiometry."
+status: "notes"
+difficulty: "advanced"
 topic: theory
 ---
 

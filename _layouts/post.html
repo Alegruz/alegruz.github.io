@@ -5,11 +5,35 @@ layout: default
 {%- assign page_topic = page.topic | default: "engine" -%}
 {%- assign topic_data = site.data.topics[page_topic] -%}
 {%- assign topic_label = topic_data.label | default: page_topic -%}
+{%- assign page_series = page.series -%}
+{%- assign series_data = site.data.series[page_series] -%}
+{%- assign series_posts = site.posts | where: "series", page_series | sort: "series_order" -%}
+{%- assign series_index = page.series_order | default: 0 | plus: 0 -%}
+{%- assign previous_series_order = series_index | minus: 1 -%}
+{%- assign next_series_order = series_index | plus: 1 -%}
+{%- assign previous_series_post = nil -%}
+{%- assign next_series_post = nil -%}
+{%- if page_series -%}
+  {%- for series_post in series_posts -%}
+    {%- assign series_post_order = series_post.series_order | default: 0 | plus: 0 -%}
+    {%- if series_post_order == previous_series_order -%}
+      {%- assign previous_series_post = series_post -%}
+    {%- endif -%}
+    {%- if series_post_order == next_series_order -%}
+      {%- assign next_series_post = series_post -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
 
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
     <a class="post-back" href="{{ "/" | relative_url }}">Archive</a>
-    <p class="post-kicker">{{ topic_label }}</p>
+    <p class="post-kicker">
+      <span>{{ topic_label }}</span>
+      {%- if page_series and series_data -%}
+        <a href="{{ "/series/" | append: page_series | append: "/" | relative_url }}">{{ series_data.label }}</a>
+      {%- endif -%}
+    </p>
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
@@ -19,13 +43,42 @@ layout: default
       {%- if page.lang -%}
         <span>{{ page.lang | upcase }}</span>
       {%- endif -%}
+      {%- if page.difficulty -%}
+        <span>{{ page.difficulty | capitalize }}</span>
+      {%- endif -%}
+      {%- if page.status -%}
+        <span>{{ page.status | capitalize }}</span>
+      {%- endif -%}
       {%- if page.author -%}
         <span itemprop="author" itemscope itemtype="http://schema.org/Person">
           <span class="p-author h-card" itemprop="name">{{ page.author }}</span>
         </span>
       {%- endif -%}
     </p>
+    <div class="reader-controls" aria-label="Reading width">
+      <span>Width</span>
+      <button type="button" data-reader-width="normal" aria-pressed="true">Normal</button>
+      <button type="button" data-reader-width="wide" aria-pressed="false">Wide</button>
+      <button type="button" data-reader-width="full" aria-pressed="false">Full</button>
+    </div>
   </header>
+
+  {%- if page_series and series_data -%}
+    <nav class="series-nav" aria-label="Series navigation">
+      <div>
+        <a href="{{ "/series/" | append: page_series | append: "/" | relative_url }}">{{ series_data.label }}</a>
+        <span>Part {{ series_index }} of {{ series_posts.size }}</span>
+      </div>
+      <div class="series-nav-links">
+        {%- if previous_series_post -%}
+          <a href="{{ previous_series_post.url | relative_url }}">Previous</a>
+        {%- endif -%}
+        {%- if next_series_post -%}
+          <a href="{{ next_series_post.url | relative_url }}">Next</a>
+        {%- endif -%}
+      </div>
+    </nav>
+  {%- endif -%}
 
   <div class="post-layout">
     <nav class="post-toc" id="post-toc" aria-label="Table of contents" hidden>
@@ -37,6 +90,36 @@ layout: default
       {{ content }}
     </div>
   </div>
+
+  <section class="related-posts" aria-label="Related posts">
+    <h2>Related</h2>
+    <ol>
+      {%- assign related_count = 0 -%}
+      {%- if page_series -%}
+        {%- for related_post in series_posts -%}
+          {%- if related_count < 3 and related_post.url != page.url -%}
+            <li>
+              <a href="{{ related_post.url | relative_url }}">{{ related_post.title | escape }}</a>
+              <span>{{ related_post.date | date: "%Y-%m-%d" }}</span>
+            </li>
+            {%- assign related_count = related_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+      {%- if related_count == 0 -%}
+        {%- assign related_pool = site.posts | where: "topic", page_topic | where: "lang", page.lang -%}
+        {%- for related_post in related_pool -%}
+          {%- if related_count < 3 and related_post.url != page.url -%}
+            <li>
+              <a href="{{ related_post.url | relative_url }}">{{ related_post.title | escape }}</a>
+              <span>{{ related_post.date | date: "%Y-%m-%d" }}</span>
+            </li>
+            {%- assign related_count = related_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </ol>
+  </section>
 
   <footer class="post-footer">
     <a class="text-link" href="{{ "/" | relative_url }}">Back to archive</a>

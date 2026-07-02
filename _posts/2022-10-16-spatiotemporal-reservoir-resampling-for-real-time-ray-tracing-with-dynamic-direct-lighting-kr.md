@@ -4,6 +4,11 @@ title:  ReSTIR 논문 정리
 date:   2022-10-16 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on ReSTIR 논문 정리."
+status: "notes"
+difficulty: "advanced"
+series: "restir"
+series_order: 4
 topic: rendering
 ---
 

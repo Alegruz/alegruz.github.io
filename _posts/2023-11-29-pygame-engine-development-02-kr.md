@@ -4,6 +4,11 @@ title:  "Pygame 엔진 개발 일지 02: Assert 대탐험"
 date:   2023-11-29 00:00:00 +0000
 categories: engine
 lang: "ko"
+description: "Notes on Pygame 엔진 개발 일지 02: Assert 대탐험."
+status: "report"
+difficulty: "intermediate"
+series: "pygame-engine"
+series_order: 3
 topic: engine
 ---
 

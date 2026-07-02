@@ -4,6 +4,9 @@ title:  Study Notes on Raytracing Implementations
 date:   2025-07-13 17:01:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on Study Notes on Raytracing Implementations."
+status: "notes"
+difficulty: "advanced"
 topic: rendering
 ---
 

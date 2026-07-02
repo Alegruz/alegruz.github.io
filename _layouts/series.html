@@ -1,0 +1,40 @@
+---
+layout: default
+---
+
+{%- assign series_key = page.series_key -%}
+{%- assign series_data = site.data.series[series_key] -%}
+{%- assign series_posts = site.posts | where: "series", series_key | sort: "series_order" -%}
+
+<section class="series-page">
+  <header class="series-header">
+    <a class="post-back" href="{{ "/series/" | relative_url }}">Series</a>
+    <h1>{{ series_data.label | default: page.title | escape }}</h1>
+    {%- if series_data.description -%}
+      <p>{{ series_data.description }}</p>
+    {%- endif -%}
+    <span class="series-count">{{ series_posts.size }} posts</span>
+  </header>
+
+  <ol class="series-post-list">
+    {%- for post in series_posts -%}
+      {%- assign post_topic = post.topic | default: "engine" -%}
+      {%- assign topic_data = site.data.topics[post_topic] -%}
+      {%- assign topic_label = topic_data.label | default: post_topic -%}
+      <li class="series-post-row">
+        <span class="series-step">{{ forloop.index }}</span>
+        <div>
+          <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          <p>
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            <span>{{ topic_label }}</span>
+            <span>{{ post.lang | default: "en" | upcase }}</span>
+            {%- if post.difficulty -%}
+              <span>{{ post.difficulty | capitalize }}</span>
+            {%- endif -%}
+          </p>
+        </div>
+      </li>
+    {%- endfor -%}
+  </ol>
+</section>

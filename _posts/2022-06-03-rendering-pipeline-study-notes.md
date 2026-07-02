@@ -4,6 +4,11 @@ title:  Rendering Pipeline Study Notes
 date:   2022-06-03 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Rendering Pipeline Study Notes."
+status: "notes"
+difficulty: "intermediate"
+series: "rendering-pipeline"
+series_order: 1
 topic: rendering
 ---
 

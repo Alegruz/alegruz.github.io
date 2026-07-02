@@ -4,6 +4,11 @@ title:  Pipeline State Cache Studies
 date:   2024-11-22 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Pipeline State Cache Studies."
+status: "notes"
+difficulty: "intermediate"
+series: "rendering-pipeline"
+series_order: 4
 topic: engine
 ---
 

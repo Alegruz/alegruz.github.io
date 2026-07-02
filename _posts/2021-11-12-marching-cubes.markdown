@@ -4,6 +4,11 @@ title:  Marching Cube Study Note
 date:   2021-11-12 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Marching Cube Study Note."
+status: "notes"
+difficulty: "intermediate"
+series: "marching-cubes"
+series_order: 1
 topic: rendering
 ---
 

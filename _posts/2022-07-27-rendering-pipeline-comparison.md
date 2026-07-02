@@ -4,6 +4,11 @@ title:  Rendering Pipeline Comparison
 date:   2022-07-27 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Rendering Pipeline Comparison."
+status: "notes"
+difficulty: "intermediate"
+series: "rendering-pipeline"
+series_order: 3
 topic: rendering
 ---
 

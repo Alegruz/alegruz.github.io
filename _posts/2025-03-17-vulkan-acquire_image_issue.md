@@ -4,6 +4,11 @@ title:  Why vkAcquireNextImageKHR Returns VK_NOT_READY?
 date:   2025-03-17 00:00:00 +0000
 categories: graphics
 lang: "en"
+description: "Notes on Why vkAcquireNextImageKHR Returns VK_NOT_READY?."
+status: "report"
+difficulty: "advanced"
+series: "vulkan-notes"
+series_order: 4
 topic: api
 ---
 

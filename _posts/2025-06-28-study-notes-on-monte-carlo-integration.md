@@ -4,6 +4,11 @@ title:  Study Notes on Monte Carlo Integration
 date:   2025-06-28 20:55:00 +0900
 categories: graphics
 lang: "en"
+description: "Notes on Study Notes on Monte Carlo Integration."
+status: "notes"
+difficulty: "advanced"
+series: "math-notes"
+series_order: 4
 topic: theory
 ---
 

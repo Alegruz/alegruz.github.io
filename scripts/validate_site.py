@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate post metadata and generated internal links."""
+"""Validate post metadata and generated site output."""
 
 from __future__ import annotations
 
@@ -12,12 +12,23 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 POSTS = ROOT / "_posts"
 SITE = ROOT / "_site"
-TOPICS = {"rendering", "api", "theory", "engine"}
 LANGS = {"en", "ko"}
+STATUSES = {"notes", "report", "translation", "draft"}
+DIFFICULTIES = {"beginner", "intermediate", "advanced"}
+IMAGE_SUFFIXES = {".avif", ".gif", ".jpg", ".jpeg", ".png", ".webp"}
 
 
 def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
+    return path.read_text(encoding="utf-8-sig")
+
+
+def read_data_keys(path: Path) -> set[str]:
+    keys: set[str] = set()
+    for line in read_text(path).splitlines():
+        match = re.match(r"^([a-z0-9-]+):\s*$", line)
+        if match:
+            keys.add(match.group(1))
+    return keys
 
 
 def parse_front_matter(path: Path) -> dict[str, str]:
@@ -37,6 +48,9 @@ def parse_front_matter(path: Path) -> dict[str, str]:
 
 def validate_posts() -> list[str]:
     errors: list[str] = []
+    topics = read_data_keys(ROOT / "_data" / "topics.yml")
+    series_keys = read_data_keys(ROOT / "_data" / "series.yml")
+
     for path in sorted(POSTS.glob("*")):
         if path.suffix.lower() not in {".md", ".markdown"}:
             continue
@@ -49,13 +63,34 @@ def validate_posts() -> list[str]:
         title = front_matter.get("title")
         lang = front_matter.get("lang")
         topic = front_matter.get("topic")
+        description = front_matter.get("description")
+        status = front_matter.get("status")
+        difficulty = front_matter.get("difficulty")
+        series = front_matter.get("series")
+        series_order = front_matter.get("series_order")
 
         if not title:
             errors.append(f"{path.relative_to(ROOT)}: missing title")
         if lang not in LANGS:
             errors.append(f"{path.relative_to(ROOT)}: invalid lang {lang!r}")
-        if topic not in TOPICS:
+        if topic not in topics:
             errors.append(f"{path.relative_to(ROOT)}: invalid topic {topic!r}")
+        if not description:
+            errors.append(f"{path.relative_to(ROOT)}: missing description")
+        if status not in STATUSES:
+            errors.append(f"{path.relative_to(ROOT)}: invalid status {status!r}")
+        if difficulty not in DIFFICULTIES:
+            errors.append(f"{path.relative_to(ROOT)}: invalid difficulty {difficulty!r}")
+        if series:
+            if series not in series_keys:
+                errors.append(f"{path.relative_to(ROOT)}: invalid series {series!r}")
+            try:
+                if int(series_order or "0") < 1:
+                    raise ValueError
+            except ValueError:
+                errors.append(f"{path.relative_to(ROOT)}: invalid series_order {series_order!r}")
+        elif series_order:
+            errors.append(f"{path.relative_to(ROOT)}: series_order without series")
     return errors
 
 
@@ -113,8 +148,53 @@ def validate_generated_links() -> list[str]:
     return errors
 
 
+def validate_generated_images() -> list[str]:
+    errors: list[str] = []
+    if not SITE.exists():
+        return ["_site does not exist; run `bundle exec jekyll build` first"]
+
+    image_pattern = re.compile(r"<img\b[^>]*>", re.I)
+    alt_pattern = re.compile(r"\balt\s*=", re.I)
+    for page in sorted(SITE.rglob("*.html")):
+        text = read_text(page)
+        for match in image_pattern.finditer(text):
+            tag = match.group(0)
+            if not alt_pattern.search(tag):
+                errors.append(f"{page.relative_to(ROOT)}: image missing alt attribute")
+    return errors
+
+
+def validate_generated_files() -> list[str]:
+    errors: list[str] = []
+    if not (SITE / "search.json").exists():
+        errors.append("_site/search.json was not generated")
+    return errors
+
+
+def collect_warnings() -> list[str]:
+    warnings: list[str] = []
+    image_root = ROOT / "assets" / "images"
+    if not image_root.exists():
+        return warnings
+
+    for path in sorted(image_root.rglob("*")):
+        if path.suffix.lower() in IMAGE_SUFFIXES and path.stat().st_size > 1_500_000:
+            size_mb = path.stat().st_size / 1_000_000
+            warnings.append(f"{path.relative_to(ROOT)} is {size_mb:.1f} MB")
+    return warnings
+
+
 def main() -> int:
-    errors = validate_posts() + validate_generated_links()
+    warnings = collect_warnings()
+    for warning in warnings:
+        print(f"warning: {warning}", file=sys.stderr)
+
+    errors = (
+        validate_posts()
+        + validate_generated_files()
+        + validate_generated_links()
+        + validate_generated_images()
+    )
     if errors:
         for error in errors:
             print(error, file=sys.stderr)

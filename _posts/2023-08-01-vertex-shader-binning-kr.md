@@ -4,6 +4,9 @@ title:  정점 쉐이더 구간화 Vertex Shader Binning
 date:   2023-08-01 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 정점 쉐이더 구간화 Vertex Shader Binning."
+status: "notes"
+difficulty: "intermediate"
 topic: rendering
 ---
 

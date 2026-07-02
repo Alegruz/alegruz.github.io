@@ -5,6 +5,7 @@ layout: default
 {%- assign en_count = site.posts | where: "lang", "en" | size -%}
 {%- assign ko_count = site.posts | where: "lang", "ko" | size -%}
 {%- assign total_count = site.posts | size -%}
+{%- assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" -%}
 
 <div class="home-shell">
   {{ content }}
@@ -44,6 +45,31 @@ layout: default
         </div>
       </div>
 
+      <label class="select-shell" for="year-filter">
+        <span data-lang="en">Year</span>
+        <span data-lang="ko">연도</span>
+        <select id="year-filter" class="feed-select" aria-label="Year filter">
+          <option value="all">All years</option>
+          {%- for year in posts_by_year -%}
+            <option value="{{ year.name }}">{{ year.name }}</option>
+          {%- endfor -%}
+        </select>
+      </label>
+
+      <label class="select-shell" for="series-filter">
+        <span data-lang="en">Series</span>
+        <span data-lang="ko">시리즈</span>
+        <select id="series-filter" class="feed-select" aria-label="Series filter">
+          <option value="all">All series</option>
+          {%- for item in site.data.series -%}
+            {%- assign series_posts = site.posts | where: "series", item[0] -%}
+            {%- if series_posts.size > 0 -%}
+              <option value="{{ item[0] }}">{{ item[1].label }}</option>
+            {%- endif -%}
+          {%- endfor -%}
+        </select>
+      </label>
+
       <label class="search-shell" for="post-search">
         <span data-lang="en">Search</span>
         <span data-lang="ko">검색</span>
@@ -59,7 +85,6 @@ layout: default
       </label>
     </div>
 
-    {%- assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" -%}
     <div id="post-feed" class="post-years">
       {%- for year in posts_by_year -%}
         <section class="post-year-group" data-year-group>
@@ -74,11 +99,22 @@ layout: default
                 class="post-row"
                 data-post-lang="{{ post_lang }}"
                 data-topic="{{ post_topic }}"
+                data-year="{{ post.date | date: "%Y" }}"
+                data-series="{{ post.series | default: "" }}"
+                data-status="{{ post.status | default: "" }}"
+                data-difficulty="{{ post.difficulty | default: "" }}"
                 data-title="{{ post.title | downcase | escape }}"
+                data-summary="{{ post.description | default: post.excerpt | strip_html | normalize_whitespace | downcase | escape }}"
+                data-url="{{ post.url | relative_url }}"
               >
                 <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
                 <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-                <span class="post-row-meta">{{ topic_label }} / {{ post_lang | upcase }}</span>
+                <span class="post-row-meta">
+                  {{ topic_label }} / {{ post_lang | upcase }}
+                  {%- if post.series -%}
+                    / Series
+                  {%- endif -%}
+                </span>
               </li>
             {%- endfor -%}
           </ol>
@@ -91,4 +127,4 @@ layout: default
   </section>
 </div>
 
-<script src="{{ '/assets/js/home-console.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/home-console.js' | relative_url }}" data-search-index="{{ '/search.json' | relative_url }}"></script>

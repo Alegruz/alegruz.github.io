@@ -4,6 +4,11 @@ title:  광선 추적 전역 조명을 위한 세계 공간 시공간 저장소 
 date:   2022-10-24 00:00:00 +0000
 categories: graphics
 lang: "ko"
+description: "Notes on 광선 추적 전역 조명을 위한 세계 공간 시공간 저장소 재사용."
+status: "notes"
+difficulty: "advanced"
+series: "restir"
+series_order: 7
 topic: rendering
 ---
 

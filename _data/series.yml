@@ -1,0 +1,33 @@
+restir:
+  label: ReSTIR and Resampling
+  description: Reservoir resampling, ReSTIR GI, and practical path tracing notes.
+fundamentals-computer-graphics:
+  label: Fundamentals of Computer Graphics
+  description: Reading notes on core computer graphics concepts.
+effective-cpp:
+  label: Effective C++
+  description: C++ study notes from Effective C++.
+exceptional-cpp:
+  label: Exceptional C++
+  description: C++ study notes from Exceptional C++.
+pygame-engine:
+  label: Pygame Engine Development
+  description: Development notes from a small Pygame engine project.
+rhi-system-analysis:
+  label: Game Engine RHI System Analysis
+  description: Notes on render hardware interface designs in engines.
+vulkan-notes:
+  label: Vulkan and Graphics API Notes
+  description: Graphics API behavior, debugging, and correctness notes.
+sph:
+  label: SPH and Fluid Simulation
+  description: Smoothed particle hydrodynamics and visualization notes.
+marching-cubes:
+  label: Marching Cubes
+  description: Marching cubes study and implementation notes.
+rendering-pipeline:
+  label: Rendering Pipeline Studies
+  description: Rendering pipeline, efficiency, and cache notes.
+math-notes:
+  label: Mathematics Notes
+  description: Monte Carlo, proof writing, and related math notes.
