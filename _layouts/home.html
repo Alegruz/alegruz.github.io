@@ -2,62 +2,64 @@
 layout: default
 ---
 
+{%- assign en_count = site.posts | where: "lang", "en" | size -%}
+{%- assign ko_count = site.posts | where: "lang", "ko" | size -%}
+{%- assign total_count = site.posts | size -%}
+
 <div class="home-shell">
   {{ content }}
 
-  {%- assign en_count = site.posts | where: "lang", "en" | size -%}
-  {%- assign ko_count = site.posts | where: "lang", "ko" | size -%}
-  {%- assign total_count = site.posts | size -%}
-  {%- assign latest_post = site.posts | first -%}
-
-  <section class="feed-console" aria-label="Post explorer">
-    <div class="feed-heading">
-      <h2 data-lang="en">Interactive Post Atlas</h2>
-      <h2 data-lang="ko">인터랙티브 글 아틀라스</h2>
-      <p data-lang="en">Filter by topic, language, and keywords to navigate the archive quickly.</p>
-      <p data-lang="ko">주제, 언어, 키워드로 글을 필터링해서 아카이브를 빠르게 탐색하세요.</p>
-    </div>
-
-    <div class="feed-stats">
-      <article class="stat-card">
-        <p class="stat-label" data-lang="en">Total Posts</p>
-        <p class="stat-label" data-lang="ko">전체 글</p>
-        <p class="stat-value">{{ total_count }}</p>
-      </article>
-      <article class="stat-card">
-        <p class="stat-label" data-lang="en">English</p>
-        <p class="stat-label" data-lang="ko">영어</p>
-        <p class="stat-value">{{ en_count }}</p>
-      </article>
-      <article class="stat-card">
-        <p class="stat-label" data-lang="en">Korean</p>
-        <p class="stat-label" data-lang="ko">한국어</p>
-        <p class="stat-value">{{ ko_count }}</p>
-      </article>
-      <article class="stat-card">
-        <p class="stat-label" data-lang="en">Latest</p>
-        <p class="stat-label" data-lang="ko">최근 글</p>
-        <p class="stat-value stat-date">{{ latest_post.date | date: "%Y-%m-%d" }}</p>
-      </article>
+  <section class="archive-shell" aria-label="Post archive">
+    <div class="archive-heading">
+      <div>
+        <h2 data-lang="en">Posts</h2>
+        <h2 data-lang="ko">글</h2>
+      </div>
+      <div class="feed-stats" aria-label="Archive statistics">
+        <article class="stat-card">
+          <p class="stat-label" data-lang="en">Total</p>
+          <p class="stat-label" data-lang="ko">전체</p>
+          <p class="stat-value">{{ total_count }}</p>
+        </article>
+        <article class="stat-card">
+          <p class="stat-label" data-lang="en">English</p>
+          <p class="stat-label" data-lang="ko">영어</p>
+          <p class="stat-value">{{ en_count }}</p>
+        </article>
+        <article class="stat-card">
+          <p class="stat-label" data-lang="en">Korean</p>
+          <p class="stat-label" data-lang="ko">한국어</p>
+          <p class="stat-value">{{ ko_count }}</p>
+        </article>
+        <article class="stat-card">
+          <p class="stat-label" data-lang="en">Visible</p>
+          <p class="stat-label" data-lang="ko">표시 중</p>
+          <p class="stat-value" id="visible-count">{{ en_count }}</p>
+        </article>
+      </div>
     </div>
 
     <div class="feed-controls">
       <div class="chip-group" role="group" aria-label="Topic filters">
-        <button class="chip active" type="button" data-topic="all">All</button>
-        <button class="chip" type="button" data-topic="rendering">Rendering</button>
-        <button class="chip" type="button" data-topic="api">Graphics API</button>
-        <button class="chip" type="button" data-topic="theory">Theory/Math</button>
-        <button class="chip" type="button" data-topic="engine">Engine</button>
+        <button class="chip active" type="button" data-topic="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-topic="rendering" aria-pressed="false">Rendering</button>
+        <button class="chip" type="button" data-topic="api" aria-pressed="false">Graphics API</button>
+        <button class="chip" type="button" data-topic="theory" aria-pressed="false">Theory / Math</button>
+        <button class="chip" type="button" data-topic="engine" aria-pressed="false">Engine</button>
       </div>
-      <input
-        id="post-search"
-        class="feed-search"
-        type="search"
-        placeholder="Search posts"
-        aria-label="Search posts"
-        data-placeholder-en="Search posts"
-        data-placeholder-ko="글 검색"
-      />
+      <label class="search-shell" for="post-search">
+        <span data-lang="en">Search</span>
+        <span data-lang="ko">검색</span>
+        <input
+          id="post-search"
+          class="feed-search"
+          type="search"
+          placeholder="Search posts"
+          aria-label="Search posts"
+          data-placeholder-en="Search posts"
+          data-placeholder-ko="글 검색"
+        />
+      </label>
     </div>
 
     <ul id="post-feed" class="post-grid">
@@ -74,21 +76,42 @@ layout: default
           {%- assign topic = "engine" -%}
         {%- endif -%}
 
-        <li class="post-card" data-lang="{{ post.lang }}" data-topic="{{ topic }}" data-title="{{ post.title | downcase | escape }}" data-year="{{ post.date | date: '%Y' }}">
-          <p class="post-date">{{ post.date | date: "%Y-%m-%d" }}</p>
-          <h3><a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
-          <p class="post-excerpt">{{ post.excerpt | strip_html | strip_newlines | truncate: 190 }}</p>
-          <div class="post-meta-row">
-            <span class="badge">{{ topic }}</span>
-            <span class="badge">{{ post.lang }}</span>
-            <span class="badge">{{ post.date | date: "%Y" }}</span>
-          </div>
+        {%- assign topic_label = "Engine" -%}
+        {%- if topic == "rendering" -%}
+          {%- assign topic_label = "Rendering" -%}
+        {%- elsif topic == "api" -%}
+          {%- assign topic_label = "Graphics API" -%}
+        {%- elsif topic == "theory" -%}
+          {%- assign topic_label = "Theory / Math" -%}
+        {%- endif -%}
+
+        {%- assign post_lang = post.lang | default: "en" -%}
+        <li
+          class="post-card"
+          data-lang="{{ post_lang }}"
+          data-topic="{{ topic }}"
+          data-title="{{ post.title | downcase | escape }}"
+          data-year="{{ post.date | date: '%Y' }}"
+        >
+          <article>
+            <div class="post-card-top">
+              <span class="topic-signal" aria-hidden="true"></span>
+              <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            </div>
+            <h3><a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+            <p class="post-excerpt">{{ post.excerpt | strip_html | strip_newlines | truncate: 160 }}</p>
+            <div class="post-meta-row">
+              <span class="badge">{{ topic_label }}</span>
+              <span class="badge">{{ post_lang | upcase }}</span>
+              <span class="badge">{{ post.date | date: "%Y" }}</span>
+            </div>
+          </article>
         </li>
       {%- endfor -%}
     </ul>
 
     <p id="feed-empty" class="feed-empty" hidden data-msg-en="No posts match the current filters." data-msg-ko="현재 필터 조건에 맞는 글이 없습니다.">No posts match the current filters.</p>
-    <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+    <p class="rss-subscribe"><a href="{{ "/feed.xml" | relative_url }}">RSS feed</a></p>
   </section>
 </div>
 

@@ -2,31 +2,30 @@
 layout: home
 ---
 
-<section class="landing-hero" data-lang="en">
-  <p class="landing-kicker">Game Engine x Rendering x Theory</p>
-  <h1>Engineering notes from production graphics and long-form study</h1>
+<section class="landing-hero" data-lang="en" aria-labelledby="home-title-en">
+  <p class="landing-kicker">Game engine / rendering / graphics programming</p>
+  <h1 id="home-title-en">Alegruz's blog</h1>
   <p>
-    This blog documents my work and learning across real-time rendering, modern graphics APIs,
-    engine architecture, and the mathematical foundations behind them. I work on BlackSpace Engine
-    at Pearl Abyss, the in-house engine powering Crimson Desert, DokeV, and Plan 8.
+    Notes on real-time rendering, graphics APIs, game engine architecture,
+    performance, and the math behind computer graphics.
   </p>
-  <div class="landing-links">
-    <a class="landing-btn" href="/cv/">CV</a>
+  <div class="landing-links" aria-label="Profile links">
+    <a class="landing-btn primary" href="/cv/">CV</a>
     <a class="landing-btn" href="/music/">Music</a>
     <a class="landing-btn" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames</a>
     <a class="landing-btn" href="https://github.com/Alegruz" target="_blank" rel="noopener">GitHub</a>
   </div>
 </section>
 
-<section class="landing-hero" data-lang="ko">
-  <p class="landing-kicker">Game Engine x Rendering x Theory</p>
-  <h1>실무 그래픽스와 이론 학습을 함께 기록하는 기술 블로그</h1>
+<section class="landing-hero" data-lang="ko" aria-labelledby="home-title-ko">
+  <p class="landing-kicker">게임 엔진 / 렌더링 / 그래픽스 프로그래밍</p>
+  <h1 id="home-title-ko">Alegruz's blog</h1>
   <p>
-    실시간 렌더링, 최신 그래픽스 API, 엔진 아키텍처,
-    그리고 이를 뒷받침하는 수학/이론을 꾸준히 정리합니다.
+    실시간 렌더링, 그래픽스 API, 게임 엔진 아키텍처, 성능,
+    컴퓨터 그래픽스 수학에 대한 노트를 정리합니다.
   </p>
-  <div class="landing-links">
-    <a class="landing-btn" href="/cv/">CV</a>
+  <div class="landing-links" aria-label="프로필 링크">
+    <a class="landing-btn primary" href="/cv/">CV</a>
     <a class="landing-btn" href="/music/">Music</a>
     <a class="landing-btn" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames</a>
     <a class="landing-btn" href="https://github.com/Alegruz" target="_blank" rel="noopener">GitHub</a>

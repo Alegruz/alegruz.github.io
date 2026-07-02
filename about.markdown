@@ -5,88 +5,68 @@ permalink: /about/
 ---
 
 <section class="about-shell" data-lang="en">
-  <h1>About</h1>
-  <p>
-    I am a game engine and graphics engineer who likes to connect practical implementation,
-    production constraints, and theoretical rigor. At Pearl Abyss, I work on BlackSpace Engine,
-    the in-house engine behind Crimson Desert, DokeV, and Plan 8.
-  </p>
+  <div class="page-hero-panel">
+    <h1>About</h1>
+    <p>
+      I am a game engine and graphics engineer at Pearl Abyss, working on BlackSpace Engine.
+      I write notes on rendering, graphics APIs, engine systems, performance, and math.
+    </p>
+  </div>
 
   <div class="about-grid">
-    <article class="about-card about-engine-card">
-      <h2>Production Work</h2>
-      <p>
-        Developer on BlackSpace Engine, Pearl Abyss' in-house game engine powering
-        Crimson Desert (launched), DokeV (WIP), and Plan 8 (WIP).
-      </p>
+    <article class="about-card">
+      <h2>Work</h2>
+      <p>BlackSpace Engine developer at Pearl Abyss.</p>
       <a class="text-link" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames profile</a>
     </article>
 
     <article class="about-card">
-      <h2>Primary Focus</h2>
+      <h2>Focus</h2>
       <ul>
-        <li>Real-time rendering systems</li>
-        <li>Graphics API behavior and correctness</li>
-        <li>Performance analysis and optimization</li>
-        <li>Rendering mathematics and Monte Carlo methods</li>
+        <li>Real-time rendering</li>
+        <li>Graphics APIs</li>
+        <li>Game engine architecture</li>
+        <li>Performance analysis</li>
+        <li>Rendering mathematics</li>
       </ul>
     </article>
 
     <article class="about-card">
-      <h2>Current Learning</h2>
-      <ul>
-        <li>Production-scale engine systems and content workflows</li>
-        <li>Advanced path tracing and spatio-temporal resampling</li>
-        <li>Engine architecture patterns and RHI design</li>
-        <li>Proof-oriented mathematical thinking</li>
-      </ul>
-    </article>
-
-    <article class="about-card">
-      <h2>Outside Work</h2>
+      <h2>Interests</h2>
       <ul>
         <li>Language learning</li>
-        <li>Small soundtrack sketches and game-music ideas</li>
-        <li>Travel and cultural exploration</li>
-        <li>Classic game hardware and emulator development</li>
+        <li>Music sketches</li>
+        <li>Travel</li>
+        <li>Classic game hardware and emulators</li>
       </ul>
-    </article>
-
-    <article class="about-card about-music-card">
-      <h2>Music</h2>
-      <p>
-        I also enjoy making compact themes, loops, and mood sketches. It is a casual creative outlet,
-        but I am open to small side projects when the tone fits.
-      </p>
-      <a class="text-link" href="/music/">Listen to the music sketches</a>
     </article>
   </div>
 </section>
 
 <section class="about-shell" data-lang="ko">
-  <h1>소개</h1>
-  <p>
-    저는 실무 구현, 제품 제약, 이론적 엄밀함을 함께 연결하는
-    게임 엔진/그래픽스 엔지니어입니다.
-  </p>
+  <div class="page-hero-panel">
+    <h1>소개</h1>
+    <p>
+      Pearl Abyss에서 BlackSpace Engine을 개발하는 게임 엔진 및 그래픽스 엔지니어입니다.
+      렌더링, 그래픽스 API, 엔진 시스템, 성능, 수학에 대한 노트를 정리합니다.
+    </p>
+  </div>
 
   <div class="about-grid">
     <article class="about-card">
-      <h2>주요 분야</h2>
-      <ul>
-        <li>실시간 렌더링 시스템</li>
-        <li>그래픽스 API 동작/정확성</li>
-        <li>성능 분석 및 최적화</li>
-        <li>렌더링 수학 및 몬테카를로 기법</li>
-      </ul>
+      <h2>업무</h2>
+      <p>Pearl Abyss BlackSpace Engine 개발.</p>
+      <a class="text-link" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames 프로필</a>
     </article>
 
     <article class="about-card">
-      <h2>현재 학습 중</h2>
+      <h2>관심 분야</h2>
       <ul>
-        <li>고급 경로 추적 및 시공간 재표집</li>
-        <li>엔진 아키텍처 패턴 및 RHI 설계</li>
-        <li>증명 중심 수학적 사고</li>
+        <li>실시간 렌더링</li>
+        <li>그래픽스 API</li>
+        <li>게임 엔진 아키텍처</li>
+        <li>성능 분석</li>
+        <li>렌더링 수학</li>
       </ul>
     </article>
 
@@ -94,8 +74,9 @@ permalink: /about/
       <h2>개인 관심사</h2>
       <ul>
         <li>언어 학습</li>
-        <li>여행 및 문화 탐방</li>
-        <li>고전 게임 하드웨어와 에뮬레이터 개발</li>
+        <li>음악 스케치</li>
+        <li>여행</li>
+        <li>고전 게임 하드웨어와 에뮬레이터</li>
       </ul>
     </article>
   </div>
