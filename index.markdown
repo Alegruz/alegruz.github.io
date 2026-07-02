@@ -7,11 +7,13 @@ layout: home
   <h1>Engineering notes from production graphics and long-form study</h1>
   <p>
     This blog documents my work and learning across real-time rendering, modern graphics APIs,
-    engine architecture, and the mathematical foundations behind them.
+    engine architecture, and the mathematical foundations behind them. I work on BlackSpace Engine
+    at Pearl Abyss, the in-house engine powering Crimson Desert, DokeV, and Plan 8.
   </p>
   <div class="landing-links">
-    <a class="landing-btn" href="/portfolio/">Portfolio</a>
     <a class="landing-btn" href="/cv/">CV</a>
+    <a class="landing-btn" href="/music/">Music</a>
+    <a class="landing-btn" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames</a>
     <a class="landing-btn" href="https://github.com/Alegruz" target="_blank" rel="noopener">GitHub</a>
   </div>
 </section>
@@ -24,8 +26,9 @@ layout: home
     그리고 이를 뒷받침하는 수학/이론을 꾸준히 정리합니다.
   </p>
   <div class="landing-links">
-    <a class="landing-btn" href="/portfolio/">Portfolio</a>
     <a class="landing-btn" href="/cv/">CV</a>
+    <a class="landing-btn" href="/music/">Music</a>
+    <a class="landing-btn" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames</a>
     <a class="landing-btn" href="https://github.com/Alegruz" target="_blank" rel="noopener">GitHub</a>
   </div>
 </section>

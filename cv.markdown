@@ -15,7 +15,7 @@ permalink: /cv/
         <li>Email (work): onion@pearlabyss.com</li>
         <li>Email (academic/personal): alegruz@khu.ac.kr</li>
         <li>Location: Uiwang-si, Gyeonggi-do, Republic of Korea</li>
-        <li>Links: <a href="https://github.com/Alegruz" target="_blank" rel="noopener">GitHub</a> | <a href="https://www.linkedin.com/in/alegruz" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li>Links: <a href="https://github.com/Alegruz" target="_blank" rel="noopener">GitHub</a> | <a href="https://www.linkedin.com/in/alegruz" target="_blank" rel="noopener">LinkedIn</a> | <a href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames</a></li>
       </ul>
     </article>
 
@@ -24,13 +24,15 @@ permalink: /cv/
       <p>
         Engineer focused on real-time rendering systems, graphics API integration,
         shader workflows, and performance optimization for production game engines.
+        Developer on Pearl Abyss' BlackSpace Engine, which powers Crimson Desert,
+        DokeV, and Plan 8.
       </p>
     </article>
 
     <article class="cv-card">
       <h2>Experience</h2>
       <ul>
-        <li><strong>Pearl Abyss</strong>, Game Engine Systems Engineer (2023.01 - Present)</li>
+        <li><strong>Pearl Abyss</strong>, Game Engine Systems Engineer (2023.01 - Present): BlackSpace Engine developer for Crimson Desert (launched), DokeV (WIP), and Plan 8 (WIP)</li>
         <li><strong>Pearl Abyss</strong>, Game Engine Engineering Intern (2022.07 - 2022.08)</li>
         <li><strong>MLVC</strong>, Undergraduate Researcher (2021.01 - 2021.08)</li>
         <li><strong>Social Radio Company</strong>, Android Programmer (2020.09 - 2021.02)</li>

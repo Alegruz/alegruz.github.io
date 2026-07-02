@@ -8,10 +8,20 @@ permalink: /about/
   <h1>About</h1>
   <p>
     I am a game engine and graphics engineer who likes to connect practical implementation,
-    production constraints, and theoretical rigor.
+    production constraints, and theoretical rigor. At Pearl Abyss, I work on BlackSpace Engine,
+    the in-house engine behind Crimson Desert, DokeV, and Plan 8.
   </p>
 
   <div class="about-grid">
+    <article class="about-card about-engine-card">
+      <h2>Production Work</h2>
+      <p>
+        Developer on BlackSpace Engine, Pearl Abyss' in-house game engine powering
+        Crimson Desert (launched), DokeV (WIP), and Plan 8 (WIP).
+      </p>
+      <a class="text-link" href="https://www.mobygames.com/person/1950168/minha-ju/" target="_blank" rel="noopener">MobyGames profile</a>
+    </article>
+
     <article class="about-card">
       <h2>Primary Focus</h2>
       <ul>
@@ -25,6 +35,7 @@ permalink: /about/
     <article class="about-card">
       <h2>Current Learning</h2>
       <ul>
+        <li>Production-scale engine systems and content workflows</li>
         <li>Advanced path tracing and spatio-temporal resampling</li>
         <li>Engine architecture patterns and RHI design</li>
         <li>Proof-oriented mathematical thinking</li>
@@ -35,9 +46,19 @@ permalink: /about/
       <h2>Outside Work</h2>
       <ul>
         <li>Language learning</li>
+        <li>Small soundtrack sketches and game-music ideas</li>
         <li>Travel and cultural exploration</li>
         <li>Classic game hardware and emulator development</li>
       </ul>
+    </article>
+
+    <article class="about-card about-music-card">
+      <h2>Music</h2>
+      <p>
+        I also enjoy making compact themes, loops, and mood sketches. It is a casual creative outlet,
+        but I am open to small side projects when the tone fits.
+      </p>
+      <a class="text-link" href="/music/">Listen to the music sketches</a>
     </article>
   </div>
 </section>
