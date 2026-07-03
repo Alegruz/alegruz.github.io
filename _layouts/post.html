@@ -13,6 +13,14 @@ layout: default
 {%- assign next_series_order = series_index | plus: 1 -%}
 {%- assign previous_series_post = nil -%}
 {%- assign next_series_post = nil -%}
+{%- assign word_count = content | strip_html | number_of_words -%}
+{%- assign reading_minutes = word_count | divided_by: 220 -%}
+{%- assign reading_remainder = word_count | modulo: 220 -%}
+{%- if reading_minutes < 1 -%}
+  {%- assign reading_minutes = 1 -%}
+{%- elsif reading_remainder > 0 -%}
+  {%- assign reading_minutes = reading_minutes | plus: 1 -%}
+{%- endif -%}
 {%- if page_series -%}
   {%- for series_post in series_posts -%}
     {%- assign series_post_order = series_post.series_order | default: 0 | plus: 0 -%}
@@ -43,6 +51,8 @@ layout: default
       {%- if page.lang -%}
         <span>{{ page.lang | upcase }}</span>
       {%- endif -%}
+      <span>{{ reading_minutes }} min read</span>
+      <span>{{ word_count }} words</span>
       {%- if page.difficulty -%}
         <span>{{ page.difficulty | capitalize }}</span>
       {%- endif -%}

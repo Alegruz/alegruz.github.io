@@ -1,4 +1,5 @@
 <header class="site-header" role="banner">
+  <a class="skip-link" href="#main-content">Skip to content</a>
   <script src="{{ '/assets/js/language-toggle.js' | relative_url }}"></script>
   {%- assign translation_en_url = "" -%}
   {%- assign translation_ko_url = "" -%}
@@ -34,7 +35,15 @@
           {%- for path in page_paths -%}
             {%- assign my_page = site.pages | where: "path", path | first -%}
             {%- if my_page.title -%}
-              <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
+              {%- assign is_current_page = false -%}
+              {%- if my_page.url == page.url -%}
+                {%- assign is_current_page = true -%}
+              {%- endif -%}
+              <a
+                class="page-link{% if is_current_page %} active{% endif %}"
+                href="{{ my_page.url | relative_url }}"
+                {% if is_current_page %}aria-current="page"{% endif %}
+              >{{ my_page.title | escape }}</a>
             {%- endif -%}
           {%- endfor -%}
           <button

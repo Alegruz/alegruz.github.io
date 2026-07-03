@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const seriesSelect = document.getElementById("series-filter");
   const emptyNotice = document.getElementById("feed-empty");
   const visibleCount = document.getElementById("visible-count");
+  const filterStatus = document.getElementById("filter-status");
+  const clearFiltersButton = document.getElementById("clear-filters");
   const script = document.querySelector("script[data-search-index]");
   const searchIndexUrl = script?.dataset.searchIndex;
   const urlParams = new URLSearchParams(window.location.search);
@@ -27,6 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function uiLanguage() {
     return document.documentElement.getAttribute("lang") === "ko" ? "ko" : "en";
+  }
+
+  function defaultLanguageFilter() {
+    return uiLanguage();
   }
 
   function escapeHtml(value) {
@@ -61,6 +67,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (seriesSelect?.options.length) {
       seriesSelect.options[0].textContent = isKorean ? "모든 시리즈" : "All series";
+    }
+
+    if (clearFiltersButton) {
+      clearFiltersButton.textContent = isKorean
+        ? clearFiltersButton.dataset.labelKo || "필터 초기화"
+        : clearFiltersButton.dataset.labelEn || "Clear filters";
     }
   }
 
@@ -211,6 +223,57 @@ document.addEventListener("DOMContentLoaded", function () {
     element.innerHTML = escapeHtml(original).replace(pattern, "<mark class=\"search-mark\">$1</mark>");
   }
 
+  function selectedOptionText(select) {
+    if (!select) {
+      return "";
+    }
+
+    return select.options[select.selectedIndex]?.textContent || select.value;
+  }
+
+  function activeTopicLabel() {
+    const activeButton = topicButtons.find((button) => button.dataset.topic === activeTopic);
+    return activeButton?.textContent.trim() || activeTopic;
+  }
+
+  function isDefaultFilterState(query) {
+    return !query
+      && activeTopic === "all"
+      && activeLanguageFilter === defaultLanguageFilter()
+      && activeYear === "all"
+      && activeSeries === "all";
+  }
+
+  function updateFilterFeedback(query, count) {
+    const languageLabel = activeLanguageFilter === "all" ? "All languages" : activeLanguageFilter.toUpperCase();
+    const details = [languageLabel];
+
+    if (query) {
+      details.push(`Search: "${query}"`);
+    }
+
+    if (activeTopic !== "all") {
+      details.push(`Topic: ${activeTopicLabel()}`);
+    }
+
+    if (activeYear !== "all") {
+      details.push(`Year: ${activeYear}`);
+    }
+
+    if (activeSeries !== "all") {
+      details.push(`Series: ${selectedOptionText(seriesSelect)}`);
+    }
+
+    if (filterStatus) {
+      const noun = count === 1 ? "post" : "posts";
+      filterStatus.textContent = `${count} ${noun} - ${details.join(" / ")}`;
+    }
+
+    if (clearFiltersButton) {
+      clearFiltersButton.hidden = isDefaultFilterState(query);
+    }
+  }
+
   function updateUrl(query) {
     const next = new URLSearchParams();
     if (query) next.set("q", query);
@@ -225,7 +288,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function applyFilters(options = {}) {
-    const query = ((searchInput && searchInput.value) || "").trim().toLowerCase();
+    const rawQuery = ((searchInput && searchInput.value) || "").trim();
+    const query = rawQuery.toLowerCase();
     let count = 0;
 
     updateLocalizedControls();
@@ -272,9 +336,39 @@ document.addEventListener("DOMContentLoaded", function () {
         : emptyNotice.dataset.msgEn || "No posts match the current filters.";
     }
 
+    updateFilterFeedback(rawQuery, count);
+
     if (!options.skipUrlUpdate) {
-      updateUrl(query);
+      updateUrl(rawQuery);
     }
+  }
+
+  function resetFilters() {
+    activeTopic = "all";
+    activeLanguageFilter = defaultLanguageFilter();
+    activeYear = "all";
+    activeSeries = "all";
+
+    const allTopicButton = topicButtons.find((button) => button.dataset.topic === "all") || topicButtons[0];
+    if (allTopicButton) {
+      setActiveButton(topicButtons, allTopicButton);
+    }
+
+    setLanguageFilter(activeLanguageFilter);
+
+    if (yearSelect) {
+      yearSelect.value = "all";
+    }
+
+    if (seriesSelect) {
+      seriesSelect.value = "all";
+    }
+
+    if (searchInput) {
+      searchInput.value = "";
+    }
+
+    applyFilters();
   }
 
   function hydrateSearchIndex() {
@@ -351,6 +445,17 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", function () {
       applyFilters({ skipUrlUpdate: !searchHydrated });
     });
+
+    searchInput.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && searchInput.value) {
+        searchInput.value = "";
+        applyFilters();
+      }
+    });
+  }
+
+  if (clearFiltersButton) {
+    clearFiltersButton.addEventListener("click", resetFilters);
   }
 
   document.addEventListener("keydown", function (event) {
@@ -375,7 +480,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const observer = new MutationObserver(function () {
-    if (!urlParams.has("lang")) {
+    const currentParams = new URLSearchParams(window.location.search);
+    if (!currentParams.has("lang")) {
       setLanguageFilter(uiLanguage());
     }
     applyFilters();
