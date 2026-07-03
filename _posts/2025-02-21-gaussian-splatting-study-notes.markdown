@@ -9,6 +9,7 @@ description: "$$ G(x) = e^{-{\\frac{1}{2}}\\left(x \\right)^{T}\\sum^{-1}{\\left
 status: "notes"
 difficulty: "intermediate"
 topic: rendering
+tags: [rendering, gaussian-splatting]
 ---
 
 ## Reads
@@ -148,7 +149,7 @@ $$ L = \left(1 - \lambda \right)L_{1} + \lambda L_{\textrm{D-SSIM}} $$
                         * divide by the factor of *&Phi;* = 1.6 (heuristic value)
                         * position is sampled from the original(big) Gaussian's PDF
                     * set *&alpha;* value to zero every *N* = 3000 iterations
-    6. 
+    6.
 
 ## Concepts to Study
 

@@ -189,14 +189,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const content = row.dataset.searchContent || "";
     const topic = row.dataset.searchTopic || row.dataset.topic || "";
     const series = row.dataset.searchSeries || row.dataset.series || "";
+    const tags = row.dataset.searchTags || row.dataset.tags || "";
+    const headings = row.dataset.searchHeadings || "";
     let score = 0;
 
     terms.forEach((term) => {
       if (title === term) score += 120;
       if (title.startsWith(term)) score += 80;
       score += countOccurrences(title, term) * 55;
+      score += countOccurrences(tags, term) * 45;
       score += countOccurrences(series, term) * 35;
       score += countOccurrences(topic, term) * 30;
+      score += countOccurrences(headings, term) * 24;
       score += countOccurrences(description, term) * 18;
       score += countOccurrences(excerpt, term) * 10;
       score += countOccurrences(content, term) * 2;
@@ -447,18 +451,22 @@ document.addEventListener("DOMContentLoaded", function () {
             post.title,
             post.description,
             post.excerpt,
+            post.headings,
             post.content,
             post.topic_label,
             post.series_label,
+            Array.isArray(post.tags) ? post.tags.join(" ") : "",
             post.status,
             post.difficulty
           ].filter(Boolean).join(" ").toLowerCase();
           row.dataset.searchTitle = (post.title || "").toLowerCase();
           row.dataset.searchDescription = (post.description || "").toLowerCase();
           row.dataset.searchExcerpt = (post.excerpt || "").toLowerCase();
+          row.dataset.searchHeadings = (post.headings || "").toLowerCase();
           row.dataset.searchContent = (post.content || "").toLowerCase();
           row.dataset.searchTopic = [post.topic, post.topic_label].filter(Boolean).join(" ").toLowerCase();
           row.dataset.searchSeries = [post.series, post.series_label].filter(Boolean).join(" ").toLowerCase();
+          row.dataset.searchTags = Array.isArray(post.tags) ? post.tags.join(" ").toLowerCase() : "";
         });
         searchHydrated = true;
         searchLoading = false;

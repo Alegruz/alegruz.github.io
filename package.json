@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "content:audit": "python scripts/content_audit.py",
     "visual:smoke": "node scripts/visual_smoke.mjs"
   },
   "devDependencies": {

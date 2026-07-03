@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "pygame-engine"
 series_order: 1
 topic: engine
+tags: [engine, pygame-engine, pygame]
 ---
 
 # 소개

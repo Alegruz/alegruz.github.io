@@ -10,6 +10,7 @@ difficulty: "beginner"
 series: "fundamentals-computer-graphics"
 series_order: 4
 topic: rendering
+tags: [rendering, fundamentals-computer-graphics]
 ---
 
 컴퓨터 그래픽스computer graphics란 컴퓨터로 이미지image를 만들어내는 모든 용법을 의미한다.

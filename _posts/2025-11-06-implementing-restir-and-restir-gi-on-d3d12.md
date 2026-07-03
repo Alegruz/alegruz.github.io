@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 10
 topic: rendering
+tags: [rendering, restir, d3d12]
 ---
 
 # Introduction
@@ -34,7 +35,7 @@ The implementation was done using Direct3D 12 and slang. The renderer was built 
 
 # Results
 
-▶️ [YouTube Demo – Temporal Reuse (Sept 21, 2025)](https://youtu.be/T5tYhoAHzLU?si=QjRvoQsYwbGVvsPR)  
+▶️ [YouTube Demo – Temporal Reuse (Sept 21, 2025)](https://youtu.be/T5tYhoAHzLU?si=QjRvoQsYwbGVvsPR)
 ▶️ [YouTube Demo – Indirect Light (Sept 26, 2025)](https://youtu.be/OTc1I7WVSt0?si=H8-nFEEiRDQ9RRfz)
 
 # Future Work

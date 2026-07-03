@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "fundamentals-computer-graphics"
 series_order: 6
 topic: rendering
+tags: [rendering, fundamentals-computer-graphics, ray-tracing]
 ---
 
 컴퓨터 그래픽스의 가장 기초적인 작업은 삼차원 물체를 *렌더링rendering*하는 것이다. 한 장면에 3D 공간에 존재하는 여러 기하학적 객체들을 특정 시점에서 바라봤을 때 보이는 이미지라는 2D로 계산해내는 것이다. 좀 더 구체적으로 말하자면 여러 객체들을 입력으로 받아 픽셀 배열을 출력으로 주는 것이다. 어쨋든 각 물체가 픽셀에 어떤 영향을 준다는 뜻이다. 이걸 실제로 하는 방법에는 두 가지가 있다:

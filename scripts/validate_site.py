@@ -10,6 +10,7 @@ from datetime import date
 from html import unescape
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+from xml.etree import ElementTree
 
 ROOT = Path(__file__).resolve().parents[1]
 POSTS = ROOT / "_posts"
@@ -30,9 +31,11 @@ GENERATED_FILE_BUDGETS = {
     "assets/main.css": 70_000,
     "assets/js/home-console.js": 28_000,
     "assets/js/post-enhancements.js": 24_000,
-    "search.json": 350_000,
-    "feed.json": 3_000_000,
+    "search.json": 220_000,
+    "feed.json": 80_000,
 }
+FORBIDDEN_GENERATED_PARTS = {".vscode", "assets/externals", "scripts"}
+FORBIDDEN_GENERATED_SUFFIXES = {".dll", ".exe", ".o", ".so"}
 SOURCE_EXTENSIONS = {".html", ".md", ".markdown"}
 SOURCE_SKIP_PARTS = {
     ".git",
@@ -152,6 +155,7 @@ def validate_posts() -> list[str]:
         difficulty = front_matter.get("difficulty")
         series = front_matter.get("series")
         series_order = front_matter.get("series_order")
+        tags = front_matter.get("tags")
         translation_key = front_matter.get("translation_key")
         math = front_matter.get("math")
 
@@ -174,6 +178,8 @@ def validate_posts() -> list[str]:
             errors.append(f"{path.relative_to(ROOT)}: draft post cannot ship in production")
         if difficulty not in DIFFICULTIES:
             errors.append(f"{path.relative_to(ROOT)}: invalid difficulty {difficulty!r}")
+        if not tags:
+            errors.append(f"{path.relative_to(ROOT)}: missing tags")
         if MATH_PATTERN.search(body) and math != "true":
             errors.append(f"{path.relative_to(ROOT)}: TeX content requires `math: true` front matter")
         if series:
@@ -306,7 +312,7 @@ def source_warnings() -> list[str]:
         if path.suffix.lower() not in {".md", ".markdown"}:
             continue
         for line_number, line in enumerate(read_text(path).splitlines(), start=1):
-            if LOCAL_MARKDOWN_IMAGE_PATTERN.search(line):
+            if re.match(r"""^\s*!\[[^\]]*\]\((/assets/images/[^)\s]+)(?:\s+["'][^)]*["'])?\)\s*$""", line):
                 raw_image_refs.append(f"{path.relative_to(ROOT)}:{line_number}")
 
     if raw_image_refs:
@@ -431,7 +437,7 @@ def validate_generated_files() -> list[str]:
                 elif len(items) != post_count:
                     errors.append(f"_site/feed.json has {len(items)} items; expected {post_count}")
                 else:
-                    required_keys = {"id", "url", "title", "content_html", "date_published"}
+                    required_keys = {"id", "url", "title", "content_text", "date_published"}
                     for index, item in enumerate(items):
                         if not isinstance(item, dict):
                             errors.append(f"_site/feed.json item {index} is not an object")
@@ -441,6 +447,58 @@ def validate_generated_files() -> list[str]:
                             errors.append(f"_site/feed.json item {index} missing {sorted(missing)}")
     if not MANIFEST.exists():
         errors.append("_data/image_manifest.yml was not generated; run `python scripts/optimize_images.py`")
+    return errors
+
+
+def validate_sitemap() -> list[str]:
+    errors: list[str] = []
+    sitemap = SITE / "sitemap.xml"
+    robots = SITE / "robots.txt"
+    expected_sitemap_url = "https://alegruz.github.io/sitemap.xml"
+
+    if not sitemap.exists():
+        errors.append("_site/sitemap.xml was not generated")
+    else:
+        try:
+            tree = ElementTree.parse(sitemap)
+        except ElementTree.ParseError as exc:
+            errors.append(f"_site/sitemap.xml is invalid XML: {exc}")
+        else:
+            locations = [
+                element.text or ""
+                for element in tree.findall(".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc")
+            ]
+            if not locations:
+                errors.append("_site/sitemap.xml has no URLs")
+            if "https://alegruz.github.io/" not in locations:
+                errors.append("_site/sitemap.xml is missing the home page URL")
+            bad_locations = [
+                location for location in locations
+                if not location.startswith("https://alegruz.github.io/")
+            ]
+            if bad_locations:
+                errors.append(f"_site/sitemap.xml has non-production URLs: {bad_locations[:3]}")
+
+    if not robots.exists():
+        errors.append("_site/robots.txt was not generated")
+    elif f"Sitemap: {expected_sitemap_url}" not in read_text(robots):
+        errors.append(f"_site/robots.txt must contain `Sitemap: {expected_sitemap_url}`")
+    return errors
+
+
+def validate_generated_policy() -> list[str]:
+    errors: list[str] = []
+    if not SITE.exists():
+        return ["_site does not exist; run `bundle exec jekyll build` first"]
+
+    for path in sorted(SITE.rglob("*")):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(SITE).as_posix()
+        if any(relative == part or relative.startswith(f"{part}/") for part in FORBIDDEN_GENERATED_PARTS):
+            errors.append(f"_site/{relative} should not be generated")
+        if path.suffix.lower() in FORBIDDEN_GENERATED_SUFFIXES:
+            errors.append(f"_site/{relative} has forbidden generated suffix {path.suffix!r}")
     return errors
 
 
@@ -512,6 +570,8 @@ def main() -> int:
     errors = (
         validate_posts()
         + validate_generated_files()
+        + validate_sitemap()
+        + validate_generated_policy()
         + validate_source_links()
         + validate_generated_links()
         + validate_generated_images()

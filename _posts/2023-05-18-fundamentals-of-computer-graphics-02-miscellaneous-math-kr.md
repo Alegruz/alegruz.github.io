@@ -10,6 +10,7 @@ difficulty: "beginner"
 series: "fundamentals-computer-graphics"
 series_order: 3
 topic: theory
+tags: [theory, fundamentals-computer-graphics]
 ---
 
 [목차]({% post_url 2023-05-17-fundamentals-of-computer-graphics-kr %})
@@ -228,9 +229,9 @@ float shade = integrate(cos()*f*(), unit-hemisphere)
 float weightedShade = integrate((1/pi)*cos()*f*(), unit-hemisphere) // integrate(cos(), unit-hemisphere) = pi
 ```
 
-![SolidAngleIntegration](/assets/images/FundamentalOfComputerGraphics/SolidAngleIntegration.png)
+{% include image.html src="/assets/images/FundamentalOfComputerGraphics/SolidAngleIntegration.png" alt="SolidAngleIntegration" caption="SolidAngleIntegration" %}
 
-![SolidAngleSphericalCoordinatesIntegration](/assets/images/FundamentalOfComputerGraphics/SolidAngleSphericalCoordinatesIntegration.png)
+{% include image.html src="/assets/images/FundamentalOfComputerGraphics/SolidAngleSphericalCoordinatesIntegration.png" alt="SolidAngleSphericalCoordinatesIntegration" caption="SolidAngleSphericalCoordinatesIntegration" %}
 
 ## 2.6 밀도 함수density function
 
@@ -260,4 +261,4 @@ f(x, y, z) = f(**p**) = 0
 
 ### 2.7.4 암시 곡면의 곡면 법선surface normal
 
-점의 기울기를 구하여 
+점의 기울기를 구하여

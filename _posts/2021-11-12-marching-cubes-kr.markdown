@@ -11,6 +11,7 @@ difficulty: "intermediate"
 series: "marching-cubes"
 series_order: 2
 topic: rendering
+tags: [rendering, marching-cubes]
 ---
 
 ## 명시적 곡면과 암시적 곡면<sup>[1](#footnote_1)</sup>
@@ -79,9 +80,9 @@ topic: rendering
 
 마칭 큐브는 오로지 정규화된 그리드의 모서리에 대한 교차점만 구하므로, 뾰족한 부분들을 제대로 표현하려면 셀 내에 추가적인 점들을 찍어줘야 한다. 이에 나온 확장 마칭 큐브 알고리듬 [Kobbelt et al. 01]<sup>[6](#footnote_6)</sup>은 거리 함수의 도함수 ∇F를 바탕으로 셀 내에 뾰족한 특징이 존재하는지 확인하고, 복셀의 모서리와의 교차점에 대한 추정 접면을 교차시켜 추가적인 점들을 찍어 준다.
 
-![ExtendedMarchingCubes2d](/assets/images/MarchingCubes/ExtendedMarchingCubes2d.png)
+{% include image.html src="/assets/images/MarchingCubes/ExtendedMarchingCubes2d.png" alt="ExtendedMarchingCubes2d" caption="ExtendedMarchingCubes2d" %}
 
-![ExtendedMarchingCubes3d](/assets/images/MarchingCubes/ExtendedMarchingCubes3d.png)
+{% include image.html src="/assets/images/MarchingCubes/ExtendedMarchingCubes3d.png" alt="ExtendedMarchingCubes3d" caption="ExtendedMarchingCubes3d" %}
 
 확장 마칭 큐브를 OpenMesh 자료 구조 [Botsch et al. 02]<sup>[7](#footnote_7)</sup>를 기반으로 구현해놓은 예제는 [Kobbelt et al. 05]<sup>[8](#footnote_8)</sup>에서 다운 받을 수 있다.
 
@@ -163,7 +164,7 @@ topic: rendering
 <div id="footnote_6">
 <p>6. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/media/papers/feature1.pdf">“Feature Sensitive Surface Extraction from Volume Data.”</a> In Proc. of ACM SIGGRAPH, pp. 57–66. New York: ACM, 2001.</p></div>
 <div id="footnote_7">
-<p>7. M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. <a href="https://www.graphics.rwth-aachen.de/media/papers/openmesh1.pdf">“OpenMesh – a generic and efficient polygon mesh data structure.”</a> 
+<p>7. M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. <a href="https://www.graphics.rwth-aachen.de/media/papers/openmesh1.pdf">“OpenMesh – a generic and efficient polygon mesh data structure.”</a>
 Presented at the OpenSG Symposium 02, 2002</p></div>
 <div id="footnote_8">
 <p>8. L. Kobbelt, M. Botsch, U. Schwanecke, and H.-P. Seidel. <a href="https://www.graphics.rwth-aachen.de/software/feature-sensitive-surface-extraction/">“Extended Marching Cubes Implementation.”</a> , 2002–2005.</p></div>

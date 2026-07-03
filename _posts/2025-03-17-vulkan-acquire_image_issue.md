@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "vulkan-notes"
 series_order: 4
 topic: api
+tags: [api, vulkan-notes, vulkan]
 ---
 
 ## Issue

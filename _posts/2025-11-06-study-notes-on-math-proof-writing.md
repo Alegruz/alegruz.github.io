@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "math-notes"
 series_order: 5
 topic: theory
+tags: [theory, math-notes]
 ---
 
 # 1. Sentential Logic

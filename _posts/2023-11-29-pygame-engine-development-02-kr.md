@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "pygame-engine"
 series_order: 3
 topic: engine
+tags: [engine, pygame-engine, pygame]
 ---
 
 출처: Game Programmging Gems. 1.12 Squeezing More Out of Assert. Steve Rabin.

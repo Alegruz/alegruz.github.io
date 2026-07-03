@@ -123,6 +123,7 @@ layout: default
                 data-topic="{{ post_topic }}"
                 data-year="{{ post.date | date: "%Y" }}"
                 data-series="{{ post.series | default: "" }}"
+                data-tags="{{ post.tags | join: " " | downcase | escape }}"
                 data-status="{{ post.status | default: "" }}"
                 data-difficulty="{{ post.difficulty | default: "" }}"
                 data-title="{{ post.title | downcase | escape }}"

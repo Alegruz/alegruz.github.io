@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 4
 topic: rendering
+tags: [rendering, restir, ray-tracing]
 ---
 
 * [Benedikt Bitterli](https://benedikt-bitterli.me/), Dartmouth College
@@ -47,7 +48,7 @@ topic: rendering
 
 어떤 점 y에서 직접광에 의해 방향 ![DirectionOmega](/assets/images/ReStir/DirectionOmega.png)로 반사된 radiance L은 모든 광원 표면 A에 대한 적분으로 구할 수 있음:
 
-![ReflectedRadianceL](/assets/images/ReStir/ReflectedRadianceL.png)
+{% include image.html src="/assets/images/ReStir/ReflectedRadianceL.png" alt="ReflectedRadianceL" caption="ReflectedRadianceL" %}
 
 &rho;: BSDF<br>
 L<sub>e</sub>: 광원 radiance<br>
@@ -56,17 +57,17 @@ G: 기하항. 역제곱 거리와 코사인항
 
 보는 방향 ![DirectionOmega](/assets/images/ReStir/DirectionOmega.png)와 shading할 점 y를 편의성을 위해 빼놓고 넓이의 변화량을 dx로 표기하면 다음과 같이 L을 간단하게 표현할 수 있음:
 
-![SimplifiedReflectedRadianceL](/assets/images/ReStir/SimplifiedReflectedRadianceL.png)
+{% include image.html src="/assets/images/ReStir/SimplifiedReflectedRadianceL.png" alt="SimplifiedReflectedRadianceL" caption="SimplifiedReflectedRadianceL" %}
 
-![IntegrandF](/assets/images/ReStir/IntegrandF.png)
+{% include image.html src="/assets/images/ReStir/IntegrandF.png" alt="IntegrandF" caption="IntegrandF" %}
 
 여기에 *중요도 표집Importance Sampling*(IS)를 적용하면 다음과 같아짐:
 
-![ImportanceSampling](/assets/images/ReStir/ImportanceSampling.png)
+{% include image.html src="/assets/images/ReStir/ImportanceSampling.png" alt="ImportanceSampling" caption="ImportanceSampling" %}
 
 여기에 *다중 중요도 표집Multiple Importance Sampling*(MIS)를 적용할 경우 다음과 같아짐:
 
-![MultipleImportanceSampling](/assets/images/ReStir/MultipleImportanceSampling.png)
+{% include image.html src="/assets/images/ReStir/MultipleImportanceSampling.png" alt="MultipleImportanceSampling" caption="MultipleImportanceSampling" %}
 
 여기서 w<sub>s</sub> 함수는 가중치 함수로, 주로 균형 휴리스틱 함수 ![BalanceHeuristic](/assets/images/MonteCarloIntegration/BalanceHeuristic.png) 사용함.
 
@@ -78,21 +79,21 @@ MIS 대신 사용할 수 있는 방법에는 몇몇 항의 곱에 *근사하게*
 
 즉, 적당히 최적인 PDF p에서 z 개의 표본을 우선 뽑아보고, 이 집합에서 확률 p(z \| **x**)에 따라 한 표본을 또다시 뽑는 것임. 이때의 표본 집합의 모든 z 개의 표본은 각각 가중치를 갖는데, 이 가중치에 비례하여 확률을 부여함. 이때 한 표본을 뽑을 때, target PDF에 근사하게 표본을 뽑아야 하므로 가중치에 target PDF의 정보를 추가함:
 
-![ResampledImportanceSamplingCandidateProbability](/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png)
+{% include image.html src="/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateProbability.png" alt="ResampledImportanceSamplingCandidateProbability" caption="ResampledImportanceSamplingCandidateProbability" %}
 
-![ResampledImportanceSamplingCandidateWeight](/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png)
+{% include image.html src="/assets/images/RestirForGameGi/ResampledImportanceSamplingCandidateWeight.png" alt="ResampledImportanceSamplingCandidateWeight" caption="ResampledImportanceSamplingCandidateWeight" %}
 
 이런 방법을 사용하여 최종적으로 샘플 y ≡ x<sub>z</sub>를 뽑게 됨.
 
 이때 단일 표본 RIS 추정량은 다음과 같음:
 
-![SingleSampleRisEstimator](/assets/images/ReStir/SingleSampleRisEstimator.png)
+{% include image.html src="/assets/images/ReStir/SingleSampleRisEstimator.png" alt="SingleSampleRisEstimator" caption="SingleSampleRisEstimator" %}
 
 즉, 추정량은 마치 y가 p가 아니라 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)에서 온 것으로 착각하게 되고, 괄호 안의 항을 통해 실제로는 ![TargetPdf](/assets/images/RestirForGameGi/ResampledImportanceSamplingDesiredPdf.png)를 근사하고 있음을 알 수 있음.
 
 RIS를 여러 표본에 대해 반복하고 평균을 내게 되면 N개 표본 RIS 추정량을 얻을 수 있음:
 
-![NSampleRisEstimator](/assets/images/ReStir/NSampleRisEstimator.png)
+{% include image.html src="/assets/images/ReStir/NSampleRisEstimator.png" alt="NSampleRisEstimator" caption="NSampleRisEstimator" %}
 
 이 논문에서는 단일 표본을 가정하고 진행함.
 
@@ -136,7 +137,7 @@ RIS 알고리듬은 다음과 같음:
 
 가중치 저장소 표집Weighted reservoir sampling (WRS)이란 어떤 연속된, 지속적으로 들어오는 데이터 스트림stream {x<sub>1</sub>, &hellip; x<sub>M</sub>}에 대해서 N 개의 원소를 무작위로 표집하는 알고리듬의 한 종류임. RIS에서처럼 각 원소에는 가중치 w(x<sub>i</sub>)가 있으며, 이 가중치에 따른 확률로 x<sub>i</sub>를 선택하게 됨:
 
-![WrsWeightsProbability](/assets/images/ReStir/WrsWeightsProbability.png)
+{% include image.html src="/assets/images/ReStir/WrsWeightsProbability.png" alt="WrsWeightsProbability" caption="WrsWeightsProbability" %}
 
 저장소 표집은 원소마다 딱 한 번만 처리하며, 메모리엔 오로지 N 개의 원소만 있을 수 있다. 스트림의 크기 M은 사전에 몰라도 됨.
 
@@ -146,7 +147,7 @@ RIS 알고리듬은 다음과 같음:
 
 스트림에 새 원소가 들어오면, 불변량을 유지하기 위해 저장소를 갱신해줘야 함. 즉, m 개의 표본을 처리한 이후에 표본 x<sub>i</sub>가 ![WrsWeightsProbability](/assets/images/ReStir/WrsWeightsProbability.png)의 확률로 저장소에 등장한다는 것. 갱신 규칙에 의해 ![ReservoirReplacementProbability](/assets/images/ReStir/ReservoirReplacementProbability.png)의 확률로 저장소에 있는 x<sub>i</sub>를 다음 표본 x<sub>m + 1</sub>으로 교체한다. 이를 통해 x<sub>m + 1</sub>가 원하는 빈도에 따라 저장소에 등장할 수 있도록 해줌. 즉, 임의의 이전 표본 x<sub>i</sub>가 저장소에 있을 확률은 다음과 같음:
 
-![XiRemainingInReservoirProbability](/assets/images/ReStir/XiRemainingInReservoirProbability.png)
+{% include image.html src="/assets/images/ReStir/XiRemainingInReservoirProbability.png" alt="XiRemainingInReservoirProbability" caption="XiRemainingInReservoirProbability" %}
 
 이를 통해 불변량이 유지됨.
 
@@ -275,11 +276,11 @@ WRS 알고리듬을 RIS에 적용해서 스트리밍 알고리듬으로 바꾸�
 
 RIS에서 어느 부분에서 편향성이 발생하는지를 보기 위해 우선 단일 표본 RIS 추정량 공식을 다시 살펴보기로 함:
 
-![SingleSampleRisEstimatorRegrouped](/assets/images/ReStir/SingleSampleRisEstimatorRegrouped.png)
+{% include image.html src="/assets/images/ReStir/SingleSampleRisEstimatorRegrouped.png" alt="SingleSampleRisEstimatorRegrouped" caption="SingleSampleRisEstimatorRegrouped" %}
 
 이때 W는 생성된 표본 y ≡ x<sub>z</sub>에 대한 확률 가중치임:
 
-![StochasticWeight](/assets/images/ReStir/StochasticWeight.png)
+{% include image.html src="/assets/images/ReStir/StochasticWeight.png" alt="StochasticWeight" caption="StochasticWeight" %}
 
 이때 W의 역할은 도대체 뭘까?
 
@@ -297,27 +298,27 @@ RIS에서 어느 부분에서 편향성이 발생하는지를 보기 위해 우�
 
 이제 RIS에 의해 생성된 표본들의 PDF p(y)를 구해보자. 표준 RIS에서는 모든 후보 표본이 같은 PDF p에서 올 것이라고 가정하지만, 여기서는 **x**의 표본 x<sub>i</sub>가 서로 다른 source PDF p<sub>i</sub>(x<sub>i</sub>)에서 왔을 수도 있다고 가정. 이 모든 후보들의 joint PDF는 단순히 모든 PDF를 곱한 것임:
 
-![JointPdf](/assets/images/ReStir/JointPdf.png)
+{% include image.html src="/assets/images/ReStir/JointPdf.png" alt="JointPdf" caption="JointPdf" %}
 
 RIS 알고리듬의 2단계에서는 한 인덱스 z ∈ {1, &hellip;, M}를 뽑지만, 이때 뽑는 확률과 가중치는 이제 후보의 출신 PDF에 따라 처리함:
 
-![RisCandidateSpecificProbability](/assets/images/ReStir/RisCandidateSpecificProbability.png)
+{% include image.html src="/assets/images/ReStir/RisCandidateSpecificProbability.png" alt="RisCandidateSpecificProbability" caption="RisCandidateSpecificProbability" %}
 
-![RisCandidateSpecificWeight](/assets/images/ReStir/RisCandidateSpecificWeight.png)
+{% include image.html src="/assets/images/ReStir/RisCandidateSpecificWeight.png" alt="RisCandidateSpecificWeight" caption="RisCandidateSpecificWeight" %}
 
 p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된 인덱스 z에 대한 joint PDF를 다음과 같이 곱으로 나타낼 수 있음:
 
-![JointPdfRewritten](/assets/images/ReStir/JointPdfRewritten.png)
+{% include image.html src="/assets/images/ReStir/JointPdfRewritten.png" alt="JointPdfRewritten" caption="JointPdfRewritten" %}
 
 그래서 p(y)이 무엇이느냐?
 
 고정된 출력 표본 y에 대해서 여러 **x**, z가 존재할 수 있음. 예를 들어 x<sub>1</sub> = y이고 z = 1이라고 하면 나머지 x<sub>2</sub>, &hellip;, x<sub>M</sub>는 아무거나일 수도 있음. z = 2인 경우도 마찬가지임. 당연히 y는 p<sub>i</sub>(y) > 0인 경우에서만 생성되므로, 다음과 같이 집합으로 표현해보자:
 
-![SetOfYs](/assets/images/ReStir/SetOfYs.png)
+{% include image.html src="/assets/images/ReStir/SetOfYs.png" alt="SetOfYs" caption="SetOfYs" %}
 
 출력 표본 y에 대한 전체 PDF를 구하려면, 단순히 y를 생성할 수 있는 모든 경우의 수에 대한 joint PDF를 주변부로 처리해주면 됨:
 
-![TotalPdfOfAnOutputSampleY](/assets/images/ReStir/TotalPdfOfAnOutputSampleY.png)
+{% include image.html src="/assets/images/ReStir/TotalPdfOfAnOutputSampleY.png" alt="TotalPdfOfAnOutputSampleY" caption="TotalPdfOfAnOutputSampleY" %}
 
 이때 **x**<sup>i &rarr; y</sup> = {x<sub>1</sub>, &hellip;, x<sub>i - 1</sub>, y, x<sub>i + 1</sub>, &hellip;, x<sub>M</sub>}을 의미함. 즉, i번째 후보를 y로 픽스한 것임. 적분은 픽스되지 않은 나머지 후보들에 대해서만 적용함.
 
@@ -325,11 +326,11 @@ p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된
 
 이제 RIS의 PDF도 정의했겠다, RIS 가중치 W(**x**, z)의 기대값이 PDF의 역수임을 보이도록 하면 됨. 우선 이걸 구하려면 조건부 기대값을 적용해야함. 어떤 출력 표본 y가 *주어졌을 때*, 평균 가중치가 무엇인가? 즉, x<sub>z</sub> = y인 **x**와 z에 대한 W(**x**, z)의 기대값을 구하고 p(y)로 나눠준 x<sub>z</sub> = y 시행의 확률 밀도를 구하면 됨:
 
-![ExpectationOfRisWeight](/assets/images/ReStir/ExpectationOfRisWeight.png)
+{% include image.html src="/assets/images/ReStir/ExpectationOfRisWeight.png" alt="ExpectationOfRisWeight" caption="ExpectationOfRisWeight" %}
 
 부록 A에서 이 표현식이 다음과 같이 간략화 됨을 보임:
 
-![SimplifiedExpectationOfRisWeight](/assets/images/ReStir/SimplifiedExpectationOfRisWeight.png)
+{% include image.html src="/assets/images/ReStir/SimplifiedExpectationOfRisWeight.png" alt="SimplifiedExpectationOfRisWeight" caption="SimplifiedExpectationOfRisWeight" %}
 
 즉, 두 가지를 알 수 있음:
 
@@ -342,15 +343,15 @@ p(**x**)랑 p(z | **x**)에 대한 식은 있으니 후보군 **x**와 선택된
 
 RIS 가중치를 수정해주면 편향성을 없앨 수 있음. 1/M을 곱하는 대신, 어떤 가중치 m(x<sub>z</sub>)을 곱해주는 것임:
 
-![UnbiasedStochasticWeight](/assets/images/ReStir/UnbiasedStochasticWeight.png)
+{% include image.html src="/assets/images/ReStir/UnbiasedStochasticWeight.png" alt="UnbiasedStochasticWeight" caption="UnbiasedStochasticWeight" %}
 
 위에서처럼 W의 기대값을 계산해보면:
 
-![UnbiasedExpectationOfRisWeight](/assets/images/ReStir/UnbiasedExpectationOfRisWeight.png)
+{% include image.html src="/assets/images/ReStir/UnbiasedExpectationOfRisWeight.png" alt="UnbiasedExpectationOfRisWeight" caption="UnbiasedExpectationOfRisWeight" %}
 
-즉, 무편향 추정량은 그냥 
+즉, 무편향 추정량은 그냥
 
-![UnbiasedEstimatorRequirement](/assets/images/ReStir/UnbiasedEstimatorRequirement.png)
+{% include image.html src="/assets/images/ReStir/UnbiasedEstimatorRequirement.png" alt="UnbiasedEstimatorRequirement" caption="UnbiasedEstimatorRequirement" %}
 
 만 만족하면 됨.
 
@@ -364,7 +365,7 @@ RIS 가중치를 수정해주면 편향성을 없앨 수 있음. 1/M을 곱하�
 
 다행히도 아래 예시와 같이 가중치 m(x<sub>z</sub>)을 아무거나 고를 수 있음:
 
-![BalanceHeuristicOfCandidatePdfs](/assets/images/ReStir/BalanceHeuristicOfCandidatePdfs.png)
+{% include image.html src="/assets/images/ReStir/BalanceHeuristicOfCandidatePdfs.png" alt="BalanceHeuristicOfCandidatePdfs" caption="BalanceHeuristicOfCandidatePdfs" %}
 
 즉, 후보 PDF들의 균형 휴리스틱임. 이를 통해 편향성도 해결, 노이즈도 해결할 수 있음.
 
@@ -600,8 +601,8 @@ Z{\left(y \right )} = \left \{ i \mid 1 \leq i \leq M \wedge p_{i}{\left(y \righ
 
 TotalPdfOfAnOutputSampleY
 ```
-p{\left(y\right)} = 
-\sum_{i \in Z{\left(y \right )}} 
+p{\left(y\right)} =
+\sum_{i \in Z{\left(y \right )}}
 \underbrace
 {
   {
@@ -612,8 +613,8 @@ p{\left(y\right)} =
 
 ExpectationOfRisWeight
 ```
-E_{x_{z} = y}\left [ W{\left(\textbf{x}, z \right )} \right ] = 
-\sum_{i \in Z{\left(y \right )}} 
+E_{x_{z} = y}\left [ W{\left(\textbf{x}, z \right )} \right ] =
+\sum_{i \in Z{\left(y \right )}}
 \frac
 {
   {

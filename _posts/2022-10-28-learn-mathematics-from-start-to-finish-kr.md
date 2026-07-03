@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "math-notes"
 series_order: 2
 topic: theory
+tags: [theory, math-notes]
 ---
 
 [원글 1](https://youtu.be/pTnEG_WGd2Q)<br>

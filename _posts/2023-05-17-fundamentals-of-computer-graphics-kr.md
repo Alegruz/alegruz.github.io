@@ -10,6 +10,7 @@ difficulty: "beginner"
 series: "fundamentals-computer-graphics"
 series_order: 1
 topic: rendering
+tags: [rendering, fundamentals-computer-graphics]
 ---
 
 게임 개발자의 시선에서 본 Fundamentals of Computer Graphics 5판의 정리 글입니다.

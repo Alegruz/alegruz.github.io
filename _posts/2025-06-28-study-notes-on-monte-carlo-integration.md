@@ -11,6 +11,7 @@ difficulty: "advanced"
 series: "math-notes"
 series_order: 4
 topic: theory
+tags: [theory, math-notes, monte-carlo]
 ---
 
 When learning new concepts, I often ask the following questions to keep myself focused:
@@ -63,16 +64,16 @@ Let's try an interactive example:
   const ctx = canvas.getContext('2d');
   const startBtn = document.getElementById('start-simulation');
   const resetBtn = document.getElementById('reset-simulation');
-  
+
   let pointsInside = 0;
   let totalPoints = 0;
   let animationId = null;
   let isRunning = false;
-  
+
   const radius = 180;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  
+
   function drawCircleAndSquare() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -88,7 +89,7 @@ Let's try an interactive example:
     ctx.lineWidth = 2;
     ctx.stroke();
   }
-  
+
   function addRandomPoint() {
     // Generate random point in square
     const x = (Math.random() - 0.5) * 2 * radius + centerX;
@@ -115,7 +116,7 @@ Let's try an interactive example:
     // Update statistics
     updateStats();
   }
-  
+
   function updateStats() {
     document.getElementById('points-inside').textContent = pointsInside;
     document.getElementById('total-points').textContent = totalPoints;
@@ -125,7 +126,7 @@ Let's try an interactive example:
       document.getElementById('estimated-pi').textContent = estimatedPi.toFixed(6);
     }
   }
-  
+
   function animate() {
     if (isRunning && totalPoints < 2000) {
       addRandomPoint();
@@ -135,7 +136,7 @@ Let's try an interactive example:
       startBtn.textContent = 'Start Simulation';
     }
   }
-  
+
   function startSimulation() {
     if (!isRunning) {
       isRunning = true;
@@ -149,7 +150,7 @@ Let's try an interactive example:
       }
     }
   }
-  
+
   function resetSimulation() {
     isRunning = false;
     if (animationId) {
@@ -161,11 +162,11 @@ Let's try an interactive example:
     drawCircleAndSquare();
     updateStats();
   }
-  
+
   // Event listeners
   startBtn.addEventListener('click', startSimulation);
   resetBtn.addEventListener('click', resetSimulation);
-  
+
   // Initialize
   drawCircleAndSquare();
   updateStats();
@@ -241,7 +242,7 @@ Now, the problem is to come up with an easily integrable function f<sub>n</sub>(
 
 $$f_n \in \mathbb{P}_n$$
 
-We can 
+We can
 
 where P<sub>n</sub>([a, b]) is the space of polynomials of degree at most n defined over the interval [a, b]. In this case, we can use polynomial interpolation to find a polynomial that approximates f(x) well enough.
 
@@ -457,7 +458,7 @@ We can see that the term &chi;<sub>&Omega;</sub>(**x**) / \|&Omega;\| is a proba
 
 $$I(f) = |\Omega| \mathbb{E}_{\chi_{\Omega}}[f(\textbf{x})] = |\Omega| \int_{\mathbb{R}^n} f(\textbf{x}) p(\textbf{x}) d\textbf{x} = |\Omega| \mu(f)$$
 
-where 
+where
 
 $$p(\textbf{x}) = \frac{\chi_{\Omega}(\textbf{x})}{|\Omega|}$$
 
@@ -599,7 +600,7 @@ For example, let's say that we have three fair coins. A fair coin is a coin that
     frequenciesDiv.innerHTML = '';
 
     // 🚨 Break the reference: overwrite with a fresh array copy
-    chart.data.datasets[0].data = [0, 0, 0, 0].slice(); 
+    chart.data.datasets[0].data = [0, 0, 0, 0].slice();
     chart.update();
   });
 
@@ -847,7 +848,7 @@ Remember that we have defined our integral approximation as:
 
 $$I(f) = |\Omega| \mathbb{E}_{\chi_{\Omega}}[f(\textbf{x})] = |\Omega| \int_{\mathbb{R}^n} f(\textbf{x}) p(\textbf{x}) d\textbf{x} = |\Omega| \mu(f)$$
 
-where 
+where
 
 $$p(\textbf{x}) = \frac{\chi_{\Omega}(\textbf{x})}{|\Omega|}$$
 

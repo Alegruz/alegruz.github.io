@@ -8,6 +8,7 @@ description: "우선 R 0 을 conditions.py에서 처리하고, 이후 R 1 을 fl
 status: "notes"
 difficulty: "intermediate"
 topic: rendering
+tags: [rendering]
 ---
 
 [소스 코드 링크](https://github.com/pecormiernocca/authoring-consistent-landscapes)
@@ -50,7 +51,7 @@ DEM 데이터를 바탕으로 물 데이터를 생성함.
 
 ## 온도 데이터
 
-![Temperature](/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Temperature.png)
+{% include image.html src="/assets/images/AuthoringConsistentLandscapesWithFloraAndFauna/Temperature.png" alt="Temperature" caption="Temperature" %}
 
 온도는 단순히 -(dem / 100) 으로 처리함.
 
@@ -81,9 +82,9 @@ DEM 데이터를 바탕으로 물 데이터를 생성함.
         * `moisture`: 지상 습도
         * 위의 데이터는 각각 (최소, 최대, 경쟁)의 값을 갖고 있음.
         * `geology`: 각 색깔별로 생존 가능성을 의미 (1이면 생존, 0이면 생존 불가)
-    1. 각 식물마다 
+    1. 각 식물마다
         1. 밀도 계산
-            1. 
+            1.
         2. 데이터(일조량, 온도, 배수량 등) `gpi` 데이터에 기록
 4. 결과 `tif` 파일로 저장
 

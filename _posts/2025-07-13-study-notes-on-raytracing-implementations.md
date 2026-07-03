@@ -8,6 +8,7 @@ description: "Raytracing is basically computing intersections of parametric line
 status: "notes"
 difficulty: "advanced"
 topic: rendering
+tags: [rendering, ray-tracing]
 ---
 
 Raytracing is basically computing intersections of parametric lines from the camera with the scene geometry, and then evaluating the lighting at those intersection points. This doesn't require any special hardware, just a lot of computation. However, the naive approach of checking every pixel against every triangle in the scene is too slow for real-time applications. There are several techniques to speed this up, such as bounding volume hierarchies (BVH), spatial partitioning, and acceleration structures. In this post, I will go through several ways to implement raytracing, focusing on the most common ones used in real-time graphics.
@@ -154,7 +155,7 @@ When we trace a ray, we need to check if the ray is intersecting with any geomet
 HitResult GetClosestHitGeometry(const Ray& ray, const std::vector<Geometry>& geometries)
 {
     HitResult hitResult;
-    
+
     for (const Geometry& geometry : geometries)
     {
         for (const Triangle& triangle : geometry.Triangles)
@@ -1053,13 +1054,13 @@ fn onClosestHit(ray: Ray, hitResult: HitResult, renderContext: ptr<function, Ren
         var shadowHitResult = getClosestHitTriangle(shadowRay);
         if(shadowHitResult.triangleIndex >= 0 && shadowHitResult.bIsEmissive == true && shadowHitResult.triangleIndex == i32(i))
         {
-          var lightColor = shadowHitResult.color; // Use the color from the emissive triangle   
+          var lightColor = shadowHitResult.color; // Use the color from the emissive triangle
           // If the shadow ray hits an emissive geometry, we can consider it lit
           let lambertian = max(dot(shadowRay.direction, hitResult.normal), 0.0);
           lightColor *= lambertian; // Scale light color by Lambertian reflectance
           intensity += lightColor; // Add light color
         }
-      }    
+      }
     }
   }
   return color;
@@ -1109,12 +1110,12 @@ fn main(@builtin(global_invocation_id) globalId: vec3<u32>)
         (gCamera.up * gCamera.height / 2.0);
 
     var seed: u32 = (globalId.x + globalId.y * u32(resolution.x)) ^ gFrameInput.randomSeed; // Use frame input seed for randomness
-    
+
     let jitter = vec2<f32>(
         random(&seed),
         random(&seed) // Use a different seed for the second component to avoid identical jitters
     );
-    
+
     let pixelPosition = vec3<f32>(
         mix(focalLeftBottom.x, focalRightTop.x, (pixel.x + jitter.x) / resolution.x),
         mix(focalLeftBottom.y, focalRightTop.y, (pixel.y + jitter.y) / resolution.y),

@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 1
 topic: rendering
+tags: [rendering, restir, ray-tracing]
 ---
 
 # ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집 (2022.04.09)
@@ -334,7 +335,7 @@ void WriteReservoir(RWStructuredBuffer<PackedGIReservoir> reservoirBuffer, uint 
 </div>
 <div style="clear: both;"></div>
 
-에는 가시점에서의 BSDF의 효과와 코사인 항까지 포함하고 있음. 물론, 
+에는 가시점에서의 BSDF의 효과와 코사인 항까지 포함하고 있음. 물론,
 
 <div id="eq_10">
  <p style="float: left; width:10%; text-align:left;"></p>
@@ -498,17 +499,17 @@ void execute(const uint2 pixel)
 7:          if 유사성이 주어진 기준보다 낮다면 then
 8:              continue
 9:          R<sub>n</sub> ← TemporalReservoirBuffer[q<sub>n</sub>]
-10:         |J<sub>q<sub>n</sub> → q</sub>| 계산  (<a href="#eq_11">식 11</a>)  
-11:         <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>| 
-12:         <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|  
+10:         |J<sub>q<sub>n</sub> → q</sub>| 계산  (<a href="#eq_11">식 11</a>)
+11:         <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|
+12:         <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>n</sub>.z)/|J<sub>q<sub>n</sub> → q</sub>|
 13:         if R<sub>n</sub>의 표본점이 q의 x<sub>v</sub>에서 보이지 않는다면 then
-14:             <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← 0  
+14:             <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub> ← 0
 15:         R<sub>s</sub>.Merge(R<sub>n</sub>, <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/>'<sub>q</sub>)
 16:         Q ← Q ∩ q<sub>n</sub>
 17:     Z ← 0
 18:     for each q<sub>n</sub> in Q do
 19:         if <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q<sub>n</sub></sub> &gt; 0 then
-20:             Z ← Z + R<sub>n</sub>.M   (편향 정정)  
+20:             Z ← Z + R<sub>n</sub>.M   (편향 정정)
 21:     R<sub>s</sub>.W ← R<sub>s</sub>.w / (Z · <img alt="target PDF" src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/TargetPdf.png"/><sub>q</sub>(R<sub>s</sub>.z))   (<a href="#eq_7">식 7</a>)
 22:     SpatialReservoirBuffer[q] ← R<sub>s</sub>
 </code></pre>
@@ -733,7 +734,7 @@ void execute(const uint2 pixel)
 <p><strong>그림 9:</strong> 공간적 재사용에 의한 편향. 좌측: 무편향 결과. 중간: 편향된 결과. 우측: 10× 차이. 특히 그림자 영역에서 가시성의 변화 때문에 편향이 주로 나옴. 목표 함수가 광택 반사를 포함하고, 정반사 방향으로 표본을 더 주기 때문에, 의자 다리 근처에서의 광택진 바닥 쪽의 편향이 더욱 심함.</p>
 </div>
 
-공간적 재사용에 의한 편향을 줄이는 다른 방법은 공간적 저장소가 [알고리듬 4](#알고리듬-4-공간적-재표집)에서처럼 근처 픽셀의 공간적 저장소에서 작동하는 것이 아닌, 근처 픽셀의 시간적 저장소에서만 작동하도록 해주는 것임. 이러면 편향된 표본을 여러번 재표집하여 편향이 누적되는 현상을 막을 수 있음. 하지만 공간적 저장소만 사용할 경우 새롭게 시야에 등장한(즉, 가려지지 않은) 픽셀이 충분한 표본을 수집할 수 없게 될 수도 있어 가시적인 노이즈가 발생할 수 있음. 이 경우 입력 표본의 수가 적은 공간 저장소의 경우 근처 공간 저장소를 재사용하여 수렴 속도를 향상시킴. [그림 10](#figure_10)에서 전체 데이터 흐름을 볼 수 있음. 
+공간적 재사용에 의한 편향을 줄이는 다른 방법은 공간적 저장소가 [알고리듬 4](#알고리듬-4-공간적-재표집)에서처럼 근처 픽셀의 공간적 저장소에서 작동하는 것이 아닌, 근처 픽셀의 시간적 저장소에서만 작동하도록 해주는 것임. 이러면 편향된 표본을 여러번 재표집하여 편향이 누적되는 현상을 막을 수 있음. 하지만 공간적 저장소만 사용할 경우 새롭게 시야에 등장한(즉, 가려지지 않은) 픽셀이 충분한 표본을 수집할 수 없게 될 수도 있어 가시적인 노이즈가 발생할 수 있음. 이 경우 입력 표본의 수가 적은 공간 저장소의 경우 근처 공간 저장소를 재사용하여 수렴 속도를 향상시킴. [그림 10](#figure_10)에서 전체 데이터 흐름을 볼 수 있음.
 
 <div style="text-align: center" id="figure_10">
 <img src="https://raw.githubusercontent.com/Alegruz/alegruz.github.io/master/assets/images/ReStirGi/Figure10.jpeg" alt="Figure10">

@@ -11,6 +11,7 @@ difficulty: "intermediate"
 series: "marching-cubes"
 series_order: 1
 topic: rendering
+tags: [rendering, marching-cubes]
 ---
 
 ## Explicit Surface and Implicit Surface<sup>[1](#footnote_1)</sup>
@@ -79,9 +80,9 @@ There are some ambiguity that leads to cracks in the extracted surface. A proper
 
 Marching cubes computes intersection points on the edges of a regular grid only. A faithful reconstruction of sharp features requires additional sample points within the cells containing them. The Extended Marching Cubes algorithm [Kobbelt et al. 01]<sup>[6](#footnote_6)</sup> therefore examines the distance function's gradient ∇F to detect those cells that contain a sharp feature and to find additional sample points by intersecting the estimated tangent planes at the edge intersection points of the voxel.
 
-![ExtendedMarchingCubes2d](/assets/images/MarchingCubes/ExtendedMarchingCubes2d.png)
+{% include image.html src="/assets/images/MarchingCubes/ExtendedMarchingCubes2d.png" alt="ExtendedMarchingCubes2d" caption="ExtendedMarchingCubes2d" %}
 
-![ExtendedMarchingCubes3d](/assets/images/MarchingCubes/ExtendedMarchingCubes3d.png)
+{% include image.html src="/assets/images/MarchingCubes/ExtendedMarchingCubes3d.png" alt="ExtendedMarchingCubes3d" caption="ExtendedMarchingCubes3d" %}
 
 An example implementation of extended marching cubes based on the OpenMesh data structure [Botsch et al. 02]<sup>[7](#footnote_7)</sup> can be downloaded from [Kobbelt et al. 05]<sup>[8](#footnote_8)</sup>.
 

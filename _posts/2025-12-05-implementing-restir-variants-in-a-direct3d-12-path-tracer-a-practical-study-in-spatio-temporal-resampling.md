@@ -11,6 +11,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 11
 topic: rendering
+tags: [rendering, restir, d3d12, ray-tracing]
 ---
 
 My informal report on implementing ReSTIR variants in a Direct3D 12 path tracer is [here]({% post_url 2025-11-06-implementing-restir-and-restir-gi-on-d3d12 %}).

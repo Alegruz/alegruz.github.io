@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "exceptional-cpp"
 series_order: 1
 topic: engine
+tags: [engine, exceptional-cpp]
 ---
 
 게임 개발자의 시선에서 본 Exceptional C++ 정리 글입니다.

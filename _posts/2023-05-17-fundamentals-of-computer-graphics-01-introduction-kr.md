@@ -10,6 +10,7 @@ difficulty: "beginner"
 series: "fundamentals-computer-graphics"
 series_order: 2
 topic: rendering
+tags: [rendering, fundamentals-computer-graphics]
 ---
 
 [목차]({% post_url 2023-05-17-fundamentals-of-computer-graphics-kr %})

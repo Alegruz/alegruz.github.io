@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "exceptional-cpp"
 series_order: 2
 topic: engine
+tags: [engine, exceptional-cpp]
 ---
 
 [목차]({% post_url 2023-05-20-exceptional-cpp-kr %})
@@ -56,7 +57,7 @@ v[2] = 3;
 v[3] = 4;
 // ...
 v[99] = 100;    // 설사 reserve한 상태에서 이런 할당 연산이 가능하다고 가정하자
-                // 만약 앞에 v[0] = 1; 같은 거 없이 바로 v[99] = 100 하나만 해준다면, 
+                // 만약 앞에 v[0] = 1; 같은 거 없이 바로 v[99] = 100 하나만 해준다면,
                 // 이 벡터의 크기는 1인 것인지, 100인 것인지 논리적으로 불분명함.
 for (std::vector<int>::iterator i = v.begin(); i < v.end(); i++)
 {

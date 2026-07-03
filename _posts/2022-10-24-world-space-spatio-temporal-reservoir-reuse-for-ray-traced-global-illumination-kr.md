@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 7
 topic: rendering
+tags: [rendering, restir, ray-tracing]
 ---
 
 * [Guillaume Boissé](https://github.com/gboisse), AMD.

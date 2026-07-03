@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 8
 topic: rendering
+tags: [rendering, restir]
 ---
 
 ReSTIR was the theme for my graduation project. I wanted to understand the state-of-the-art real-time/interactive global illumination technique, but I have failed to do so. This is largely due to the lack of background knowledges. Now, I am starting again to study ReSTIR, but this time properly, to the level where I can try to come up with my own research ideas.
@@ -70,7 +71,7 @@ During studying each materials, I will be diving into concepts that I don't full
 * Journals
   * ACM Transactions on Graphics
   * Computer Graphics Forum
-  * Proceedings of the ACM on Computer Graphics and Interactive Techniques 
+  * Proceedings of the ACM on Computer Graphics and Interactive Techniques
 
 * 2025
     * Eurographics

@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 9
 topic: rendering
+tags: [rendering, restir]
 ---
 
 Lately, I’ve been studying real-time global illumination techniques—particularly ReSTIR and its extensions. As I dug deeper into how the algorithm works, I began to see a curious and compelling analogy: ReSTIR resembles how humans learn from each other.

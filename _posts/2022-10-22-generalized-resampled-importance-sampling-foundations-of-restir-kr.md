@@ -11,6 +11,7 @@ difficulty: "advanced"
 series: "restir"
 series_order: 6
 topic: rendering
+tags: [rendering, restir, monte-carlo]
 ---
 
 * [Daqi Lin](https://dqlin.xyz/), University of Utah.
@@ -552,7 +553,7 @@ ShiftMappingAssumptions
 ShiftMappingEquality
 
 ```
-\textrm{E}{\left[c_{s}{\left(Y \right )}f{\left(Y \right )}\left | \frac{\delta{T_{s}}}{\delta{X_{s}}} \right |\frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}}W_{s} \right ]} 
+\textrm{E}{\left[c_{s}{\left(Y \right )}f{\left(Y \right )}\left | \frac{\delta{T_{s}}}{\delta{X_{s}}} \right |\frac{\sum_{j=1}^{M}{w_{j}}}{w_{s}}W_{s} \right ]}
 = \int_{\textrm{supp}{\left(Y \right )}}{f{\left(x \right )}}\textrm{d}x
 ```
 

@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "sph"
 series_order: 1
 topic: engine
+tags: [engine, sph]
 ---
 
 ## Smoothed Particle Hydrodynamics
@@ -153,31 +154,31 @@ We can deep dive into all the discussions and theories about dirac functions and
 
 If there exists a function A(**x**<sub>i</sub>), the function can be discretized into:
 
-![SphDiscretization](/assets/images/Sph/SphDifferentialOperatorDiscretization.png)
+{% include image.html src="/assets/images/Sph/SphDifferentialOperatorDiscretization.png" alt="SphDiscretization" caption="SphDiscretization" %}
 
 The discretization of differential operator would be:
 
-![SphDifferentialOperatorDiscretization](/assets/images/Sph/SphDifferentialOperatorDiscretization.png)
+{% include image.html src="/assets/images/Sph/SphDifferentialOperatorDiscretization.png" alt="SphDifferentialOperatorDiscretization" caption="SphDifferentialOperatorDiscretization" %}
 
-For improved readability, we will drop the second argument of the kernel function and use the abbreviation: 
+For improved readability, we will drop the second argument of the kernel function and use the abbreviation:
 
-![KernelFunctionAbbreviation](/assets/images/Sph/KernelFunctionAbbreviation.gif)
+{% include image.html src="/assets/images/Sph/KernelFunctionAbbreviation.gif" alt="KernelFunctionAbbreviation" caption="KernelFunctionAbbreviation" %}
 
 In order to ensure symmetry, the equation is then rearranged into:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/MonaghanSphDerivative.png)
+{% include image.html src="/assets/images/Sph/MonaghanSphDerivative.png" alt="SphDifferentialOperatorDiscretizationSymmetricFormula" caption="SphDifferentialOperatorDiscretizationSymmetricFormula" %}
 
 The discretization of laplace operator would be:
 
-![SphLaplaceOperatorDiscretization](/assets/images/Sph/SphLaplaceOperatorDiscretization.png)
+{% include image.html src="/assets/images/Sph/SphLaplaceOperatorDiscretization.png" alt="SphLaplaceOperatorDiscretization" caption="SphLaplaceOperatorDiscretization" %}
 
 In order to cope with very poor estimate of the 2<sup>nd</sup>-order differential, Brookshaw propositioned an improved discrete operator for the Laplacian:
 
-![SphLaplaceOperatorDiscretizationBrookshaw](/assets/images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png)
+{% include image.html src="/assets/images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png" alt="SphLaplaceOperatorDiscretizationBrookshaw" caption="SphLaplaceOperatorDiscretizationBrookshaw" %}
 
 However, the resulting 2<sup>nd</sup>-order derivatives has problems that in the context of physics simulations, the forces derived using this operator are not conserving momentum. By a little bit of mathematical magic, the formula can be rearranged into:
 
-![SphLaplaceOperatorDiscretizationImproved](/assets/images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png)
+{% include image.html src="/assets/images/Sph/SphLaplaceOperatorDiscretizationBrookshaw.png" alt="SphLaplaceOperatorDiscretizationImproved" caption="SphLaplaceOperatorDiscretizationImproved" %}
 
 ##### Kernel Functions
 
@@ -203,7 +204,7 @@ Images and equations from [Staubach. 2010.]<sup>[16](#footnote_16)</sup>.
 
 Using ![SphDifferentialOperatorDiscretization](/assets/images/Sph/SphDifferentialOperatorDiscretization.png), the density field at positionition **x**<sub>i</sub> results in:
 
-![MassDensityFunction](/assets/images/Sph/MassDensityFunction.png)
+{% include image.html src="/assets/images/Sph/MassDensityFunction.png" alt="MassDensityFunction" caption="MassDensityFunction" %}
 
 ### Simple Fluid Simulator<sup>[15](#footnote_15)</sup>
 
@@ -392,7 +393,7 @@ private:
     float* mHostPressureForces = nullptr;      // Particle Pressure Forces
     float* mHostDensities = nullptr;           // Particle Densities
     float* mHostPressures = nullptr;           // Particle Pressures
-    
+
     uint32_t* mHostParticleHashes = nullptr;
     uint32_t* mHostCellStarts = nullptr;
     uint32_t* mHostCellEnds = nullptr;
@@ -767,7 +768,7 @@ void ParticleSystem::Update(float DeltaTime)
 
 ##### Densities
 
-![MassDensity](/assets/images/Sph/MassDensityFunction.png)
+{% include image.html src="/assets/images/Sph/MassDensityFunction.png" alt="MassDensity" caption="MassDensity" %}
 
 ```cpp
 void ComputeDensities(float* OutDensities, float* SortedPositions, uint* GridParticleIndice, uint* CellStarts, uint* CellEnds, uint NumParticles, uint NumCells)
@@ -878,7 +879,7 @@ In order to approximate the Laplacian of the velocityocity field we
 combine an SPH derivative with a finite difference derivative which
 yields the following equation<sup>[17](#footnote_17)</sup>:
 
-![MonaghanSphDerivative](/assets/images/Sph/MonaghanSphDerivative.png)
+{% include image.html src="/assets/images/Sph/MonaghanSphDerivative.png" alt="MonaghanSphDerivative" caption="MonaghanSphDerivative" %}
 
 where **x**<sub>ij</sub> = **x**<sub>i</sub> − **x**<sub>j</sub>, **v**<sub>ij</sub> = **v**<sub>i</sub> − **v**<sub>j</sub> and *d* is the number of spatial dimensions.
 
@@ -1018,7 +1019,7 @@ void ComputeNonPressureForcesByCell(int3 Gridpositionition,
                     uint OriginalIndex = GridParticleIndice[j];
                     float3 Neighborvelocityocity = make_float3(SortedVelocities[j]);
                     float3 Vij = velocityocity - Neighborvelocityocity;
-                    
+
                     // sigma (mass_j / density_j) * v_ij * (2 * ||gradient of kernel|| / ||r_ij||)
                     // sigma (mass_j / density_j) * (v_ij * x_ij) / (||x_ij||^2 + 0.01 * h^2) ∇W_ij
                     OutViscosityForce += (gParameters.Mass / Densities[OriginalIndex]) * dot(Vij, Rij) / (dot(Rij, Rij) + 0.01f * gParameters.KernelRadiusSquared) * Poly6KernelGradient(Rij);
@@ -1037,18 +1038,18 @@ Compute <strong>F</strong><sub><i>i</i></sub><sup>pressure</sup> = -1/ρ ∇<i>p
 
 Discretization of differential operator:
 
-![SphDifferentialOperatorDiscretizationSymmetricFormula](/assets/images/Sph/MonaghanSphDerivative.png)
+{% include image.html src="/assets/images/Sph/MonaghanSphDerivative.png" alt="SphDifferentialOperatorDiscretizationSymmetricFormula" caption="SphDifferentialOperatorDiscretizationSymmetricFormula" %}
 
 As for state equations, it requires density values, thus it would be efficient to compute them with densities altogether:
 
 ```cpp
-void ComputeDensitiesAndPressures(float* OutDensities, 
-                                  float* OutPressures, 
-                                  float* SortedPositions, 
-                                  uint* GridParticleIndice, 
-                                  uint* CellStarts, 
-                                  uint* CellEnds, 
-                                  uint NumParticles, 
+void ComputeDensitiesAndPressures(float* OutDensities,
+                                  float* OutPressures,
+                                  float* SortedPositions,
+                                  uint* GridParticleIndice,
+                                  uint* CellStarts,
+                                  uint* CellEnds,
+                                  uint NumParticles,
                                   uint NumCells)
 {
     // thread per particle
@@ -1071,7 +1072,7 @@ void ComputeDensitiesAndPressures(float* OutDensities,
 
 __global__
 void ComputeDensitiesAndPressuresDevice(float* OutDensities,    // output: new density
-                                        float* OutPressures,    // output: new pressure  
+                                        float* OutPressures,    // output: new pressure
                                         float4* SortedPositions,  // input: sorted Positions
                                         uint* GridParticleIndice, // input: sorted particle indices
                                         uint* CellStarts,
@@ -1236,7 +1237,7 @@ void ComputeForcesByCell(int3 Gridpositionition,
                     uint OriginalIndex = GridParticleIndice[j];
                     float3 Neighborvelocityocity = make_float3(SortedVelocities[j]);
                     float3 Vij = velocityocity - Neighborvelocityocity;
-                    
+
                     // sigma mass_j * (pressure_i / (density_i)^2 + pressure_j / (density_j)^2) * gradient of W_ij
                     OutPressureForce += gParameters.Mass * ((Pressure / (Density * Density)) + (Pressures[OriginalIndex] / (Densities[OriginalIndex] * Densities[OriginalIndex]))) * SpikyKernelGradient(Rij);
                     ...
@@ -1273,7 +1274,7 @@ struct IntegrateFunctor
         volatile float4 VelocityData = thrust::get<1>(InTuple);
         float3 Position = make_float3(PositionData.x, PositionData.y, PositionData.z);
         float3 Velocity = make_float3(VelocityData.x, VelocityData.y, VelocityData.z);
-        
+
         Position += Velocity * deltaTime;
 
         if (Position.x > 1.0f * gParameters.XScaleFactor - gParameters.ParticleRadius)
@@ -1323,7 +1324,7 @@ void IntegrateSystem(float* OutPositions, float* OutVelocities, float DeltaTime,
 {
     thrust::device_ptr<float4> devicePositions((float4*) OutPositions);
     thrust::device_ptr<float4> deviceVelocities((float4*) OutVelocities);
-    
+
     thrust::for_each(thrust::make_zip_iterator(thrust::make_tuple(devicePositions, deviceVelocities)),
                      thrust::make_zip_iterator(thrust::make_tuple(devicePositions + NumParticles, deviceVelocities + NumParticles)),
                      IntegrateFunctor(deltaTime));

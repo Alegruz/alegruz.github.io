@@ -35,6 +35,9 @@
   {%- if page.topic -%}
     <meta property="article:section" content="{{ site.data.topics[page.topic].label | default: page.topic | escape }}">
   {%- endif -%}
+  {%- for tag in page.tags -%}
+    <meta property="article:tag" content="{{ tag | escape }}">
+  {%- endfor -%}
 {%- endif -%}
 
 {%- if page.translation_key -%}
@@ -49,6 +52,7 @@
 {%- feed_meta -%}
 
 {%- if page.layout == "post" -%}
+  {%- assign page_keywords = page.tags | join: ", " -%}
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -66,6 +70,7 @@
       "@type": "Person",
       "name": {{ page.author | default: site.title | jsonify }}
     },
+    "keywords": {{ page_keywords | jsonify }},
     "inLanguage": {{ page_lang | jsonify }}
   }
   </script>

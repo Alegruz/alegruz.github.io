@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "pygame-engine"
 series_order: 2
 topic: engine
+tags: [engine, pygame-engine, pygame]
 ---
 
 # 데이터 기반 설계 정리

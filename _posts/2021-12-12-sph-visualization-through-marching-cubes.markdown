@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "sph"
 series_order: 2
 topic: rendering
+tags: [rendering, sph, marching-cubes]
 ---
 
 ## Marching Cubes in CUDA Sample Code
@@ -33,8 +34,8 @@ uint3 GridSizeShift = make_uint3(0u, GridSizeLog2.x, GridSizeLog2.x + GridSizeLo
 uint3 GridSize = make_uint3(1u << GridSizeLog2.x, 1u << GridSizeLog2.y, 1u << GridSizeLog2.z);  // 64u, 64u, 64u
 uint3 GridSizeMask = make_uint3(GridSize.x - 1u, GridSize.y - 1u, GridSize.z - 1u); // 63u, 63u, 63u
 
-float3 VoxelSize = make_float3(2.0f / static_cast<float>(GridSize.x), 
-                               2.0f / static_cast<float>(GridSize.y), 
+float3 VoxelSize = make_float3(2.0f / static_cast<float>(GridSize.x),
+                               2.0f / static_cast<float>(GridSize.y),
                                2.0f / static_cast<float>(GridSize.z));  // 0.03125f, 0.03125f, 0.03125f
 uint NumVoxels = GridSize.x * GridSize.y * GridSize.z;  // 262_144u
 uint NumMaxVertices = GridSize.x * GridSize.y * 100u;    // 409_600u
@@ -90,10 +91,10 @@ cudaTextureObject_t gVolumesTexture;
 ### 1. Calculate number of vertices needed per voxel
 
 ```cpp
-void ClassifyVoxels(dim3 Grid, 
-                    dim3 Threads, 
-                    uint* OutVoxelVertices, 
-                    uint* OutIsVoxelOccupied, 
+void ClassifyVoxels(dim3 Grid,
+                    dim3 Threads,
+                    uint* OutVoxelVertices,
+                    uint* OutIsVoxelOccupied,
                     uint3 GridSize,
                     uint3 GridSizeShift,
                     uint3 GridSizeMask,
@@ -110,10 +111,10 @@ uint Threads = 128u;
 dim3 Grid(NumVoxels / Threads, 1u, 1u); // 2_048u, 1u, 1u
 
 // MarchingCubesKernel.cu
-void ClassifyVoxels(dim3 Grid, 
-                    dim3 Threads, 
-                    uint* OutVoxelVertices, 
-                    uint* OutIsVoxelOccupied, 
+void ClassifyVoxels(dim3 Grid,
+                    dim3 Threads,
+                    uint* OutVoxelVertices,
+                    uint* OutIsVoxelOccupied,
                     uint3 GridSize,
                     uint3 GridSizeShift,
                     uint3 GridSizeMask,
@@ -253,7 +254,7 @@ float ScalarFieldFunction(float3 Position, float3 NeighborPosition)
 
 First of all, we need to define the field function to determine the grid's current status. In this source code, I have defined the field value to be the minimum squared distance between the particles in the adjacent grids. Afterwards, based on these scalar values in each corners, we can determine the number of vertices needed in each grids using predefined table, `gNumVerticesTexture`. For example, if the cube index is `0b1001 1001`, which is depicted in the figure below:
 
-![MarchingCubesIndex10011001](/assets/images/SphMarchingCubes/MarchingCubesIndex10011001.jpeg)
+{% include image.html src="/assets/images/SphMarchingCubes/MarchingCubesIndex10011001.jpeg" alt="MarchingCubesIndex10011001" caption="MarchingCubesIndex10011001" %}
 
 ### 2. Scan occupied voxel array to skip empty voxels
 
@@ -279,13 +280,13 @@ For example, if `DeviceIsVoxelOccupied` is `{ 0, 0, 1, 1, 0, 1, 0, 1 }`, then th
 uint LastElement;
 uint LastScannedElement;
 
-checkCudaErrors(cudaMemcpy(reinterpret_cast<void*>(&LastElement), 
-                           reinterpret_cast<void*>(DeviceIsVoxelOccupied + NumVoxels - 1u), 
-                           sizeof(uint), 
+checkCudaErrors(cudaMemcpy(reinterpret_cast<void*>(&LastElement),
+                           reinterpret_cast<void*>(DeviceIsVoxelOccupied + NumVoxels - 1u),
+                           sizeof(uint),
                            cudaMemcpyDeviceToHost));
-checkCudaErrors(cudaMemcpy(reinterpret_cast<void*>(&LastScannedElement), 
-                           reinterpret_cast<void*>(DeviceIsVoxelOccupiedScanned + NumVoxels - 1u), 
-                           sizeof(uint), 
+checkCudaErrors(cudaMemcpy(reinterpret_cast<void*>(&LastScannedElement),
+                           reinterpret_cast<void*>(DeviceIsVoxelOccupiedScanned + NumVoxels - 1u),
+                           sizeof(uint),
                            cudaMemcpyDeviceToHost));
 NumActivelVoxels = LastElement + LastScannedElement;
 ```
@@ -301,7 +302,7 @@ void GetCompactedVoxels(dim3 Grid, dim3 Threads, uint* OutCompactedVoxelArray, u
 {
     GetCompactedVoxelsDevice<<<Grid, Threads>>>(OutCompactedVoxelArray,
                                                 IsVoxelOccupied,
-                                                IsVoxelOccupiedScanned, 
+                                                IsVoxelOccupiedScanned,
                                                 NumVoxels);
     getLastCudaError("GetCompactedVoxelsDevice failed");
 }
@@ -355,7 +356,7 @@ void GenerateTriangles(dim3 Grid,
                        uint NumActivelVoxels,
                        uint NumMaxVertices)
 {
-    GenerateTrianglesDevice<<<Grid, NTHREADS>>>(OutPositions, 
+    GenerateTrianglesDevice<<<Grid, NTHREADS>>>(OutPositions,
                                                 OutNormals,
                                                 CompactedVoxelArray,
                                                 NumVerticesScanned,
@@ -415,14 +416,14 @@ void GenerateTrianglesDevice(float4* OutPositions,
                            Position + make_float3(VoxelSize.x, 0.0f,        VoxelSize.z),
                            Position + make_float3(VoxelSize.x, VoxelSize.y, VoxelSize.z),
                            Position + make_float3(0.0f,        VoxelSize.y, VoxelSize.z) };
-    
-    float4 Field[8] = { make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
-                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
-                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
-                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
-                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
-                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
-                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX), 
+
+    float4 Field[8] = { make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
+                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
+                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
+                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
+                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
+                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
+                        make_float4(0.0f, 0.0f, 0.0f, FLT_MAX),
                         make_float4(0.0f, 0.0f, 0.0f, FLT_MAX) };
 
     for (int z = -1; z <= 1; ++z)

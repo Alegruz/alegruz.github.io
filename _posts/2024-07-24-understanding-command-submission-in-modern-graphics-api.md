@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "vulkan-notes"
 series_order: 1
 topic: api
+tags: [api, vulkan-notes, vulkan]
 ---
 
 One of the significant shifts in modern graphics APIs is the management of GPU commands. This shift, where developers now manage the entire lifecycle of GPU commands, from recording to submission and synchronization, is a complex and crucial challenge that underscores the importance of your expertise in this field.

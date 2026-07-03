@@ -2,9 +2,10 @@ import { chromium } from "@playwright/test";
 import { createReadStream, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve, sep } from "node:path";
+import { tmpdir } from "node:os";
 
 const siteRoot = resolve("_site");
-const outputRoot = resolve(".visual-smoke");
+const outputRoot = resolve(process.env.VISUAL_SMOKE_DIR || join(tmpdir(), "alegruz-visual-smoke"));
 
 const contentTypes = new Map([
   [".css", "text/css; charset=utf-8"],

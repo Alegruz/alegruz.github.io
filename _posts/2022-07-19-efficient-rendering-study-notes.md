@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "rendering-pipeline"
 series_order: 2
 topic: rendering
+tags: [rendering, rendering-pipeline]
 ---
 
 # Forward Rendering
@@ -75,13 +76,13 @@ Classic forward rendering:<sup>[StewartThomas13](#StewartThomas13)</sup>
 Modern Forward Shading:<sup>[Olsson15](#Olsson15)</sup>
 1. Optional Pre-Z / Geometry Pass
 2. Light Assignment
-   * Build Light Acceleration Structure (Grid) 
+   * Build Light Acceleration Structure (Grid)
 3. Geometry Pass
    * Just your normal shading pass
    * For each fragment
      * Look up light list in acceleration structure
      * Loop over lights and accumulate shading
-     * Write shading to frame buffer 
+     * Write shading to frame buffer
 
 ## Z Pre-Pass rendering
 
@@ -216,7 +217,7 @@ void shading_function(inout FragmentData aFragData)
   ivec2 tileCoord = ivec2(gl_FragCoord.xy) / ivec2(TILE_SIZE_X, TILE_SIZE_Y);
   int tileIdx = tileCoord.x + tileCoord.y * LIGHT_GRID_SIZE_X;
 
-  // fetch tile's light data start offset (.y) and 
+  // fetch tile's light data start offset (.y) and
   // number of lights (.x)
   ivec2 lightListRange = u_lightListRange[tileIdx].xy;
 
@@ -283,7 +284,7 @@ tileZBounds = reduce_z_bounds(tiles2D, depthBuffer);
 // for transparent geometry, prune lights against maximum Z-direction
 lightListsTrans = prune_lights_max(lightLists2D, tileZBounds);
 
-// for opaque geometry additionally prune lights against 
+// for opaque geometry additionally prune lights against
 // minimum Z-direction
 lightListsOpaque = prune_lights_min(lightListsTrans, tileZBounds);
 
@@ -324,7 +325,7 @@ Forward+:<sup>[StewartThomas13](#StewartThomas13)</sup>
 * Forward+ Light-culling stage before final shading<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
 * Stages:<sup>[HaradaMcKeeYang12](#HaradaMcKeeYang12)</sup>
   * Depth Pre-Pass (Z prepass<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>)
-  * Light Culling<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup> 
+  * Light Culling<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
   * Final Shading<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
 * Advantages:
@@ -402,7 +403,7 @@ void appendLightToList(int i)
   float4 frustum[4];
   { // construct frustum
     float4 v[4];
-    // projToView: 
+    // projToView:
     //   takes screen-space pixel indices and depth value
     //   returns coordinates in view space
     v[0] = projToView(8 * GET_GROUP_IDX,        8 * GET_GROUP_IDY,        1.f);
@@ -595,7 +596,7 @@ float4 PS( PSInput i ) : SV_TARGET
 
 ### Render Passes<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
-![Forward+RenderPasses](/assets/images/DeferredShading/Forward%2BRenderPasses.png)
+{% include image.html src="/assets/images/DeferredShading/Forward%2BRenderPasses.png" alt="Forward+RenderPasses" caption="Forward+RenderPasses" %}
 
 #### One-Bounce Indirect Illumination<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
 
@@ -677,12 +678,12 @@ if (shadowIndex < 255)  // is it shadow casting?
 * Two methods presented
   1. Split depth range in two at halfway point
      * Keep two light lists per tile (one for each depth region)
-     * In the forward shading pass, each pixel determines which list to use 
+     * In the forward shading pass, each pixel determines which list to use
   2. 2.5D, partition depth range into 32 cells
      * Determine the cell for each pixel in the tile
      * Make a bit mask representing which cells are occupied in that tile
      * Each light gets a similar bit mask (easy for spheres)
-     * Logical AND the light bit mask with the tile bit mask 
+     * Logical AND the light bit mask with the tile bit mask
 
 ## Clustered Forward+<sup>[Leadbetter14](#Leadbetter14)</sup>
 
@@ -783,12 +784,12 @@ For each light and lit pixel
 
 Traditional deferred shading:<sup>[Andersson09](#Andersson09)</sup>
 1. Graphics pipeline rasterizes gbuffer for opaque surfaces
-   * Normal, albedos, roughness, etc. 
+   * Normal, albedos, roughness, etc.
    * Render scene geometry into G-Buffer MRT<sup>[StewartThomas13](#StewartThomas13)</sup>
      * Store material properties (albedo, specular, normal, etc.)
      * Write to depth buffer as normal
 2. Light sources are rendered & accumulate lighting to a texture (accumulation buffer)<sup>[StewartThomas13](#StewartThomas13)</sup>
-   * Light volume or screen-space tile rendering 
+   * Light volume or screen-space tile rendering
    * Use G-Buffer RTs as inputs<sup>[StewartThomas13](#StewartThomas13)</sup>
    * Render geometries enclosing light area<sup>[StewartThomas13](#StewartThomas13)</sup>
 3. Combine shading & lighting for final output
@@ -796,7 +797,7 @@ Traditional deferred shading:<sup>[Andersson09](#Andersson09)</sup>
 Modern Deferred Shading:<sup>[Olsson15](#Olsson15)</sup>
 1. Render Scene to G-Buffers
 2. Light Assignment
-   * Build Light Acceleration Structure (Grid) 
+   * Build Light Acceleration Structure (Grid)
 3. Full Screen Pass
    * Quad (or CUDA, or Compute Shaders, or SPUs)
    * For each pixel
@@ -1753,15 +1754,15 @@ movc r5.w, r0.w, r5.y, -r5.y
 
 Opaque Material Render Pass
 
-1. Depth Prepass 
+1. Depth Prepass
 2. GBuffer
-   * Tag stencil for regular lighting or split lighting 
+   * Tag stencil for regular lighting or split lighting
 3. Render Shadow
    * Async Light list generation + Light/Material classification
    * Async SSAO (Use Normal buffer)
-   * Async SSR (Use Normal buffer) 
+   * Async SSR (Use Normal buffer)
 4. Deferred directional cascade shadow
-   * (Use Normal buffer for normal shadow bias) 
+   * (Use Normal buffer for normal shadow bias)
 5. Tile deferred lighting
    * Indirect dispatch for each shader variants
      * Read stencil
@@ -1770,10 +1771,10 @@ Opaque Material Render Pass
        * Split lighting: separate diffuse and specular
 6. Forward Opaque
    * (Optional) Output BaseColor + Diffusion Profile
-   * (Optional) Output + Tag stencil for split lighting 
-7. SS Subsurface Scattering 
+   * (Optional) Output + Tag stencil for split lighting
+7. SS Subsurface Scattering
    * Test stencil for split lighting
-   * Combine lighting 
+   * Combine lighting
 
 ## Geometry Phase
 
@@ -1891,15 +1892,15 @@ float4 PSLightPass_EdgeSampleOnly( PS_INPUT_EDGE_SAMPLE input ) : SV_TARGET
 {
   // Convert screen coordinates to integer
   int3 nScreenCoordinates = int3(input.Pos.xy, 0);
-  
+
   // Sample G-Buffer textures for current sample
   float4 MRT0 = txMRT0.Load( nScreenCoordinates, input.uSample);
   float4 MRT1 = txMRT1.Load( nScreenCoordinates, input.uSample);
   float4 MRT2 = txMRT2.Load( nScreenCoordinates, input.uSample);
-  
+
   // Apply light equation to this sample
   float4 vColor = LightEquation(MRT0, MRT1, MRT2);
-  
+
   // Return calculated sample color
   return vColor;
 }
@@ -1987,7 +1988,7 @@ Lighting Optimizations:<sup>[LagardeGolubev18](#LagardeGolubev18)</sup>
 * Hierarchical approach:
   1. Find screen-space AABB for each visible light
   2. Big tile 64 &times; 64 prepass
-     * Coarse intersection test 
+     * Coarse intersection test
   3. Build Tile or Cluster Light list
      * Narrow intersection test
      * Tile:
@@ -2100,7 +2101,7 @@ Dealing with the light volume rendering:<sup>[Hargreaves04](#Hargreaves04)</sup>
 2. Camera is inside the light bounding mesh
    * Draw backfaces
 3. Light volume intersects the far clip plane
-   * Draw frontfaces 
+   * Draw frontfaces
 4. Light volume intersects both near and far clip planes
    * Light is too big
 
@@ -2121,7 +2122,7 @@ Pass 0: Render full-screen quad only where 0x03==stencil count
   Else
     color = 0, stencil = 0x01
 Pass 1: Render full-screen quad only where 0x03==stencil count
-  Perform light accumulation / shading 
+  Perform light accumulation / shading
 ```
 <sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
 
@@ -2136,7 +2137,7 @@ Pass 1: Render full-screen quad only where 0x03==stencil count
    * Global Sources
      * Most fill-rate expensive
      1. Enable the appropriate shaders
-     2. Render a quad covering the screen 
+     2. Render a quad covering the screen
    * Local Sources
    1. Select the appropriate [level of detail](#PlaceresLoD).
    2. Enable and configure the source shaders
@@ -2168,7 +2169,7 @@ Other optimizations:
 1. Render light volume with color write disabled<sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
    * Depth Func = LESS, Stencil Func = ALWAYS
    * Stencil Z-FAIL = REPLACE (with value X)
-   * Rest of stencil ops set to KEEP 
+   * Rest of stencil ops set to KEEP
 2. Render with lighting shader<sup>[HargreavesHarris04](#HargreavesHarris04)</sup>
    * Depth Func = ALWAYS, Stencil Func = EQUAL, all ops = KEEP, Stencil Ref = X
    * Unlit pixels will be culled because stencil will not match the reference value
@@ -2317,14 +2318,14 @@ Amortizes overhead<sup>[Lauritzen10](#Lauritzen10)</sup>.
 1. Divide the screen into a grid<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
     * (Optional) Find min / max Z-bounds for each tile<sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 2. Find which lights intersect each cell<sup>[BalestraEngstad08](#BalestraEngstad08)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
-   * +How many lights<sup>[Andersson09](#Andersson09)</sup> 
+   * +How many lights<sup>[Andersson09](#Andersson09)</sup>
 3. Render quads over each cell calculating up to 8 lights per pass<sup>[BalestraEngstad08](#BalestraEngstad08)</sup>
   * Results in a light buffer
   * Only apply the visible light sources on pixels in each tile<sup>[Andersson09](#Andersson09)</sup><sup>[Andersson11](#Andersson11)</sup><sup>[OlssonBilleterAssarsson13](#OlssonBilleterAssarsson13)</sup>
 
 Algorithm:<sup>[OlssonAssarsson11](#OlssonAssarsson11)</sup>
 1. Render the (opaque) geometry into the G-Buffers<sup>[StewartThomas13](#StewartThomas13)</sup>
-   * Ordinary deferred geometry pass 
+   * Ordinary deferred geometry pass
    * Store material properties<sup>[StewartThomas13](#StewartThomas13)</sup>
    * Provides tile depth bounds<sup>[StewartThomas13](#StewartThomas13)</sup>
 2. Construct a screen space grid, covering the frame buffer, with some fixed tile size, t = (x, y), e.g. 32 &times; 32 pixels<sup>[WhiteBarreBrisebois11](#WhiteBarreBrisebois11)</sup><sup>[StewartThomas13](#StewartThomas13)</sup>
@@ -2365,7 +2366,7 @@ vec3 computeLight(vec3 position, vec3 normal, vec3 albedo,
     int lightId = texelFetch(tileDataTex, dataInd, 0).x;
     shading += applyLight(position, normal, albedo, specular,
                           shininess, viewDir, lightId);
-  }  
+  }
 
   return shading;
 }
@@ -2379,8 +2380,8 @@ void main()
   vec3 normal = texelFetch(normalTex, fragPos).xyz;
   vec3 viewDir = -normalize(position);
 
-  gl_fragColor = computeLight(position, normal, albedo, 
-                              specShine.xyz, viewDir, specShine.w, 
+  gl_fragColor = computeLight(position, normal, albedo,
+                              specShine.xyz, viewDir, specShine.w,
                               fragPos);
 }
 ```
@@ -2393,7 +2394,7 @@ PhyreEngine Implementation:<sup>[Swoboda09](#Swoboda09)</sup>
    *  Compare light direction with tile average normal value
 2. Choose fast paths based on tile contents
    * No lights affect the tile? Use fast path
-   * Check material values to see if any pixels are marked as lit 
+   * Check material values to see if any pixels are marked as lit
 
 Screen tile classification is a powerful technique with many applications:<sup>[Swoboda09](#Swoboda09)</sup>
 * Full screen effect optimization - DoF, SSAO
@@ -2781,10 +2782,10 @@ void CullLightsCS(...)
     float3 c = mul(float4(p.xyz, 1), g_mView).xyz;
 
     // Test if sphere is intersecting or inside frustum
-    if ((GetSignedDistanceFromPlane(c, frustumEqn[0]) < r) && 
-        (GetSignedDistanceFromPlane(c, frustumEqn[1]) < r) && 
-        (GetSignedDistanceFromPlane(c, frustumEqn[2]) < r) && 
-        (GetSignedDistanceFromPlane(c, frustumEqn[3]) < r) && 
+    if ((GetSignedDistanceFromPlane(c, frustumEqn[0]) < r) &&
+        (GetSignedDistanceFromPlane(c, frustumEqn[1]) < r) &&
+        (GetSignedDistanceFromPlane(c, frustumEqn[2]) < r) &&
+        (GetSignedDistanceFromPlane(c, frustumEqn[3]) < r) &&
         (-c.z + minZ < r) && (c.z - maxZ < r))
     {
       // Do a thread-safe increment of the list counter
@@ -2857,7 +2858,7 @@ New Culling Method:<sup>[Zhdan16](#Zhdan16)</sup>
 1. Camera frustum culling
    * Cull lights against camera frustum
    * Split visible lights into "outer" and "inner"
-   * Can be done in CPU 
+   * Can be done in CPU
 2. Depth buffers creation
    * For each tile:
      * Find and copy max depth for "outer" lights
@@ -2873,7 +2874,7 @@ New Culling Method:<sup>[Zhdan16](#Zhdan16)</sup>
    * Use PS for precise culling and per-tile light list creation
 * Common light types
   * Light geometry can be replaced with proxy geometry
-  * Point light (omni)  
+  * Point light (omni)
     * Geosphere (2 subdivisions, octa-based)
     * Close enough to sphere
     * Low poly works well at low resolution
@@ -2909,7 +2910,7 @@ New Culling Method:<sup>[Zhdan16](#Zhdan16)</sup>
     Requiresments & setup
     <ul>
       <li>
-        Input data: 
+        Input data:
         <ul>
           <li>gbuffers, depth buffer</li>
           <li>light constants</li>
@@ -2917,7 +2918,7 @@ New Culling Method:<sup>[Zhdan16](#Zhdan16)</sup>
         </ul>
       </li>
       <li>
-        Output data:<sup><a href="#Andersson11">Andersson11</a></sup> 
+        Output data:<sup><a href="#Andersson11">Andersson11</a></sup>
         <ul>
           <li>Fully composited & lit HDR texture</li>
         </ul>
@@ -3097,10 +3098,10 @@ Compute min and max Z value for each tile. This requires access to the z buffer.
 
 ```c
 // Test if sphere is intersecting or inside frustum
-if ((GetSignedDistanceFromPlane(c, frustumEqn[0]) < r) && 
-    (GetSignedDistanceFromPlane(c, frustumEqn[1]) < r) && 
-    (GetSignedDistanceFromPlane(c, frustumEqn[2]) < r) && 
-    (GetSignedDistanceFromPlane(c, frustumEqn[3]) < r) && 
+if ((GetSignedDistanceFromPlane(c, frustumEqn[0]) < r) &&
+    (GetSignedDistanceFromPlane(c, frustumEqn[1]) < r) &&
+    (GetSignedDistanceFromPlane(c, frustumEqn[2]) < r) &&
+    (GetSignedDistanceFromPlane(c, frustumEqn[3]) < r) &&
     (-c.z + minZ < r) && (c.z - maxZ < r))
 {
   if (-c.z + minZ < r && c.z - halfZ < r)
@@ -3183,7 +3184,7 @@ viud DepthBoundsCS( uint3 globalIdx : SV_DispatchThreadID,
     ldsZMax[threadNum] = max(maxZ00, max(maxZ01, max(maxZ10, maxZ11)));
     GroupMemoryBarrierWithGroupSync();
 
-    // Minimum and maximum using parallel reduction, with the 
+    // Minimum and maximum using parallel reduction, with the
     // loop manually unrolled for 8x8 thread groups (64 threads
     // per thread group)
     if (threadNum < 32)
@@ -3231,7 +3232,7 @@ viud DepthBoundsCS( uint3 globalIdx : SV_DispatchThreadID,
 
 This is the second rendering pass where we store light properties of all lights in a light buffer(aka L-Buffer).<sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
-![LightPrePassRenderer](/assets/images/DeferredShading/LightPrePassRenderer.png)
+{% include image.html src="/assets/images/DeferredShading/LightPrePassRenderer.png" alt="LightPrePassRenderer" caption="LightPrePassRenderer" %}
 <sup>[EngelShaderX709](#EngelShaderX709)</sup>
 
 Compared to a deferred renderer, the light pre-pass renderer offers more flexibility regarding material implementations. Compared to a Z pre-pass renderer, it offers less flexibility but a flexible and fast multi-light solution.<sup>[EngelShaderX709](#EngelShaderX709)</sup>
@@ -3548,7 +3549,7 @@ In the sorting approach, we explicitly store this index for each pixel. When the
 
 #### Cluster Key Packing<sup>[OlssonBilleterAssarssonHpg12](#OlssonBilleterAssarssonHpg12)</sup>
 
-Allocate 8 bits to each i and j components, which allows up to 8192 &times; 8192 size RTs. Depth index k is determined from settings for the near and far planes and ![ClusterK](/assets/images/DeferredShading/ClusterK.png). 
+Allocate 8 bits to each i and j components, which allows up to 8192 &times; 8192 size RTs. Depth index k is determined from settings for the near and far planes and ![ClusterK](/assets/images/DeferredShading/ClusterK.png).
 
 The paper uses 10 bits, 4 bits for the actually depth data, and 6 bits for the optional normal clustering.
 
@@ -3576,10 +3577,10 @@ memory to where the cluster’s data is stored.
 Algorithm:<sup>[OrtegrenPersson16](#OrtegrenPersson16)</sup>
 * For each light type:
   1. Shell pass
-     * Find min / max depths in every tile for every light 
+     * Find min / max depths in every tile for every light
      * Conservative Rasterization<sup>[Persson15](#Persson15)</sup>
-  2. Fill pass 
-     * Use the min / max depths and fill indices into the light linked list 
+  2. Fill pass
+     * Use the min / max depths and fill indices into the light linked list
      * Compute shader<sup>[Persson15](#Persson15)</sup>
   * When all light types have been processed, light assignment is complete, and the light linked list can be used when shading geometry
 * Lights as meshes<sup>[Persson15](#Persson15)</sup>
@@ -3683,7 +3684,7 @@ struct LightFragmentLink
 {
   float m_LightDepthMax;
   float m_LightDepthMin;
-  
+
   uint m_LightIndex;
   uint m_Next;
 };
@@ -4044,7 +4045,7 @@ Three basic render passes:<sup>[Trebilco09](#Trebilco09)</sup>
 2. Disable depth writes (depth testing only) and render light volumes into a light index texture
    * Standard deferred lighting / shadow volume techniques can be used to find what fragments are hit by each light volume
 3. Render geometry using standard forward rendering
-   * Lighting is done using the light index texture to access lighting properties in each shader 
+   * Lighting is done using the light index texture to access lighting properties in each shader
 
 In order to support multiple light indexes per-fragment, it would be ideal to store the first light index in the texture's red channel, second light index in the blue index, etc.<sup>[Trebilco09](#Trebilco09)</sup>
 
@@ -4118,19 +4119,19 @@ Divided the screen into 4 &times; 4 pixel tiles. Each tile is classified accordi
 
 1. Sky
    * Fastest pixels because no lighting calculations required
-   * Sky color is simply copied directly from the G-Buffer 
+   * Sky color is simply copied directly from the G-Buffer
 2. Sun light
-   * Pixels facing the sun requires sun and specular lighting calculations (unless they're fully in shadow) 
+   * Pixels facing the sun requires sun and specular lighting calculations (unless they're fully in shadow)
 3. Solid shadow
-   * Pixels fully in shadow don't require any shadow or sun light calculations 
+   * Pixels fully in shadow don't require any shadow or sun light calculations
 4. Soft shadow
-   * Pixels at the edge of shadows require expensive eight-tap percentage closer filtering (PCF) unless they face away from the sun 
+   * Pixels at the edge of shadows require expensive eight-tap percentage closer filtering (PCF) unless they face away from the sun
 5. Shadow fade
-   * Pixels near the end of the dynamic shadow draw distance fade from full shadow to no shadow to avoid pops as geometry moves out of the shadow range 
+   * Pixels near the end of the dynamic shadow draw distance fade from full shadow to no shadow to avoid pops as geometry moves out of the shadow range
 6. Light scattering
-   * All but the nearest pixels 
+   * All but the nearest pixels
 7. Antialiasing
-   * Pixels at the edges of polygons require lighting calculations for both 2X MSAA fragments 
+   * Pixels at the edges of polygons require lighting calculations for both 2X MSAA fragments
 
 Classify four during our screen-space shadow mask generation, the other three in a per-pixel pass.
 
@@ -4170,14 +4171,14 @@ Features:
 
 1. G-Buffers (96 bits)
    * Depth, normal, material ids
-   * Opaque geometries + Decals 
+   * Opaque geometries + Decals
    * Highly-compressed
 2. L-Buffers
    * Lighting accumulation
    * Light Geometry
-   * Lights 
+   * Lights
 3. Lit Result
-   * Full-screen shading 
+   * Full-screen shading
 
 * Advantages:
   * Memory footprint fits in EDRAM (96 bpp)
@@ -4272,7 +4273,7 @@ Edge-smoothing filter by [Fabio05](https://www.gamedevs.org/uploads/deferred-sha
 1. Edge-detection scan is applied to the screen. The filter uses discontinuities in the positions and normal stored in the GBuffer. The results can be stored in the stencil buffer as a mask for the next step.
 2. The screen is blurred using only the pixels that are edges
    * These pixels are masked in the stencil buffer
-   * However, color bleeding can occur (e.g., background color bleeding into the character) 
+   * However, color bleeding can occur (e.g., background color bleeding into the character)
    * Thus, a kernel is applied to the edge pixels, but only the closest to the camera are combined
    * [Cloor bleeding reduction](https://developer.amd.com/wordpress/media/2012/10/Scheuermann_DepthOfField.pdf)
 
@@ -4299,7 +4300,7 @@ float4 PSMarkStencilWithEdgePixels( PS_INPUT input ) : SV_TARGET
 
   // Discard pixel if non-edge (only mark stencil for edge pixels)
   if (!bIsEdge) discard;
-  
+
   // Return color (will have no effect since no color buffer bound) return
   float4(1,1,1,1);
 }
@@ -4323,69 +4324,69 @@ This MSAA edge detection technique is quite fast, especially compared to a custo
 Our solution was to trade some signal frequency at the discontinuities for smoothness, and to leave other parts of the image intact. We detect discontinuities in both depth and normal direction by taking 8+1 samples of depth and finding how depth at the current pixel differs from the ideal line passed through opposite corner points. The normals were used to fix issues such as a wall perpendicular to the floor, where the depth forms a perfect line (or will be similar at all samples) but an aliased edge exists. The normals were processed in a similar cross-filter manner, and the dot product between normals was used to determine the presence of an edge.
 
 ```
-struct v2p  
-{    
-  float4 tc0: TEXCOORD0; // Center    
-  float4 tc1: TEXCOORD1; // Left Top      
-  float4 tc2: TEXCOORD2; // Right Bottom    
-  float4 tc3: TEXCOORD3; // Right Top    
-  float4 tc4: TEXCOORD4; // Left Bottom      
-  float4 tc5: TEXCOORD5; // Left / Right    
-  float4 tc6: TEXCOORD6; // Top /Bottom  
-};      
+struct v2p
+{
+  float4 tc0: TEXCOORD0; // Center
+  float4 tc1: TEXCOORD1; // Left Top
+  float4 tc2: TEXCOORD2; // Right Bottom
+  float4 tc3: TEXCOORD3; // Right Top
+  float4 tc4: TEXCOORD4; // Left Bottom
+  float4 tc5: TEXCOORD5; // Left / Right
+  float4 tc6: TEXCOORD6; // Top /Bottom
+};
 
-/////////////////////////////////////////////////////////////////////  
-uniform sampler2D s_distort;  
-uniform half4 e_barrier;  // x=norm(~.8f), y=depth(~.5f)  
-uniform half4 e_weights;  // x=norm, y=depth  
-uniform half4 e_kernel;   // x=norm, y=depth    
-/////////////////////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////////////////////
+uniform sampler2D s_distort;
+uniform half4 e_barrier;  // x=norm(~.8f), y=depth(~.5f)
+uniform half4 e_weights;  // x=norm, y=depth
+uniform half4 e_kernel;   // x=norm, y=depth
+/////////////////////////////////////////////////////////////////////
 
-half4 main(v2p I) : COLOR  
-{   
-  // Normal discontinuity filter   
-  half3 nc = tex2D(s_normal, I.tc0);   
-  half4 nd;   
-  nd.x = dot(nc, (half3)tex2D(s_normal, I.tc1));   
-  nd.y = dot(nc, (half3)tex2D(s_normal, I.tc2));   
-  nd.z = dot(nc, (half3)tex2D(s_normal, I.tc3));   
-  nd.w = dot(nc, (half3)tex2D(s_normal, I.tc4));   
-  nd -= e_barrier.x;   
-  nd = step(0, nd);   
-  half ne = saturate(dot(nd, e_weights.x));     
+half4 main(v2p I) : COLOR
+{
+  // Normal discontinuity filter
+  half3 nc = tex2D(s_normal, I.tc0);
+  half4 nd;
+  nd.x = dot(nc, (half3)tex2D(s_normal, I.tc1));
+  nd.y = dot(nc, (half3)tex2D(s_normal, I.tc2));
+  nd.z = dot(nc, (half3)tex2D(s_normal, I.tc3));
+  nd.w = dot(nc, (half3)tex2D(s_normal, I.tc4));
+  nd -= e_barrier.x;
+  nd = step(0, nd);
+  half ne = saturate(dot(nd, e_weights.x));
 
-  // Opposite coords     
-  float4 tc5r = I.tc5.wzyx;   
-  float4 tc6r = I.tc6.wzyx;     
-  
-  // Depth filter : compute gradiental difference:   
-  // (c-sample1)+(c-sample1_opposite)   
-  half4 dc = tex2D(s_position, I.tc0);   
-  half4 dd;   
-  dd.x = (half)tex2D(s_position, I.tc1).z +          
-    (half)tex2D(s_position, I.tc2).z;   
-  dd.y = (half)tex2D(s_position, I.tc3).z +          
-    (half)tex2D(s_position, I.tc4).z;   
-  dd.z = (half)tex2D(s_position, I.tc5).z +          
-    (half)tex2D(s_position, tc5r).z;   
-  dd.w = (half)tex2D(s_position, I.tc6).z +          
-    (half)tex2D(s_position, tc6r).z;   
-  dd = abs(2 * dc.z - dd)- e_barrier.y;   
-  dd = step(dd, 0);   
-  half de = saturate(dot(dd, e_weights.y));     
-  
-  // Weight     
-  half w = (1 - de * ne) * e_kernel.x; 
-  // 0 - no aa, 1=full aa     
-  // Smoothed color   
-  // (a-c)*w + c = a*w + c(1-w)   
-  float2 offset = I.tc0 * (1-w);   
-  half4 s0 = tex2D(s_image, offset + I.tc1 * w);   
-  half4 s1 = tex2D(s_image, offset + I.tc2 * w);   
-  half4 s2 = tex2D(s_image, offset + I.tc3 * w);   
-  half4 s3 = tex2D(s_image, offset + I.tc4 * w);   
-  return (s0 + s1 + s2 + s3)/4.h;  
-} 
+  // Opposite coords
+  float4 tc5r = I.tc5.wzyx;
+  float4 tc6r = I.tc6.wzyx;
+
+  // Depth filter : compute gradiental difference:
+  // (c-sample1)+(c-sample1_opposite)
+  half4 dc = tex2D(s_position, I.tc0);
+  half4 dd;
+  dd.x = (half)tex2D(s_position, I.tc1).z +
+    (half)tex2D(s_position, I.tc2).z;
+  dd.y = (half)tex2D(s_position, I.tc3).z +
+    (half)tex2D(s_position, I.tc4).z;
+  dd.z = (half)tex2D(s_position, I.tc5).z +
+    (half)tex2D(s_position, tc5r).z;
+  dd.w = (half)tex2D(s_position, I.tc6).z +
+    (half)tex2D(s_position, tc6r).z;
+  dd = abs(2 * dc.z - dd)- e_barrier.y;
+  dd = step(dd, 0);
+  half de = saturate(dot(dd, e_weights.y));
+
+  // Weight
+  half w = (1 - de * ne) * e_kernel.x;
+  // 0 - no aa, 1=full aa
+  // Smoothed color
+  // (a-c)*w + c = a*w + c(1-w)
+  float2 offset = I.tc0 * (1-w);
+  half4 s0 = tex2D(s_image, offset + I.tc1 * w);
+  half4 s1 = tex2D(s_image, offset + I.tc2 * w);
+  half4 s2 = tex2D(s_image, offset + I.tc3 * w);
+  half4 s3 = tex2D(s_image, offset + I.tc4 * w);
+  return (s0 + s1 + s2 + s3)/4.h;
+}
 ```
 
 #### Tabula Rasa<sup>[Koonce07](#Koonce07)</sup>
@@ -4399,84 +4400,84 @@ We compare the changes in the cosine of the angle between the center pixel and i
 The output of the edge detection is a per-pixel weight between zero and one. The weight reflects how much of an edge the pixel is on. We use this weight to do four bilinear samples when computing the final pixel color. The four samples we take are at the pixel center for a weight of zero and at the four corners of the pixel for a weight of one. This results in a weighted average of the target pixel with all eight of its neighbors.
 
 ```
-////////////////////////////    // Neighbor offset table    ////////////////////////////    
-const static float2 offsets[9] = 
-{   
-  float2( 0.0,  0.0), //Center       0    
-  float2(-1.0, -1.0), //Top Left     1    
-  float2( 0.0, -1.0), //Top          2    
-  float2( 1.0, -1.0), //Top Right    3    
-  float2( 1.0,  0.0), //Right        4    
-  float2( 1.0,  1.0), //Bottom Right 5    
-  float2( 0.0,  1.0), //Bottom       6    
-  float2(-1.0,  1.0), //Bottom Left  7    
-  float2(-1.0,  0.0)  //Left         8 
-}; 
+////////////////////////////    // Neighbor offset table    ////////////////////////////
+const static float2 offsets[9] =
+{
+  float2( 0.0,  0.0), //Center       0
+  float2(-1.0, -1.0), //Top Left     1
+  float2( 0.0, -1.0), //Top          2
+  float2( 1.0, -1.0), //Top Right    3
+  float2( 1.0,  0.0), //Right        4
+  float2( 1.0,  1.0), //Bottom Right 5
+  float2( 0.0,  1.0), //Bottom       6
+  float2(-1.0,  1.0), //Bottom Left  7
+  float2(-1.0,  0.0)  //Left         8
+};
 
-float DL_GetEdgeWeight(in float2 screenPos) 
-{   
-  float Depth[9];   
-  float3 Normal[9];   
-  
-  //Retrieve normal and depth data for all neighbors.    
-  for (int i=0; i<9; ++i)   
-  {     
-    float2 uv = screenPos + offsets[i] * PixelSize;     
+float DL_GetEdgeWeight(in float2 screenPos)
+{
+  float Depth[9];
+  float3 Normal[9];
+
+  //Retrieve normal and depth data for all neighbors.
+  for (int i=0; i<9; ++i)
+  {
+    float2 uv = screenPos + offsets[i] * PixelSize;
     Depth[i] = DL_GetDepth(uv);   //Retrieves depth from MRTs
 
-    Normal[i]= DL_GetNormal(uv);  //Retrieves normal from MRTs 
-  }   
-  
-  //Compute Deltas in Depth.    
-  float4 Deltas1;   
-  float4 Deltas2;   
-  Deltas1.x = Depth[1];   
-  Deltas1.y = Depth[2];   
-  Deltas1.z = Depth[3];   
-  Deltas1.w = Depth[4];   
-  Deltas2.x = Depth[5];   
-  Deltas2.y = Depth[6];   
-  Deltas2.z = Depth[7];   
-  Deltas2.w = Depth[8];   
-  
-  //Compute absolute gradients from center.   
-  Deltas1 = abs(Deltas1 - Depth[0]);   
-  Deltas2 = abs(Depth[0] - Deltas2);   
-  
-  //Find min and max gradient, ensuring min != 0    
-  float4 maxDeltas = max(Deltas1, Deltas2);   
-  float4 minDeltas = max(min(Deltas1, Deltas2), 0.00001);   
-  
-  // Compare change in gradients, flagging ones that change    
-  // significantly.    
-  // How severe the change must be to get flagged is a function of the    
-  // minimum gradient. It is not resolution dependent. The constant    
-  // number here would change based on how the depth values are stored    
-  // and how sensitive the edge detection should be.    
-  float4 depthResults = step(minDeltas * 25.0, maxDeltas);   
-  
-  //Compute change in the cosine of the angle between normals.   
-  Deltas1.x = dot(Normal[1], Normal[0]);   
-  Deltas1.y = dot(Normal[2], Normal[0]);   
-  Deltas1.z = dot(Normal[3], Normal[0]);   
-  Deltas1.w = dot(Normal[4], Normal[0]);   
-  Deltas2.x = dot(Normal[5], Normal[0]);   
-  Deltas2.y = dot(Normal[6], Normal[0]);   
-  Deltas2.z = dot(Normal[7], Normal[0]);   
-  Deltas2.w = dot(Normal[8], Normal[0]);   
-  Deltas1 = abs(Deltas1 - Deltas2);   
-  
-  // Compare change in the cosine of the angles, flagging changes   
-  // above some constant threshold. The cosine of the angle is not a    
-  // linear function of the angle, so to have the flagging be    
-  // independent of the angles involved, an arccos function would be    
-  // required.    
-  float4 normalResults = step(0.4, Deltas1);   
-  normalResults = max(normalResults, depthResults);   
-  
-  return (normalResults.x + normalResults.y +           
-    normalResults.z + normalResults.w) * 0.25; 
-} 
+    Normal[i]= DL_GetNormal(uv);  //Retrieves normal from MRTs
+  }
+
+  //Compute Deltas in Depth.
+  float4 Deltas1;
+  float4 Deltas2;
+  Deltas1.x = Depth[1];
+  Deltas1.y = Depth[2];
+  Deltas1.z = Depth[3];
+  Deltas1.w = Depth[4];
+  Deltas2.x = Depth[5];
+  Deltas2.y = Depth[6];
+  Deltas2.z = Depth[7];
+  Deltas2.w = Depth[8];
+
+  //Compute absolute gradients from center.
+  Deltas1 = abs(Deltas1 - Depth[0]);
+  Deltas2 = abs(Depth[0] - Deltas2);
+
+  //Find min and max gradient, ensuring min != 0
+  float4 maxDeltas = max(Deltas1, Deltas2);
+  float4 minDeltas = max(min(Deltas1, Deltas2), 0.00001);
+
+  // Compare change in gradients, flagging ones that change
+  // significantly.
+  // How severe the change must be to get flagged is a function of the
+  // minimum gradient. It is not resolution dependent. The constant
+  // number here would change based on how the depth values are stored
+  // and how sensitive the edge detection should be.
+  float4 depthResults = step(minDeltas * 25.0, maxDeltas);
+
+  //Compute change in the cosine of the angle between normals.
+  Deltas1.x = dot(Normal[1], Normal[0]);
+  Deltas1.y = dot(Normal[2], Normal[0]);
+  Deltas1.z = dot(Normal[3], Normal[0]);
+  Deltas1.w = dot(Normal[4], Normal[0]);
+  Deltas2.x = dot(Normal[5], Normal[0]);
+  Deltas2.y = dot(Normal[6], Normal[0]);
+  Deltas2.z = dot(Normal[7], Normal[0]);
+  Deltas2.w = dot(Normal[8], Normal[0]);
+  Deltas1 = abs(Deltas1 - Deltas2);
+
+  // Compare change in the cosine of the angles, flagging changes
+  // above some constant threshold. The cosine of the angle is not a
+  // linear function of the angle, so to have the flagging be
+  // independent of the angles involved, an arccos function would be
+  // required.
+  float4 normalResults = step(0.4, Deltas1);
+  normalResults = max(normalResults, depthResults);
+
+  return (normalResults.x + normalResults.y +
+    normalResults.z + normalResults.w) * 0.25;
+}
 ```
 
 
@@ -4611,7 +4612,7 @@ EA. SIGGRAPH. 2011.
 
 ## 2009
 
-<a id="Andersson09" href="https://www.ea.com/frostbite/news/parallel-graphics-in-frostbite-current-future">Parallel Graphics in Frostbite - Current Future</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/) / [Embark Studios](https://www.embark-studios.com/). 
+<a id="Andersson09" href="https://www.ea.com/frostbite/news/parallel-graphics-in-frostbite-current-future">Parallel Graphics in Frostbite - Current Future</a>. [Johan Andersson](https://www.linkedin.com/in/repii/), [DICE](https://www.dice.se/) / [Embark Studios](https://www.embark-studios.com/).
 SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 <a id="EngelShaderX709" href="https://gitea.yiem.net/QianMo/Real-Time-Rendering-4th-Bibliography-Collection/raw/branch/main/Chapter%201-24/[0431]%20[ShaderX7%202009]%20Designing%20a%20Renderer%20for%20Multiple%20Lights-%20The%20Light%20Pre-Pass%20Renderer.pdf">Designing a Renderer for Multiple Lights: The Light Pre-Pass Renderer</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [ShaderX7](http://www.shaderx7.com/).<br>
 <a id="EngelSiggraph09" href="https://www.slideshare.net/cagetu/light-prepass">Light Pre-Pass; Deferred Lighting: Latest Development</a>. [Wolfgang Engel](http://diaryofagraphicsprogrammer.blogspot.com/), [Rockstar Games](https://www.rockstargames.com/) / [The Forge](https://theforge.dev/). [SIGGRAPH 2009: Advances in Real-Time Rendering in Games Course](https://advances.realtimerendering.com/s2009/index.html).<br>
@@ -5070,7 +5071,7 @@ SIGGRAPH 2009: Beyond Programmable Shading Course.<br>
 ---
 
 * Z Pre-Pass
-  
+
 ```
 @startuml
 start

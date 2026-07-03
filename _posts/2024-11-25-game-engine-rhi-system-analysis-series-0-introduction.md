@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "rhi-system-analysis"
 series_order: 1
 topic: engine
+tags: [engine, rhi-system-analysis]
 ---
 
 - [Game Engine RHI System Analysis Series 0: Introduction (2024.11.25)](#game-engine-rhi-system-analysis-series-0-introduction-20241125)

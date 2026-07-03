@@ -8,6 +8,7 @@ description: "Instruction Decoding on the 8086 Decode let ModuleReady = null; pe
 status: "notes"
 difficulty: "intermediate"
 topic: engine
+tags: [engine, performance]
 ---
 
 <div id="instruction-decoding-on-the-8086" style="text-align: center; margin: 20px 0;">

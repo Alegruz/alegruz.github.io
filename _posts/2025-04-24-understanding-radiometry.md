@@ -9,6 +9,7 @@ description: "This is my second note on studying ReSTIR: Understanding Radiometr
 status: "notes"
 difficulty: "advanced"
 topic: theory
+tags: [theory, restir, radiometry]
 ---
 
 This is my second note on studying ReSTIR: Understanding Radiometry.
@@ -145,4 +146,4 @@ Further studies lead to other concepts such as BRDF, but it is also crucial for 
 
 Below is an image ChatGPT created based on this text. As you can see, there are some strange diagrams at the end, but I think the readers can decipher this image.
 
-![radiosity_diagram](/assets/images/Radiometry/radiometry_diagram.png)
+{% include image.html src="/assets/images/Radiometry/radiometry_diagram.png" alt="radiosity_diagram" caption="radiosity_diagram" %}

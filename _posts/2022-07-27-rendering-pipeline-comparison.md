@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "rendering-pipeline"
 series_order: 3
 topic: rendering
+tags: [rendering, rendering-pipeline]
 ---
 
 # Environment
@@ -29,7 +30,7 @@ topic: rendering
 ## Bandwidth Comparison<sup>[Thibieroz04](#Thibieroz04)</sup>
 
 ```
-\textrm{Bandwidth}_{60\textrm{fps}} = \left(\textrm{W} \times \textrm{H} \times \left[ \textrm{MRT}_{\textrm{BPP}} \times   
+\textrm{Bandwidth}_{60\textrm{fps}} = \left(\textrm{W} \times \textrm{H} \times \left[ \textrm{MRT}_{\textrm{BPP}} \times
  n_{\textrm{MRT}} \times n + \textrm{Z}_\textrm{BPP} \times \textrm{Overdraw} + \textrm{T}_\textrm{BPP} \times \textrm{T}_\textrm{B} + n \times \left(2 \times \textrm{BB}_\textrm{BPP} + \textrm{T}_\textrm{S} \times \textrm{T}_\textrm{BPP} \right ) \right ] + \textrm{C}_\textrm{Geometry} \right ) \times 60 \textrm{Bytes} / \textrm{s}
 ```
 
@@ -47,57 +48,57 @@ topic: rendering
 
 ### Frame Duration
 
-![FrameDurationBarAll](/assets/images/DeferredShading/FrameDurationBarAll.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationBarAll.png" alt="FrameDurationBarAll" caption="FrameDurationBarAll" %}
 
-![FrameDurationBarDeferred](/assets/images/DeferredShading/FrameDurationBarDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationBarDeferred.png" alt="FrameDurationBarDeferred" caption="FrameDurationBarDeferred" %}
 
-![FrameDurationBarDeferredNoDefault](/assets/images/DeferredShading/FrameDurationBarDeferredNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationBarDeferredNoDefault.png" alt="FrameDurationBarDeferredNoDefault" caption="FrameDurationBarDeferredNoDefault" %}
 
-![FrameDurationBarForward](/assets/images/DeferredShading/FrameDurationBarForward.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationBarForward.png" alt="FrameDurationBarForward" caption="FrameDurationBarForward" %}
 
-![FrameDurationBarForwardNoDefault](/assets/images/DeferredShading/FrameDurationBarForwardNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationBarForwardNoDefault.png" alt="FrameDurationBarForwardNoDefault" caption="FrameDurationBarForwardNoDefault" %}
 
 ### Light Phase Duration
 
-![LightPhaseDurationBarAll](/assets/images/DeferredShading/LightPhaseDurationBarAll.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationBarAll.png" alt="LightPhaseDurationBarAll" caption="LightPhaseDurationBarAll" %}
 
-![LightPhaseDurationBarAllNoDefault](/assets/images/DeferredShading/LightPhaseDurationBarAllNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationBarAllNoDefault.png" alt="LightPhaseDurationBarAllNoDefault" caption="LightPhaseDurationBarAllNoDefault" %}
 
-![LightPhaseDurationBarTiled](/assets/images/DeferredShading/LightPhaseDurationBarTiled.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationBarTiled.png" alt="LightPhaseDurationBarTiled" caption="LightPhaseDurationBarTiled" %}
 
-![LightPhaseDurationBarClustered](/assets/images/DeferredShading/LightPhaseDurationBarClustered.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationBarClustered.png" alt="LightPhaseDurationBarClustered" caption="LightPhaseDurationBarClustered" %}
 
 ### Render Color Duration
 
-![RenderColorDurationBarAll](/assets/images/DeferredShading/RenderColorDurationBarAll.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarAll.png" alt="RenderColorDurationBarAll" caption="RenderColorDurationBarAll" %}
 
-![RenderColorDurationBarDeferred](/assets/images/DeferredShading/RenderColorDurationBarDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarDeferred.png" alt="RenderColorDurationBarDeferred" caption="RenderColorDurationBarDeferred" %}
 
-![RenderColorDurationBarDeferredNoDefault](/assets/images/DeferredShading/RenderColorDurationBarDeferredNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarDeferredNoDefault.png" alt="RenderColorDurationBarDeferredNoDefault" caption="RenderColorDurationBarDeferredNoDefault" %}
 
-![RenderColorDurationBarForward](/assets/images/DeferredShading/RenderColorDurationBarForward.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarForward.png" alt="RenderColorDurationBarForward" caption="RenderColorDurationBarForward" %}
 
-![RenderColorDurationBarForwardNoDefault](/assets/images/DeferredShading/RenderColorDurationBarForwardNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarForwardNoDefault.png" alt="RenderColorDurationBarForwardNoDefault" caption="RenderColorDurationBarForwardNoDefault" %}
 
-![RenderColorDurationBarTiled](/assets/images/DeferredShading/RenderColorDurationBarTiled.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarTiled.png" alt="RenderColorDurationBarTiled" caption="RenderColorDurationBarTiled" %}
 
-![RenderColorDurationBarTiledNoShading](/assets/images/DeferredShading/RenderColorDurationBarTiledNoShading.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarTiledNoShading.png" alt="RenderColorDurationBarTiledNoShading" caption="RenderColorDurationBarTiledNoShading" %}
 
-![RenderColorDurationBarClustered](/assets/images/DeferredShading/RenderColorDurationBarClustered.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationBarClustered.png" alt="RenderColorDurationBarClustered" caption="RenderColorDurationBarClustered" %}
 
 ### Tile / Cluster Assignment Duration
 
-![TileClusterAssignmentDurationBarAll](/assets/images/DeferredShading/TileClusterAssignmentDurationBarAll.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationBarAll.png" alt="TileClusterAssignmentDurationBarAll" caption="TileClusterAssignmentDurationBarAll" %}
 
-![TileClusterAssignmentDurationBarDeferred](/assets/images/DeferredShading/TileClusterAssignmentDurationBarDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationBarDeferred.png" alt="TileClusterAssignmentDurationBarDeferred" caption="TileClusterAssignmentDurationBarDeferred" %}
 
-![TileClusterAssignmentDurationBarDeferredNoShading](/assets/images/DeferredShading/TileClusterAssignmentDurationBarDeferredNoShading.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationBarDeferredNoShading.png" alt="TileClusterAssignmentDurationBarDeferredNoShading" caption="TileClusterAssignmentDurationBarDeferredNoShading" %}
 
-![TileClusterAssignmentDurationBarForward](/assets/images/DeferredShading/TileClusterAssignmentDurationBarForward.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationBarForward.png" alt="TileClusterAssignmentDurationBarForward" caption="TileClusterAssignmentDurationBarForward" %}
 
-![TileClusterAssignmentDurationBarTiled](/assets/images/DeferredShading/TileClusterAssignmentDurationBarTiled.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationBarTiled.png" alt="TileClusterAssignmentDurationBarTiled" caption="TileClusterAssignmentDurationBarTiled" %}
 
-![TileClusterAssignmentDurationBarClustered](/assets/images/DeferredShading/TileClusterAssignmentDurationBarClustered.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationBarClustered.png" alt="TileClusterAssignmentDurationBarClustered" caption="TileClusterAssignmentDurationBarClustered" %}
 
 ## Bandwidth
 
@@ -685,73 +686,73 @@ topic: rendering
 
 ### Frame Duration
 
-![FrameDurationAll](/assets/images/DeferredShading/FrameDurationAll.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationAll.png" alt="FrameDurationAll" caption="FrameDurationAll" %}
 
-![FrameDurationDeferred](/assets/images/DeferredShading/FrameDurationDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationDeferred.png" alt="FrameDurationDeferred" caption="FrameDurationDeferred" %}
 
-![FrameDurationDeferredNoDefault](/assets/images/DeferredShading/FrameDurationDeferredNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationDeferredNoDefault.png" alt="FrameDurationDeferredNoDefault" caption="FrameDurationDeferredNoDefault" %}
 
-![FrameDurationForward](/assets/images/DeferredShading/FrameDurationForward.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationForward.png" alt="FrameDurationForward" caption="FrameDurationForward" %}
 
-![FrameDurationForwardNoDefault](/assets/images/DeferredShading/FrameDurationForwardNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationForwardNoDefault.png" alt="FrameDurationForwardNoDefault" caption="FrameDurationForwardNoDefault" %}
 
-![FrameDurationTiled](/assets/images/DeferredShading/FrameDurationTiled.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationTiled.png" alt="FrameDurationTiled" caption="FrameDurationTiled" %}
 
-![FrameDurationTiled2_5D](/assets/images/DeferredShading/FrameDurationTiled2_5D.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationTiled2_5D.png" alt="FrameDurationTiled2_5D" caption="FrameDurationTiled2_5D" %}
 
-![FrameDurationTiled2_5DAABB](/assets/images/DeferredShading/FrameDurationTiled2_5DAABB.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationTiled2_5DAABB.png" alt="FrameDurationTiled2_5DAABB" caption="FrameDurationTiled2_5DAABB" %}
 
-![FrameDurationClustered](/assets/images/DeferredShading/FrameDurationClustered.png)
+{% include image.html src="/assets/images/DeferredShading/FrameDurationClustered.png" alt="FrameDurationClustered" caption="FrameDurationClustered" %}
 
 ### Light Phase Duration
 
-![LightPhaseDurationDeferred](/assets/images/DeferredShading/LightPhaseDurationDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationDeferred.png" alt="LightPhaseDurationDeferred" caption="LightPhaseDurationDeferred" %}
 
-![LightPhaseDurationDeferredNoDefault](/assets/images/DeferredShading/LightPhaseDurationDeferredNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationDeferredNoDefault.png" alt="LightPhaseDurationDeferredNoDefault" caption="LightPhaseDurationDeferredNoDefault" %}
 
-![LightPhaseDurationTiled](/assets/images/DeferredShading/LightPhaseDurationTiled.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationTiled.png" alt="LightPhaseDurationTiled" caption="LightPhaseDurationTiled" %}
 
-![LightPhaseDurationTiled2_5D](/assets/images/DeferredShading/LightPhaseDurationTiled2_5D.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationTiled2_5D.png" alt="LightPhaseDurationTiled2_5D" caption="LightPhaseDurationTiled2_5D" %}
 
-![LightPhaseDurationTiled2_5DAABB](/assets/images/DeferredShading/LightPhaseDurationTiled2_5DAABB.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationTiled2_5DAABB.png" alt="LightPhaseDurationTiled2_5DAABB" caption="LightPhaseDurationTiled2_5DAABB" %}
 
-![LightPhaseDurationClustered](/assets/images/DeferredShading/LightPhaseDurationClustered.png)
+{% include image.html src="/assets/images/DeferredShading/LightPhaseDurationClustered.png" alt="LightPhaseDurationClustered" caption="LightPhaseDurationClustered" %}
 
 ### Render Color Duration
 
-![RenderColorDurationAll](/assets/images/DeferredShading/RenderColorDurationAll.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationAll.png" alt="RenderColorDurationAll" caption="RenderColorDurationAll" %}
 
-![RenderColorDurationDeferred](/assets/images/DeferredShading/RenderColorDurationDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationDeferred.png" alt="RenderColorDurationDeferred" caption="RenderColorDurationDeferred" %}
 
-![RenderColorDurationDeferredNoDefault](/assets/images/DeferredShading/RenderColorDurationDeferredNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationDeferredNoDefault.png" alt="RenderColorDurationDeferredNoDefault" caption="RenderColorDurationDeferredNoDefault" %}
 
-![RenderColorDurationForward](/assets/images/DeferredShading/RenderColorDurationForward.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationForward.png" alt="RenderColorDurationForward" caption="RenderColorDurationForward" %}
 
-![RenderColorDurationForwardNoDefault](/assets/images/DeferredShading/RenderColorDurationForwardNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationForwardNoDefault.png" alt="RenderColorDurationForwardNoDefault" caption="RenderColorDurationForwardNoDefault" %}
 
-![RenderColorDurationTiled](/assets/images/DeferredShading/RenderColorDurationTiled.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationTiled.png" alt="RenderColorDurationTiled" caption="RenderColorDurationTiled" %}
 
-![RenderColorDurationTiled2_5D](/assets/images/DeferredShading/RenderColorDurationTiled2_5D.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationTiled2_5D.png" alt="RenderColorDurationTiled2_5D" caption="RenderColorDurationTiled2_5D" %}
 
-![RenderColorDurationTiled2_5DAABB](/assets/images/DeferredShading/RenderColorDurationTiled2_5DAABB.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationTiled2_5DAABB.png" alt="RenderColorDurationTiled2_5DAABB" caption="RenderColorDurationTiled2_5DAABB" %}
 
-![RenderColorDurationClustered](/assets/images/DeferredShading/RenderColorDurationClustered.png)
+{% include image.html src="/assets/images/DeferredShading/RenderColorDurationClustered.png" alt="RenderColorDurationClustered" caption="RenderColorDurationClustered" %}
 
 ### Tile / Cluster Assignment Duration
 
-![TileClusterAssignmentDurationAll](/assets/images/DeferredShading/TileClusterAssignmentDurationAll.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationAll.png" alt="TileClusterAssignmentDurationAll" caption="TileClusterAssignmentDurationAll" %}
 
-![TileClusterAssignmentDurationDeferred](/assets/images/DeferredShading/TileClusterAssignmentDurationDeferred.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationDeferred.png" alt="TileClusterAssignmentDurationDeferred" caption="TileClusterAssignmentDurationDeferred" %}
 
-![TileClusterAssignmentDurationForward](/assets/images/DeferredShading/TileClusterAssignmentDurationForward.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationForward.png" alt="TileClusterAssignmentDurationForward" caption="TileClusterAssignmentDurationForward" %}
 
-![TileClusterAssignmentDurationTiled](/assets/images/DeferredShading/TileClusterAssignmentDurationTiled.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationTiled.png" alt="TileClusterAssignmentDurationTiled" caption="TileClusterAssignmentDurationTiled" %}
 
-![TileClusterAssignmentDurationTiled2_5D](/assets/images/DeferredShading/TileClusterAssignmentDurationTiled2_5D.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationTiled2_5D.png" alt="TileClusterAssignmentDurationTiled2_5D" caption="TileClusterAssignmentDurationTiled2_5D" %}
 
-![TileClusterAssignmentDurationTiled2_5DAABB](/assets/images/DeferredShading/TileClusterAssignmentDurationTiled2_5DAABB.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationTiled2_5DAABB.png" alt="TileClusterAssignmentDurationTiled2_5DAABB" caption="TileClusterAssignmentDurationTiled2_5DAABB" %}
 
-![TileClusterAssignmentDurationClustered](/assets/images/DeferredShading/TileClusterAssignmentDurationClustered.png)
+{% include image.html src="/assets/images/DeferredShading/TileClusterAssignmentDurationClustered.png" alt="TileClusterAssignmentDurationClustered" caption="TileClusterAssignmentDurationClustered" %}
 
 ## GBuffer: Fat Buffer vs Thin Buffer<sup>[Kaplanyan10](#Kaplanyan10)</sup>
 
@@ -761,19 +762,19 @@ topic: rendering
 
 #### Frame Duration
 
-![NormalCompressionFrameDurationNoDefault](/assets/images/DeferredShading/NormalCompressionFrameDurationNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/NormalCompressionFrameDurationNoDefault.png" alt="NormalCompressionFrameDurationNoDefault" caption="NormalCompressionFrameDurationNoDefault" %}
 
 #### Render Color Duration
 
-![NormalCompressionRenderColorDurationNoDefault](/assets/images/DeferredShading/NormalCompressionRenderColorDurationNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/NormalCompressionRenderColorDurationNoDefault.png" alt="NormalCompressionRenderColorDurationNoDefault" caption="NormalCompressionRenderColorDurationNoDefault" %}
 
 #### Geometry Phase Duration
 
-![NormalCompressionGeometryPhaseDurationNoDefault](/assets/images/DeferredShading/NormalCompressionGeometryPhaseDurationNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/NormalCompressionGeometryPhaseDurationNoDefault.png" alt="NormalCompressionGeometryPhaseDurationNoDefault" caption="NormalCompressionGeometryPhaseDurationNoDefault" %}
 
 #### Lighting Phase Duration
 
-![NormalCompressionLightingPhaseDurationNoDefault](/assets/images/DeferredShading/NormalCompressionLightingPhaseDurationNoDefault.png)
+{% include image.html src="/assets/images/DeferredShading/NormalCompressionLightingPhaseDurationNoDefault.png" alt="NormalCompressionLightingPhaseDurationNoDefault" caption="NormalCompressionLightingPhaseDurationNoDefault" %}
 
 ## False Positive Rate
 
@@ -1385,13 +1386,13 @@ Pipelines to optimize:
 
 1. Generalize and always optimize for the worst case scenario
    1. Discover the biggest bottlenecks and address them by tackling the biggest time consumer. This means avoiding partial optimizations.
-      * Ex) Crysis 1: If the camera was static, then motion blur was disabled. If the camera was moving fast, then motion blur was enabled. This kind of bad optimization strategy resulted in big performance peaks and an inconsistent frame rate. 
+      * Ex) Crysis 1: If the camera was static, then motion blur was disabled. If the camera was moving fast, then motion blur was enabled. This kind of bad optimization strategy resulted in big performance peaks and an inconsistent frame rate.
    2. Once done, repeat *ad nauseam*!
 2. Don't repeat work or do unnecessary work. For example:
    1. Don't down-sample full-screen color targets or depth targets multiple times for different postprocessing functinos
    2. Minimize the number of memory transfers, render target clears, and any redundant full-screen passes
    3. Such repeated or redundant work adds up very quickly
-      * Ex) A full-screen pass a 720 p costs ca. 0.25 ms on the Xbox 360 and ca. 0.4 ms on PS3. It is very easy to spend many milliseconds in a wasteful manner. 
+      * Ex) A full-screen pass a 720 p costs ca. 0.25 ms on the Xbox 360 and ca. 0.4 ms on PS3. It is very easy to spend many milliseconds in a wasteful manner.
    4. Batch as much as possible in a single pass
 3. Take advantage of interframe coherency. Amortize costs across frames:
    1. This can provide a significant gain if done carefully, talking performance peaks and multi-GPU systems into account

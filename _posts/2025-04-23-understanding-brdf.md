@@ -9,6 +9,7 @@ description: "This is my first note on studying ReSTIR: Understanding BRDF."
 status: "notes"
 difficulty: "advanced"
 topic: theory
+tags: [theory, restir, brdf]
 ---
 
 This is my first note on studying ReSTIR: Understanding BRDF.

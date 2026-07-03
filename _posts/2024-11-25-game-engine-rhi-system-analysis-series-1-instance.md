@@ -10,6 +10,7 @@ difficulty: "advanced"
 series: "rhi-system-analysis"
 series_order: 2
 topic: engine
+tags: [engine, rhi-system-analysis]
 ---
 
 - [Game Engine RHI System Analysis Series 1: Instance (2024.11.25)](#game-engine-rhi-system-analysis-series-1-instance-20241125)
@@ -43,7 +44,7 @@ When creating a swap chain, an [`IDXGIFactory2`](https://learn.microsoft.com/en-
 
 All these initializations happens when the graphics manager is initialized.
 
-![InstanceAnkiD3D12](/assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiD3D12.png)
+{% include image.html src="/assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiD3D12.png" alt="InstanceAnkiD3D12" caption="InstanceAnkiD3D12" %}
 
 Just like D3D12, [`VkInstance`](https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkInstance.html) is initialized in the graphics manager. Unlike `IDXGIFactory`, [`VkInstance`](https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkInstance.html) is kept by the manager for future uses.
 
@@ -61,7 +62,7 @@ When instance initialization is over, instance is used to create the surface. An
 
 Instance is later used when DLSS needs to be initialized. This is initialized when renderer initializes the renderer objects. One of the renderer objects, `TemporalUpscaler` uses a `GrUpscaler` that which can use DLSS.
 
-![InstanceAnkiVK](/assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiVK.png)
+{% include image.html src="/assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiVK.png" alt="InstanceAnkiVK" caption="InstanceAnkiVK" %}
 
 Both graphics manager `GrManager` and renderer `Renderer` is initialized when the application `App` is initialized.
 
@@ -280,7 +281,7 @@ Both graphics manager `GrManager` and renderer `Renderer` is initialized when th
       4.  Map read back memory to query result
       5.  Reset control
 
-![InstanceBgfx](/assets/images/GameEngineRhiSystemAnalysis/InstanceBgfx.png)
+{% include image.html src="/assets/images/GameEngineRhiSystemAnalysis/InstanceBgfx.png" alt="InstanceBgfx" caption="InstanceBgfx" %}
 
 BGFX has a `Dxgi` struct where it manages the DXGI instances such as the `IDXGIFactory`. When running the application, the engine initializes the instance when available during the main loop(`Context::renderFrame`). Context has a renderer context, which has the instance.
 

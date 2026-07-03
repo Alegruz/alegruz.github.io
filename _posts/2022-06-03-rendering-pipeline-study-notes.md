@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "rendering-pipeline"
 series_order: 1
 topic: rendering
+tags: [rendering, rendering-pipeline]
 ---
 
 # References
@@ -824,9 +825,9 @@ Full screen lighting is actually slower than forward rendering.
        4. Discard sources with a tiny contribution because of their projected bounding object being too small or too far
        5. Check that more than a predefined number of sources do not affect each screen region. Choose the biggest, strongest, and closer sources
     2. Individual Phase
-       * Lights and special effects in general can be classified in two main groups: global sources, local sources 
+       * Lights and special effects in general can be classified in two main groups: global sources, local sources
        * Global Sources
-          * Sun, DoF, fog, etc. 
+          * Sun, DoF, fog, etc.
           * For each global sources:
             * Enable the appropriate shaders
             * Render a quad covering the screen
@@ -837,11 +838,11 @@ Full screen lighting is actually slower than forward rendering.
        1. Select the appropriate level of detail
           * Farther and smaller sources don't have to be computed with the same quality than closer sources
        2. If dynamic branching is not supported, render a mask in the stencil buffer
-          * If dynamic branching is supported, if the pixel position is not found to be in the influence area of the bounding object, then the pixel is discarded 
+          * If dynamic branching is supported, if the pixel position is not found to be in the influence area of the bounding object, then the pixel is discarded
        3. Enable and configure the source shaders
        4. Compute the minimum and maximum screen cord values of the projected bounding object
        5. Enable the scissor test
-          * Using the rectangle that surrounds the screen projection of the source bounding object 
+          * Using the rectangle that surrounds the screen projection of the source bounding object
           * Quickly rejects pixels at the fragment level
        6. Enable the clipping planes
           * Further restrain the pixels that get into the fragment stage from the transform level
@@ -1245,14 +1246,14 @@ Optimization:<sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
 <sup>[Shishkovtsov05](#Shishkovtsov05)</sup>
 
 ```
-Pass 0: 
-Render full-screen quad only where 0x03==stencil count (where attributes are stored)    
-If ((N dot L) * ambient_occlusion_term > 0)      
+Pass 0:
+Render full-screen quad only where 0x03==stencil count (where attributes are stored)
+If ((N dot L) * ambient_occlusion_term > 0)
     discard fragment
 Else
     color = 0, stencil = 0x01
 
-Pass 1: 
+Pass 1:
 Render full-screen quad only where 0x03==stencil count
 Perform light accumulation / shading
 ```
@@ -1310,63 +1311,63 @@ Perform light accumulation / shading
 ```c
 struct v2p
 {
-    float4 tc0: TEXCOORD0; // Center    
-    float4 tc1: TEXCOORD1; // Left Top      
-    float4 tc2: TEXCOORD2; // Right Bottom    
-    float4 tc3: TEXCOORD3; // Right Top    
-    float4 tc4: TEXCOORD4; // Left Bottom      
-    float4 tc5: TEXCOORD5; // Left / Right    
-    float4 tc6: TEXCOORD6; // Top / Bottom  
-};      
-/////////////////////////////////////////////////////////////////////  
-uniform sampler2D s_distort;  
-uniform half4 e_barrier;  // x=norm(~.8f), y=depth(~.5f)  
-uniform half4 e_weights;  // x=norm, y=depth  
-uniform half4 e_kernel;   // x=norm, y=depth    
-/////////////////////////////////////////////////////////////////////  
+    float4 tc0: TEXCOORD0; // Center
+    float4 tc1: TEXCOORD1; // Left Top
+    float4 tc2: TEXCOORD2; // Right Bottom
+    float4 tc3: TEXCOORD3; // Right Top
+    float4 tc4: TEXCOORD4; // Left Bottom
+    float4 tc5: TEXCOORD5; // Left / Right
+    float4 tc6: TEXCOORD6; // Top / Bottom
+};
+/////////////////////////////////////////////////////////////////////
+uniform sampler2D s_distort;
+uniform half4 e_barrier;  // x=norm(~.8f), y=depth(~.5f)
+uniform half4 e_weights;  // x=norm, y=depth
+uniform half4 e_kernel;   // x=norm, y=depth
+/////////////////////////////////////////////////////////////////////
 
-half4 main(v2p I) : COLOR  
-{   
-    // Normal discontinuity filter   
-    half3 nc = tex2D(s_normal, I.tc0);   
-    half4 nd;   
-    nd.x = dot(nc, (half3)tex2D(s_normal, I.tc1));   
-    nd.y = dot(nc, (half3)tex2D(s_normal, I.tc2));   
-    nd.z = dot(nc, (half3)tex2D(s_normal, I.tc3));   
-    nd.w = dot(nc, (half3)tex2D(s_normal, I.tc4));   
-    nd -= e_barrier.x;   
-    nd = step(0, nd);   
-    half ne = saturate(dot(nd, e_weights.x));     
-    
-    // Opposite coords     
-    float4 tc5r = I.tc5.wzyx;   
-    float4 tc6r = I.tc6.wzyx;     
-    
-    // Depth filter : compute gradiental difference:   
-    // (c-sample1)+(c-sample1_opposite)   
-    half4 dc = tex2D(s_position, I.tc0);   
-    half4 dd;   
-    dd.x = (half)tex2D(s_position, I.tc1).z + (half)tex2D(s_position, I.tc2).z;   
-    dd.y = (half)tex2D(s_position, I.tc3).z + (half)tex2D(s_position, I.tc4).z;   
-    dd.z = (half)tex2D(s_position, I.tc5).z + (half)tex2D(s_position, tc5r).z;   
-    dd.w = (half)tex2D(s_position, I.tc6).z + (half)tex2D(s_position, tc6r).z;   
-    dd = abs(2 * dc.z - dd)- e_barrier.y;   
-    dd = step(dd, 0);   
-    half de = saturate(dot(dd, e_weights.y));     
-    
-    // Weight     
-    half w = (1 - de * ne) * e_kernel.x; 
-    // 0 - no aa, 1=full aa     
-    // Smoothed color   
-    // (a-c)*w + c = a*w + c(1-w)   
-    float2 offset = I.tc0 * (1-w);   
-    half4 s0 = tex2D(s_image, offset + I.tc1 * w);   
-    half4 s1 = tex2D(s_image, offset + I.tc2 * w);   
-    half4 s2 = tex2D(s_image, offset + I.tc3 * w);   
-    half4 s3 = tex2D(s_image, offset + I.tc4 * w);   
+half4 main(v2p I) : COLOR
+{
+    // Normal discontinuity filter
+    half3 nc = tex2D(s_normal, I.tc0);
+    half4 nd;
+    nd.x = dot(nc, (half3)tex2D(s_normal, I.tc1));
+    nd.y = dot(nc, (half3)tex2D(s_normal, I.tc2));
+    nd.z = dot(nc, (half3)tex2D(s_normal, I.tc3));
+    nd.w = dot(nc, (half3)tex2D(s_normal, I.tc4));
+    nd -= e_barrier.x;
+    nd = step(0, nd);
+    half ne = saturate(dot(nd, e_weights.x));
 
-    return (s0 + s1 + s2 + s3)/4.h;  
-} 
+    // Opposite coords
+    float4 tc5r = I.tc5.wzyx;
+    float4 tc6r = I.tc6.wzyx;
+
+    // Depth filter : compute gradiental difference:
+    // (c-sample1)+(c-sample1_opposite)
+    half4 dc = tex2D(s_position, I.tc0);
+    half4 dd;
+    dd.x = (half)tex2D(s_position, I.tc1).z + (half)tex2D(s_position, I.tc2).z;
+    dd.y = (half)tex2D(s_position, I.tc3).z + (half)tex2D(s_position, I.tc4).z;
+    dd.z = (half)tex2D(s_position, I.tc5).z + (half)tex2D(s_position, tc5r).z;
+    dd.w = (half)tex2D(s_position, I.tc6).z + (half)tex2D(s_position, tc6r).z;
+    dd = abs(2 * dc.z - dd)- e_barrier.y;
+    dd = step(dd, 0);
+    half de = saturate(dot(dd, e_weights.y));
+
+    // Weight
+    half w = (1 - de * ne) * e_kernel.x;
+    // 0 - no aa, 1=full aa
+    // Smoothed color
+    // (a-c)*w + c = a*w + c(1-w)
+    float2 offset = I.tc0 * (1-w);
+    half4 s0 = tex2D(s_image, offset + I.tc1 * w);
+    half4 s1 = tex2D(s_image, offset + I.tc2 * w);
+    half4 s2 = tex2D(s_image, offset + I.tc3 * w);
+    half4 s3 = tex2D(s_image, offset + I.tc4 * w);
+
+    return (s0 + s1 + s2 + s3)/4.h;
+}
  ```
 
 ### Examples
@@ -1375,10 +1376,10 @@ half4 main(v2p I) : COLOR
 
 G-Buffer structure:
 1. Pixel position
-   * World space position of the pixel 
+   * World space position of the pixel
    * R16G16B16A16 FLOAT
 2. Pixel Normal vector
-   * World space normalized normal vector 
+   * World space normalized normal vector
    * Choice:
        * Model space: Simplest.
        * Tangent space
@@ -1746,12 +1747,12 @@ float4 main(PSInput psInput) : SV_Target
    1. Render Normals
       * 1st geometry pass results in normal(and depth) buffer
         * Uses a single color RT
-        * No MRT required 
+        * No MRT required
    2. Lighting Accumulation
       * Perform all lighting calculation into light buffer
         * Use normal and depth buffer as input textures
         * Render geometries enclosing light area
-        * Write (LightColor * N.L * Attenuation) in RGB, specular in A 
+        * Write (LightColor * N.L * Attenuation) in RGB, specular in A
    3. Combine lighting with materials
       * 2nd geometry pass using light buffer as input
         * Fetch geometry material
@@ -1956,11 +1957,11 @@ Clustered Deferred Rendering:
   2. 400 best occluders to depth buffer
   3. Generate Hi-Z Buffer
   4. Opaque culling & rendering
-     * Hierarchical z-buffer used for culling 
+     * Hierarchical z-buffer used for culling
 * Lighting
   * Uses a clustered structure on the frustum:
     * 32 x 32 pixels based tile
-    * Z exponential distribution  
+    * Z exponential distribution
   * Hierarchical culling of light volume to fill the structure
   * Local cubemaps regarded as lights
   * Shadows, cubemaps and gobos reside in textures arrays
@@ -2094,7 +2095,7 @@ Clustered Deferred Rendering:
      * Use AABBs for initial early out (2D no depth)
      * Follow up with exact intersection test between tile and convex hull
      * Use bounding spheres as an extra testing criteria
-  3. Build Tile or Cluster Light list 
+  3. Build Tile or Cluster Light list
      * Narrow intersection test
 
 ## Forward+<sup>[HaradaMcKeeYang13](#HaradaMcKeeYang13)</sup>
@@ -2267,7 +2268,7 @@ for (uint lightIndex = GI; lightIndex < MAX_LIGHTS; lightIndex += 64)
             overlapping = false;
         }
     }
-    
+
     if (!overlapping)
         continue;
 
@@ -2335,7 +2336,7 @@ MiniEngine version:
 ```c
 if (GI == 0)
 {
-    uint lightCount = 
+    uint lightCount =
         ((tileLightCountSphere & 0xff) << 0) |
         ((tileLightCountCone & 0xff) << 8) |
         ((tileLightCountConeShadowed & 0xff) << 16);
@@ -2389,7 +2390,7 @@ if (GI == 0)
     * If the specular term can be separated in a later rendering pass, a dedicated material shininess value can be applied
       * (&Sigma;<sub>i</sub> (N · H<sub>i</sub>)<sup>n</sup>)<sup>mn</sup>
   * Applying a material shiniess value to the specular reflection can be done in several ways
-    1. Similar to a deferred renderer, a material specular shininess can be stored in the normal / depth buffer (stencil area) 
+    1. Similar to a deferred renderer, a material specular shininess can be stored in the normal / depth buffer (stencil area)
     2. Moving into a different color space that reuses some of the ideas here to achieve a tighter packed render target
     3. A separate term can be stored to reconstruct the specular term in a later render pass
        1. &Sigma;<sub>i</sub> N · L<sub>i</sub> * Diffuse<sub>Red</sub> * Attenuation<sub>i</sub>
@@ -2402,7 +2403,7 @@ if (GI == 0)
        *  The result of this equation can be used to apply a material shininess value
     1. The diffuse term stored in the first three channels of the light buffer can be converted to luminance and then used to reconstruct the specular reflection term
     2. The common rules for constructing a specular term can be bended by creating a new term that fits better into this renderer design
-* 
+*
 
 ### Comparison and Conclusion
 
@@ -2419,7 +2420,7 @@ if (GI == 0)
 |Geometry pass stores all material and light properties|Geometry pass fills up normal and depth buffer,<br>Lighting pass stores light properties in light buffer|
 |Only one geometry pass for the main view|(Version A) Second geometry buffer fetches light buffer and apply different material terms per surface by reconstructing the lighting equation<br>(Version B) Ambient + Resolve(MSAA) pass fetches light buffer and uses its content as diffuse / specular content and add the ambient term while resolving into the main buffer|
 |Lights are blit and therefore only limited by memory bandwidth||
-|Memory bandwidth| | 
+|Memory bandwidth| |
 |Recalculate full lighting equation for every light| |
 |Limited material representation in G-Buffer| |
 |MSAA difficult compared to Forward renderer| |
@@ -2483,7 +2484,7 @@ group Render Opaque Objects
     :Depth Buffer;
     end split
     :Switch Off Depth Write;
-    :Light Buffer; 
+    :Light Buffer;
 floating note left: Sort Back-To-Front
     :Forward Rendering;
 floating note left: Sort Front-To-Back

@@ -10,6 +10,7 @@ difficulty: "intermediate"
 series: "effective-cpp"
 series_order: 2
 topic: engine
+tags: [engine, effective-cpp, cpp]
 ---
 
 [목차]({% post_url 2023-05-20-effective-cpp-kr %})

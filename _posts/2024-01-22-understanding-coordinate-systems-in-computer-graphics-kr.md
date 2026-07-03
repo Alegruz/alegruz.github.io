@@ -9,6 +9,7 @@ description: "보통 우리는 컴퓨터 그래픽스라는 것을 생각할 땐
 status: "notes"
 difficulty: "intermediate"
 topic: rendering
+tags: [rendering, math]
 ---
 
 - [컴퓨터 그래픽스에서 좌표계 이해하기 (2024.01.22)](#컴퓨터-그래픽스에서-좌표계-이해하기-20240122)
