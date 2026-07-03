@@ -4,7 +4,7 @@ title:  Pygame 엔진 개발 일지 00 Pygame Engine Development 00
 date:   2023-11-23 00:00:00 +0000
 categories: engine
 lang: "ko"
-description: "Notes on Pygame 엔진 개발 일지 00 Pygame Engine Development 00."
+description: "최근에 남는 시간에 그냥 재미로 pygame 기반의 2D 게임 엔진을 개발 중이다. 사실 대학교에 재학 중일 때 젤다의 전설: 신들의 트라이포스를 pygame으로 베껴서 만들었던 적이 있는데, 그때도 비슷한 짓을 했었다. 이번에는 제대로 에디터라든가 요즘 게임 엔진이 제공하는 여러..."
 status: "report"
 difficulty: "intermediate"
 series: "pygame-engine"

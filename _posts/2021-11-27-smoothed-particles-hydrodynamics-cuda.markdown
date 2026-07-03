@@ -4,7 +4,7 @@ title:  Smoothed Particle Hydrodynamics by CUDA
 date:   2021-11-27 00:00:00 +0000
 categories: simulation
 lang: "en"
-description: "Notes on Smoothed Particle Hydrodynamics by CUDA."
+description: "In order to understand the SPH method, we must understand how can we simulate liquid. The idea is that liquid is essentially a group of small molecules, also..."
 status: "notes"
 difficulty: "intermediate"
 series: "sph"

@@ -4,7 +4,7 @@ title:  SPH Visualization through Marching Cubes
 date:   2021-12-12 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on SPH Visualization through Marching Cubes."
+description: "This function classifies voxels based on number of vertices it will generate. Each thread deals with a single voxel."
 status: "notes"
 difficulty: "intermediate"
 series: "sph"

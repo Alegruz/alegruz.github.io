@@ -4,7 +4,7 @@ title:  Why Exception Occurs at vkDestroySwapchainKHR?
 date:   2025-03-17 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Why Exception Occurs at vkDestroySwapchainKHR?."
+description: "When destroying the swapchain, an exception occurs. The exception was a read access violation issue."
 status: "report"
 difficulty: "advanced"
 series: "vulkan-notes"

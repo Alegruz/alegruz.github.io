@@ -4,7 +4,7 @@ title:  "Gaussian Splatting Study Notes"
 date:   2025-02-21 09:26:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on Gaussian Splatting Study Notes."
+description: "$$ G(x) = e^{-{\\frac{1}{2}}\\left(x \\right)^{T}\\sum^{-1}{\\left(x\\right)}} $$ $$ \\Sigma = RSS^{T}R^{T} $$ $$ L = \\left(1 - \\lambda \\right)L{1} + \\lambda L{\\tex..."
 status: "notes"
 difficulty: "intermediate"
 topic: rendering

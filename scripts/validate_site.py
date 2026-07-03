@@ -12,10 +12,13 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 POSTS = ROOT / "_posts"
 SITE = ROOT / "_site"
+MANIFEST = ROOT / "_data" / "image_manifest.yml"
 LANGS = {"en", "ko"}
 STATUSES = {"notes", "report", "translation", "draft"}
 DIFFICULTIES = {"beginner", "intermediate", "advanced"}
 IMAGE_SUFFIXES = {".avif", ".gif", ".jpg", ".jpeg", ".png", ".webp"}
+STATIC_IMAGE_BUDGET = 1_500_000
+ANIMATED_IMAGE_BUDGET = 6_000_000
 
 
 def read_text(path: Path) -> str:
@@ -50,6 +53,7 @@ def validate_posts() -> list[str]:
     errors: list[str] = []
     topics = read_data_keys(ROOT / "_data" / "topics.yml")
     series_keys = read_data_keys(ROOT / "_data" / "series.yml")
+    translations: dict[str, list[tuple[Path, str | None]]] = {}
 
     for path in sorted(POSTS.glob("*")):
         if path.suffix.lower() not in {".md", ".markdown"}:
@@ -68,6 +72,7 @@ def validate_posts() -> list[str]:
         difficulty = front_matter.get("difficulty")
         series = front_matter.get("series")
         series_order = front_matter.get("series_order")
+        translation_key = front_matter.get("translation_key")
 
         if not title:
             errors.append(f"{path.relative_to(ROOT)}: missing title")
@@ -77,6 +82,8 @@ def validate_posts() -> list[str]:
             errors.append(f"{path.relative_to(ROOT)}: invalid topic {topic!r}")
         if not description:
             errors.append(f"{path.relative_to(ROOT)}: missing description")
+        elif description.startswith("Notes on "):
+            errors.append(f"{path.relative_to(ROOT)}: generic description")
         if status not in STATUSES:
             errors.append(f"{path.relative_to(ROOT)}: invalid status {status!r}")
         if difficulty not in DIFFICULTIES:
@@ -91,6 +98,16 @@ def validate_posts() -> list[str]:
                 errors.append(f"{path.relative_to(ROOT)}: invalid series_order {series_order!r}")
         elif series_order:
             errors.append(f"{path.relative_to(ROOT)}: series_order without series")
+        if translation_key:
+            translations.setdefault(translation_key, []).append((path, lang))
+
+    for translation_key, rows in sorted(translations.items()):
+        langs = [lang for _, lang in rows]
+        if len(rows) < 2:
+            errors.append(f"translation_key {translation_key!r}: only one post")
+        if len(langs) != len(set(langs)):
+            paths = ", ".join(str(path.relative_to(ROOT)) for path, _ in rows)
+            errors.append(f"translation_key {translation_key!r}: duplicate language in {paths}")
     return errors
 
 
@@ -168,19 +185,57 @@ def validate_generated_files() -> list[str]:
     errors: list[str] = []
     if not (SITE / "search.json").exists():
         errors.append("_site/search.json was not generated")
+    if not MANIFEST.exists():
+        errors.append("_data/image_manifest.yml was not generated; run `python scripts/optimize_images.py`")
     return errors
+
+
+def referenced_local_images() -> set[Path]:
+    if not SITE.exists():
+        return set()
+
+    references: set[Path] = set()
+    attr_pattern = re.compile(r"""(?:href|src)=["']([^"']+)["']""")
+    for page in sorted(SITE.rglob("*.html")):
+        text = read_text(page)
+        for match in attr_pattern.finditer(text):
+            raw_url = unescape(match.group(1))
+            if not raw_url or raw_url.startswith("#") or is_external(raw_url):
+                continue
+            parsed = urlparse(raw_url)
+            path = unquote(parsed.path)
+            if not path:
+                continue
+
+            if path.startswith("/"):
+                site_target = SITE / path.lstrip("/")
+            else:
+                site_target = page.parent / path
+            if site_target.suffix.lower() not in IMAGE_SUFFIXES:
+                continue
+
+            try:
+                relative_site_target = site_target.resolve().relative_to(SITE.resolve())
+            except ValueError:
+                continue
+            source_target = ROOT / relative_site_target
+            if source_target.exists():
+                references.add(source_target)
+    return references
 
 
 def collect_warnings() -> list[str]:
     warnings: list[str] = []
-    image_root = ROOT / "assets" / "images"
-    if not image_root.exists():
+    images = referenced_local_images()
+    if not images:
         return warnings
 
-    for path in sorted(image_root.rglob("*")):
-        if path.suffix.lower() in IMAGE_SUFFIXES and path.stat().st_size > 1_500_000:
+    for path in sorted(images):
+        budget = ANIMATED_IMAGE_BUDGET if path.suffix.lower() in {".gif", ".webp"} else STATIC_IMAGE_BUDGET
+        if path.stat().st_size > budget:
             size_mb = path.stat().st_size / 1_000_000
-            warnings.append(f"{path.relative_to(ROOT)} is {size_mb:.1f} MB")
+            budget_mb = budget / 1_000_000
+            warnings.append(f"{path.relative_to(ROOT)} is {size_mb:.1f} MB; budget is {budget_mb:.1f} MB")
     return warnings
 
 

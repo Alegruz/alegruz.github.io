@@ -4,7 +4,7 @@ title:  "익셉셔널 C++: 01 제너릭 프로그래밍 및 C++ 표준 라이브
 date:   2023-05-20 00:00:00 +0000
 categories: programming cpp exceptional_cpp
 lang: "ko"
-description: "Notes on 익셉셔널 C++: 01 제너릭 프로그래밍 및 C++ 표준 라이브러리."
+description: "게임 개발자로서 성능이 매우 중요하기 때문에 C++ STL에 포함된 애들보다는 C의 snprintf가 제일 나은 선택지 같다."
 status: "notes"
 difficulty: "intermediate"
 series: "exceptional-cpp"

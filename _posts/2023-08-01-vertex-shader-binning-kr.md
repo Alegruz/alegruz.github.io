@@ -4,7 +4,7 @@ title:  정점 쉐이더 구간화 Vertex Shader Binning
 date:   2023-08-01 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 정점 쉐이더 구간화 Vertex Shader Binning."
+description: "3D 그래픽스를 디스플레이에 렌더링할 때, 구간bin을 사용하는 시스템이다."
 status: "notes"
 difficulty: "intermediate"
 topic: rendering

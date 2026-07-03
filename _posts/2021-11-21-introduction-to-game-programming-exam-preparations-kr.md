@@ -4,7 +4,7 @@ title:  게임 프로그래밍 입문 공부 노트
 date:   2021-11-21 00:00:00 +0000
 categories: study
 lang: "ko"
-description: "Notes on 게임 프로그래밍 입문 공부 노트."
+description: "앞으로 함수를 호출할 때, 공통적으로 무언가를 추가적으로 실행하고 싶을 때 사용하는 기능."
 status: "notes"
 difficulty: "beginner"
 topic: engine

@@ -4,7 +4,7 @@ title:  광선 추적 전역 조명을 위한 세계 공간 시공간 저장소 
 date:   2022-10-24 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 광선 추적 전역 조명을 위한 세계 공간 시공간 저장소 재사용."
+description: "저장소 기반 재표집 방법이 노이즈를 줄여주면서도 픽셀 당 그림자 광선 몇 개 밖에 안 써도 됨. 근데 현재 이미지 공간 기반으로 저장소를 사용하는 방법들은 효율적으로 간접광을 처리하기 위해 위해 더 많이 튕길 때의 경우까지 확장하지 않음."
 status: "notes"
 difficulty: "advanced"
 series: "restir"

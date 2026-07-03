@@ -4,7 +4,7 @@ title:  "Game Engine RHI System Analysis Series 0: Introduction"
 date:   2024-11-25 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Game Engine RHI System Analysis Series 0: Introduction."
+description: "This is a series of analysis on different game engines with publicly available source codes like Godot, Unreal. The goal of this series is to analyze and sur..."
 status: "report"
 difficulty: "advanced"
 series: "rhi-system-analysis"

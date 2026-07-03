@@ -4,7 +4,7 @@ title:  Rendering Pipeline Comparison
 date:   2022-07-27 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Rendering Pipeline Comparison."
+description: "Pipeline Frame DRAM Read/Write Utilization DRAM Activity L1 Cache L2 Cache Percentage utilization of DRAM reads Percentage utilization of DRAM writes Total D..."
 status: "notes"
 difficulty: "intermediate"
 series: "rendering-pipeline"

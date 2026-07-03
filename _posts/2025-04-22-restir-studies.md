@@ -4,7 +4,7 @@ title:  ReSTIR Study Notes
 date:   2025-04-22 20:49:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on ReSTIR Study Notes."
+description: "ReSTIR was the theme for my graduation project. I wanted to understand the state-of-the-art real-time/interactive global illumination technique, but I have f..."
 status: "notes"
 difficulty: "advanced"
 series: "restir"

@@ -4,7 +4,7 @@ title:  Study Notes on Performance-Aware Programming
 date:   2025-07-22 19:00:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on Study Notes on Performance-Aware Programming."
+description: "Instruction Decoding on the 8086 Decode let ModuleReady = null; performanceAwareProgramming({ locateFile: (p) = p.endsWith('.wasm') ? '{{ \"/assets/codes/perf..."
 status: "notes"
 difficulty: "intermediate"
 topic: engine

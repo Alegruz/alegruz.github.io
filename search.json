@@ -17,6 +17,7 @@ permalink: /search.json
       "topic_label": {{ topic_data.label | default: post_topic | jsonify }},
       "series": {{ post.series | default: "" | jsonify }},
       "series_label": {{ series_data.label | default: "" | jsonify }},
+      "translation_key": {{ post.translation_key | default: "" | jsonify }},
       "status": {{ post.status | default: "" | jsonify }},
       "difficulty": {{ post.difficulty | default: "" | jsonify }},
       "description": {{ post.description | default: "" | jsonify }},

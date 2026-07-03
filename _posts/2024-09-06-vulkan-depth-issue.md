@@ -4,7 +4,7 @@ title:  Why My Depth Buffer Only Writes 0 or 1?
 date:   2024-09-06 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Why My Depth Buffer Only Writes 0 or 1?."
+description: "Check your viewport settings in VkPipelineViewportStateCreateInfo. I bet your min/max depth are both 0."
 status: "report"
 difficulty: "advanced"
 series: "vulkan-notes"

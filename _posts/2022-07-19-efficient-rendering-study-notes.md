@@ -4,7 +4,7 @@ title:  Efficient Rendering Study Notes
 date:   2022-07-19 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Efficient Rendering Study Notes."
+description: "Classic forward rendering: StewartThomas13"
 status: "notes"
 difficulty: "intermediate"
 series: "rendering-pipeline"

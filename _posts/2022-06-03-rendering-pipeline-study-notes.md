@@ -4,7 +4,7 @@ title:  Rendering Pipeline Study Notes
 date:   2022-06-03 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Rendering Pipeline Study Notes."
+description: "Simple multi-pass deferred rendering pseudo-code: Ortiz18"
 status: "notes"
 difficulty: "intermediate"
 series: "rendering-pipeline"

@@ -4,7 +4,7 @@ title: Implementing ReSTIR Variants in a Direct3D 12 Path Tracer - A Practical S
 date: 2025-12-05 18:40:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on Implementing ReSTIR Variants in a Direct3D 12 Path Tracer - A Practical Study in Spatio-Temporal Resampling."
+description: "My informal report on implementing ReSTIR variants in a Direct3D 12 path tracer is here."
 status: "report"
 difficulty: "advanced"
 series: "restir"

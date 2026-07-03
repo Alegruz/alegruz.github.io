@@ -4,7 +4,7 @@ title:  컴퓨터 그래픽스에서 좌표계 이해하기
 date:   2024-01-22 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 컴퓨터 그래픽스에서 좌표계 이해하기."
+description: "보통 우리는 컴퓨터 그래픽스라는 것을 생각할 땐 너무 복잡하게 생각하려는 경향이 있다. 개인적으로 필자는 그래픽스를 공부를 항상 실제 현실과 비유를 해서 했는데, 그게 좀 더 이해가 쉽고 편하기도 하고, 직관적이기도 하다. 대표적으로 컴퓨터 그래픽스에서 좌표계라는 개념의 경우 실제..."
 status: "notes"
 difficulty: "intermediate"
 topic: rendering

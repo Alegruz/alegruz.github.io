@@ -14,14 +14,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const visibleCount = document.getElementById("visible-count");
   const script = document.querySelector("script[data-search-index]");
   const searchIndexUrl = script?.dataset.searchIndex;
+  const urlParams = new URLSearchParams(window.location.search);
 
-  let activeTopic = "all";
-  let activeLanguageFilter = uiLanguage();
-  let activeYear = "all";
-  let activeSeries = "all";
+  let activeTopic = urlParams.get("topic") || "all";
+  let activeLanguageFilter = urlParams.get("lang") || uiLanguage();
+  let activeYear = urlParams.get("year") || "all";
+  let activeSeries = urlParams.get("series") || "all";
+  let searchHydrated = false;
 
   function uiLanguage() {
     return document.documentElement.getAttribute("lang") === "ko" ? "ko" : "en";
+  }
+
+  function escapeHtml(value) {
+    return value.replace(/[&<>"']/g, function (char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[char];
+    });
+  }
+
+  function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   function updateLocalizedControls() {
@@ -52,10 +70,37 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function setLanguageFilter(lang) {
-    activeLanguageFilter = lang;
-    const activeButton = languageButtons.find((button) => button.dataset.langFilter === lang);
+    const supported = new Set(["all", "en", "ko"]);
+    activeLanguageFilter = supported.has(lang) ? lang : uiLanguage();
+    const activeButton = languageButtons.find((button) => button.dataset.langFilter === activeLanguageFilter);
     if (activeButton) {
       setActiveButton(languageButtons, activeButton);
+    }
+  }
+
+  function syncControlsFromState() {
+    const activeTopicButton = topicButtons.find((button) => button.dataset.topic === activeTopic) || topicButtons[0];
+    if (activeTopicButton) {
+      activeTopic = activeTopicButton.dataset.topic || "all";
+      setActiveButton(topicButtons, activeTopicButton);
+    }
+
+    setLanguageFilter(activeLanguageFilter);
+
+    if (yearSelect) {
+      const hasYear = Array.from(yearSelect.options).some((option) => option.value === activeYear);
+      yearSelect.value = hasYear ? activeYear : "all";
+      activeYear = yearSelect.value;
+    }
+
+    if (seriesSelect) {
+      const hasSeries = Array.from(seriesSelect.options).some((option) => option.value === activeSeries);
+      seriesSelect.value = hasSeries ? activeSeries : "all";
+      activeSeries = seriesSelect.value;
+    }
+
+    if (searchInput) {
+      searchInput.value = urlParams.get("q") || "";
     }
   }
 
@@ -67,7 +112,37 @@ document.addEventListener("DOMContentLoaded", function () {
     ].join(" ");
   }
 
-  function applyFilters() {
+  function highlightText(element, query) {
+    if (!element) {
+      return;
+    }
+
+    const original = element.dataset.originalText || element.textContent;
+    element.dataset.originalText = original;
+
+    if (!query) {
+      element.textContent = original;
+      return;
+    }
+
+    const pattern = new RegExp(`(${escapeRegExp(query)})`, "ig");
+    element.innerHTML = escapeHtml(original).replace(pattern, "<mark class=\"search-mark\">$1</mark>");
+  }
+
+  function updateUrl(query) {
+    const next = new URLSearchParams();
+    if (query) next.set("q", query);
+    if (activeTopic !== "all") next.set("topic", activeTopic);
+    if (activeLanguageFilter !== uiLanguage()) next.set("lang", activeLanguageFilter);
+    if (activeYear !== "all") next.set("year", activeYear);
+    if (activeSeries !== "all") next.set("series", activeSeries);
+
+    const queryString = next.toString();
+    const nextUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ""}${window.location.hash}`;
+    window.history.replaceState(null, "", nextUrl);
+  }
+
+  function applyFilters(options = {}) {
     const query = ((searchInput && searchInput.value) || "").trim().toLowerCase();
     let count = 0;
 
@@ -86,6 +161,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const visible = matchesTopic && matchesLanguage && matchesYear && matchesSeries && matchesQuery;
 
       row.hidden = !visible;
+      row.classList.toggle("search-hit", Boolean(query && visible));
+      highlightText(row.querySelector(".post-link"), visible ? query : "");
+      highlightText(row.querySelector(".post-summary"), visible ? query : "");
+
       if (visible) {
         count += 1;
       }
@@ -105,6 +184,10 @@ document.addEventListener("DOMContentLoaded", function () {
       emptyNotice.textContent = uiLanguage() === "ko"
         ? emptyNotice.dataset.msgKo || "현재 필터 조건에 맞는 글이 없습니다."
         : emptyNotice.dataset.msgEn || "No posts match the current filters.";
+    }
+
+    if (!options.skipUrlUpdate) {
+      updateUrl(query);
     }
   }
 
@@ -134,9 +217,12 @@ document.addEventListener("DOMContentLoaded", function () {
             post.difficulty
           ].filter(Boolean).join(" ").toLowerCase();
         });
+        searchHydrated = true;
         applyFilters();
       })
-      .catch(() => {});
+      .catch(() => {
+        searchHydrated = true;
+      });
   }
 
   topicButtons.forEach((button) => {
@@ -170,7 +256,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (searchInput) {
-    searchInput.addEventListener("input", applyFilters);
+    searchInput.addEventListener("input", function () {
+      applyFilters({ skipUrlUpdate: !searchHydrated });
+    });
   }
 
   document.addEventListener("keydown", function (event) {
@@ -195,12 +283,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const observer = new MutationObserver(function () {
-    setLanguageFilter(uiLanguage());
+    if (!urlParams.has("lang")) {
+      setLanguageFilter(uiLanguage());
+    }
     applyFilters();
   });
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 
-  setLanguageFilter(uiLanguage());
+  syncControlsFromState();
   hydrateSearchIndex();
-  applyFilters();
+  applyFilters({ skipUrlUpdate: true });
 });

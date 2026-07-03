@@ -4,7 +4,7 @@ title:  "컴퓨터 그래픽스 기초: 01 서론"
 date:   2023-05-17 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 컴퓨터 그래픽스 기초: 01 서론."
+description: "책에서는 컴퓨터 그래픽스란 컴퓨터를 사용하여 어떤 이미지를 생성하고 조작하는 모든 것을 의미한다고 한다. 하지만 필자의 경우 게임 개발자이므로 조금은 좁은 시선으로 이 책을 바라보려고 한다. 필자가 다루려는 부분들은 게임과 유관한 부분이기 때문에 시각화, 컴퓨터 비전, 2D 등은..."
 status: "notes"
 difficulty: "beginner"
 series: "fundamentals-computer-graphics"

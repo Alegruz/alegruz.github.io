@@ -4,7 +4,7 @@ title:  "컴퓨터 그래픽스 기초: 02 사소한 수학"
 date:   2023-05-18 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 컴퓨터 그래픽스 기초: 02 사소한 수학."
+description: "그래픽스는 결국 수학을 코드로 옮긴 것이므로 수학이 간결해지면 코드도 간결해진다. 여기서 다루는 주제는 튜토리얼의 느낌보다는 참고 자료로서의 성격이 더 강하다."
 status: "notes"
 difficulty: "beginner"
 series: "fundamentals-computer-graphics"

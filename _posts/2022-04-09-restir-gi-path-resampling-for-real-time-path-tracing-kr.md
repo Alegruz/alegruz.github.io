@@ -4,7 +4,7 @@ title:  "ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집"
 date:   2022-04-09 00:00:00 +0000
 categories: simulation
 lang: "ko"
-description: "Notes on ReSTIR GI: 실시간 경로 추적을 위한 경로 재표집."
+description: "최근에 GPU 많이 발전해서 광선추적법 하드웨어로 가속할 수 있긴 한데, 실시간 어플리케이션에서는 실질적으로 픽셀 당 추적 가능한 광선의 수가 얼마 안 됨. 그렇기에 경로 추적법을 사용할 경우, 현존하는 가장 성능이 좋은 디노이징 알고리듬을 사용하더라도 해결해야할 문제들이 있음...."
 status: "notes"
 difficulty: "advanced"
 series: "restir"

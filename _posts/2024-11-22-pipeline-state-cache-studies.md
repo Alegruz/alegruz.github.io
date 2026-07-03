@@ -4,7 +4,7 @@ title:  Pipeline State Cache Studies
 date:   2024-11-22 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Pipeline State Cache Studies."
+description: "The most efficient way to render using modern GPU is to utilize it's hardware's architecture. Modern GPUs uses the concept of pipelines to maximize performan..."
 status: "notes"
 difficulty: "intermediate"
 series: "rendering-pipeline"

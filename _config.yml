@@ -30,6 +30,7 @@ github_username:  Alegruz
 linkedin_username: alegruz
 header_pages:
   - series.markdown
+  - topics.markdown
   - cv.markdown
   - music.markdown
   - about.markdown

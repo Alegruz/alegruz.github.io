@@ -4,7 +4,7 @@ title:  "이펙티브 C++: 01 C++에 익숙해지기"
 date:   2023-05-20 00:00:00 +0000
 categories: programming cpp effective_cpp
 lang: "ko"
-description: "Notes on 이펙티브 C++: 01 C++에 익숙해지기."
+description: "이렇듯 어떤 부분에 집중하느냐에 따라 C++을 사용하는 양상이 매우 달라짐."
 status: "notes"
 difficulty: "intermediate"
 series: "effective-cpp"

@@ -4,7 +4,7 @@ title: Study Notes on Math - Proof Writing
 date: 2025-11-06 16:05:00 +0900
 categories: math logic
 lang: "en"
-description: "Notes on Study Notes on Math - Proof Writing."
+description: "Premise 1: All humans are mortal. Premise 2: Socrates is a human. Conclusion: Socrates is mortal."
 status: "notes"
 difficulty: "intermediate"
 series: "math-notes"

@@ -4,7 +4,7 @@ title:  Pygame 엔진 개발 일지 01
 date:   2023-11-29 00:00:00 +0000
 categories: engine
 lang: "ko"
-description: "Notes on Pygame 엔진 개발 일지 01."
+description: "출처: Game Programmging Gems. 1.0 The Magic of Data-Driven Design. Steve Rabin."
 status: "report"
 difficulty: "intermediate"
 series: "pygame-engine"

@@ -4,7 +4,7 @@ title:  Why vkAcquireNextImageKHR Returns VK_NOT_READY?
 date:   2025-03-17 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Why vkAcquireNextImageKHR Returns VK_NOT_READY?."
+description: "I requested three frame buffers, and vkAcquireNextImageKHR returns VKNOTREADY on the last frame buffer at the first cycle, and the returned image index is th..."
 status: "report"
 difficulty: "advanced"
 series: "vulkan-notes"

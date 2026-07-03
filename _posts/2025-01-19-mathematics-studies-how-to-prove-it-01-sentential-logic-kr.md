@@ -4,7 +4,7 @@ title:  "수학 공부: How to Prove It. 01. 문장 논리"
 date:   2025-01-19 00:00:00 +0000
 categories: math
 lang: "ko"
-description: "Notes on 수학 공부: How to Prove It. 01. 문장 논리."
+description: "연역 추론은 증명의 기본. 연역 추론의 대표적인 예시는 삼단 논법. 두 개의 전제와 하나의 결론으로 구성됨. 기본적으로 결론이 만약 거짓이라면 전제 중 하나는 반드시 거짓이어야 함. 예를 들어보자:"
 status: "notes"
 difficulty: "intermediate"
 series: "math-notes"

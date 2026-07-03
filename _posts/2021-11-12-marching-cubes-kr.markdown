@@ -4,7 +4,8 @@ title:  마칭 큐브 공부 노트
 date:   2021-11-12 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 마칭 큐브 공부 노트."
+translation_key: "marching-cubes"
+description: "우선 명시적 곡면과 암시적 곡면의 차이를 이해해야 한다. 명시적 곡면이란 우리가 OpenGL이나 DirectX에 직접 정점 자료와 색인 자료를 넘겨주듯이 일일이 공간에 이미 정점과 모서리가 주어진 곡면을 의미한다. 암시적 곡면이란 고등학교 기하와 벡터, 혹은 대학교 선형대수나 그래..."
 status: "notes"
 difficulty: "intermediate"
 series: "marching-cubes"

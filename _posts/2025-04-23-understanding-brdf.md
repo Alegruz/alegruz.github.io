@@ -4,7 +4,7 @@ title:  Understanding BRDF
 date:   2025-04-23 21:16:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on Understanding BRDF."
+description: "This is my first note on studying ReSTIR: Understanding BRDF."
 status: "notes"
 difficulty: "advanced"
 topic: theory

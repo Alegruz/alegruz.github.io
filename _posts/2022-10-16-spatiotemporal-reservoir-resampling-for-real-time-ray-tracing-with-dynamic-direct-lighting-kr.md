@@ -4,7 +4,7 @@ title:  ReSTIR 논문 정리
 date:   2022-10-16 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on ReSTIR 논문 정리."
+description: "문제: 수백만 개의 동적인 광원으로부터의 직접광을 몬테 카를로 적분법을 활용하여 효율적으로 렌더링하기 해결: ReSTIR 알고리듬"
 status: "notes"
 difficulty: "advanced"
 series: "restir"

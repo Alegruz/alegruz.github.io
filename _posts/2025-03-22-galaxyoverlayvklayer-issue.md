@@ -4,7 +4,7 @@ title:  Why Vulkan Warns about GalaxyOverlayVkLayer when Creating an Instance wi
 date:   2025-03-22 13:02:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on Why Vulkan Warns about GalaxyOverlayVkLayer when Creating an Instance with Zero Layer Enabled?."
+description: "When creating a Vulkan instance with zero enable layers, Vulkan loader warns about GalaxyOverlayVkLayer's name not conforming to naming standard (Policy LLPL..."
 status: "report"
 difficulty: "advanced"
 series: "vulkan-notes"

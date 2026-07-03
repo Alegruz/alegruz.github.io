@@ -4,7 +4,7 @@ title:  실무에서의 ReSTIR
 date:   2022-09-17 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 실무에서의 ReSTIR."
+description: "2020년에 SIGGRAPH에 나온 Spatiotemporal reservoir resampling for real-time ray tracing with dynamic direct lighting 논문으로부터 ReSTIR 붐이 시작되었는데, 해당 기술을 적용한 여러 논문을 읽고..."
 status: "notes"
 difficulty: "advanced"
 series: "restir"

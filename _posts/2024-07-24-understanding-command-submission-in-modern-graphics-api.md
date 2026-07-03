@@ -4,7 +4,7 @@ title:  Understanding Command Submission in Modern Graphics
 date:   2024-07-24 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Understanding Command Submission in Modern Graphics."
+description: "One of the significant shifts in modern graphics APIs is the management of GPU commands. This shift, where developers now manage the entire lifecycle of GPU..."
 status: "notes"
 difficulty: "intermediate"
 series: "vulkan-notes"

@@ -1,8 +1,12 @@
 rendering:
   label: Rendering
+  description: Rendering algorithms, ray tracing, sampling, lighting, and graphics study notes.
 api:
   label: Graphics API
+  description: Vulkan, Direct3D, swapchains, synchronization, and API debugging notes.
 theory:
   label: Theory / Math
+  description: Proof writing, Monte Carlo methods, and mathematical background for graphics.
 engine:
   label: Engine
+  description: Game engine architecture, RHI design, performance, and implementation notes.

@@ -4,7 +4,7 @@ title:  실시간 광선 추적법 공부 노트
 date:   2022-04-03 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 실시간 광선 추적법 공부 노트."
+description: "이 노트는 Real-Time Rendering 책을 읽고 한국어로 정리한 책입니다."
 status: "notes"
 difficulty: "advanced"
 topic: rendering

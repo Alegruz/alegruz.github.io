@@ -4,7 +4,7 @@ title:  전역 조명 공부 노트
 date:   2022-03-13 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 전역 조명 공부 노트."
+description: "이 노트는 NVIDIA에서 제공한 광선 추적법 입문 시리즈인 Ray Tracing Essentials를 한국어로 정리/요약한 노트입니다. 광선 추적법을 공부하시는 분들을 위해 남깁니다."
 status: "notes"
 difficulty: "advanced"
 topic: rendering
@@ -536,11 +536,11 @@ DXR과 Vulkan에서는 광선 추적법을 위해 다섯 가지의 새로운 셰
 
 물론 실제 사진을 보면 틈 사이가 조금 더 어두운 등 약간의 차이는 있기는 하다. 하지만 디노이징된 영상도 상당히 좋은 것을 볼 수 있다.
 
-![DenoisingGif](/assets/images/RayTracingEssentials/Denoising.gif)
+![DenoisingGif](/assets/images/RayTracingEssentials/Denoising.webp)
 
 위의 영상의 경우 실시간은 아니고 7 fps 정도의 속도로 렌더링 되었으나, 결과를 보면 상당히 훌륭한 것을 알 수 있다.
 
-![DenoisingAndReference](/assets/images/RayTracingEssentials/DenoisingAndReference.gif)
+![DenoisingAndReference](/assets/images/RayTracingEssentials/DenoisingAndReference.webp)
 
 실제 결과와 비교해봐도 상당히 훌륭한 결과가 나옴을 알 수 있다.
 

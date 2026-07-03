@@ -4,7 +4,8 @@ title:  Marching Cube Study Note
 date:   2021-11-12 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Marching Cube Study Note."
+translation_key: "marching-cubes"
+description: "There are two types of surfaces to understand beforehand. The Explicit Surface and the Implicit Surface. Explicit surface is a surface that has every vertice..."
 status: "notes"
 difficulty: "intermediate"
 series: "marching-cubes"

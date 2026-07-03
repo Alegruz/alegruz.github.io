@@ -108,7 +108,10 @@ layout: default
                 data-url="{{ post.url | relative_url }}"
               >
                 <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
-                <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                <div class="post-row-main">
+                  <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                  <p class="post-summary">{{ post.description | default: post.excerpt | strip_html | normalize_whitespace }}</p>
+                </div>
                 <span class="post-row-meta">
                   {{ topic_label }} / {{ post_lang | upcase }}
                   {%- if post.series -%}

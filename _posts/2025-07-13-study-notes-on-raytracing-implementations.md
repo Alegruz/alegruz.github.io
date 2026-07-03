@@ -4,7 +4,7 @@ title:  Study Notes on Raytracing Implementations
 date:   2025-07-13 17:01:00 +0900
 categories: graphics
 lang: "en"
-description: "Notes on Study Notes on Raytracing Implementations."
+description: "Raytracing is basically computing intersections of parametric lines from the camera with the scene geometry, and then evaluating the lighting at those inters..."
 status: "notes"
 difficulty: "advanced"
 topic: rendering

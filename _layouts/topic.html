@@ -1,0 +1,42 @@
+---
+layout: default
+---
+
+{%- assign topic_key = page.topic_key -%}
+{%- assign topic_data = site.data.topics[topic_key] -%}
+{%- assign topic_posts = site.posts | where: "topic", topic_key -%}
+{%- assign difficulties = "beginner,intermediate,advanced" | split: "," -%}
+
+<section class="topic-page">
+  <header class="topic-header">
+    <a class="post-back" href="{{ "/topics/" | relative_url }}">Topics</a>
+    <h1>{{ topic_data.label | default: page.title | escape }}</h1>
+    {%- if topic_data.description -%}
+      <p>{{ topic_data.description }}</p>
+    {%- endif -%}
+    <span class="series-count">{{ topic_posts.size }} posts</span>
+  </header>
+
+  <div class="topic-lanes">
+    {%- for difficulty in difficulties -%}
+      {%- assign lane_posts = topic_posts | where: "difficulty", difficulty -%}
+      {%- if lane_posts.size > 0 -%}
+        <section class="topic-lane">
+          <h2>{{ difficulty | capitalize }}</h2>
+          <ol class="topic-post-list">
+            {%- for post in lane_posts -%}
+              <li class="topic-post-row">
+                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+                <div>
+                  <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                  <p>{{ post.description | default: post.excerpt | strip_html | normalize_whitespace }}</p>
+                </div>
+                <span>{{ post.lang | default: "en" | upcase }}</span>
+              </li>
+            {%- endfor -%}
+          </ol>
+        </section>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</section>

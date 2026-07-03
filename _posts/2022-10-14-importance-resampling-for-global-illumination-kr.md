@@ -4,7 +4,7 @@ title:  전역 조명을 위한 중요도 재표집
 date:   2022-10-14 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 전역 조명을 위한 중요도 재표집."
+description: "Eurographics 렌더링 심포지엄 (2005) Kavita Bala, Philip Dutré (편집자)"
 status: "notes"
 difficulty: "advanced"
 series: "restir"

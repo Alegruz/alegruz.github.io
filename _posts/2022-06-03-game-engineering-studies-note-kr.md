@@ -4,7 +4,7 @@ title:  게임공학 공부 노트
 date:   2022-06-03 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 게임공학 공부 노트."
+description: "FK: 연속된 관절과, 각 관절에 대한 각도가 주어졌을 때, 관절의 끝지점의 위치를 결정하는 문제."
 status: "notes"
 difficulty: "intermediate"
 topic: engine

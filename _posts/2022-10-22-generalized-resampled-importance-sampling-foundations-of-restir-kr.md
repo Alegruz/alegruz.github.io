@@ -4,7 +4,7 @@ title:  "일반 재표집 중요도 표집: ReSTIR의 근간"
 date:   2022-10-22 00:00:00 +0000
 categories: graphics
 lang: "ko"
-description: "Notes on 일반 재표집 중요도 표집: ReSTIR의 근간."
+description: "장면들이 너무 복잡해지니깐 실시간으로 광선 추적 / 경로 표집할 때 적은 표본으로 최고의 퀄리티를 뽑아야하는 기술이 더욱 중요해짐... 최근엔 재표집resampling 기반의 RIS로 최대한 뭔가를 해보려고 했는데, 그 중 하나가 시공간으로 복잡한 광전달을 픽셀 당 겨우 몇 개의..."
 status: "notes"
 difficulty: "advanced"
 series: "restir"

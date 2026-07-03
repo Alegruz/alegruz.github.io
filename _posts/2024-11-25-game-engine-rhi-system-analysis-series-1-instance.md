@@ -4,7 +4,7 @@ title:  "Game Engine RHI System Analysis Series 1: Instance"
 date:   2024-11-25 00:00:00 +0000
 categories: graphics
 lang: "en"
-description: "Notes on Game Engine RHI System Analysis Series 1: Instance."
+description: "In order to use a Graphics API, once has to initialize something called an Instance. In Direct3D, the Microsoft DirectX Graphics Infrastructure or DXGI is th..."
 status: "report"
 difficulty: "advanced"
 series: "rhi-system-analysis"
