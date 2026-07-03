@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "visual:smoke": "node scripts/visual_smoke.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.0"
+  }
+}

@@ -1,5 +1,6 @@
 ---
 layout: post
+math: true
 title:  컴퓨터 그래픽스에서 좌표계 이해하기
 date:   2024-01-22 00:00:00 +0000
 categories: graphics

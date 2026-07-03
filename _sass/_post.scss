@@ -431,6 +431,31 @@ mjx-container {
   padding: 0.15rem 0;
 }
 
+.post-content :target {
+  scroll-margin-top: 88px;
+}
+
+.post-content h2:target,
+.post-content h3:target,
+.post-content h4:target {
+  color: var(--accent);
+}
+
+.footnotes,
+.post-content h1[id="참고문헌"] ~ div[id] {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.footnotes li:target,
+.post-content div[id^="footnote"]:target {
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+
 .post-neighbor-nav {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

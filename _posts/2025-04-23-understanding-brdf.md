@@ -1,5 +1,6 @@
 ---
 layout: post
+math: true
 title:  Understanding BRDF
 date:   2025-04-23 21:16:00 +0900
 categories: graphics

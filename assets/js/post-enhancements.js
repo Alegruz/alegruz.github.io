@@ -421,9 +421,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadMathJaxIfNeeded() {
-    const text = content.textContent || "";
-    const hasMath = /\$\$|\\\(|\\\[|\\begin\{/.test(text);
-    if (!hasMath) {
+    if (article?.dataset.mathEnabled !== "true") {
       return;
     }
 

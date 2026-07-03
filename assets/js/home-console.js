@@ -476,6 +476,13 @@ document.addEventListener("DOMContentLoaded", function () {
     return ((searchInput && searchInput.value) || "").trim();
   }
 
+  function openFirstVisibleResult() {
+    const firstVisible = feed?.querySelector(".post-row:not([hidden]) .post-link");
+    if (firstVisible instanceof HTMLAnchorElement) {
+      window.location.href = firstVisible.href;
+    }
+  }
+
   topicButtons.forEach((button) => {
     button.addEventListener("click", function () {
       activeTopic = button.dataset.topic || "all";
@@ -523,6 +530,11 @@ document.addEventListener("DOMContentLoaded", function () {
         searchInput.value = "";
         clearScheduledFilter();
         applyFilters();
+      } else if (event.key === "Enter" && searchQuery()) {
+        event.preventDefault();
+        clearScheduledFilter();
+        applyFilters();
+        openFirstVisibleResult();
       }
     });
   }

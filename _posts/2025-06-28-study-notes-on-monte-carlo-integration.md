@@ -1,5 +1,6 @@
 ---
 layout: post
+math: true
 title:  Study Notes on Monte Carlo Integration
 date:   2025-06-28 20:55:00 +0900
 categories: graphics

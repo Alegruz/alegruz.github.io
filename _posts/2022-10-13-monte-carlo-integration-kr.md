@@ -1,5 +1,6 @@
 ---
 layout: post
+math: true
 title:  몬테 카를로 적분법이란?
 date:   2022-10-13 00:00:00 +0000
 categories: math

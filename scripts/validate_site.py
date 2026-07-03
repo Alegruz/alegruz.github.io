@@ -23,7 +23,16 @@ STATIC_IMAGE_BUDGET = 1_500_000
 ANIMATED_IMAGE_BUDGET = 6_000_000
 ATTR_PATTERN = re.compile(r"""(href|src|srcset)=["']([^"']+)["']""")
 MARKDOWN_LINK_PATTERN = re.compile(r"""(?<!!)\[[^\]]+\]\(([^)\s]+)(?:\s+["'][^)]*["'])?\)""")
+LOCAL_MARKDOWN_IMAGE_PATTERN = re.compile(r"""!\[[^\]]*\]\((/assets/images/[^)\s]+)(?:\s+["'][^)]*["'])?\)""")
+MATH_PATTERN = re.compile(r"""\$\$|\\\(|\\\[|\\begin\{""")
 POST_FILE_DATE_PATTERN = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-")
+GENERATED_FILE_BUDGETS = {
+    "assets/main.css": 70_000,
+    "assets/js/home-console.js": 28_000,
+    "assets/js/post-enhancements.js": 24_000,
+    "search.json": 350_000,
+    "feed.json": 3_000_000,
+}
 SOURCE_EXTENSIONS = {".html", ".md", ".markdown"}
 SOURCE_SKIP_PARTS = {
     ".git",
@@ -50,19 +59,27 @@ def read_data_keys(path: Path) -> set[str]:
     return keys
 
 
-def parse_front_matter(path: Path) -> dict[str, str]:
+def split_front_matter(path: Path) -> tuple[str, str]:
     text = read_text(path).lstrip("\ufeff")
     match = re.match(r"---\n(.*?)\n---\n", text, re.S)
     if not match:
         raise ValueError("missing YAML front matter")
+    return match.group(1), text[match.end():]
 
+
+def parse_front_matter_text(front_matter: str) -> dict[str, str]:
     data: dict[str, str] = {}
-    for line in match.group(1).splitlines():
+    for line in front_matter.splitlines():
         if ":" not in line or line.startswith(" "):
             continue
         key, value = line.split(":", 1)
         data[key.strip()] = value.strip().strip("\"'")
     return data
+
+
+def parse_front_matter(path: Path) -> dict[str, str]:
+    front_matter, _ = split_front_matter(path)
+    return parse_front_matter_text(front_matter)
 
 
 def parse_scalar(value: str) -> object:
@@ -121,10 +138,11 @@ def validate_posts() -> list[str]:
             if post_date > today:
                 errors.append(f"{path.relative_to(ROOT)}: post date is in the future")
         try:
-            front_matter = parse_front_matter(path)
+            front_matter_text, body = split_front_matter(path)
         except ValueError as exc:
             errors.append(f"{path.relative_to(ROOT)}: {exc}")
             continue
+        front_matter = parse_front_matter_text(front_matter_text)
 
         title = front_matter.get("title")
         lang = front_matter.get("lang")
@@ -135,6 +153,7 @@ def validate_posts() -> list[str]:
         series = front_matter.get("series")
         series_order = front_matter.get("series_order")
         translation_key = front_matter.get("translation_key")
+        math = front_matter.get("math")
 
         if not title:
             errors.append(f"{path.relative_to(ROOT)}: missing title")
@@ -151,8 +170,12 @@ def validate_posts() -> list[str]:
             errors.append(f"{path.relative_to(ROOT)}: generic description")
         if status not in STATUSES:
             errors.append(f"{path.relative_to(ROOT)}: invalid status {status!r}")
+        elif status == "draft":
+            errors.append(f"{path.relative_to(ROOT)}: draft post cannot ship in production")
         if difficulty not in DIFFICULTIES:
             errors.append(f"{path.relative_to(ROOT)}: invalid difficulty {difficulty!r}")
+        if MATH_PATTERN.search(body) and math != "true":
+            errors.append(f"{path.relative_to(ROOT)}: TeX content requires `math: true` front matter")
         if series:
             if series not in series_keys:
                 errors.append(f"{path.relative_to(ROOT)}: invalid series {series!r}")
@@ -276,6 +299,27 @@ def urls_from_source(text: str) -> list[str]:
     return urls
 
 
+def source_warnings() -> list[str]:
+    warnings: list[str] = []
+    raw_image_refs: list[str] = []
+    for path in sorted(POSTS.glob("*")):
+        if path.suffix.lower() not in {".md", ".markdown"}:
+            continue
+        for line_number, line in enumerate(read_text(path).splitlines(), start=1):
+            if LOCAL_MARKDOWN_IMAGE_PATTERN.search(line):
+                raw_image_refs.append(f"{path.relative_to(ROOT)}:{line_number}")
+
+    if raw_image_refs:
+        preview = ", ".join(raw_image_refs[:12])
+        remaining = len(raw_image_refs) - min(len(raw_image_refs), 12)
+        suffix = f", +{remaining} more" if remaining else ""
+        warnings.append(
+            "raw local Markdown image syntax found; prefer `{% include image.html ... %}` "
+            f"for optimized local images: {preview}{suffix}"
+        )
+    return warnings
+
+
 def validate_source_links() -> list[str]:
     errors: list[str] = []
     if not SITE.exists():
@@ -335,6 +379,17 @@ def validate_generated_files() -> list[str]:
         path for path in POSTS.glob("*")
         if path.suffix.lower() in {".md", ".markdown"}
     ])
+    for relative_path, budget in GENERATED_FILE_BUDGETS.items():
+        target = SITE / relative_path
+        if not target.exists():
+            errors.append(f"_site/{relative_path} was not generated")
+            continue
+        size = target.stat().st_size
+        if size > budget:
+            size_kb = size / 1000
+            budget_kb = budget / 1000
+            errors.append(f"_site/{relative_path} is {size_kb:.1f} KB; budget is {budget_kb:.1f} KB")
+
     search_index = SITE / "search.json"
     if not search_index.exists():
         errors.append("_site/search.json was not generated")
@@ -453,6 +508,7 @@ def validate_image_budgets() -> list[str]:
 
 
 def main() -> int:
+    warnings = source_warnings()
     errors = (
         validate_posts()
         + validate_generated_files()
@@ -461,6 +517,8 @@ def main() -> int:
         + validate_generated_images()
         + validate_image_budgets()
     )
+    for warning in warnings:
+        print(f"warning: {warning}", file=sys.stderr)
     if errors:
         for error in errors:
             print(error, file=sys.stderr)

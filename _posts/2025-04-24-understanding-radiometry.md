@@ -1,5 +1,6 @@
 ---
 layout: post
+math: true
 title:  Understanding Radiometry
 date:   2025-04-24 20:55:00 +0900
 categories: graphics
