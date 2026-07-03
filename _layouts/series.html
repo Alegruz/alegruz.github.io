@@ -13,7 +13,10 @@ layout: default
     {%- if series_data.description -%}
       <p>{{ series_data.description }}</p>
     {%- endif -%}
-    <span class="series-count">{{ series_posts.size }} posts</span>
+    <div class="meta-actions">
+      <span class="series-count">{{ series_posts.size }} posts</span>
+      <a class="meta-action-link" href="{{ "/" | relative_url }}?series={{ series_key }}">Filtered archive</a>
+    </div>
   </header>
 
   <ol class="series-post-list">

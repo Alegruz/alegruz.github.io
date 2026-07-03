@@ -19,6 +19,7 @@ DIFFICULTIES = {"beginner", "intermediate", "advanced"}
 IMAGE_SUFFIXES = {".avif", ".gif", ".jpg", ".jpeg", ".png", ".webp"}
 STATIC_IMAGE_BUDGET = 1_500_000
 ANIMATED_IMAGE_BUDGET = 6_000_000
+ATTR_PATTERN = re.compile(r"""(href|src|srcset)=["']([^"']+)["']""")
 
 
 def read_text(path: Path) -> str:
@@ -47,6 +48,37 @@ def parse_front_matter(path: Path) -> dict[str, str]:
         key, value = line.split(":", 1)
         data[key.strip()] = value.strip().strip("\"'")
     return data
+
+
+def parse_scalar(value: str) -> object:
+    value = value.strip()
+    if value == "true":
+        return True
+    if value == "false":
+        return False
+    if value.isdigit():
+        return int(value)
+    return value.strip("\"'")
+
+
+def load_image_manifest() -> dict[str, dict[str, object]]:
+    records: dict[str, dict[str, object]] = {}
+    if not MANIFEST.exists():
+        return records
+
+    current: dict[str, object] | None = None
+    for line in read_text(MANIFEST).splitlines():
+        if line.startswith("  - path: "):
+            if current and isinstance(current.get("path"), str):
+                records[str(current["path"])] = current
+            current = {"path": line.split(":", 1)[1].strip()}
+        elif current is not None and line.startswith("    ") and ":" in line:
+            key, value = line.strip().split(":", 1)
+            current[key] = parse_scalar(value)
+
+    if current and isinstance(current.get("path"), str):
+        records[str(current["path"])] = current
+    return records
 
 
 def validate_posts() -> list[str]:
@@ -150,18 +182,33 @@ def generated_target_exists(page: Path, raw_url: str) -> bool:
     return any(candidate.exists() for candidate in candidates)
 
 
+def urls_from_attr(attr_name: str, raw_value: str) -> list[str]:
+    raw_value = unescape(raw_value).strip()
+    if not raw_value:
+        return []
+    if attr_name != "srcset":
+        return [raw_value]
+
+    urls: list[str] = []
+    for candidate in raw_value.split(","):
+        candidate = candidate.strip()
+        if not candidate:
+            continue
+        urls.append(candidate.split()[0])
+    return urls
+
+
 def validate_generated_links() -> list[str]:
     errors: list[str] = []
     if not SITE.exists():
         return ["_site does not exist; run `bundle exec jekyll build` first"]
 
-    attr_pattern = re.compile(r"""(?:href|src)=["']([^"']+)["']""")
     for page in sorted(SITE.rglob("*.html")):
         text = read_text(page)
-        for match in attr_pattern.finditer(text):
-            url = match.group(1)
-            if not generated_target_exists(page, url):
-                errors.append(f"{page.relative_to(ROOT)}: broken internal link {url!r}")
+        for match in ATTR_PATTERN.finditer(text):
+            for url in urls_from_attr(match.group(1), match.group(2)):
+                if not generated_target_exists(page, url):
+                    errors.append(f"{page.relative_to(ROOT)}: broken internal link {url!r}")
     return errors
 
 
@@ -195,60 +242,71 @@ def referenced_local_images() -> set[Path]:
         return set()
 
     references: set[Path] = set()
-    attr_pattern = re.compile(r"""(?:href|src)=["']([^"']+)["']""")
     for page in sorted(SITE.rglob("*.html")):
         text = read_text(page)
-        for match in attr_pattern.finditer(text):
-            raw_url = unescape(match.group(1))
-            if not raw_url or raw_url.startswith("#") or is_external(raw_url):
-                continue
-            parsed = urlparse(raw_url)
-            path = unquote(parsed.path)
-            if not path:
-                continue
+        for match in ATTR_PATTERN.finditer(text):
+            for raw_url in urls_from_attr(match.group(1), match.group(2)):
+                if not raw_url or raw_url.startswith("#") or is_external(raw_url):
+                    continue
+                parsed = urlparse(raw_url)
+                path = unquote(parsed.path)
+                if not path:
+                    continue
 
-            if path.startswith("/"):
-                site_target = SITE / path.lstrip("/")
-            else:
-                site_target = page.parent / path
-            if site_target.suffix.lower() not in IMAGE_SUFFIXES:
-                continue
+                if path.startswith("/"):
+                    site_target = SITE / path.lstrip("/")
+                else:
+                    site_target = page.parent / path
+                if site_target.suffix.lower() not in IMAGE_SUFFIXES:
+                    continue
 
-            try:
-                relative_site_target = site_target.resolve().relative_to(SITE.resolve())
-            except ValueError:
-                continue
-            source_target = ROOT / relative_site_target
-            if source_target.exists():
-                references.add(source_target)
+                try:
+                    relative_site_target = site_target.resolve().relative_to(SITE.resolve())
+                except ValueError:
+                    continue
+                source_target = ROOT / relative_site_target
+                if source_target.exists():
+                    references.add(source_target)
     return references
 
 
-def collect_warnings() -> list[str]:
-    warnings: list[str] = []
-    images = referenced_local_images()
-    if not images:
-        return warnings
+def image_budget(record: dict[str, object] | None, path: Path) -> int:
+    if (record and record.get("animated") is True) or path.suffix.lower() == ".gif":
+        return ANIMATED_IMAGE_BUDGET
+    return STATIC_IMAGE_BUDGET
 
-    for path in sorted(images):
-        budget = ANIMATED_IMAGE_BUDGET if path.suffix.lower() in {".gif", ".webp"} else STATIC_IMAGE_BUDGET
-        if path.stat().st_size > budget:
-            size_mb = path.stat().st_size / 1_000_000
-            budget_mb = budget / 1_000_000
-            warnings.append(f"{path.relative_to(ROOT)} is {size_mb:.1f} MB; budget is {budget_mb:.1f} MB")
-    return warnings
+
+def validate_image_budgets() -> list[str]:
+    errors: list[str] = []
+    manifest = load_image_manifest()
+    for path in sorted(referenced_local_images()):
+        relative_path = path.relative_to(ROOT).as_posix()
+        record = manifest.get(relative_path)
+        budget = image_budget(record, path)
+        size = path.stat().st_size
+        if size <= budget:
+            continue
+
+        webp = record.get("webp") if record else None
+        webp_path = ROOT / str(webp) if webp else None
+        webp_record = manifest.get(str(webp)) if webp else None
+        webp_budget = image_budget(webp_record, webp_path) if webp_path is not None else 0
+        if webp_path is not None and webp_path.exists() and webp_path.stat().st_size <= webp_budget:
+            continue
+
+        size_mb = size / 1_000_000
+        budget_mb = budget / 1_000_000
+        errors.append(f"{path.relative_to(ROOT)} is {size_mb:.1f} MB; budget is {budget_mb:.1f} MB")
+    return errors
 
 
 def main() -> int:
-    warnings = collect_warnings()
-    for warning in warnings:
-        print(f"warning: {warning}", file=sys.stderr)
-
     errors = (
         validate_posts()
         + validate_generated_files()
         + validate_generated_links()
         + validate_generated_images()
+        + validate_image_budgets()
     )
     if errors:
         for error in errors:

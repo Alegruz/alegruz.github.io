@@ -1,0 +1,39 @@
+{%- assign raw_src = include.src | strip -%}
+{%- assign normalized_src = raw_src | remove_first: "/" -%}
+{%- assign image_entry = nil -%}
+{%- for image in site.data.image_manifest.images -%}
+  {%- if image.path == normalized_src -%}
+    {%- assign image_entry = image -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign alt = include.alt | default: "" -%}
+{%- assign loading = include.loading | default: "lazy" -%}
+{%- assign decoding = include.decoding | default: "async" -%}
+{%- assign fallback_url = raw_src | relative_url -%}
+{%- assign figure_class = "post-figure optimized-image" -%}
+{%- if include.wide -%}
+  {%- assign figure_class = figure_class | append: " figure-wide" -%}
+{%- endif -%}
+
+<figure class="{{ figure_class }}">
+  <picture class="post-picture">
+    {%- if image_entry and image_entry.webp -%}
+      {%- assign webp_url = "/" | append: image_entry.webp | relative_url -%}
+      <source srcset="{{ webp_url }}" type="image/webp">
+    {%- endif -%}
+    <img
+      src="{{ fallback_url }}"
+      alt="{{ alt | escape }}"
+      loading="{{ loading }}"
+      decoding="{{ decoding }}"
+      {%- if image_entry -%}
+        width="{{ image_entry.width }}"
+        height="{{ image_entry.height }}"
+      {%- endif -%}
+    >
+  </picture>
+  {%- if include.caption -%}
+    <figcaption>{{ include.caption }}</figcaption>
+  {%- endif -%}
+</figure>

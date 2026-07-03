@@ -14,7 +14,10 @@ layout: default
     {%- if topic_data.description -%}
       <p>{{ topic_data.description }}</p>
     {%- endif -%}
-    <span class="series-count">{{ topic_posts.size }} posts</span>
+    <div class="meta-actions">
+      <span class="series-count">{{ topic_posts.size }} posts</span>
+      <a class="meta-action-link" href="{{ "/" | relative_url }}?topic={{ topic_key }}">Filtered archive</a>
+    </div>
   </header>
 
   <div class="topic-lanes">

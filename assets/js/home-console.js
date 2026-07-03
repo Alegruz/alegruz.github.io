@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const script = document.querySelector("script[data-search-index]");
   const searchIndexUrl = script?.dataset.searchIndex;
   const urlParams = new URLSearchParams(window.location.search);
+  const feed = document.getElementById("post-feed");
+  const yearGroupOrder = new Map(yearGroups.map((group, index) => [group, index]));
+  const rowOrder = new Map(rows.map((row, index) => [row, index]));
 
   let activeTopic = urlParams.get("topic") || "all";
   let activeLanguageFilter = urlParams.get("lang") || uiLanguage();
@@ -112,6 +115,85 @@ document.addEventListener("DOMContentLoaded", function () {
     ].join(" ");
   }
 
+  function countOccurrences(value, term) {
+    if (!value || !term) {
+      return 0;
+    }
+
+    let count = 0;
+    let index = value.indexOf(term);
+    while (index !== -1) {
+      count += 1;
+      index = value.indexOf(term, index + term.length);
+    }
+    return count;
+  }
+
+  function scoreRow(row, query) {
+    if (!query) {
+      return 0;
+    }
+
+    const terms = query.split(/\s+/).filter(Boolean);
+    const title = row.dataset.searchTitle || row.dataset.title || "";
+    const description = row.dataset.searchDescription || row.dataset.summary || "";
+    const excerpt = row.dataset.searchExcerpt || "";
+    const content = row.dataset.searchContent || "";
+    const topic = row.dataset.searchTopic || row.dataset.topic || "";
+    const series = row.dataset.searchSeries || row.dataset.series || "";
+    let score = 0;
+
+    terms.forEach((term) => {
+      if (title === term) score += 120;
+      if (title.startsWith(term)) score += 80;
+      score += countOccurrences(title, term) * 55;
+      score += countOccurrences(series, term) * 35;
+      score += countOccurrences(topic, term) * 30;
+      score += countOccurrences(description, term) * 18;
+      score += countOccurrences(excerpt, term) * 10;
+      score += countOccurrences(content, term) * 2;
+    });
+
+    return score;
+  }
+
+  function sortResults(query) {
+    yearGroups.forEach((group) => {
+      const list = group.querySelector(".post-list");
+      if (!list) {
+        return;
+      }
+
+      const groupRows = Array.from(list.querySelectorAll(".post-row"));
+      groupRows
+        .sort((a, b) => {
+          if (!query) {
+            return rowOrder.get(a) - rowOrder.get(b);
+          }
+          return Number(b.dataset.searchScore || 0) - Number(a.dataset.searchScore || 0)
+            || rowOrder.get(a) - rowOrder.get(b);
+        })
+        .forEach((row) => list.appendChild(row));
+    });
+
+    if (!feed) {
+      return;
+    }
+
+    yearGroups
+      .slice()
+      .sort((a, b) => {
+        if (!query) {
+          return yearGroupOrder.get(a) - yearGroupOrder.get(b);
+        }
+
+        const bestA = Math.max(0, ...Array.from(a.querySelectorAll(".post-row:not([hidden])")).map((row) => Number(row.dataset.searchScore || 0)));
+        const bestB = Math.max(0, ...Array.from(b.querySelectorAll(".post-row:not([hidden])")).map((row) => Number(row.dataset.searchScore || 0)));
+        return bestB - bestA || yearGroupOrder.get(a) - yearGroupOrder.get(b);
+      })
+      .forEach((group) => feed.appendChild(group));
+  }
+
   function highlightText(element, query) {
     if (!element) {
       return;
@@ -159,8 +241,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const matchesSeries = activeSeries === "all" || rowSeries === activeSeries;
       const matchesQuery = !query || getSearchText(row).includes(query);
       const visible = matchesTopic && matchesLanguage && matchesYear && matchesSeries && matchesQuery;
+      const score = visible ? scoreRow(row, query) : 0;
 
       row.hidden = !visible;
+      row.dataset.searchScore = String(score);
       row.classList.toggle("search-hit", Boolean(query && visible));
       highlightText(row.querySelector(".post-link"), visible ? query : "");
       highlightText(row.querySelector(".post-summary"), visible ? query : "");
@@ -169,6 +253,8 @@ document.addEventListener("DOMContentLoaded", function () {
         count += 1;
       }
     });
+
+    sortResults(query);
 
     yearGroups.forEach((group) => {
       const hasVisibleRows = Array.from(group.querySelectorAll(".post-row")).some((row) => !row.hidden);
@@ -216,6 +302,12 @@ document.addEventListener("DOMContentLoaded", function () {
             post.status,
             post.difficulty
           ].filter(Boolean).join(" ").toLowerCase();
+          row.dataset.searchTitle = (post.title || "").toLowerCase();
+          row.dataset.searchDescription = (post.description || "").toLowerCase();
+          row.dataset.searchExcerpt = (post.excerpt || "").toLowerCase();
+          row.dataset.searchContent = (post.content || "").toLowerCase();
+          row.dataset.searchTopic = [post.topic, post.topic_label].filter(Boolean).join(" ").toLowerCase();
+          row.dataset.searchSeries = [post.series, post.series_label].filter(Boolean).join(" ").toLowerCase();
         });
         searchHydrated = true;
         applyFilters();

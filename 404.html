@@ -1,25 +1,108 @@
 ---
+layout: default
+title: Not Found
 permalink: /404.html
-layout: page
+description: Page not found.
 ---
 
-<style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
+<section class="not-found-page">
+  <header class="not-found-hero">
+    <p class="not-found-code">404</p>
+    <div>
+      <h1>Not Found</h1>
+      <p>The page does not exist, or the URL changed. Search the archive or jump into one of the main reading paths.</p>
+      <p class="not-found-request">
+        Requested path:
+        <code id="missing-path">/404.html</code>
+      </p>
+    </div>
+  </header>
 
-<div class="container">
-  <h1>404</h1>
+  <form class="not-found-search" action="{{ "/" | relative_url }}" method="get">
+    <label for="not-found-query">Search posts</label>
+    <div>
+      <input id="not-found-query" name="q" type="search" placeholder="restir, vulkan, ray tracing">
+      <button type="submit">Search</button>
+    </div>
+  </form>
 
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
-</div>
+  <div class="not-found-actions" aria-label="Primary recovery links">
+    <a href="{{ "/" | relative_url }}">Archive</a>
+    <a href="{{ "/start/" | relative_url }}">Start Here</a>
+    <a href="{{ "/topics/" | relative_url }}">Topics</a>
+    <a href="{{ "/series/" | relative_url }}">Series</a>
+  </div>
+
+  <div class="not-found-grid">
+    <section class="not-found-panel">
+      <h2>Topics</h2>
+      <div class="not-found-link-grid">
+        {%- for item in site.data.topics -%}
+          {%- assign topic_key = item[0] -%}
+          {%- assign topic_data = item[1] -%}
+          {%- assign topic_posts = site.posts | where: "topic", topic_key -%}
+          <a href="{{ "/topics/" | append: topic_key | append: "/" | relative_url }}">
+            <span>{{ topic_data.label | escape }}</span>
+            <small>{{ topic_posts.size }} posts</small>
+          </a>
+        {%- endfor -%}
+      </div>
+    </section>
+
+    <section class="not-found-panel">
+      <h2>Series</h2>
+      <div class="not-found-link-grid">
+        {%- for item in site.data.series limit: 6 -%}
+          {%- assign series_key = item[0] -%}
+          {%- assign series_data = item[1] -%}
+          {%- assign series_posts = site.posts | where: "series", series_key -%}
+          {%- if series_posts.size > 0 -%}
+            <a href="{{ "/series/" | append: series_key | append: "/" | relative_url }}">
+              <span>{{ series_data.label | escape }}</span>
+              <small>{{ series_posts.size }} posts</small>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+
+    <section class="not-found-panel not-found-recent">
+      <h2>Recent</h2>
+      <ol>
+        {%- for post in site.posts limit: 5 -%}
+          {%- assign post_topic = post.topic | default: "engine" -%}
+          {%- assign topic_data = site.data.topics[post_topic] -%}
+          <li>
+            <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            <p>
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+              <span>{{ topic_data.label | default: post_topic }}</span>
+              <span>{{ post.lang | default: "en" | upcase }}</span>
+            </p>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </section>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var path = window.location.pathname + window.location.search;
+    var pathNode = document.getElementById("missing-path");
+    var queryInput = document.getElementById("not-found-query");
+    var query = decodeURIComponent(window.location.pathname)
+      .replace(/\.[a-z0-9]+$/i, "")
+      .split("/")
+      .filter(Boolean)
+      .pop();
+
+    if (pathNode) {
+      pathNode.textContent = path || "/404.html";
+    }
+
+    if (queryInput && query) {
+      queryInput.value = query.replace(/[-_]+/g, " ");
+    }
+  })();
+</script>
