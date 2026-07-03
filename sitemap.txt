@@ -1,16 +1,80 @@
----
-layout: null
-permalink: /sitemap.txt
----
-{%- assign html_pages = site.html_pages | sort: "url" %}
-{%- for page in html_pages %}
-{%- unless page.url == "/404.html" or page.sitemap == false or page.url contains "/google" %}
-{{ page.url | absolute_url }}
-{% endunless %}
-{%- endfor %}
-{%- assign posts = site.posts | sort: "date" | reverse %}
-{%- for post in posts %}
-{%- unless post.sitemap == false %}
-{{ post.url | absolute_url }}
-{% endunless %}
-{%- endfor %}
+https://alegruz.github.io/
+https://alegruz.github.io/about/
+https://alegruz.github.io/cv/
+https://alegruz.github.io/music/
+https://alegruz.github.io/series/
+https://alegruz.github.io/series/effective-cpp/
+https://alegruz.github.io/series/exceptional-cpp/
+https://alegruz.github.io/series/fundamentals-computer-graphics/
+https://alegruz.github.io/series/marching-cubes/
+https://alegruz.github.io/series/math-notes/
+https://alegruz.github.io/series/pygame-engine/
+https://alegruz.github.io/series/rendering-pipeline/
+https://alegruz.github.io/series/restir/
+https://alegruz.github.io/series/rhi-system-analysis/
+https://alegruz.github.io/series/sph/
+https://alegruz.github.io/series/vulkan-notes/
+https://alegruz.github.io/topics/
+https://alegruz.github.io/topics/api/
+https://alegruz.github.io/topics/engine/
+https://alegruz.github.io/topics/rendering/
+https://alegruz.github.io/topics/theory/
+https://alegruz.github.io/graphics/2025/12/05/implementing-restir-variants-in-a-direct3d-12-path-tracer-a-practical-study-in-spatio-temporal-resampling.html
+https://alegruz.github.io/math/logic/2025/11/06/study-notes-on-math-proof-writing.html
+https://alegruz.github.io/graphics/2025/11/05/implementing-restir-and-restir-gi-on-d3d12.html
+https://alegruz.github.io/graphics/2025/07/22/study-notes-on-performance-aware-programming.html
+https://alegruz.github.io/graphics/2025/07/13/study-notes-on-raytracing-implementations.html
+https://alegruz.github.io/graphics/2025/06/28/restir-and-collective-intelligence.html
+https://alegruz.github.io/graphics/2025/06/28/study-notes-on-monte-carlo-integration.html
+https://alegruz.github.io/graphics/2025/04/24/understanding-radiometry.html
+https://alegruz.github.io/graphics/2025/04/23/understanding-brdf.html
+https://alegruz.github.io/graphics/2025/04/22/restir-studies.html
+https://alegruz.github.io/graphics/2025/03/22/galaxyoverlayvklayer-issue.html
+https://alegruz.github.io/graphics/2025/03/17/vulkan-acquire_image_issue.html
+https://alegruz.github.io/graphics/2025/03/17/vulkan-swap_chain_destroy_issue.html
+https://alegruz.github.io/graphics/2025/02/21/gaussian-splatting-study-notes.html
+https://alegruz.github.io/graphics/2025/01/20/computer-graphics-studies-fundamentals-of-computer-graphics-04-ray-tracing-kr.html
+https://alegruz.github.io/graphics/2025/01/19/computer-graphics-studies-fundamentals-of-computer-graphics-01-introduction-kr.html
+https://alegruz.github.io/graphics/2025/01/19/computer-graphics-studies-fundamentals-of-computer-graphics-03-raster-images-kr.html
+https://alegruz.github.io/math/2025/01/19/mathematics-studies-how-to-prove-it-01-sentential-logic-kr.html
+https://alegruz.github.io/graphics/2024/11/25/game-engine-rhi-system-analysis-series-0-introduction.html
+https://alegruz.github.io/graphics/2024/11/25/game-engine-rhi-system-analysis-series-1-instance.html
+https://alegruz.github.io/graphics/2024/11/22/pipeline-state-cache-studies.html
+https://alegruz.github.io/graphics/2024/09/06/vulkan-depth-issue.html
+https://alegruz.github.io/graphics/2024/07/24/understanding-command-submission-in-modern-graphics-api.html
+https://alegruz.github.io/graphics/2024/01/22/understanding-coordinate-systems-in-computer-graphics-kr.html
+https://alegruz.github.io/engine/2023/11/29/pygame-engine-development-01-kr.html
+https://alegruz.github.io/engine/2023/11/29/pygame-engine-development-02-kr.html
+https://alegruz.github.io/engine/2023/11/23/pygame-engine-development-00-kr.html
+https://alegruz.github.io/graphics/2023/08/01/vertex-shader-binning-kr.html
+https://alegruz.github.io/programming/cpp/effective_cpp/2023/05/20/effective-cpp-01-kr.html
+https://alegruz.github.io/programming/cpp/effective_cpp/2023/05/20/effective-cpp-kr.html
+https://alegruz.github.io/programming/cpp/exceptional_cpp/2023/05/20/exceptional-cpp-01-kr.html
+https://alegruz.github.io/programming/cpp/exceptional_cpp/2023/05/20/exceptional-cpp-kr.html
+https://alegruz.github.io/graphics/2023/05/18/fundamentals-of-computer-graphics-02-miscellaneous-math-kr.html
+https://alegruz.github.io/graphics/2023/05/17/fundamentals-of-computer-graphics-01-introduction-kr.html
+https://alegruz.github.io/graphics/2023/05/17/fundamentals-of-computer-graphics-kr.html
+https://alegruz.github.io/gameprogramming/2023/02/16/loops-kr.html
+https://alegruz.github.io/math/2022/10/28/learn-mathematics-from-start-to-finish-kr.html
+https://alegruz.github.io/graphics/2022/10/24/world-space-spatio-temporal-reservoir-reuse-for-ray-traced-global-illumination-kr.html
+https://alegruz.github.io/graphics/2022/10/22/generalized-resampled-importance-sampling-foundations-of-restir-kr.html
+https://alegruz.github.io/graphics/2022/10/20/restir-gi-path-resampling-for-real-time-path-tracing-revisited-kr.html
+https://alegruz.github.io/graphics/2022/10/16/spatiotemporal-reservoir-resampling-for-real-time-ray-tracing-with-dynamic-direct-lighting-kr.html
+https://alegruz.github.io/graphics/2022/10/14/importance-resampling-for-global-illumination-kr.html
+https://alegruz.github.io/math/2022/10/13/monte-carlo-integration-kr.html
+https://alegruz.github.io/graphics/2022/09/17/restir-for-production-kr.html
+https://alegruz.github.io/graphics/2022/07/27/rendering-pipeline-comparison.html
+https://alegruz.github.io/graphics/2022/07/19/efficient-rendering-study-notes.html
+https://alegruz.github.io/graphics/2022/06/03/game-engineering-studies-note-kr.html
+https://alegruz.github.io/graphics/2022/06/03/rendering-pipeline-study-notes.html
+https://alegruz.github.io/simulation/2022/04/23/authoring-consistent-landscapes-with-flora-and-fauna-source-code-analysis-kr.html
+https://alegruz.github.io/simulation/2022/04/09/restir-gi-path-resampling-for-real-time-path-tracing-kr.html
+https://alegruz.github.io/graphics/2022/04/03/real-time-ray-tracing-notes-kr.html
+https://alegruz.github.io/simulation/2022/03/31/authoring-consistent-landscapes-with-flora-and-fauna-kr.html
+https://alegruz.github.io/graphics/2022/03/15/global-illumination-studies-kr.html
+https://alegruz.github.io/graphics/2022/03/13/ray-tracing-essentials-kr.html
+https://alegruz.github.io/graphics/2021/12/12/sph-visualization-through-marching-cubes.html
+https://alegruz.github.io/simulation/2021/11/27/smoothed-particles-hydrodynamics-cuda.html
+https://alegruz.github.io/study/2021/11/21/introduction-to-game-programming-exam-preparations-kr.html
+https://alegruz.github.io/graphics/2021/11/12/marching-cubes-kr.html
+https://alegruz.github.io/graphics/2021/11/12/marching-cubes.html
