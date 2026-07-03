@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from html import unescape
@@ -20,6 +21,18 @@ IMAGE_SUFFIXES = {".avif", ".gif", ".jpg", ".jpeg", ".png", ".webp"}
 STATIC_IMAGE_BUDGET = 1_500_000
 ANIMATED_IMAGE_BUDGET = 6_000_000
 ATTR_PATTERN = re.compile(r"""(href|src|srcset)=["']([^"']+)["']""")
+MARKDOWN_LINK_PATTERN = re.compile(r"""(?<!!)\[[^\]]+\]\(([^)\s]+)(?:\s+["'][^)]*["'])?\)""")
+SOURCE_EXTENSIONS = {".html", ".md", ".markdown"}
+SOURCE_SKIP_PARTS = {
+    ".git",
+    ".jekyll-cache",
+    ".sass-cache",
+    "_site",
+    "assets/externals",
+    "node_modules",
+    "vendor",
+}
+REMOVED_INTERNAL_PATHS = {"/start/"}
 
 
 def read_text(path: Path) -> str:
@@ -198,6 +211,51 @@ def urls_from_attr(attr_name: str, raw_value: str) -> list[str]:
     return urls
 
 
+def should_skip_source(path: Path) -> bool:
+    relative = path.relative_to(ROOT).as_posix()
+    return any(relative == part or relative.startswith(f"{part}/") for part in SOURCE_SKIP_PARTS)
+
+
+def source_files() -> list[Path]:
+    files: list[Path] = []
+    for path in ROOT.rglob("*"):
+        if path.is_file() and path.suffix.lower() in SOURCE_EXTENSIONS and not should_skip_source(path):
+            files.append(path)
+    return sorted(files)
+
+
+def urls_from_source(text: str) -> list[str]:
+    urls: list[str] = []
+    for match in ATTR_PATTERN.finditer(text):
+        urls.extend(urls_from_attr(match.group(1), match.group(2)))
+    for match in MARKDOWN_LINK_PATTERN.finditer(text):
+        urls.append(unescape(match.group(1)).strip())
+    return urls
+
+
+def validate_source_links() -> list[str]:
+    errors: list[str] = []
+    if not SITE.exists():
+        return ["_site does not exist; run `bundle exec jekyll build` first"]
+
+    for path in source_files():
+        text = read_text(path)
+        relative = path.relative_to(ROOT)
+        for removed_path in REMOVED_INTERNAL_PATHS:
+            if removed_path in text:
+                errors.append(f"{relative}: references removed internal path {removed_path!r}")
+
+        for raw_url in urls_from_source(text):
+            if "{{" in raw_url or "{%" in raw_url:
+                continue
+            parsed = urlparse(raw_url)
+            if parsed.scheme or parsed.netloc or not parsed.path.startswith("/"):
+                continue
+            if not generated_target_exists(SITE / "index.html", raw_url):
+                errors.append(f"{relative}: broken source internal link {raw_url!r}")
+    return errors
+
+
 def validate_generated_links() -> list[str]:
     errors: list[str] = []
     if not SITE.exists():
@@ -230,8 +288,32 @@ def validate_generated_images() -> list[str]:
 
 def validate_generated_files() -> list[str]:
     errors: list[str] = []
-    if not (SITE / "search.json").exists():
+    search_index = SITE / "search.json"
+    if not search_index.exists():
         errors.append("_site/search.json was not generated")
+    else:
+        try:
+            records = json.loads(read_text(search_index))
+        except json.JSONDecodeError as exc:
+            errors.append(f"_site/search.json is invalid JSON: {exc}")
+        else:
+            if not isinstance(records, list):
+                errors.append("_site/search.json must contain a JSON array")
+            else:
+                post_count = len([
+                    path for path in POSTS.glob("*")
+                    if path.suffix.lower() in {".md", ".markdown"}
+                ])
+                if len(records) != post_count:
+                    errors.append(f"_site/search.json has {len(records)} records; expected {post_count}")
+                required_keys = {"title", "url", "content"}
+                for index, record in enumerate(records):
+                    if not isinstance(record, dict):
+                        errors.append(f"_site/search.json record {index} is not an object")
+                        continue
+                    missing = required_keys.difference(record)
+                    if missing:
+                        errors.append(f"_site/search.json record {index} missing {sorted(missing)}")
     if not MANIFEST.exists():
         errors.append("_data/image_manifest.yml was not generated; run `python scripts/optimize_images.py`")
     return errors
@@ -304,6 +386,7 @@ def main() -> int:
     errors = (
         validate_posts()
         + validate_generated_files()
+        + validate_source_links()
         + validate_generated_links()
         + validate_generated_images()
         + validate_image_budgets()

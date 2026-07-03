@@ -14,6 +14,12 @@ document.addEventListener("DOMContentLoaded", function () {
       || "section";
   }
 
+  function headingLabel(heading) {
+    const clone = heading.cloneNode(true);
+    clone.querySelectorAll(".heading-anchor").forEach((anchor) => anchor.remove());
+    return clone.textContent.trim();
+  }
+
   function enhanceImages() {
     const images = Array.from(content.querySelectorAll("img"));
     images.forEach((image) => {
@@ -55,19 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function buildTableOfContents() {
-    const toc = document.getElementById("post-toc");
-    const list = document.getElementById("post-toc-list");
+  function prepareHeadings() {
     const headings = Array.from(content.querySelectorAll("h2, h3"));
-
-    if (!toc || !list || headings.length < 3) {
-      return;
-    }
-
     const usedIds = new Set();
+
     headings.forEach((heading) => {
       if (!heading.id) {
-        const base = slugify(heading.textContent);
+        const base = slugify(headingLabel(heading));
         let id = base;
         let index = 2;
         while (usedIds.has(id) || document.getElementById(id)) {
@@ -78,13 +78,36 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       usedIds.add(heading.id);
 
+      if (!heading.querySelector(".heading-anchor")) {
+        const anchor = document.createElement("a");
+        anchor.className = "heading-anchor";
+        anchor.href = `#${heading.id}`;
+        anchor.setAttribute("aria-label", `Link to ${headingLabel(heading)}`);
+        anchor.textContent = "#";
+        heading.appendChild(anchor);
+      }
+    });
+
+    return headings;
+  }
+
+  function buildTableOfContents() {
+    const toc = document.getElementById("post-toc");
+    const list = document.getElementById("post-toc-list");
+    const headings = prepareHeadings();
+
+    if (!toc || !list || headings.length < 3) {
+      return;
+    }
+
+    headings.forEach((heading) => {
       const item = document.createElement("li");
       item.className = heading.tagName === "H3" ? "toc-h3" : "toc-h2";
 
       const link = document.createElement("a");
       link.href = `#${heading.id}`;
       link.dataset.headingId = heading.id;
-      link.textContent = heading.textContent;
+      link.textContent = headingLabel(heading);
       item.appendChild(link);
       list.appendChild(item);
     });
@@ -133,6 +156,21 @@ document.addEventListener("DOMContentLoaded", function () {
       label.textContent = language;
       toolbar.appendChild(label);
 
+      const actions = document.createElement("div");
+      actions.className = "code-actions";
+
+      const wrapButton = document.createElement("button");
+      wrapButton.type = "button";
+      wrapButton.textContent = "Wrap";
+      wrapButton.setAttribute("aria-pressed", "false");
+      wrapButton.addEventListener("click", () => {
+        const wrapped = !wrapper.classList.contains("code-wrapped");
+        wrapper.classList.toggle("code-wrapped", wrapped);
+        wrapButton.textContent = wrapped ? "Scroll" : "Wrap";
+        wrapButton.setAttribute("aria-pressed", wrapped ? "true" : "false");
+      });
+      actions.appendChild(wrapButton);
+
       const copyButton = document.createElement("button");
       copyButton.type = "button";
       copyButton.textContent = "Copy";
@@ -147,7 +185,25 @@ document.addEventListener("DOMContentLoaded", function () {
           window.setTimeout(() => { copyButton.textContent = "Copy"; }, 1200);
         }
       });
-      toolbar.appendChild(copyButton);
+      actions.appendChild(copyButton);
+
+      const lineCount = (code?.textContent || pre.textContent || "").split("\n").length;
+      if (lineCount > 44) {
+        const expandButton = document.createElement("button");
+        wrapper.classList.add("code-collapsed");
+        expandButton.type = "button";
+        expandButton.textContent = "Expand";
+        expandButton.setAttribute("aria-expanded", "false");
+        expandButton.addEventListener("click", () => {
+          const expanded = wrapper.classList.toggle("code-expanded");
+          wrapper.classList.toggle("code-collapsed", !expanded);
+          expandButton.textContent = expanded ? "Collapse" : "Expand";
+          expandButton.setAttribute("aria-expanded", expanded ? "true" : "false");
+        });
+        actions.appendChild(expandButton);
+      }
+
+      toolbar.appendChild(actions);
 
       pre.parentNode.insertBefore(wrapper, pre);
       wrapper.appendChild(toolbar);

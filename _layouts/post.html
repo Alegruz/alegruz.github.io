@@ -16,6 +16,9 @@ layout: default
 {%- assign word_count = content | strip_html | number_of_words -%}
 {%- assign reading_minutes = word_count | divided_by: 220 -%}
 {%- assign reading_remainder = word_count | modulo: 220 -%}
+{%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
+{%- assign published_day = page.date | date: "%Y-%m-%d" -%}
+{%- assign updated_day = page.last_modified_at | date: "%Y-%m-%d" -%}
 {%- if reading_minutes < 1 -%}
   {%- assign reading_minutes = 1 -%}
 {%- elsif reading_remainder > 0 -%}
@@ -45,14 +48,17 @@ layout: default
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
         {{ page.date | date: date_format }}
       </time>
+      {%- if page.last_modified_at and updated_day != published_day -%}
+        <time class="dt-updated" datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">
+          Updated {{ page.last_modified_at | date: date_format }}
+        </time>
+      {%- endif -%}
       {%- if page.lang -%}
         <span>{{ page.lang | upcase }}</span>
       {%- endif -%}
       <span>{{ reading_minutes }} min read</span>
-      <span>{{ word_count }} words</span>
       {%- if page.difficulty -%}
         <span>{{ page.difficulty | capitalize }}</span>
       {%- endif -%}

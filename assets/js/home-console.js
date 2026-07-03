@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let activeYear = urlParams.get("year") || "all";
   let activeSeries = urlParams.get("series") || "all";
   let searchHydrated = false;
+  let searchHydrationStarted = false;
 
   function uiLanguage() {
     return document.documentElement.getAttribute("lang") === "ko" ? "ko" : "en";
@@ -372,10 +373,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function hydrateSearchIndex() {
-    if (!searchIndexUrl) {
+    if (!searchIndexUrl || searchHydrated || searchHydrationStarted) {
       return;
     }
 
+    searchHydrationStarted = true;
     const rowsByUrl = new Map(rows.map((row) => [row.dataset.url, row]));
     fetch(searchIndexUrl, { headers: { Accept: "application/json" } })
       .then((response) => response.ok ? response.json() : [])
@@ -411,6 +413,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  function searchQuery() {
+    return ((searchInput && searchInput.value) || "").trim();
+  }
+
   topicButtons.forEach((button) => {
     button.addEventListener("click", function () {
       activeTopic = button.dataset.topic || "all";
@@ -443,7 +449,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (searchInput) {
     searchInput.addEventListener("input", function () {
-      applyFilters({ skipUrlUpdate: !searchHydrated });
+      if (searchQuery()) {
+        hydrateSearchIndex();
+      }
+      applyFilters();
+    });
+
+    searchInput.addEventListener("focus", function () {
+      hydrateSearchIndex();
     });
 
     searchInput.addEventListener("keydown", function (event) {
@@ -489,6 +502,8 @@ document.addEventListener("DOMContentLoaded", function () {
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 
   syncControlsFromState();
-  hydrateSearchIndex();
+  if (searchQuery()) {
+    hydrateSearchIndex();
+  }
   applyFilters({ skipUrlUpdate: true });
 });

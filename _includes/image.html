@@ -16,7 +16,12 @@
   {%- assign figure_class = figure_class | append: " figure-wide" -%}
 {%- endif -%}
 
-<figure class="{{ figure_class }}">
+<figure
+  class="{{ figure_class }}"
+  {%- if image_entry -%}
+    style="--image-ratio: {{ image_entry.width }} / {{ image_entry.height }};"
+  {%- endif -%}
+>
   <picture class="post-picture">
     {%- if image_entry and image_entry.webp -%}
       {%- assign webp_url = "/" | append: image_entry.webp | relative_url -%}

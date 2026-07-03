@@ -71,6 +71,9 @@ exclude:
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
+  - .vscode/
+  - scripts/
+  - temp.puml
   - assets/externals/emsdk/
   - "*.o"
   - "*.so"
