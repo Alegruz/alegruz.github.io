@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import date
 from html import unescape
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -22,6 +23,7 @@ STATIC_IMAGE_BUDGET = 1_500_000
 ANIMATED_IMAGE_BUDGET = 6_000_000
 ATTR_PATTERN = re.compile(r"""(href|src|srcset)=["']([^"']+)["']""")
 MARKDOWN_LINK_PATTERN = re.compile(r"""(?<!!)\[[^\]]+\]\(([^)\s]+)(?:\s+["'][^)]*["'])?\)""")
+POST_FILE_DATE_PATTERN = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-")
 SOURCE_EXTENSIONS = {".html", ".md", ".markdown"}
 SOURCE_SKIP_PARTS = {
     ".git",
@@ -101,10 +103,23 @@ def validate_posts() -> list[str]:
     translations: dict[str, list[tuple[Path, str | None]]] = {}
     titles: dict[tuple[str | None, str], list[Path]] = {}
     series_orders: dict[str, list[tuple[int, Path]]] = {}
+    today = date.today()
 
     for path in sorted(POSTS.glob("*")):
         if path.suffix.lower() not in {".md", ".markdown"}:
             continue
+        date_match = POST_FILE_DATE_PATTERN.match(path.name)
+        if not date_match:
+            errors.append(f"{path.relative_to(ROOT)}: filename must start with YYYY-MM-DD")
+        else:
+            year, month, day = (int(value) for value in date_match.groups())
+            try:
+                post_date = date(year, month, day)
+            except ValueError as exc:
+                errors.append(f"{path.relative_to(ROOT)}: invalid filename date: {exc}")
+                post_date = today
+            if post_date > today:
+                errors.append(f"{path.relative_to(ROOT)}: post date is in the future")
         try:
             front_matter = parse_front_matter(path)
         except ValueError as exc:
@@ -316,6 +331,10 @@ def validate_generated_images() -> list[str]:
 
 def validate_generated_files() -> list[str]:
     errors: list[str] = []
+    post_count = len([
+        path for path in POSTS.glob("*")
+        if path.suffix.lower() in {".md", ".markdown"}
+    ])
     search_index = SITE / "search.json"
     if not search_index.exists():
         errors.append("_site/search.json was not generated")
@@ -328,10 +347,6 @@ def validate_generated_files() -> list[str]:
             if not isinstance(records, list):
                 errors.append("_site/search.json must contain a JSON array")
             else:
-                post_count = len([
-                    path for path in POSTS.glob("*")
-                    if path.suffix.lower() in {".md", ".markdown"}
-                ])
                 if len(records) != post_count:
                     errors.append(f"_site/search.json has {len(records)} records; expected {post_count}")
                 required_keys = {"title", "url", "content"}
@@ -342,6 +357,33 @@ def validate_generated_files() -> list[str]:
                     missing = required_keys.difference(record)
                     if missing:
                         errors.append(f"_site/search.json record {index} missing {sorted(missing)}")
+
+    json_feed = SITE / "feed.json"
+    if not json_feed.exists():
+        errors.append("_site/feed.json was not generated")
+    else:
+        try:
+            feed = json.loads(read_text(json_feed))
+        except json.JSONDecodeError as exc:
+            errors.append(f"_site/feed.json is invalid JSON: {exc}")
+        else:
+            if not isinstance(feed, dict):
+                errors.append("_site/feed.json must contain a JSON object")
+            else:
+                items = feed.get("items")
+                if not isinstance(items, list):
+                    errors.append("_site/feed.json items must be a JSON array")
+                elif len(items) != post_count:
+                    errors.append(f"_site/feed.json has {len(items)} items; expected {post_count}")
+                else:
+                    required_keys = {"id", "url", "title", "content_html", "date_published"}
+                    for index, item in enumerate(items):
+                        if not isinstance(item, dict):
+                            errors.append(f"_site/feed.json item {index} is not an object")
+                            continue
+                        missing = required_keys.difference(item)
+                        if missing:
+                            errors.append(f"_site/feed.json item {index} missing {sorted(missing)}")
     if not MANIFEST.exists():
         errors.append("_data/image_manifest.yml was not generated; run `python scripts/optimize_images.py`")
     return errors

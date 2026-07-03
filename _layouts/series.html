@@ -5,6 +5,26 @@ layout: default
 {%- assign series_key = page.series_key -%}
 {%- assign series_data = site.data.series[series_key] -%}
 {%- assign series_posts = site.posts | where: "series", series_key | sort: "series_order" -%}
+{%- assign recent_posts = series_posts | sort: "date" | reverse -%}
+{%- assign latest_post = recent_posts | first -%}
+{%- assign max_order = 0 -%}
+{%- assign order_tokens = "|" -%}
+{%- for post in series_posts -%}
+  {%- assign post_order = post.series_order | default: 0 | plus: 0 -%}
+  {%- if post_order > max_order -%}
+    {%- assign max_order = post_order -%}
+  {%- endif -%}
+  {%- assign order_tokens = order_tokens | append: post_order | append: "|" -%}
+{%- endfor -%}
+{%- assign missing_count = 0 -%}
+{%- assign missing_orders = "" -%}
+{%- for order in (1..max_order) -%}
+  {%- assign order_token = "|" | append: order | append: "|" -%}
+  {%- unless order_tokens contains order_token -%}
+    {%- assign missing_count = missing_count | plus: 1 -%}
+    {%- assign missing_orders = missing_orders | append: order | append: " " -%}
+  {%- endunless -%}
+{%- endfor -%}
 
 <section class="series-page">
   <header class="series-header">
@@ -15,6 +35,14 @@ layout: default
     {%- endif -%}
     <div class="meta-actions">
       <span class="series-count">{{ series_posts.size }} posts</span>
+      {%- if latest_post -%}
+        <span class="series-count">Updated {{ latest_post.date | date: "%Y-%m-%d" }}</span>
+      {%- endif -%}
+      {%- if missing_count == 0 -%}
+        <span class="series-count">Complete</span>
+      {%- else -%}
+        <span class="series-count">{{ missing_count }} missing: {{ missing_orders | strip }}</span>
+      {%- endif -%}
       <a class="meta-action-link" href="{{ "/" | relative_url }}?series={{ series_key }}">Filtered archive</a>
     </div>
   </header>

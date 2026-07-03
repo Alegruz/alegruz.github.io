@@ -1,0 +1,274 @@
+@media (max-width: 900px) {
+  .site-nav {
+    position: fixed;
+    top: 12px;
+    right: 16px;
+    z-index: 50;
+  }
+
+  .nav-menu-button {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: pointer;
+  }
+
+  .nav-menu-button span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--ink);
+  }
+
+  .site-nav .trigger {
+    position: fixed;
+    top: 58px;
+    right: 16px;
+    left: 16px;
+    display: none;
+    padding: 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .site-nav .nav-trigger:checked ~ .trigger {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .site-nav .page-link {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .feed-controls,
+  .music-hero,
+  .post-layout,
+  .post-layout.has-toc,
+  .post.reader-wide .post-layout,
+  .post.reader-wide .post-layout.has-toc,
+  .post.reader-full .post-layout,
+  .post.reader-full .post-layout.has-toc {
+    grid-template-columns: 1fr;
+  }
+
+  .post-toc {
+    grid-column: 1;
+    grid-row: auto;
+    position: static;
+    padding: 0 0 1rem;
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 720px) {
+  .wrapper {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .page-content {
+    padding-top: 28px;
+  }
+
+  .archive-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .filter-feedback {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .clear-filters {
+    width: 100%;
+  }
+
+  .post-year-group,
+  .post-row,
+  .post-neighbor-nav,
+  .series-post-row,
+  .topic-post-row,
+  .related-posts li,
+  .cv-grid,
+  .about-grid,
+  .music-track-list,
+  .footer-col-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .post-year-group {
+    gap: 0.25rem;
+  }
+
+  .post-year-group h3 {
+    font-size: 0.92rem;
+  }
+
+  .post-row {
+    gap: 0.25rem;
+    padding: 0.55rem 0;
+  }
+
+  .post-summary {
+    -webkit-line-clamp: 1;
+    margin-top: 0.1rem;
+    font-size: 0.84rem;
+  }
+
+  .post-date,
+  .post-row-meta {
+    font-size: 0.74rem;
+  }
+
+  .not-found-hero,
+  .not-found-grid,
+  .not-found-search div {
+    grid-template-columns: 1fr;
+  }
+
+  .not-found-code {
+    min-width: 0;
+  }
+
+  .series-step {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .post-row-meta {
+    text-align: left;
+  }
+
+  .topic-post-row span {
+    text-align: left;
+  }
+
+  .series-nav,
+  .related-posts li {
+    align-items: flex-start;
+  }
+
+  .landing-hero h1,
+  .music-hero h1,
+  .page-hero-panel h1,
+  .post-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body {
+    display: block;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  .site-header,
+  .site-footer,
+  .reader-controls,
+  .series-nav,
+  .post-toc,
+  .post-neighbor-nav,
+  .related-posts,
+  .post-footer,
+  .reading-progress,
+  .feed-controls,
+  .filter-feedback,
+  .rss-subscribe {
+    display: none !important;
+  }
+
+  .wrapper,
+  .post,
+  .post.reader-wide,
+  .post.reader-full {
+    max-width: none;
+    padding: 0;
+  }
+
+  .page-content {
+    padding: 0;
+  }
+
+  .post-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #999;
+  }
+
+  .post-title {
+    max-width: none;
+    font-size: 24pt;
+  }
+
+  .post-layout,
+  .post-layout.has-toc,
+  .post.reader-wide .post-layout,
+  .post.reader-wide .post-layout.has-toc,
+  .post.reader-full .post-layout,
+  .post.reader-full .post-layout.has-toc {
+    display: block;
+  }
+
+  .post-content {
+    max-width: none;
+  }
+
+  .post-content h2 {
+    break-after: avoid;
+    border-top-color: #999;
+  }
+
+  .post-content h3,
+  .post-content h4,
+  .post-content pre,
+  .post-content figure,
+  .post-content table {
+    break-inside: avoid;
+  }
+
+  .post-content pre,
+  .code-block {
+    border-color: #999;
+    background: #fff;
+  }
+
+  .post-content a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

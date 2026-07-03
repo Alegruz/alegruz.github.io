@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         expand: "펼치기",
         failed: "실패",
         linkTo: "섹션 링크",
+        sectionCopied: "복사됨",
         scroll: "스크롤",
         wrap: "줄바꿈",
         closeImage: "이미지 닫기"
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         expand: "Expand",
         failed: "Failed",
         linkTo: "Link to",
+        sectionCopied: "Copied",
         scroll: "Scroll",
         wrap: "Wrap",
         closeImage: "Close image"
@@ -108,6 +110,22 @@ document.addEventListener("DOMContentLoaded", function () {
         anchor.href = `#${heading.id}`;
         anchor.setAttribute("aria-label", `${labels.linkTo} ${headingLabel(heading)}`);
         anchor.textContent = "#";
+        anchor.addEventListener("click", async (event) => {
+          event.preventDefault();
+          const nextUrl = `${window.location.origin}${window.location.pathname}#${heading.id}`;
+          window.history.replaceState(null, "", `#${heading.id}`);
+          try {
+            await navigator.clipboard.writeText(nextUrl);
+            anchor.classList.add("copied");
+            anchor.textContent = labels.sectionCopied;
+            window.setTimeout(() => {
+              anchor.classList.remove("copied");
+              anchor.textContent = "#";
+            }, 1200);
+          } catch {
+            window.location.hash = heading.id;
+          }
+        });
         heading.appendChild(anchor);
       }
     });
@@ -140,23 +158,32 @@ document.addEventListener("DOMContentLoaded", function () {
     toc.closest(".post-layout")?.classList.add("has-toc");
 
     const links = Array.from(list.querySelectorAll("a"));
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver((entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    let ticking = false;
 
-        if (!visible) {
-          return;
-        }
+    function updateActiveHeading() {
+      ticking = false;
+      const anchorOffset = 112;
+      const activeHeading = headings.reduce((active, heading) => {
+        return heading.getBoundingClientRect().top <= anchorOffset ? heading : active;
+      }, headings[0]);
 
-        links.forEach((link) => {
-          link.classList.toggle("active", link.dataset.headingId === visible.target.id);
-        });
-      }, { rootMargin: "-15% 0px -70% 0px", threshold: 0.01 });
-
-      headings.forEach((heading) => observer.observe(heading));
+      links.forEach((link) => {
+        const active = link.dataset.headingId === activeHeading.id;
+        link.classList.toggle("active", active);
+        link.parentElement?.classList.toggle("active", active);
+      });
     }
+
+    function scheduleActiveHeadingUpdate() {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateActiveHeading);
+      }
+    }
+
+    window.addEventListener("scroll", scheduleActiveHeadingUpdate, { passive: true });
+    window.addEventListener("resize", scheduleActiveHeadingUpdate);
+    updateActiveHeading();
   }
 
   function enhanceCodeBlocks() {
@@ -341,6 +368,35 @@ document.addEventListener("DOMContentLoaded", function () {
     setMode(readStoredMode() || "normal");
   }
 
+  function setupReadingProgress() {
+    const progress = document.querySelector("#reading-progress span");
+    if (!article || !progress) {
+      return;
+    }
+
+    let ticking = false;
+
+    function updateProgress() {
+      ticking = false;
+      const start = article.offsetTop;
+      const end = content.offsetTop + content.scrollHeight - window.innerHeight;
+      const distance = Math.max(1, end - start);
+      const progressValue = Math.min(1, Math.max(0, (window.scrollY - start) / distance));
+      progress.style.transform = `scaleX(${progressValue})`;
+    }
+
+    function scheduleProgressUpdate() {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateProgress);
+      }
+    }
+
+    window.addEventListener("scroll", scheduleProgressUpdate, { passive: true });
+    window.addEventListener("resize", scheduleProgressUpdate);
+    updateProgress();
+  }
+
   function enhanceExternalLinks() {
     const links = Array.from(content.querySelectorAll("a[href]"));
     links.forEach((link) => {
@@ -387,6 +443,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setupReaderControls();
+  setupReadingProgress();
   enhanceExternalLinks();
   enhanceImages();
   enhanceCodeBlocks();

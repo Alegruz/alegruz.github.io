@@ -1,0 +1,33 @@
+---
+layout: null
+permalink: /feed.json
+---
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": {{ site.title | jsonify }},
+  "home_page_url": {{ "/" | absolute_url | jsonify }},
+  "feed_url": {{ "/feed.json" | absolute_url | jsonify }},
+  "description": {{ site.description | jsonify }},
+  "language": {{ site.lang | default: "en" | jsonify }},
+  "items": [
+    {%- for post in site.posts -%}
+      {%- assign post_topic = post.topic | default: "engine" -%}
+      {%- assign topic_data = site.data.topics[post_topic] -%}
+      {%- assign series_data = site.data.series[post.series] -%}
+      {
+        "id": {{ post.url | absolute_url | jsonify }},
+        "url": {{ post.url | absolute_url | jsonify }},
+        "title": {{ post.title | jsonify }},
+        "summary": {{ post.description | default: post.excerpt | strip_html | normalize_whitespace | jsonify }},
+        "content_html": {{ post.content | jsonify }},
+        "date_published": {{ post.date | date_to_xmlschema | jsonify }},
+        "date_modified": {{ post.last_modified_at | default: post.date | date_to_xmlschema | jsonify }},
+        "language": {{ post.lang | default: "en" | jsonify }},
+        "tags": [
+          {{ topic_data.label | default: post_topic | jsonify }}
+          {%- if post.series -%}, {{ series_data.label | default: post.series | jsonify }}{%- endif -%}
+        ]
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}

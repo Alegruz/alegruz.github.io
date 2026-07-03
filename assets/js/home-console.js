@@ -56,6 +56,24 @@ document.addEventListener("DOMContentLoaded", function () {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
+  function parseSearchTerms(query) {
+    const terms = [];
+    const pattern = /"([^"]+)"|(\S+)/g;
+    let match = pattern.exec(query);
+    while (match) {
+      const term = (match[1] || match[2] || "").trim().toLowerCase();
+      if (term) {
+        terms.push(term);
+      }
+      match = pattern.exec(query);
+    }
+    return terms;
+  }
+
+  function matchesSearchTerms(text, terms) {
+    return !terms.length || terms.every((term) => text.includes(term));
+  }
+
   function updateLocalizedControls() {
     const isKorean = uiLanguage() === "ko";
 
@@ -160,12 +178,11 @@ document.addEventListener("DOMContentLoaded", function () {
     return count;
   }
 
-  function scoreRow(row, query) {
-    if (!query) {
+  function scoreRow(row, terms) {
+    if (!terms.length) {
       return 0;
     }
 
-    const terms = query.split(/\s+/).filter(Boolean);
     const title = row.dataset.searchTitle || row.dataset.title || "";
     const description = row.dataset.searchDescription || row.dataset.summary || "";
     const excerpt = row.dataset.searchExcerpt || "";
@@ -188,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return score;
   }
 
-  function sortResults(query) {
+  function sortResults(hasQuery) {
     yearGroups.forEach((group) => {
       const list = group.querySelector(".post-list");
       if (!list) {
@@ -198,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const groupRows = Array.from(list.querySelectorAll(".post-row"));
       groupRows
         .sort((a, b) => {
-          if (!query) {
+          if (!hasQuery) {
             return rowOrder.get(a) - rowOrder.get(b);
           }
           return Number(b.dataset.searchScore || 0) - Number(a.dataset.searchScore || 0)
@@ -214,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
     yearGroups
       .slice()
       .sort((a, b) => {
-        if (!query) {
+        if (!hasQuery) {
           return yearGroupOrder.get(a) - yearGroupOrder.get(b);
         }
 
@@ -225,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .forEach((group) => feed.appendChild(group));
   }
 
-  function highlightText(element, query) {
+  function highlightText(element, terms) {
     if (!element) {
       return;
     }
@@ -233,12 +250,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const original = element.dataset.originalText || element.textContent;
     element.dataset.originalText = original;
 
-    if (!query) {
+    if (!terms.length) {
       element.textContent = original;
       return;
     }
 
-    const pattern = new RegExp(`(${escapeRegExp(query)})`, "ig");
+    const uniqueTerms = Array.from(new Set(terms)).sort((a, b) => b.length - a.length);
+    const pattern = new RegExp(`(${uniqueTerms.map(escapeRegExp).join("|")})`, "ig");
     element.innerHTML = escapeHtml(original).replace(pattern, "<mark class=\"search-mark\">$1</mark>");
   }
 
@@ -309,6 +327,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function applyFilters(options = {}) {
     const rawQuery = ((searchInput && searchInput.value) || "").trim();
     const query = rawQuery.toLowerCase();
+    const queryTerms = parseSearchTerms(query);
+    const hasQuery = queryTerms.length > 0;
     let count = 0;
 
     updateLocalizedControls();
@@ -322,22 +342,22 @@ document.addEventListener("DOMContentLoaded", function () {
       const matchesLanguage = activeLanguageFilter === "all" || rowLanguage === activeLanguageFilter;
       const matchesYear = activeYear === "all" || rowYear === activeYear;
       const matchesSeries = activeSeries === "all" || rowSeries === activeSeries;
-      const matchesQuery = !query || getSearchText(row).includes(query);
+      const matchesQuery = matchesSearchTerms(getSearchText(row), queryTerms);
       const visible = matchesTopic && matchesLanguage && matchesYear && matchesSeries && matchesQuery;
-      const score = visible ? scoreRow(row, query) : 0;
+      const score = visible ? scoreRow(row, queryTerms) : 0;
 
       row.hidden = !visible;
       row.dataset.searchScore = String(score);
-      row.classList.toggle("search-hit", Boolean(query && visible));
-      highlightText(row.querySelector(".post-link"), visible ? query : "");
-      highlightText(row.querySelector(".post-summary"), visible ? query : "");
+      row.classList.toggle("search-hit", Boolean(hasQuery && visible));
+      highlightText(row.querySelector(".post-link"), visible ? queryTerms : []);
+      highlightText(row.querySelector(".post-summary"), visible ? queryTerms : []);
 
       if (visible) {
         count += 1;
       }
     });
 
-    sortResults(query);
+    sortResults(hasQuery);
 
     yearGroups.forEach((group) => {
       const hasVisibleRows = Array.from(group.querySelectorAll(".post-row")).some((row) => !row.hidden);
