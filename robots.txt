@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://alegruz.github.io/sitemap.xml
+Sitemap: https://alegruz.github.io/sitemap.txt

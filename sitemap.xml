@@ -9,7 +9,9 @@ permalink: /sitemap.xml
   {%- unless page.url == "/404.html" or page.sitemap == false or page.url contains "/google" %}
   <url>
     <loc>{{ page.url | absolute_url | xml_escape }}</loc>
-    <lastmod>{{ page.last_modified_at | default: site.time | date_to_xmlschema }}</lastmod>
+    {%- if page.last_modified_at %}
+    <lastmod>{{ page.last_modified_at | date_to_xmlschema }}</lastmod>
+    {%- endif %}
   </url>
   {%- endunless %}
 {%- endfor %}
