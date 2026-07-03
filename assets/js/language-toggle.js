@@ -63,5 +63,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  const navTrigger = document.getElementById("nav-trigger");
+  document.querySelectorAll(".site-nav .page-link").forEach((control) => {
+    control.addEventListener("click", function () {
+      if (navTrigger) {
+        navTrigger.checked = false;
+      }
+    });
+  });
+
   applyLanguage(currentLang);
 });

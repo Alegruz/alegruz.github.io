@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const emptyNotice = document.getElementById("feed-empty");
   const visibleCount = document.getElementById("visible-count");
   const filterStatus = document.getElementById("filter-status");
+  const searchStatus = document.getElementById("search-status");
   const clearFiltersButton = document.getElementById("clear-filters");
   const script = document.querySelector("script[data-search-index]");
   const searchIndexUrl = script?.dataset.searchIndex;
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const feed = document.getElementById("post-feed");
   const yearGroupOrder = new Map(yearGroups.map((group, index) => [group, index]));
   const rowOrder = new Map(rows.map((row, index) => [row, index]));
+  const filterDebounceMs = 140;
 
   let activeTopic = urlParams.get("topic") || "all";
   let activeLanguageFilter = urlParams.get("lang") || uiLanguage();
@@ -27,6 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let activeSeries = urlParams.get("series") || "all";
   let searchHydrated = false;
   let searchHydrationStarted = false;
+  let searchLoading = false;
+  let filterDebounceTimer = 0;
 
   function uiLanguage() {
     return document.documentElement.getAttribute("lang") === "ko" ? "ko" : "en";
@@ -75,6 +79,20 @@ document.addEventListener("DOMContentLoaded", function () {
         ? clearFiltersButton.dataset.labelKo || "필터 초기화"
         : clearFiltersButton.dataset.labelEn || "Clear filters";
     }
+
+    updateSearchStatus();
+  }
+
+  function updateSearchStatus() {
+    if (!searchStatus) {
+      return;
+    }
+
+    const isKorean = uiLanguage() === "ko";
+    searchStatus.textContent = isKorean
+      ? searchStatus.dataset.loadingKo || "검색 인덱스를 불러오는 중..."
+      : searchStatus.dataset.loadingEn || "Loading search index...";
+    searchStatus.hidden = !searchLoading;
   }
 
   function setActiveButton(buttons, activeButton) {
@@ -344,6 +362,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function clearScheduledFilter() {
+    if (filterDebounceTimer) {
+      window.clearTimeout(filterDebounceTimer);
+      filterDebounceTimer = 0;
+    }
+  }
+
+  function scheduleApplyFilters() {
+    clearScheduledFilter();
+    filterDebounceTimer = window.setTimeout(function () {
+      filterDebounceTimer = 0;
+      applyFilters();
+    }, filterDebounceMs);
+  }
+
   function resetFilters() {
     activeTopic = "all";
     activeLanguageFilter = defaultLanguageFilter();
@@ -378,6 +411,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     searchHydrationStarted = true;
+    searchLoading = true;
+    updateSearchStatus();
     const rowsByUrl = new Map(rows.map((row) => [row.dataset.url, row]));
     fetch(searchIndexUrl, { headers: { Accept: "application/json" } })
       .then((response) => response.ok ? response.json() : [])
@@ -406,10 +441,14 @@ document.addEventListener("DOMContentLoaded", function () {
           row.dataset.searchSeries = [post.series, post.series_label].filter(Boolean).join(" ").toLowerCase();
         });
         searchHydrated = true;
+        searchLoading = false;
+        updateSearchStatus();
         applyFilters();
       })
       .catch(() => {
         searchHydrated = true;
+        searchLoading = false;
+        updateSearchStatus();
       });
   }
 
@@ -452,7 +491,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (searchQuery()) {
         hydrateSearchIndex();
       }
-      applyFilters();
+      scheduleApplyFilters();
     });
 
     searchInput.addEventListener("focus", function () {
@@ -462,6 +501,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && searchInput.value) {
         searchInput.value = "";
+        clearScheduledFilter();
         applyFilters();
       }
     });

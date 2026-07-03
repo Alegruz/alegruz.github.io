@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  전역 조명 공부 노트
+title:  광선 추적 기초 공부 노트
 date:   2022-03-13 00:00:00 +0000
 categories: graphics
 lang: "ko"

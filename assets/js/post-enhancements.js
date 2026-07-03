@@ -1,6 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
   const content = document.getElementById("post-content");
   const article = document.querySelector(".post");
+  const isKorean = document.documentElement.getAttribute("lang") === "ko";
+  const labels = isKorean
+    ? {
+        copied: "복사됨",
+        collapse: "접기",
+        copy: "복사",
+        expand: "펼치기",
+        failed: "실패",
+        linkTo: "섹션 링크",
+        scroll: "스크롤",
+        wrap: "줄바꿈",
+        closeImage: "이미지 닫기"
+      }
+    : {
+        copied: "Copied",
+        collapse: "Collapse",
+        copy: "Copy",
+        expand: "Expand",
+        failed: "Failed",
+        linkTo: "Link to",
+        scroll: "Scroll",
+        wrap: "Wrap",
+        closeImage: "Close image"
+      };
   if (!content) {
     return;
   }
@@ -82,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const anchor = document.createElement("a");
         anchor.className = "heading-anchor";
         anchor.href = `#${heading.id}`;
-        anchor.setAttribute("aria-label", `Link to ${headingLabel(heading)}`);
+        anchor.setAttribute("aria-label", `${labels.linkTo} ${headingLabel(heading)}`);
         anchor.textContent = "#";
         heading.appendChild(anchor);
       }
@@ -161,28 +185,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const wrapButton = document.createElement("button");
       wrapButton.type = "button";
-      wrapButton.textContent = "Wrap";
+      wrapButton.textContent = labels.wrap;
       wrapButton.setAttribute("aria-pressed", "false");
       wrapButton.addEventListener("click", () => {
         const wrapped = !wrapper.classList.contains("code-wrapped");
         wrapper.classList.toggle("code-wrapped", wrapped);
-        wrapButton.textContent = wrapped ? "Scroll" : "Wrap";
+        wrapButton.textContent = wrapped ? labels.scroll : labels.wrap;
         wrapButton.setAttribute("aria-pressed", wrapped ? "true" : "false");
       });
       actions.appendChild(wrapButton);
 
       const copyButton = document.createElement("button");
       copyButton.type = "button";
-      copyButton.textContent = "Copy";
+      copyButton.textContent = labels.copy;
       copyButton.addEventListener("click", async () => {
         const text = code?.textContent || pre.textContent || "";
         try {
           await navigator.clipboard.writeText(text);
-          copyButton.textContent = "Copied";
-          window.setTimeout(() => { copyButton.textContent = "Copy"; }, 1200);
+          copyButton.textContent = labels.copied;
+          window.setTimeout(() => { copyButton.textContent = labels.copy; }, 1200);
         } catch {
-          copyButton.textContent = "Failed";
-          window.setTimeout(() => { copyButton.textContent = "Copy"; }, 1200);
+          copyButton.textContent = labels.failed;
+          window.setTimeout(() => { copyButton.textContent = labels.copy; }, 1200);
         }
       });
       actions.appendChild(copyButton);
@@ -192,12 +216,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const expandButton = document.createElement("button");
         wrapper.classList.add("code-collapsed");
         expandButton.type = "button";
-        expandButton.textContent = "Expand";
+        expandButton.textContent = labels.expand;
         expandButton.setAttribute("aria-expanded", "false");
         expandButton.addEventListener("click", () => {
           const expanded = wrapper.classList.toggle("code-expanded");
           wrapper.classList.toggle("code-collapsed", !expanded);
-          expandButton.textContent = expanded ? "Collapse" : "Expand";
+          expandButton.textContent = expanded ? labels.collapse : labels.expand;
           expandButton.setAttribute("aria-expanded", expanded ? "true" : "false");
         });
         actions.appendChild(expandButton);
@@ -221,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
     lightbox.className = "image-lightbox";
     lightbox.hidden = true;
     lightbox.innerHTML = `
-      <button type="button" class="image-lightbox-close" aria-label="Close image">Close</button>
+      <button type="button" class="image-lightbox-close" aria-label="${labels.closeImage}">${labels.closeImage}</button>
       <img alt="">
       <p></p>
     `;
@@ -317,6 +341,29 @@ document.addEventListener("DOMContentLoaded", function () {
     setMode(readStoredMode() || "normal");
   }
 
+  function enhanceExternalLinks() {
+    const links = Array.from(content.querySelectorAll("a[href]"));
+    links.forEach((link) => {
+      let url;
+      try {
+        url = new URL(link.href, window.location.href);
+      } catch {
+        return;
+      }
+
+      if (!["http:", "https:"].includes(url.protocol) || url.origin === window.location.origin) {
+        return;
+      }
+
+      const rel = new Set((link.getAttribute("rel") || "").split(/\s+/).filter(Boolean));
+      rel.add("noopener");
+      rel.add("noreferrer");
+      link.setAttribute("rel", Array.from(rel).join(" "));
+      link.target = "_blank";
+      link.classList.add("external-link");
+    });
+  }
+
   function loadMathJaxIfNeeded() {
     const text = content.textContent || "";
     const hasMath = /\$\$|\\\(|\\\[|\\begin\{/.test(text);
@@ -340,6 +387,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setupReaderControls();
+  enhanceExternalLinks();
   enhanceImages();
   enhanceCodeBlocks();
   buildTableOfContents();

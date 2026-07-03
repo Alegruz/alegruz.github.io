@@ -3,6 +3,11 @@ layout: default
 ---
 
 {%- assign page_topic = page.topic | default: "engine" -%}
+{%- assign page_lang = page.lang | default: "en" -%}
+{%- assign is_korean = false -%}
+{%- if page_lang == "ko" -%}
+  {%- assign is_korean = true -%}
+{%- endif -%}
 {%- assign topic_data = site.data.topics[page_topic] -%}
 {%- assign topic_label = topic_data.label | default: page_topic -%}
 {%- assign page_series = page.series -%}
@@ -19,11 +24,64 @@ layout: default
 {%- assign date_format = site.minima.date_format | default: "%Y-%m-%d" -%}
 {%- assign published_day = page.date | date: "%Y-%m-%d" -%}
 {%- assign updated_day = page.last_modified_at | date: "%Y-%m-%d" -%}
+{%- assign language_posts = site.posts | where: "lang", page_lang -%}
+{%- assign newer_post = nil -%}
+{%- assign older_post = nil -%}
+{%- assign previous_language_post = nil -%}
+{%- assign found_current_post = false -%}
+{%- if is_korean -%}
+  {%- assign archive_label = "아카이브" -%}
+  {%- assign updated_label = "수정" -%}
+  {%- assign read_unit_label = "분 읽기" -%}
+  {%- assign width_label = "너비" -%}
+  {%- assign normal_label = "보통" -%}
+  {%- assign wide_label = "넓게" -%}
+  {%- assign full_label = "전체" -%}
+  {%- assign contents_label = "목차" -%}
+  {%- assign series_nav_label = "시리즈 탐색" -%}
+  {%- assign part_label = "파트" -%}
+  {%- assign of_label = "/" -%}
+  {%- assign previous_label = "이전" -%}
+  {%- assign next_label = "다음" -%}
+  {%- assign post_nav_label = "글 탐색" -%}
+  {%- assign newer_label = "새 글" -%}
+  {%- assign older_label = "이전 글" -%}
+  {%- assign related_label = "관련 글" -%}
+  {%- assign back_label = "아카이브로 돌아가기" -%}
+{%- else -%}
+  {%- assign archive_label = "Archive" -%}
+  {%- assign updated_label = "Updated" -%}
+  {%- assign read_unit_label = "min read" -%}
+  {%- assign width_label = "Width" -%}
+  {%- assign normal_label = "Normal" -%}
+  {%- assign wide_label = "Wide" -%}
+  {%- assign full_label = "Full" -%}
+  {%- assign contents_label = "Contents" -%}
+  {%- assign series_nav_label = "Series navigation" -%}
+  {%- assign part_label = "Part" -%}
+  {%- assign of_label = "of" -%}
+  {%- assign previous_label = "Previous" -%}
+  {%- assign next_label = "Next" -%}
+  {%- assign post_nav_label = "Post navigation" -%}
+  {%- assign newer_label = "Newer" -%}
+  {%- assign older_label = "Older" -%}
+  {%- assign related_label = "Related" -%}
+  {%- assign back_label = "Back to archive" -%}
+{%- endif -%}
 {%- if reading_minutes < 1 -%}
   {%- assign reading_minutes = 1 -%}
 {%- elsif reading_remainder > 0 -%}
   {%- assign reading_minutes = reading_minutes | plus: 1 -%}
 {%- endif -%}
+{%- for language_post in language_posts -%}
+  {%- if language_post.url == page.url -%}
+    {%- assign newer_post = previous_language_post -%}
+    {%- assign found_current_post = true -%}
+  {%- elsif found_current_post and older_post == nil -%}
+    {%- assign older_post = language_post -%}
+  {%- endif -%}
+  {%- assign previous_language_post = language_post -%}
+{%- endfor -%}
 {%- if page_series -%}
   {%- for series_post in series_posts -%}
     {%- assign series_post_order = series_post.series_order | default: 0 | plus: 0 -%}
@@ -38,7 +96,7 @@ layout: default
 
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <a class="post-back" href="{{ "/" | relative_url }}">Archive</a>
+    <a class="post-back" href="{{ "/" | relative_url }}">{{ archive_label }}</a>
     <p class="post-kicker">
       <span>{{ topic_label }}</span>
       {%- if page_series and series_data -%}
@@ -52,18 +110,41 @@ layout: default
       </time>
       {%- if page.last_modified_at and updated_day != published_day -%}
         <time class="dt-updated" datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">
-          Updated {{ page.last_modified_at | date: date_format }}
+          {{ updated_label }} {{ page.last_modified_at | date: date_format }}
         </time>
       {%- endif -%}
       {%- if page.lang -%}
         <span>{{ page.lang | upcase }}</span>
       {%- endif -%}
-      <span>{{ reading_minutes }} min read</span>
+      <span>{{ reading_minutes }} {{ read_unit_label }}</span>
       {%- if page.difficulty -%}
-        <span>{{ page.difficulty | capitalize }}</span>
+        <span>
+          {%- if is_korean -%}
+            {%- case page.difficulty -%}
+              {%- when "beginner" -%}초급
+              {%- when "intermediate" -%}중급
+              {%- when "advanced" -%}고급
+              {%- else -%}{{ page.difficulty | capitalize }}
+            {%- endcase -%}
+          {%- else -%}
+            {{ page.difficulty | capitalize }}
+          {%- endif -%}
+        </span>
       {%- endif -%}
       {%- if page.status -%}
-        <span>{{ page.status | capitalize }}</span>
+        <span>
+          {%- if is_korean -%}
+            {%- case page.status -%}
+              {%- when "notes" -%}노트
+              {%- when "report" -%}리포트
+              {%- when "translation" -%}번역
+              {%- when "draft" -%}초안
+              {%- else -%}{{ page.status | capitalize }}
+            {%- endcase -%}
+          {%- else -%}
+            {{ page.status | capitalize }}
+          {%- endif -%}
+        </span>
       {%- endif -%}
       {%- if page.author -%}
         <span itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -71,34 +152,34 @@ layout: default
         </span>
       {%- endif -%}
     </p>
-    <div class="reader-controls" aria-label="Reading width">
-      <span>Width</span>
-      <button type="button" data-reader-width="normal" aria-pressed="true">Normal</button>
-      <button type="button" data-reader-width="wide" aria-pressed="false">Wide</button>
-      <button type="button" data-reader-width="full" aria-pressed="false">Full</button>
+    <div class="reader-controls" aria-label="{{ width_label }}">
+      <span>{{ width_label }}</span>
+      <button type="button" data-reader-width="normal" aria-pressed="true">{{ normal_label }}</button>
+      <button type="button" data-reader-width="wide" aria-pressed="false">{{ wide_label }}</button>
+      <button type="button" data-reader-width="full" aria-pressed="false">{{ full_label }}</button>
     </div>
   </header>
 
   {%- if page_series and series_data -%}
-    <nav class="series-nav" aria-label="Series navigation">
+    <nav class="series-nav" aria-label="{{ series_nav_label }}">
       <div>
         <a href="{{ "/series/" | append: page_series | append: "/" | relative_url }}">{{ series_data.label }}</a>
-        <span>Part {{ series_index }} of {{ series_posts.size }}</span>
+        <span>{{ part_label }} {{ series_index }} {{ of_label }} {{ series_posts.size }}</span>
       </div>
       <div class="series-nav-links">
         {%- if previous_series_post -%}
-          <a href="{{ previous_series_post.url | relative_url }}">Previous</a>
+          <a href="{{ previous_series_post.url | relative_url }}">{{ previous_label }}</a>
         {%- endif -%}
         {%- if next_series_post -%}
-          <a href="{{ next_series_post.url | relative_url }}">Next</a>
+          <a href="{{ next_series_post.url | relative_url }}">{{ next_label }}</a>
         {%- endif -%}
       </div>
     </nav>
   {%- endif -%}
 
   <div class="post-layout">
-    <nav class="post-toc" id="post-toc" aria-label="Table of contents" hidden>
-      <p>Contents</p>
+    <nav class="post-toc" id="post-toc" aria-label="{{ contents_label }}" hidden>
+      <p>{{ contents_label }}</p>
       <ol id="post-toc-list"></ol>
     </nav>
 
@@ -107,8 +188,25 @@ layout: default
     </div>
   </div>
 
-  <section class="related-posts" aria-label="Related posts">
-    <h2>Related</h2>
+  {%- if newer_post or older_post -%}
+    <nav class="post-neighbor-nav" aria-label="{{ post_nav_label }}">
+      {%- if newer_post -%}
+        <a href="{{ newer_post.url | relative_url }}">
+          <span>{{ newer_label }}</span>
+          <strong>{{ newer_post.title | escape }}</strong>
+        </a>
+      {%- endif -%}
+      {%- if older_post -%}
+        <a href="{{ older_post.url | relative_url }}">
+          <span>{{ older_label }}</span>
+          <strong>{{ older_post.title | escape }}</strong>
+        </a>
+      {%- endif -%}
+    </nav>
+  {%- endif -%}
+
+  <section class="related-posts" aria-label="{{ related_label }}">
+    <h2>{{ related_label }}</h2>
     <ol>
       {%- assign related_count = 0 -%}
       {%- if page_series -%}
@@ -138,7 +236,7 @@ layout: default
   </section>
 
   <footer class="post-footer">
-    <a class="text-link" href="{{ "/" | relative_url }}">Back to archive</a>
+    <a class="text-link" href="{{ "/" | relative_url }}">{{ back_label }}</a>
   </footer>
 
   {%- if site.disqus.shortname -%}

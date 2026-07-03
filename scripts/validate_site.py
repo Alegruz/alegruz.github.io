@@ -99,6 +99,8 @@ def validate_posts() -> list[str]:
     topics = read_data_keys(ROOT / "_data" / "topics.yml")
     series_keys = read_data_keys(ROOT / "_data" / "series.yml")
     translations: dict[str, list[tuple[Path, str | None]]] = {}
+    titles: dict[tuple[str | None, str], list[Path]] = {}
+    series_orders: dict[str, list[tuple[int, Path]]] = {}
 
     for path in sorted(POSTS.glob("*")):
         if path.suffix.lower() not in {".md", ".markdown"}:
@@ -121,6 +123,9 @@ def validate_posts() -> list[str]:
 
         if not title:
             errors.append(f"{path.relative_to(ROOT)}: missing title")
+        else:
+            normalized_title = re.sub(r"\s+", " ", title).strip().casefold()
+            titles.setdefault((lang, normalized_title), []).append(path)
         if lang not in LANGS:
             errors.append(f"{path.relative_to(ROOT)}: invalid lang {lang!r}")
         if topic not in topics:
@@ -137,14 +142,37 @@ def validate_posts() -> list[str]:
             if series not in series_keys:
                 errors.append(f"{path.relative_to(ROOT)}: invalid series {series!r}")
             try:
-                if int(series_order or "0") < 1:
+                parsed_series_order = int(series_order or "0")
+                if parsed_series_order < 1:
                     raise ValueError
             except ValueError:
                 errors.append(f"{path.relative_to(ROOT)}: invalid series_order {series_order!r}")
+            else:
+                series_orders.setdefault(series, []).append((parsed_series_order, path))
         elif series_order:
             errors.append(f"{path.relative_to(ROOT)}: series_order without series")
         if translation_key:
             translations.setdefault(translation_key, []).append((path, lang))
+
+    for (lang, title), paths in sorted(titles.items()):
+        if len(paths) > 1:
+            post_list = ", ".join(str(path.relative_to(ROOT)) for path in paths)
+            errors.append(f"duplicate title {title!r} for lang {lang!r}: {post_list}")
+
+    for series, rows in sorted(series_orders.items()):
+        by_order: dict[int, list[Path]] = {}
+        for order, path in rows:
+            by_order.setdefault(order, []).append(path)
+
+        for order, paths in sorted(by_order.items()):
+            if len(paths) > 1:
+                post_list = ", ".join(str(path.relative_to(ROOT)) for path in paths)
+                errors.append(f"series {series!r}: duplicate series_order {order}: {post_list}")
+
+        orders = sorted(by_order)
+        expected = list(range(1, len(orders) + 1))
+        if orders != expected:
+            errors.append(f"series {series!r}: series_order values are {orders}; expected {expected}")
 
     for translation_key, rows in sorted(translations.items()):
         langs = [lang for _, lang in rows]

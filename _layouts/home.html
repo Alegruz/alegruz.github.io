@@ -86,7 +86,17 @@ layout: default
     </div>
 
     <div class="filter-feedback">
-      <p id="filter-status" class="filter-status" aria-live="polite"></p>
+      <div>
+        <p id="filter-status" class="filter-status" aria-live="polite"></p>
+        <p
+          id="search-status"
+          class="search-status"
+          aria-live="polite"
+          data-loading-en="Loading search index..."
+          data-loading-ko="검색 인덱스를 불러오는 중..."
+          hidden
+        ></p>
+      </div>
       <button
         id="clear-filters"
         class="clear-filters"
