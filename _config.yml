@@ -29,9 +29,24 @@ url: "https://alegruz.github.io" # the base hostname & protocol for your site, e
 github_username:  Alegruz
 linkedin_username: alegruz
 header_pages:
+  - wiki/index.md
   - cv.markdown
   - music.markdown
   - about.markdown
+
+collections:
+  wiki:
+    output: true
+    permalink: /wiki/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: wiki
+    values:
+      layout: wiki
+      math: true
+      lang: en
 
 
 # Build settings

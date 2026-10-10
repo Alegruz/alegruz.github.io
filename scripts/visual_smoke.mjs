@@ -83,6 +83,17 @@ async function checkPage(browser, baseUrl, target) {
   const page = await context.newPage();
   await page.goto(`${baseUrl}${target.path}`, { waitUntil: "networkidle" });
 
+  if (target.path === "/wiki/linear-algebra/lu-decomposition/") {
+    await page.waitForSelector(".math-display mjx-container", { timeout: 30000 });
+    await page.evaluate(async () => { await window.MathJax.startup.promise; });
+    if (await page.locator("mjx-merror").count()) {
+      throw new Error(`${target.name}: invalid math expression`);
+    }
+    if (!(await page.locator("#post-toc").isVisible())) {
+      throw new Error(`${target.name}: table of contents is missing`);
+    }
+  }
+
   const metrics = await page.evaluate(() => ({
     bodyTextLength: document.body.innerText.trim().length,
     clientWidth: document.documentElement.clientWidth,
@@ -116,6 +127,9 @@ const targets = [
   { name: "home-dark", path: "/", colorScheme: "dark", viewport: { width: 1440, height: 1000 } },
   { name: "post", path: postUrl, viewport: { width: 1440, height: 1000 } },
   { name: "series", path: "/series/", viewport: { width: 1280, height: 900 } },
+  { name: "wiki-index", path: "/wiki/", viewport: { width: 1280, height: 900 } },
+  { name: "wiki-entry", path: "/wiki/linear-algebra/lu-decomposition/", viewport: { width: 1440, height: 1000 } },
+  { name: "wiki-mobile", path: "/wiki/linear-algebra/lu-decomposition/", viewport: { width: 390, height: 844 } },
   { name: "not-found", path: "/visual-smoke-missing-page/", viewport: { width: 1280, height: 900 } }
 ];
 
