@@ -564,13 +564,13 @@ These are the excerpts:
 > (4.21) \qquad A^{-1} = B'^{-1} C^{-1},
 > $$
 >
-> and (4.16), (4.17) show that $B'$, $C$ are semi-diagonal (upper and lower, that is, in $\mathcal{C}_+$ and $\mathcal{C}_-$ respectively). Furthermore, (4.7), (4.13), which represent the conventional way of expressing the elimination method, are clearly the inductive processes that invert (4.15), (4.12), that is, (4.19), (4.18), that is, they invert the matrices $C$, $B'$. $C$, $B'$ are semi-diagonal, and renewed inspection of (4.7), (4.13) shows at once that these are indeed the inductive processes that are required to invert semi-diagonal matrices. (In this connection cf. the remark at the end of §3.4, and the explicit expressions (4.29), (4.30).)
+> and (4.16), (4.17) show that $B'$, $C$ are semi-diagonal (upper and lower, that is, in <span class="math-inline" markdown="0">\(\mathcal{C}_{+}\)</span> and <span class="math-inline" markdown="0">\(\mathcal{C}_{-}\)</span> respectively). Furthermore, (4.7), (4.13), which represent the conventional way of expressing the elimination method, are clearly the inductive processes that invert (4.15), (4.12), that is, (4.19), (4.18), that is, they invert the matrices $C$, $B'$. $C$, $B'$ are semi-diagonal, and renewed inspection of (4.7), (4.13) shows at once that these are indeed the inductive processes that are required to invert semi-diagonal matrices. (In this connection cf. the remark at the end of §3.4, and the explicit expressions (4.29), (4.30).)
 >
 > We may therefore interpret the elimination method as one which bases the inverting of an arbitrary matrix $A$ on the combination of two tricks: First, it decomposes $A$ into a product of two semi-diagonal matrices $C$, $B'$, according to (4.20), and consequently the inverse of $A$ obtains immediately from those of $C$, $B'$, according to (4.21).$^{27}$ Second, using the semi-diagonality of $C$, $B'$, it forms their inverses by a simple, explicit, inductive process.
 >
 > ---
 >
-> $^{25}$ Or at least one which has the same order of magnitude as the maximum in question. We propose, however, to disregard this possible relaxation of the requirement. We shall postulate that $|a_{kk}^{(k)}|$ be strictly equal to $\mathrm{Max}_{i,j=k,\ldots,n} |a_{ij}^{(k)}|$.
+> $^{25}$ Or at least one which has the same order of magnitude as the maximum in question. We propose, however, to disregard this possible relaxation of the requirement. We shall postulate that <span class="math-inline" markdown="0">\(\lvert a_{kk}^{(k)}\rvert\)</span> be strictly equal to <span class="math-inline" markdown="0">\(\mathrm{Max}_{i,j=k,\ldots,n}\lvert a_{ij}^{(k)}\rvert\)</span>.
 >
 > $^{26}$ Positioning for size, as described above, occurs only for $k = 1, \ldots, n-1$. For $k = n$, however, $a_{kk}^{(k)}$ is the only $a_{ij}^{(k)}$, hence the assertion is trivial.
 
