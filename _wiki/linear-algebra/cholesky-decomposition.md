@@ -48,7 +48,7 @@ $$
 
 Conversely, <span class="math-inline" markdown="0">\(\begin{pmatrix}1&2\\2&1\end{pmatrix}\)</span> has positive entries but gives $x^TAx=-2$ for $x=(1,-1)^T$. The condition concerns every direction, not the signs of individual entries.
 
-{% include image.html src="/assets/images/wiki/cholesky-energy.svg" alt="Three contour plots compare positive definite energy with nested ellipses, semidefinite energy with a flat vertical direction, and indefinite energy with positive and negative contours." caption="Contours of xᵀAx: the SPD example rises in every direction; the semidefinite example x₁² is flat along x₂; the indefinite example x₁² − x₂² takes both signs. Equal-energy contours of the SPD matrix form closed ellipses." %}
+{% include image.html src="/assets/images/wiki/cholesky-energy.svg" alt="Three contour plots compare positive definite energy with nested ellipses, semidefinite energy with a flat vertical direction, and indefinite energy with positive and negative contours." caption="Read this as a map of input vectors x = (x₁, x₂): every point on a curve labelled q(x) = 4 has energy xᵀAx = 4, not coordinate 4. All three panels use blue solid curves at q(x) = 1, 2, 4. The SPD curves are closed ellipses around the minimum at the origin. For q(x) = x₁², each level is a pair of vertical lines: q(x) = 4 means x₁ = ±2, regardless of x₂. The indefinite panel adds orange dashed curves at q(x) = −1, −2, −4; gray lines mark q(x) = 0." %}
 
 The semidefinite example has a direction that costs no energy. The indefinite example has a direction with negative energy, so it cannot equal a squared Euclidean length for all $x$. These geometric differences correspond to zero or invalid square-root pivots in the usual algorithm.
 

@@ -123,7 +123,7 @@ $$
 
 The level curve $q(x)=1$ is an ellipse with semiaxes $1/\sqrt3$ and $1$ along those two directions. A larger positive eigenvalue makes the same-value contour narrower in that direction.
 
-{% include image.html src="/assets/images/wiki/cholesky-energy.svg" alt="Equal-value curves compare positive definite quadratic energy with ellipses, positive semidefinite energy with parallel lines, and indefinite energy with hyperbolas." caption="Each curve joins vectors with the same value of xᵀAx. Closed ellipses surround the minimum for positive definite forms; flat directions allow open parallel contours; opposite signs give hyperbolas and a saddle at the origin." %}
+{% include image.html src="/assets/images/wiki/cholesky-energy.svg" alt="Equal-value curves compare positive definite quadratic energy with ellipses, positive semidefinite energy with parallel lines, and indefinite energy with hyperbolas." caption="Each curve connects input vectors x = (x₁, x₂) with the same function value q(x) = xᵀAx. A label q(x) = 4 means the function equals 4 everywhere on that curve; it is not an axis coordinate. Blue solid curves use the same levels 1, 2, 4 in every panel. Ellipses surround the positive definite minimum; vertical pairs of lines show that x₁² is unchanged along x₂ (q(x) = 4 occurs at x₁ = ±2). Orange dashed hyperbolas in the indefinite panel have values −1, −2, −4, and gray lines have value zero." %}
 
 Read the figure as a map in the input plane, rather than a graph of height against position. The corresponding height function is a bowl, a trough, or a saddle.
 

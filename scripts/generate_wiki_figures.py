@@ -104,21 +104,34 @@ def energy(preview):
     fig, axs = plt.subplots(1, 3, figsize=(13, 4.8), layout="constrained")
     values = [4*X**2+4*X*Y+3*Y**2, X**2, X**2-Y**2]
     titles = ["Positive definite", "Positive semidefinite", "Indefinite"]
-    equations = ["4x₁² + 4x₁x₂ + 3x₂²", "x₁²: flat along x₂", "x₁² − x₂²: both signs"]
+    equations = ["q(x) = 4x₁² + 4x₁x₂ + 3x₂²", "q(x) = x₁²: flat along x₂", "q(x) = x₁² − x₂²: both signs"]
+    levels = [1, 2, 4]
+    label = lambda value: f"q(x) = {value:g}"
     for ax, Z, title, equation, i in zip(axs, values, titles, equations, range(3)):
         axes(ax, (-2.5, 2.5))
         ax.set_xlabel("x₁")
         ax.set_ylabel("x₂")
+        contour_labels = []
         if i == 2:
-            neg = ax.contour(X, Y, Z, levels=[-3, -1], colors=ORANGE, linestyles="dashed")
-            ax.clabel(neg, fmt="%g", fontsize=10)
-            ax.contour(X, Y, Z, levels=[0], colors=GRAY, linewidths=.9)
-        pos = ax.contour(X, Y, Z, levels=[1, 2, 3] if i else [1, 4, 9], colors=BLUE)
-        ax.clabel(pos, fmt="%g", fontsize=10)
+            neg = ax.contour(X, Y, Z, levels=[-value for value in reversed(levels)], colors=ORANGE, linestyles="dashed")
+            contour_labels.extend(ax.clabel(neg, fmt=label, fontsize=9, inline=False,
+                      manual=[(0, sign * np.sqrt(value)) for sign in [-1, 1] for value in levels]))
+            zero = ax.contour(X, Y, Z, levels=[0], colors=GRAY, linewidths=.9)
+            contour_labels.extend(ax.clabel(zero, fmt=label, fontsize=9, inline=False,
+                                           manual=[(-1.7, 1.7), (1.7, 1.7)]))
+        pos = ax.contour(X, Y, Z, levels=levels, colors=BLUE)
+        positions = [(sign * np.sqrt(value + (height**2 if i == 2 else 0)), height)
+                     for sign in [-1, 1] for value, height in zip(levels, [1.1, 0, -.65])]
+        contour_labels.extend(ax.clabel(pos, fmt=label, fontsize=9, inline=False,
+                                       manual=positions if i else False))
+        for contour_label in contour_labels:
+            contour_label.set_rotation(0)
+            contour_label.set_bbox(dict(facecolor="white", edgecolor="none", pad=1.5))
         if i == 1:
             ax.plot([0, 0], [-1.9, 1.9], color=GRAY, lw=2, linestyle="dotted")
+            ax.text(.08, 0, "q(x) = 0", color=GRAY, fontsize=9)
         ax.set_title(title + "\n" + equation, fontsize=13, pad=12)
-    save(fig, "cholesky-energy", "Energy contours: closed ellipses, a flat direction, and both positive solid and negative dashed levels.", preview)
+    save(fig, "cholesky-energy", "Each curve connects input vectors with the same q(x) = x transpose A x. All panels use positive levels 1, 2, 4; the indefinite panel also shows negative levels -1, -2, -4 and zero. Blue solid curves are positive, orange dashed curves negative, and gray curves zero.", preview)
 
 
 def covariance(preview):
