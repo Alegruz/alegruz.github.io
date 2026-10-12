@@ -2,7 +2,7 @@
 title: LU decomposition
 subject: Linear Algebra
 description: Factor a matrix into lower and upper triangular matrices to solve linear systems efficiently.
-last_modified_at: 2026-10-09
+last_modified_at: 2026-10-12
 ---
 
 ## Definition
@@ -21,7 +21,7 @@ $$
 \det(A_{1:k,1:k}) \not ={0},\qquad k = 1, 2, \cdots, n
 $$
 
-the the unit-lower-triangular $LU$ decomposition/factorization exists and is unique.
+the unit-lower-triangular $LU$ decomposition/factorization exists and is unique. Here, unit lower triangular means that every diagonal entry of $L$ is $1$.
 
 If row exchanges are required, we instead use
 
@@ -30,6 +30,8 @@ PA = LU
 $$
 
 where $P$ is a permutation matrix.
+
+The applications below assume that $A$ is nonsingular and admits the unpivoted factorization $A = LU$.
 
 ## Usages
 
@@ -63,7 +65,7 @@ And using forward substitution, it is very trivial to solve $Ly = b$, and backwa
 
 Because this is a systematic approach of solving linear systems, we are interested in computers, not humans. Naturally, the question becomes: "What is the computational cost of solving linear system using $LU$ decomposition?"
 
-If we compute all the floating-point operations, also known as flops, factorization costs $2/3n^3$ while the substitutions cost $O(n^2)$.
+For conventional dense $LU$ factorization, the floating-point operation count is $\frac{2}{3}n^3 + O(n^2)$ flops, counting each multiplication and addition separately. Thus $\frac{2}{3}n^3$ is the leading term, rather than an exact count. Forward and backward substitution together cost $O(n^2)$ per right-hand side. Once $L$ and $U$ have been computed, they can be reused to solve systems with the same $A$ and different right-hand sides without repeating the factorization.
 
 ### 2. Computing determinants
 
@@ -277,9 +279,78 @@ Now if we translate this original text to English using LLMs, we get:
 > \mathrm{X}\cdot 1(\mathrm{g}'\cdot\mathrm{h}) = \mathrm{X}\cdot(\mathrm{h}\cdot\mathrm{g}') = \mathrm{X}\cdot 1\mathrm{g}'\cdot\mathrm{h} = 0, \qquad (1.1\text{-ter})
 > $$
 
-The apostrophe notation is the transpose operator commonly noted as $^T$ in modern writings. You can already see that Banachiewicz is decomposing original matrix $A$ into two triangular matrics $g$ and $h$.
+#### Reading the original notation
 
-Unlike the modern form of $Ax = b$, Banachiewicz's representations includes the tailing $b$ into the left hand side, and tries to formulate a equation that equals to zero.
+In the displayed formulas, $\mathrm{A}'$ and $\mathrm{g}'$ are augmented arrays: each has an extra column for the constant terms. Their primes should not be read as modern transpose symbols. Banachiewicz instead uses the prefix $1$ for the transposing cracovian, whose displayed array is an identity matrix. The first index in his entries denotes the column, and the second denotes the row; for example, $A_{21}$ is in the first row and second column. These conventions can be seen in §1, equations (1.A)–(1.C), of the [original paper, pp. 393–394](https://www.oa.uj.edu.pl/pbl/books/T_Banachiewicz_1938_Bull.Acad.Pol.Ser.A.No.10-12_p.393-404.pdf).
+
+The dot also has a special meaning. To distinguish it from ordinary matrix multiplication, write the cracovian product as $R \circ S$. If $R$ and $S$ denote the arrays as displayed, then
+
+$$
+R \circ S = S^T R, \qquad
+(R \circ S)_{ij} = \sum_k S_{ki}R_{kj}.
+$$
+
+Each output entry is a dot product of a column of $S$ with a column of $R$, so the operands must have the same number of rows. Consequently,
+
+$$
+R \circ I = R, \qquad I \circ R = R^T.
+$$
+
+This explains why the original prefix $1$ transposes an array even though ordinary left multiplication by an identity matrix would leave it unchanged. Cracovian multiplication is generally nonassociative; a sequence of products is evaluated from left to right. These product and transposition rules are also given in [Kociński, §3, definitions 3.1–3.3 and 3.5](https://arxiv.org/pdf/1509.08740).
+
+#### Translating the equations into modern matrix algebra
+
+Let $C$ denote the coefficient matrix as displayed in (1.B), and let $c$ be its final column. In modern notation,
+
+$$
+C_{ij} = A_{ji}, \qquad c_i = A_{n+1,i}, \qquad
+\mathcal A = [\,C\mid c\,], \qquad
+\widehat x = \begin{bmatrix}x\\1\end{bmatrix}.
+$$
+
+The original $\mathrm X = 1\{x_1\ \cdots\ x_n\ 1\}$ is the column $\widehat x$. Thus $\mathrm X\cdot 1\mathrm A' = 0$ translates to
+
+$$
+\widehat x \circ \mathcal A^T
+= \mathcal A\widehat x
+= Cx + c = 0.
+$$
+
+This is the usual system $Cx = b$ with $c = -b$: the appended column contains the negative of the modern right-hand side.
+
+Next, let $\mathcal G = [\,G\mid q\,]$ and $H$ denote the displayed arrays $\mathrm g'$ and $\mathrm h$. Here $G$ is unit upper triangular and $H$ is upper triangular with nonzero diagonal entries. Equation (1.2) translates to
+
+$$
+\mathcal A = \mathcal G \circ H = H^T\mathcal G,
+\qquad C = H^TG, \qquad c = H^Tq.
+$$
+
+The dimensions now agree: $H^T$ is $n\times n$ and $\mathcal G$ is $n\times(n+1)$. The coefficient matrix is a product of a lower triangular matrix $H^T$ and a unit upper triangular matrix $G$.
+
+The manipulation in (1.1-ter) has the same meaning as the ordinary matrix identity
+
+$$
+\mathcal A\widehat x = H^T(\mathcal G\widehat x) = 0.
+$$
+
+Since $H^T$ is invertible, this gives $\mathcal G\widehat x = Gx + q = 0$, corresponding to the original equation (1.3). Equivalently, set $y = -q$, solve $H^Ty = b$ by forward substitution, and then solve $Gx = y$ by backward substitution.
+
+To obtain the unit-lower-triangular convention used earlier in this article, define
+
+$$
+D = \operatorname{diag}(h_{11},\ldots,h_{nn}), \qquad
+L = H^TD^{-1}, \qquad U = DG.
+$$
+
+Then $L$ has diagonal entries $1$, $U$ is upper triangular, and $LU = H^TG = C$. For the earlier example,
+
+$$
+H = \begin{bmatrix}2&4\\0&1\end{bmatrix}, \qquad
+G = \begin{bmatrix}1&\tfrac12\\0&1\end{bmatrix}, \qquad
+D = \begin{bmatrix}2&0\\0&1\end{bmatrix},
+$$
+
+which gives exactly $L = \begin{bmatrix}1&0\\2&1\end{bmatrix}$ and $U = \begin{bmatrix}2&1\\0&1\end{bmatrix}$. Banachiewicz's factorization therefore becomes modern $LU$ after translating the product and choosing the diagonal normalization.
 
 The claim here is that by using this calculation based on his algebra, we have less mathematical quantities, not number of operations, than the traditional elimination process.
 
@@ -332,7 +403,7 @@ $$
 
 As we can see, the good property of finding the least squared error is that we differentiate the quadratic equation, and obtain a linear system. This was the reason why solving linear systems were very important.
 
-Now if we generalise this problem, it becomes:
+Now if we generalise this problem, let $A \in \mathbb R^{m\times n}$, $b \in \mathbb R^m$, and $x \in \mathbb R^n$. The least-squares problem becomes:
 
 $$
 \min_x \lVert Ax - b \rVert_2^2
@@ -372,6 +443,8 @@ $$
 $$
 
 which is called the normal equation.
+
+The normal equations characterize least-squares minimizers because $F$ is a convex quadratic. If $A$ has full column rank, then $A^TA$ is positive definite and the minimizer $x$ is unique. If $A$ is rank deficient, $A^TA$ is singular and positive semidefinite, and the minimizing $x$ is not unique, although the fitted vector $Ax$ is unique.
 
 The reason this is called a normal equation is because if we rearrange the equation, we get:
 
@@ -432,7 +505,7 @@ He continues to show useful properties of this factorization:
 > The key formula in this development is $A - S'T = 0$ and all subsequent formulas stem from this. Hence if $A$ can be factored into any matrices, $S'$ and $T$, not necessarily triangular, the results of section 6 follow.
 > &hellip;
 
-Because the premise is to solve normal equations, the factorizations here were all about a SPD matrix $A = B^TB$.
+In this normal-equation setting, the coefficient matrix is a Gram matrix $A = B^TB$. Such a matrix is always symmetric positive semidefinite, since $z^TAz = \lVert Bz\rVert_2^2 \geq 0$. It is positive definite only if $B$ has full column rank. Thus the nonsingular normal-equation case gives an SPD matrix; the Gram-matrix form alone does not guarantee positive definiteness.
 
 ### Numerical introduction
 
@@ -574,21 +647,21 @@ These are the excerpts:
 >
 > $^{26}$ Positioning for size, as described above, occurs only for $k = 1, \ldots, n-1$. For $k = n$, however, $a_{kk}^{(k)}$ is the only $a_{ij}^{(k)}$, hence the assertion is trivial.
 
+The quoted expression (4.17) is retained as transcribed. In the elimination notation used above, the multiplier for row $i$ at stage $j$ is $a_{ij}^{(j)}/a_{jj}^{(j)}$ for $i>j$, with $c_{ii}=1$ and $c_{ij}=0$ for $i<j$. This follows directly from (4.15); the superscript $(i)$ in the quoted numerator should therefore not be used as the modern multiplier formula.
+
 In their paper, they are not using the usual $LU$ notation, but they clearly now define the decomposition where $C$ is the lower triangular, and the $B'$ being the upper triangular.
 
 The reason of doing this is to analyse the numerical accuracy of matrix computations.
 
-The difference between the previous factorizations is that their factorization wasn't strictly about the normal equation, where the matrix to factorize is a SPD. The condition now only asks if the matrix is square, and its leading principal minors required by elimination is zero. The latter basically means the determinant of the upper left $k\times k$ submatrix of $A$:
+Their algebraic factorization applies beyond the SPD matrices arising from nonsingular normal equations. For a nonsingular square matrix $A$, unpivoted elimination requires every leading principal minor to be nonzero. These minors are the determinants of the upper-left $k\times k$ submatrices:
 
 $$
 \Delta_k = \det (A_{1:k, 1:k})
 $$
 
-This basically is asking if the matrix $A$ requires pivot changes to perform triangular factoriztion. If there exists a $\Delta_k = 0$, then you need permutation matrix.
+Writing $\Delta_0=1$, the pivots satisfy $u_{kk}=\Delta_k/\Delta_{k-1}$ when the preceding elimination steps are defined. Nonzero leading principal minors therefore ensure nonzero pivots throughout elimination. For a nonsingular $A$, a zero leading principal minor prevents an unpivoted $LU$ factorization. The nonsingularity assumption matters: a singular matrix such as $\operatorname{diag}(1,0)$ already has triangular factors despite its zero determinant.
 
-The reason is because the paper wasn't about solving normal equations, or it's numerical stability. It was to show the rounding errors in large computations on computers, which was the reason they chose the matrix inversion to show that computers were numerically stable enough.
-
-This is the modern definition of $LU$ decomposition, but with different notations. However, the limitation of their paper was that they were only able to show the rounding error stability when $A$ was SPD.
+Their purpose was to estimate rounding errors in large matrix computations. The algebraic factorization is the modern $LU$ decomposition with different notation, but the error analysis has a narrower scope: their rigorous analysis of inversion by elimination treats symmetric positive-definite matrices. It does not establish an unconditional stability guarantee for elimination on arbitrary nonsingular matrices.
 
 ### The $L$ and $U$ notation
 
@@ -601,7 +674,7 @@ This is his *Theorem of Triangular Resolution*:
 > **Theorem of Triangular Resolution**
 > If the principal minors of the matrix $A$ are non-singular, then there is a unique unit lower triangular matrix $L$, a unique diagonal matrix $D$, with non-zero diagonal elements, and a unique unit upper triangular matrix $U$ such that $A = LDU$. Similarly, there are unique $L'$, $D'$, $U'$ such that $A = U'D'L'$.
 
-In this paper, Turing explains the numerical stability of $LDU$ factorization where $A$ is now the generalized matrix, not the SPD form.
+In this paper, Turing studies rounding errors in elimination and related factorizations for general matrices, extending the discussion beyond the SPD case. The resulting bounds depend on quantities arising during the computation; the factorization theorem alone is not a stability guarantee.
 
 When he discusses the stability of this factorization, he introduces the concept of *condition numbers*.
 
@@ -645,7 +718,18 @@ When he discusses the stability of this factorization, he introduces the concept
 >
 > &hellip;
 
-As you can see, Turing measures the error by introducing the condition numbers. However, his works weren't enough to prove that $LU$ decomposition was stable, and this was tackled by yet again another paper in 1961 called "[Error Analysis of Direct Methods of Matrix Inversion]()" by an English mathematician and a principal scientific officer in the math division at the National Physics Laboratory(NPL), James Hardy Wilkinson, who was also a chief assistant to Turing at NPL.
+Turing uses condition numbers to describe how sensitive a system's solution is to perturbations in its coefficients. His paper also derives rounding-error bounds for matrix algorithms, including elimination; it is therefore more than an introduction to conditioning.
+
+The later 1961 paper "[Error Analysis of Direct Methods of Matrix Inversion](https://doi.org/10.1145/321075.321076)" by James Hardy Wilkinson, a mathematician at the National Physical Laboratory (NPL), develops error bounds that make the role of element growth and pivot selection explicit. Element growth measures how large intermediate entries become relative to the entries of the original matrix. Large growth can amplify rounding errors. Wilkinson's analysis relates the computed result to an exact computation on slightly perturbed data, an approach known as backward error analysis.
+
+This distinguishes two questions. **Conditioning** is a property of the mathematical problem: how much can its solution change when its inputs change slightly? **Numerical stability** is a property of an algorithm: can its computed solution be interpreted as the exact solution of a nearby problem? Even a small backward error can lead to a large error in the solution of an ill-conditioned system.
+
+Consequently, the existence of $A=LU$ does not by itself guarantee numerical stability. Unpivoted elimination can suffer large element growth even when every leading principal minor is nonzero. Pivoting strategies help control growth, but their error guarantees depend on the strategy and the resulting growth. The historical development should therefore be understood as increasingly precise error analysis under stated conditions, rather than an unconditional proof that every $LU$ computation is stable.
+
+## Related pages
+
+- [Matrix factorization and decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }})
+- [Cholesky decomposition]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }})
 
 ## References
 

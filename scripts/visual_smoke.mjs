@@ -84,13 +84,19 @@ async function checkPage(browser, baseUrl, target) {
   await page.goto(`${baseUrl}${target.path}`, { waitUntil: "networkidle" });
 
   if (target.path === "/wiki/linear-algebra/lu-decomposition/") {
-    await page.waitForSelector(".math-display mjx-container", { timeout: 30000 });
+    await page.waitForSelector("#post-content mjx-container", { timeout: 30000 });
     await page.evaluate(async () => { await window.MathJax.startup.promise; });
     if (await page.locator("mjx-merror").count()) {
       throw new Error(`${target.name}: invalid math expression`);
     }
     if (!(await page.locator("#post-toc").isVisible())) {
       throw new Error(`${target.name}: table of contents is missing`);
+    }
+    if (await page.locator("#post-content blockquote table").count()) {
+      throw new Error(`${target.name}: quoted math was parsed as a Markdown table`);
+    }
+    if (await page.locator(".math-inline mjx-container").count() !== 4) {
+      throw new Error(`${target.name}: protected inline formulas did not render`);
     }
   }
 

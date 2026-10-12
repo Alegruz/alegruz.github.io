@@ -77,6 +77,7 @@ plugins:
 #   - vendor/ruby/
 
 exclude:
+  - _wiki/AGENTS.md
   - .sass-cache/
   - .jekyll-cache/
   - .visual-smoke/
