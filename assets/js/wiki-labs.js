@@ -142,6 +142,48 @@
     root.querySelector("[data-explanation]").textContent="Color shows the sign and relative magnitude at sampled points; darker means larger magnitude. Axes stay fixed at −2 to 2. For SPD input, the curve is xᵀAx = 1 and may extend beyond the view. The black line marks your direction, clipped if outside the view. Predict the remainder before changing b. Try the flat and indefinite presets: find a zero or negative energy direction.";
   }
 
+  function norms(root, f, set, id, kind) {
+    const svg=root.querySelector("svg"), status=root.querySelector("[data-status]");
+    const output=root.querySelector("[data-matrices]"), note=root.querySelector("[data-explanation]");
+    const circle=Array.from({length:181},(_,i)=>[Math.cos(i*Math.PI/90),Math.sin(i*Math.PI/90)]);
+    let shapes, dots, limit;
+    if(kind==="vector-norm"){
+      const v=[f.x1,f.x2], one=Math.abs(f.x1)+Math.abs(f.x2), two=Math.hypot(...v), inf=Math.max(...v.map(Math.abs));
+      const rule=set("norm").value, size=rule==="1"?one:rule==="2"?two:inf;
+      const boundary=rule==="1"?[[1,0],[0,1],[-1,0],[0,-1],[1,0]]:
+        rule==="2"?circle:[[1,1],[-1,1],[-1,-1],[1,-1],[1,1]];
+      const normalized=size===0?null:v.map(value=>value/size);
+      status.textContent=size===0?"Zero vector: all norms are zero; normalization is undefined.":`Selected ${rule==="inf"?"infinity":rule}-norm size: ${fmt(size)}.`;
+      output.textContent=`x = (${v.map(fmt)})\n1-norm = ${fmt(one)}\n2-norm = ${fmt(two)}\nInfinity norm = ${fmt(inf)}\n`+
+        (normalized?`Normalized vector = (${normalized.map(fmt)})`:"Cannot divide the zero vector by its norm.");
+      shapes=[boundary];dots=[v,...(normalized?[normalized]:[])];
+      limit=Math.max(1.5,...v.map(Math.abs))*1.15;
+      note.textContent="Blue boundary: size one in the selected norm. Orange line: input vector. Black dot: normalized vector on the boundary, when nonzero. Axes rescale to include the input, so read the tick labels when comparing plots.";
+    }else{
+      const A=[[f.a,f.b],[f.c,f.d]], theta=f.angle*Math.PI/180;
+      const v=[Math.cos(theta),Math.sin(theta)], y=mul(A,v);
+      const one=Math.max(Math.abs(f.a)+Math.abs(f.c),Math.abs(f.b)+Math.abs(f.d));
+      const inf=Math.max(Math.abs(f.a)+Math.abs(f.b),Math.abs(f.c)+Math.abs(f.d));
+      const fro=Math.hypot(f.a,f.b,f.c,f.d);
+      const h=f.a*f.a+f.c*f.c, k=f.b*f.b+f.d*f.d, cross=f.a*f.b+f.c*f.d;
+      const spectral=Math.sqrt((h+k+Math.hypot(h-k,2*cross))/2);
+      const stretch=Math.hypot(...y);
+      status.textContent=`Direction stretch: ${fmt(stretch)}; maximum Euclidean stretch: ${fmt(spectral)}.`;
+      output.textContent=mat("A",A)+`\nInduced 1-norm = ${fmt(one)}\nInduced infinity norm = ${fmt(inf)}\nFrobenius norm = ${fmt(fro)}\nSpectral norm = ${fmt(spectral)}\nUnit input = (${v.map(fmt)})\nOutput = (${y.map(fmt)})`;
+      shapes=[circle,circle.map(p=>mul(A,p))];dots=[v,y];
+      limit=Math.max(1.5,spectral)*1.15;
+      note.textContent="Dashed circle: Euclidean unit inputs. Blue curve: their outputs (possibly a segment or a point). Black dot: selected unit input. Orange line and dot: its output. Axes rescale to fit. The spectral norm uses the largest eigenvalue of AᵀA, not sampled angles. Values are rounded for display.";
+    }
+    const {area,point}=scene(svg,limit,id);
+    shapes.forEach((shape,i)=>node("polyline",{points:shape.map(p=>point(p).join(",")).join(" "),class:kind==="matrix-norm"&&i===0?"lab-input":"lab-first","stroke-width":2},area));
+    dots.forEach((v,i)=>{
+      const [x,y]=point(v), orange=kind==="vector-norm"?i===0:i===1;
+      if(orange)node("line",{x1:300,y1:190,x2:x,y2:y,stroke:"#c65b08","stroke-width":2},area);
+      node("circle",{cx:x,cy:y,r:4,fill:orange?"#c65b08":"currentColor"},area);
+    });
+    svg.setAttribute("aria-label",status.textContent+" "+note.textContent);
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
@@ -172,6 +214,7 @@
         }
         if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
         else if(kind==="lu")lu(root,f,set,step);
+        else if(kind==="vector-norm"||kind==="matrix-norm")norms(root,f,set,`wiki-lab-clip-${index}`,kind);
         else cholesky(root,f,`wiki-lab-clip-${index}`);
       }
       root.querySelectorAll("[data-field]").forEach(input=>input.addEventListener("input",()=>{

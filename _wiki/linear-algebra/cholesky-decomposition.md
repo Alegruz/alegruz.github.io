@@ -26,7 +26,7 @@ This is a structured [matrix decomposition]({{ '/wiki/linear-algebra/matrix-deco
 
 ## Intuition: positive energy becomes ordinary squared length
 
-A **quadratic form** is the scalar $q(x)=x^TAx$. Think of it as an energy or penalty assigned to a displacement $x$. For the real symmetric matrix <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
+A **[quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})** is the scalar $q(x)=x^TAx$. Think of it as an energy or penalty assigned to a displacement $x$. For the real symmetric matrix <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
 
 $$
 q(x)=4x_1^2+4x_1x_2+3x_2^2.
@@ -541,6 +541,8 @@ $Ly=b$ gives $y_1=1/\sqrt2$, $y_2=1/\sqrt6$. Then $L^Tx=y$ gives $x_2=1/3$ and $
 - [Stata: multivariate-normal simulation](https://www.stata.com/support/faqs/statistics/multivariate-normal-observations/): connect exercise 7 to a complete covariance-generation example.
 
 ## Related pages
+
+- [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 
 - [Symmetric positive definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})
 

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 440" role="img" aria-labelledby="title desc">
+  <title id="title">Vector norm unit balls</title>
+  <desc id="desc">A diamond for the 1-norm, circle for the 2-norm, and square for the infinity norm on identical axes. Each reaches plus and minus one on both coordinate axes.</desc>
+  <rect width="600" height="440" fill="#fff"/>
+  <g transform="translate(300 205)" stroke-width="3">
+    <rect x="-140" y="-140" width="280" height="280" fill="#fff4e8" stroke="#a84700"/>
+    <circle r="140" fill="#eaf2ff" stroke="#2563eb"/>
+    <path d="M140 0 0 -140 -140 0 0 140Z" fill="#ecfdf5" stroke="#087f5b"/>
+    <g stroke="#475569" stroke-width="1.5"><path d="M-195 0H195M0 -180V180"/></g>
+    <g fill="#1e293b" stroke="none" font-family="system-ui,sans-serif" font-size="16">
+      <text x="147" y="22">1</text><text x="-165" y="22">−1</text>
+      <text x="8" y="-140">1</text><text x="8" y="148">−1</text>
+      <text x="185" y="-10">x₁</text><text x="10" y="-165">x₂</text>
+      <text x="147" y="-145">(1, 1)</text>
+    </g>
+  </g>
+  <g font-family="system-ui,sans-serif" font-size="16" text-anchor="middle">
+    <text x="300" y="28" fill="#1e293b">Boundaries where the selected norm equals one</text>
+    <text x="110" y="411" fill="#087f5b">Diamond: 1-norm</text>
+    <text x="300" y="411" fill="#2563eb">Circle: 2-norm</text>
+    <text x="490" y="411" fill="#a84700">Square: infinity norm</text>
+  </g>
+</svg>

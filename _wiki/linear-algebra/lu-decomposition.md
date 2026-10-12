@@ -506,6 +506,8 @@ F(x) &= (Ax - b)^T(Ax - b) \\
 \end{aligned}
 $$
 
+The term $x^TA^TAx$ is a [quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) with symmetric matrix $A^TA$. Its derivative is $2A^TAx$; the linear and constant terms supply the remaining contributions.
+
 And the differentiation with respect to $x$ gives:
 
 $$
@@ -1019,6 +1021,8 @@ $A\widehat x=(3.01,7.01)^T$, so $r=(-0.01,-0.01)^T$. A residual measures the equ
 - [LAPACK: backward error and conditioning](https://www.netlib.org/lapack/lug/node81.html): develop the distinction in exercise 8 between satisfying equations and recovering an accurate solution.
 
 ## Related pages
+
+- [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 
 - [Symmetric positive definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})
 

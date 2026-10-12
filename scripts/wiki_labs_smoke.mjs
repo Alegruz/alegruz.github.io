@@ -27,12 +27,13 @@ try {
   const errors=[];
   page.on("pageerror", error => errors.push(error.message));
   const base=`http://127.0.0.1:${server.address().port}`;
-  const visit = async name => {
+  const visit = async (name, exerciseDetails=16) => {
     const response=await page.goto(`${base}/wiki/linear-algebra/${name}/`,{waitUntil:"domcontentloaded"});
     assert.equal(response.status(),200);
     await page.locator(".wiki-lab-controls").waitFor({state:"visible"});
-    assert.equal(await page.locator(".wiki-exercise details").count(),16);
-    const hint=page.locator(".wiki-exercise details").first();
+    const exercises=page.locator(exerciseDetails===16?".wiki-exercise details":".post-content details");
+    assert.equal(await exercises.count(),exerciseDetails);
+    const hint=exercises.first();
     assert.equal(await hint.getAttribute("open"),null);
     await hint.locator("summary").press("Enter");
     assert.notEqual(await hint.getAttribute("open"),null);
@@ -105,8 +106,33 @@ try {
   // x=(1,-1): 4 - 2(2.01) + 3 = 2.98.
   assert.match(await lab.output.innerText(),/xᵀAx for x = \(1, -1\): 2.98/);
 
-  for(const name of ["matrix-decomposition","lu-decomposition","cholesky-decomposition"]){
-    await visit(name);
+  lab=await visit("vector-norm",8);
+  assert.match(await lab.output.innerText(),/1-norm = 7\n2-norm = 5\nInfinity norm = 4/);
+  await lab.field("norm").selectOption("inf");
+  assert.match(await lab.output.innerText(),/Normalized vector = \(0.75,-1\)/);
+  await lab.field("x1").fill("0");await lab.field("x2").fill("0");
+  assert.match(await lab.status.innerText(),/normalization is undefined/);
+  await lab.field("x1").fill("");
+  assert.equal(await lab.field("x1").getAttribute("aria-invalid"),"true");
+  await lab.field("x1").fill("1");await lab.field("x2").fill("1");
+  await lab.field("norm").selectOption("1");
+  assert.match(await lab.output.innerText(),/Normalized vector = \(0.5,0.5\)/);
+
+  lab=await visit("matrix-norm",8);
+  assert.match(await lab.output.innerText(),/Induced 1-norm = 4/);
+  assert.match(await lab.output.innerText(),/Spectral norm = 2.92081/);
+  await lab.field("angle").focus();await lab.field("angle").press("ArrowRight");
+  assert.equal(await lab.field("angle").inputValue(),"91");
+  for(const [key,value] of Object.entries({a:0,b:5,c:0,d:0}))await lab.field(key).fill(String(value));
+  assert.match(await lab.output.innerText(),/Spectral norm = 5/);
+  await lab.field("b").fill("0");
+  assert.match(await lab.output.innerText(),/Spectral norm = 0/);
+  assert.match(await lab.status.innerText(),/Direction stretch: 0/);
+  await lab.field("a").fill("");
+  assert.equal(await lab.field("a").getAttribute("aria-invalid"),"true");
+
+  for(const name of ["matrix-decomposition","lu-decomposition","cholesky-decomposition","vector-norm","matrix-norm"]){
+    await visit(name,name.endsWith("-norm")?8:16);
     await page.setViewportSize({width:375,height:850});
     assert.equal(await page.locator(".wiki-lab").evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
     await page.emulateMedia({colorScheme:"dark"});
@@ -120,9 +146,17 @@ try {
   const solution=staticPage.locator(".wiki-exercise details").nth(1);
   await solution.locator("summary").click();
   assert.notEqual(await solution.getAttribute("open"),null);
+  for(const name of ["vector-norm","matrix-norm"]){
+    await staticPage.goto(`${base}/wiki/linear-algebra/${name}/`,{waitUntil:"domcontentloaded"});
+    assert.equal(await staticPage.locator(".wiki-lab-controls").isVisible(),false);
+    assert.equal(await staticPage.locator("noscript").isVisible(),true);
+    const answer=staticPage.locator(".post-content details").nth(1);
+    await answer.locator("summary").click();
+    assert.notEqual(await answer.getAttribute("open"),null);
+  }
   await noJS.close();
   assert.deepEqual(errors,[]);
-  console.log("Wiki labs passed: composition order, keyboard controls, LU pivoting and singularity, Cholesky boundaries, invalid inputs, 24 exercise solutions, mobile layout, dark mode, and no-JavaScript reading.");
+  console.log("Wiki labs passed: composition order, keyboard controls, LU pivoting and singularity, Cholesky boundaries, vector and matrix norms, invalid inputs, 32 exercise solutions, mobile layout, dark mode, and no-JavaScript reading.");
 } finally {
   if(browser)await browser.close();
   await new Promise(done=>server.close(done));

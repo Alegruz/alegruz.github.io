@@ -8,6 +8,16 @@
     <label>Input x₁ <input data-field="x1" type="number" step="any" value="1"></label>
     <label>Input x₂ <input data-field="x2" type="number" step="any" value="1"></label>
     <label>Order <select data-field="order"><option value="BC">Scale C, then shear B (BC)</option><option value="CB">Shear B, then scale C (CB)</option></select></label>
+    {% elsif include.kind == 'vector-norm' %}
+    <label>Input x₁ <input data-field="x1" type="number" step="any" value="3"></label>
+    <label>Input x₂ <input data-field="x2" type="number" step="any" value="-4"></label>
+    <label>Measuring rule <select data-field="norm"><option value="1">1-norm</option><option value="2" selected>2-norm</option><option value="inf">Infinity norm</option></select></label>
+    {% elsif include.kind == 'matrix-norm' %}
+    <label>a₁₁ <input data-field="a" type="number" step="any" value="1"></label>
+    <label>a₁₂ <input data-field="b" type="number" step="any" value="2"></label>
+    <label>a₂₁ <input data-field="c" type="number" step="any" value="0"></label>
+    <label>a₂₂ <input data-field="d" type="number" step="any" value="2"></label>
+    <label>Input angle (degrees) <input data-field="angle" type="range" min="0" max="360" step="1" value="90"><output data-value="angle">90</output></label>
     {% elsif include.kind == 'lu' %}
     <label>Example <select data-field="preset"><option value="ordinary">Ordinary solve</option><option value="zero">Zero first pivot</option><option value="small">Small first pivot</option><option value="singular">Singular matrix</option></select></label>
     <label>a₁₁ <input data-field="a" type="number" step="any" value="2"></label>

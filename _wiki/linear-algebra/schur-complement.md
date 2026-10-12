@@ -98,7 +98,7 @@ The third variable has no direct coupling to the eliminated first variable, so i
 
 ## Quadratic energy and positive definiteness
 
-Assume now that $M$ is real symmetric, so $C=B^T$, and that $A$ is positive definite. Completing the square gives
+The energy below is a [quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) in the combined vector $(x,y)^T$. Assume now that $M$ is real symmetric, so $C=B^T$, and that $A$ is positive definite. Completing the square gives
 
 $$
 \begin{bmatrix}x\\y\end{bmatrix}^T
@@ -223,6 +223,10 @@ A simplified stiffness model has internal displacement $x$ and boundary displace
 Here $A=2$, $D=5$, and $S=5-2(1/2)2=3$. Completing the square gives $q=2(x+y)^2+3y^2$. Relaxation sets $x=-y$, leaving $3y^2$; the effective coefficient is $3$. Both $A$ and $S$ are positive, so the full symmetric matrix is positive definite.
 
 </details>
+
+## Related pages
+
+- [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 
 ## References
 

@@ -126,7 +126,7 @@ $$
 x^TAx=\lVert L^Tx\rVert_2^2.
 $$
 
-The quadratic expression on the left may mix coordinates. The right side writes it as ordinary squared length after a triangular change of coordinates. For the example <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
+The [quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) on the left may mix coordinates. The right side writes it as ordinary squared length after a triangular change of coordinates. For the example <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
 
 $$
 4x_1^2+4x_1x_2+3x_2^2=(2x_1+x_2)^2+(\sqrt2x_2)^2.
@@ -354,6 +354,10 @@ Scaling gives $(2,2)^T$; shearing gives $(3,2)^T$. To undo the pipeline, first s
 - [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) and [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}): continue with elimination records, positive energy, and their dedicated practice sets.
 
 ## Related pages
+
+- [Vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }})
+- [Matrix norms]({{ '/wiki/linear-algebra/matrix-norm/' | relative_url }})
+- [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 
 - [Symmetric positive definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})
 

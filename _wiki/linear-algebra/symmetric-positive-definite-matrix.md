@@ -14,7 +14,7 @@ $$
 A^T=A,\qquad x^TAx>0\quad\text{for every nonzero }x\in\mathbb R^n.
 $$
 
-Here $A^T$ is the transpose, $x$ is a column vector, and $x^TAx$ is a scalar called a **quadratic form**. Both symmetry and strict positivity are required. See [van de Geijn's definition](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html).
+Here $A^T$ is the transpose, $x$ is a column vector, and $x^TAx$ is a scalar called a **[quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})**. Both symmetry and strict positivity are required. See [van de Geijn's definition](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html).
 
 SPD matrices describe an energy that increases in every direction away from zero. This structure supports unique solutions to linear systems and [Cholesky decomposition]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}), a specialized [matrix decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}).
 
@@ -291,6 +291,10 @@ The vector $(1,-1)^T$ changes the two coefficients oppositely without changing t
 - [LAPACK: DPOTRF](https://www.netlib.org/lapack/double/dpotrf.f): understand triangle storage and failure reporting in a numerical implementation.
 
 ## Related pages
+
+- [Vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }})
+- [Matrix norms]({{ '/wiki/linear-algebra/matrix-norm/' | relative_url }})
+- [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 
 - [Cholesky decomposition]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }})
 - [LU decomposition]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }})
