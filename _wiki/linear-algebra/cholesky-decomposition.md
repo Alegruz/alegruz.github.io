@@ -26,19 +26,143 @@ This is a structured [matrix decomposition]({{ '/wiki/linear-algebra/matrix-deco
 
 ## Intuition: positive energy becomes ordinary squared length
 
+The question behind Cholesky is: **can we rewrite a positive quadratic expression as a sum of squares, computing one square at a time?** We will do that for a small example, then collect the coefficients into a matrix. That construction will give us the factor $L$.
+
 A **[quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})** is the scalar $q(x)=x^TAx$. Think of it as an energy or penalty assigned to a displacement $x$. For the real symmetric matrix <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
 
 $$
 q(x)=4x_1^2+4x_1x_2+3x_2^2.
 $$
 
-The cross term couples the coordinates. Completing the square gives
+### What a cross term means
+
+A **cross term** multiplies two different variables together. Here it is $4x_1x_2$. In contrast, $4x_1^2$ involves only $x_1$, and $3x_2^2$ involves only $x_2$.
+
+The cross term describes an interaction: its contribution depends on both variables and their relative signs. Compare two inputs:
 
 $$
-q(x)=(2x_1+x_2)^2+(\sqrt2x_2)^2=\lVert L^Tx\rVert_2^2.
+q(1,1)=4+4+3=11,\qquad q(1,-1)=4-4+3=3.
 $$
 
-Cholesky finds the triangular coordinate transformation that makes this mixed quadratic expression a sum of squares. If $L$ is invertible, a nonzero $x$ cannot become the zero vector under $L^T$, so the squared length is strictly positive. That explains the SPD condition. See [Higham's discussion of positive-definite quadratic forms](https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/).
+The squared terms have the same values in both cases. Only the cross term changes sign. This is what it means to say that the expression *couples* the coordinates: their joint contribution cannot be described using only separate squares of $x_1$ and $x_2$.
+
+You can also see where the coefficient comes from in the matrix product. The two off-diagonal entries contribute $2x_1x_2$ and $2x_2x_1$, which add to $4x_1x_2$. The [quadratic form page]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) explains this correspondence between matrix entries and terms.
+
+### What completing the square means
+
+**Completing the square** means rewriting a quadratic expression using a squared quantity, while keeping its value unchanged. Start with
+
+$$
+(x+t)^2=x^2+2tx+t^2.
+$$
+
+For example, to rewrite $x^2+6x$, choose $t=3$ so that $2tx=6x$. The square supplies an extra $9$, so subtract it:
+
+$$
+x^2+6x=x^2+6x+9-9=(x+3)^2-9.
+$$
+
+Adding and subtracting the same amount preserves the expression. See [OpenStax's explanation of completing the square](https://openstax.org/books/college-algebra-2e/pages/2-5-quadratic-equations).
+
+For our two-variable example, notice that
+
+$$
+(2x_1+x_2)^2=4x_1^2+4x_1x_2+x_2^2.
+$$
+
+This square accounts for the first two terms and **one of the three copies of $x_2^2$**. Two copies remain, giving
+
+$$
+q(x)=(2x_1+x_2)^2+2x_2^2=(2x_1+x_2)^2+(\sqrt2x_2)^2.
+$$
+
+The expression is now a sum of squares of combinations of the original variables.
+
+### Why completing squares in order creates a triangular matrix
+
+The important choice is to **finish with one variable before moving to the next**. We first collect every term containing $x_1$ into the square $(2x_1+x_2)^2$. Subtracting that square from the original expression leaves
+
+$$
+q(x)-(2x_1+x_2)^2=2x_2^2.
+$$
+
+There is no $x_1$ left in this remainder. Consequently, the next square, $(\sqrt2x_2)^2$, has an $x_1$ coefficient of zero. The coefficient rows of the two squares therefore have the pattern
+
+$$
+\begin{bmatrix}
+\text{coefficient of }x_1&\text{coefficient of }x_2\\
+0&\text{coefficient of }x_2
+\end{bmatrix}.
+$$
+
+With three variables, the same procedure first absorbs all terms containing $x_1$, leaving a quadratic expression in $x_2,x_3$. Completing the next square absorbs all terms containing $x_2$ from that remainder, leaving only a multiple of $x_3^2$. The resulting combinations have the form
+
+$$
+y_1=r_{11}x_1+r_{12}x_2+r_{13}x_3,\qquad
+y_2=r_{22}x_2+r_{23}x_3,\qquad
+y_3=r_{33}x_3.
+$$
+
+Here $r_{ij}$ denotes the coefficient of $x_j$ in the $i$th combination. Each later combination omits the variables already absorbed into earlier squares. Those missing coefficients are precisely the zeros below the diagonal of an **upper triangular** coefficient matrix. Transposing it gives the lower triangular factor $L$.
+
+Thus triangularity comes from completing squares **in variable order**. An arbitrary sum-of-squares representation need not have this pattern. Positive definiteness ensures that each successive remainder supplies a positive coefficient for the next square; the proof below explains why this process can continue.
+
+### How Cholesky records these combinations
+
+Define two new quantities:
+
+$$
+y_1=2x_1+x_2,\qquad y_2=\sqrt2x_2.
+$$
+
+Then $q(x)=y_1^2+y_2^2$, the ordinary squared length of the vector $y$. For instance, $x=(1,1)^T$ gives $y=(3,\sqrt2)^T$, so the same value $11$ becomes $3^2+(\sqrt2)^2$.
+
+Collect the coefficients of these two combinations into a matrix, which we will call $R$:
+
+$$
+\begin{bmatrix}y_1\\y_2\end{bmatrix}
+=\underbrace{\begin{bmatrix}2&1\\0&\sqrt2\end{bmatrix}}_{R}
+\begin{bmatrix}x_1\\x_2\end{bmatrix}.
+$$
+
+The entries are the coefficients in the two equations for $y$. The zero below the diagonal records the step we just took: after absorbing all $x_1$ terms into the first square, the second square uses only $x_2$. This is the upper triangular pattern described above.
+
+Now multiply its transpose by itself:
+
+$$
+R^TR=
+\begin{bmatrix}2&0\\1&\sqrt2\end{bmatrix}
+\begin{bmatrix}2&1\\0&\sqrt2\end{bmatrix}
+=\begin{bmatrix}4&2\\2&3\end{bmatrix}=A.
+$$
+
+**We have performed the factorization by completing the square.** To use the lower triangular convention in the definition, name the transpose $L=R^T$:
+
+$$
+L=\begin{bmatrix}2&0\\1&\sqrt2\end{bmatrix},\qquad A=LL^T.
+$$
+
+This is where $L$ comes from: its columns contain the coefficients of the squares we just constructed. Cholesky carries out this idea systematically for an SPD matrix, choosing positive diagonal coefficients. The general algorithm below makes that sequential construction precise; see [the FLAME definition and algorithm](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html).
+
+This gives an order for recovering the original variables. First recover $x_2$ from the second equation, then substitute it into the first:
+
+$$
+x_2=\frac{y_2}{\sqrt2},\qquad x_1=\frac{y_1-x_2}{2}.
+$$
+
+The pair $(y_1,y_2)$ is another way to describe the same input, so we call it a new set of **coordinates**. Calculating $y$ from $x$ is a **coordinate transformation**. The word *triangular* describes the matrix and its dependency pattern; it does not describe a special kind of coordinate or a triangular shape.
+
+In matrix notation, the sum of squares is
+
+$$
+x^TAx=\lVert L^Tx\rVert_2^2.
+$$
+
+Here $L^Tx=y$, and the squared-norm notation on the right means $y_1^2+y_2^2$. Since we can recover $x$ from $y$, a nonzero $x$ cannot give $y=(0,0)^T$. At least one square is therefore positive. This explains the SPD condition in this example; see [Higham's discussion of positive-definite quadratic forms](https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/).
+
+This also connects the factorization to the contour plots below. In the original $x$ coordinates, $q(x)=4$ is an ellipse. After applying $y=L^Tx$, the same condition becomes $y_1^2+y_2^2=4$, a circle of radius $2$. The factor supplies the change of coordinates that turns the elliptical energy levels into ordinary circles. The contour shape motivates this goal; completing the square tells us how to achieve it.
+
+### Positivity concerns directions rather than individual entries
 
 Positive definite does **not** mean that every entry of the matrix is positive. For example, <span class="math-inline" markdown="0">\(\begin{pmatrix}2&-1\\-1&2\end{pmatrix}\)</span> gives
 
@@ -52,9 +176,9 @@ Conversely, <span class="math-inline" markdown="0">\(\begin{pmatrix}1&2\\2&1\end
 
 The semidefinite example has a direction that costs no energy. The indefinite example has a direction with negative energy, so it cannot equal a squared Euclidean length for all $x$. These geometric differences correspond to zero or invalid square-root pivots in the usual algorithm.
 
-### The factor is a table of dot products
+### Another way to read the factor we constructed
 
-Write the rows of $L$ as $r_1,\ldots,r_n$. Then $a_{ij}=r_i\cdot r_j$. In the two-variable example,
+We already found $L$ from the completed squares. We can now read its entries in another way to understand the computation. Matrix multiplication takes a row of $L$ and a column of $L^T$, which is a row of $L$ turned sideways. Thus each entry of $LL^T$ is a **dot product** of two rows of $L$ (multiply corresponding coordinates and add). Calling those rows $r_1,\ldots,r_n$, we have $a_{ij}=r_i\cdot r_j$. In our example,
 
 $$
 r_1=(2,0),\qquad r_2=(1,\sqrt2).
@@ -566,3 +690,4 @@ $Ly=b$ gives $y_1=1/\sqrt2$, $y_2=1/\sqrt6$. Then $L^Tx=y$ gives $x_2=1/3$ and $
 13. StataCorp. [*Stata 6: Simulating multivariate normal observations*](https://www.stata.com/support/faqs/statistics/multivariate-normal-observations/). Cholesky factors as covariance transformations.
 
 14. Higham, N. J. (2020, July 21). [*What Is a Symmetric Positive Definite Matrix?*](https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/). Quadratic-form interpretation and positivity conditions.
+15. OpenStax. [*College Algebra 2e*, §2.5, Quadratic Equations](https://openstax.org/books/college-algebra-2e/pages/2-5-quadratic-equations), subsection Completing the Square. Algebraic background for rewriting a quadratic using a squared expression.
