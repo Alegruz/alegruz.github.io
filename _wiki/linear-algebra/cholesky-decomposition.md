@@ -1,13 +1,14 @@
 ---
 title: Cholesky decomposition
 subject: Linear Algebra
+interactive_examples: true
 description: Understand how geodetic network adjustment led to Cholesky factorization, how its purpose developed, and how to compute it.
 last_modified_at: 2026-10-12
 ---
 
 ## Definition
 
-For a real **symmetric positive-definite** (SPD) matrix $A\in\mathbb{R}^{n\times n}$, the **Cholesky decomposition**, or **Cholesky factorization**, is
+For a real **[symmetric positive-definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})** (SPD) matrix $A\in\mathbb{R}^{n\times n}$, the **Cholesky decomposition**, or **Cholesky factorization**, is
 
 $$
 A=LL^T,
@@ -114,7 +115,7 @@ ax_1^2+2bx_1x_2+cx_2^2
 =a\left(x_1+\frac ba x_2\right)^2+\left(c-\frac{b^2}{a}\right)x_2^2.
 $$
 
-For $a>0$, a positive remainder means the second direction still has positive energy. A zero remainder leaves a flat direction. A negative remainder gives a negative-energy direction. In higher dimensions, the Schur complement is the matrix version of this remainder.
+For $a>0$, a positive remainder means the second direction still has positive energy. A zero remainder leaves a flat direction. A negative remainder gives a negative-energy direction. In higher dimensions, the [Schur complement]({{ '/wiki/linear-algebra/schur-complement/' | relative_url }}) is the matrix version of this remainder.
 
 ### Why the square roots are positive
 
@@ -130,7 +131,7 @@ $$
 0<x^TAx=z^T\left(B-\frac{cc^T}{\alpha}\right)z.
 $$
 
-Thus the Schur complement $B-cc^T/\alpha$ is SPD. Inductively factor it as $KK^T$, and obtain
+Thus the [Schur complement]({{ '/wiki/linear-algebra/schur-complement/' | relative_url }}) $B-cc^T/\alpha$ is SPD. Inductively factor it as $KK^T$, and obtain
 
 $$
 L=\begin{bmatrix}\sqrt\alpha&0\\c/\sqrt\alpha&K\end{bmatrix}.
@@ -336,7 +337,212 @@ Here the factor generates correlated observations rather than solving for unknow
 
 The historical thread is thus a continuing problem of usable computation: first, obtain least-squares corrections for measured networks; then, establish precise accuracy guarantees and efficient implementations; and, in additional applications, use the factor itself as a representation of a positive-definite matrix.
 
+## Interactive example: vary the remaining energy
+
+The experiment uses symmetric <span class="math-inline" markdown="0">\(A=\begin{pmatrix}a&b\\b&c\end{pmatrix}\)</span>. Predict the sign of $c-b^2/a$ before changing the shared coefficient $b$. When the factorization fails, find a direction with zero or negative energy. A failure here is a consequence of the chosen matrix, rather than a reason to take the square root of a negative number. The calculations follow the [Cholesky recurrences in the FLAME notes](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html).
+
+{% include wiki-lab.html kind="cholesky" title="Explore Cholesky pivots and quadratic energy" plot_description="Sampled quadratic energy with positive and negative regions, an SPD unit-energy contour, and a chosen direction." %}
+
+## Practice problems
+
+Try each problem before opening its hint or solution. The first two build hand-calculation fluency, the next two ask you to interpret or choose an approach, the next two develop logical reasoning, and the final two connect the concept to practical work. These are original exercises; the references support the mathematical concepts they use.
+
+### 1. Hand calculation: factor and solve
+
+Find $L$ with positive diagonal, solve $Ax=b$, and compute $\det A$ for
+
+$$
+A=\begin{bmatrix}9&3\\3&5\end{bmatrix},\qquad b=\begin{bmatrix}12\\8\end{bmatrix}.
+$$
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+First match the top-left square, then the off-diagonal product, then the remaining squared length.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+$l_{11}=3$, $l_{21}=1$, and $l_{22}=\sqrt{5-1}=2$, so <span class="math-inline" markdown="0">\(L=\begin{pmatrix}3&0\\1&2\end{pmatrix}\)</span>. Forward substitution gives $y=(4,2)^T$; backward substitution gives $x=(1,1)^T$. The determinant is $(3\cdot2)^2=36$.
+
+</details>
+</div>
+
+### 2. Hand calculation: construct three rows
+
+Compute the Cholesky factor and determinant of
+
+$$
+A=\begin{bmatrix}4&2&2\\2&5&3\\2&3&6\end{bmatrix}.
+$$
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+The first column is $(2,1,1)^T$. Each later diagonal supplies the squared length not already supplied.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+The second diagonal is $\sqrt{5-1}=2$. Then $l_{32}=(3-1\cdot1)/2=1$ and $l_{33}=\sqrt{6-1-1}=2$:
+
+$$
+L=\begin{bmatrix}2&0&0\\1&2&0\\1&1&2\end{bmatrix}.
+$$
+
+Multiplying $LL^T$ recovers $A$. Its determinant is $(2\cdot2\cdot2)^2=64$.
+
+</details>
+</div>
+
+### 3. Thinking: diagnose the failed square root
+
+Compare <span class="math-inline" markdown="0">\(A_1=\begin{pmatrix}1&2\\2&5\end{pmatrix}\)</span> and <span class="math-inline" markdown="0">\(A_2=\begin{pmatrix}1&2\\2&3\end{pmatrix}\)</span>. Which admits positive-diagonal Cholesky? For the other, exhibit a negative-energy direction.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Compute the remainder $c-b^2/a$, and try $x=(-b/a,1)^T$.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+For $A_1$, the remainder is $5-4=1$, so <span class="math-inline" markdown="0">\(L=\begin{pmatrix}1&0\\2&1\end{pmatrix}\)</span>. For $A_2$, it is $3-4=-1$. Taking $x=(-2,1)^T$ gives $x^TA_2x=-1$, so $A_2$ is indefinite and cannot equal $LL^T$ with real $L$.
+
+</details>
+</div>
+
+### 4. Thinking: interpret correlation near one
+
+For the covariance matrix <span class="math-inline" markdown="0">\(A_\rho=\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}\)</span> with $0\le\rho<1$, find $L$. Interpret its second diagonal when $\rho=0.9$ and as $\rho\to1$.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Write the second output as a shared component plus an independent component.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+<span class="math-inline" markdown="0">\(L=\begin{pmatrix}1&0\\\rho&\sqrt{1-\rho^2}\end{pmatrix}\)</span>. At $\rho=0.9$, the independent contribution has coefficient $\sqrt{0.19}\approx0.43589$. As $\rho\to1$, it tends to zero: the outputs become identical in the limiting construction. At $\rho=1$, the covariance matrix is singular, so the positive-diagonal theorem no longer applies.
+
+</details>
+</div>
+
+### 5. Logic: prove positivity and examine uniqueness
+
+If $L$ is an invertible real lower triangular matrix, prove $LL^T$ is SPD. Why does the uniqueness theorem require a positive diagonal?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Use $x^TLL^Tx=\lVert L^Tx
+Vert^2$, then try replacing $L$ with $-L$.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+$LL^T$ is symmetric. For nonzero $x$, invertibility implies $L^Tx\ne0$, so its squared norm is positive. Without fixing signs, $(-L)(-L)^T=LL^T$ gives another lower triangular factor. Requiring positive diagonal selects one factor. Existence and full uniqueness under that condition are the theorem stated earlier.
+
+</details>
+</div>
+
+### 6. Logic: identify the factor of a leading block
+
+If $A=LL^T$ is an SPD Cholesky factorization, show that the upper-left $k\times k$ block of $L$ is the Cholesky factor of the upper-left $k\times k$ block of $A$.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Partition L into blocks and use its zero upper-right block.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+Write
+
+$$
+L=\begin{bmatrix}L_{11}&0\\L_{21}&L_{22}\end{bmatrix}.
+$$
+
+The upper-left block of $LL^T$ is $L_{11}L_{11}^T$. $L_{11}$ is lower triangular with positive diagonal, so it is the normalized Cholesky factor of $A_{11}$. This also explains why the computation proceeds through leading blocks.
+
+</details>
+</div>
+
+### 7. Applied: generate correlated sensor errors
+
+Two sensors need zero-mean errors with covariance <span class="math-inline" markdown="0">\(\Sigma=\begin{pmatrix}4&1\\1&1\end{pmatrix}\)</span>. Construct the errors from independent zero-mean, unit-variance variables $z_1,z_2$. Verify the two variances, covariance, and correlation.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Find L and use $u=Lz$. Independence removes the cross terms involving both z variables.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+Use <span class="math-inline" markdown="0">\(L=\begin{pmatrix}2&0\\1/2&\sqrt3/2\end{pmatrix}\)</span>, so $u_1=2z_1$ and $u_2=z_1/2+\sqrt3z_2/2$. The variances are $4$ and $1/4+3/4=1$; covariance is $2\cdot1/2=1$. Correlation is $1/(2\cdot1)=1/2$. Gaussian z variables additionally give a jointly Gaussian output, but these covariance calculations need only the stated moments and independence.
+
+</details>
+</div>
+
+### 8. Applied: minimize a quadratic penalty
+
+An optimization step minimizes
+
+$$
+f(x)=\frac12x^TAx-b^Tx,\qquad
+A=\begin{bmatrix}2&-1\\-1&2\end{bmatrix},\qquad b=\begin{bmatrix}1\\0\end{bmatrix}.
+$$
+
+Derive the system for its minimizer and solve it with Cholesky. Why is the stationary point the unique minimum?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Differentiate the quadratic, and use positive definiteness to interpret the curvature.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+$\nabla f(x)=Ax-b$, so solve $Ax=b$. Here
+
+$$
+L=\begin{bmatrix}\sqrt2&0\\-1/\sqrt2&\sqrt{3/2}\end{bmatrix}.
+$$
+
+$Ly=b$ gives $y_1=1/\sqrt2$, $y_2=1/\sqrt6$. Then $L^Tx=y$ gives $x_2=1/3$ and $x_1=2/3$. For any nonzero displacement $h$ from this stationary point, the change in the objective is $\frac12h^TAh>0$. Hence this is the unique minimum.
+
+</details>
+</div>
+
+## Further learning
+
+- [FLAME: Notes on Cholesky Factorization](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html): study the full proof, algorithm, operation count, and accompanying exercises.
+- [Higham: What Is a Symmetric Positive Definite Matrix?](https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/): connect energy, eigenvalues, and positivity conditions.
+- [ALAFF: why normal equations can lose accuracy](https://www.cs.utexas.edu/~flame/laff/alaff/LLS-Why-Normal-Equations-Bad.html): understand why a stable factorization is only one part of a reliable least-squares computation.
+- [Stata: multivariate-normal simulation](https://www.stata.com/support/faqs/statistics/multivariate-normal-observations/): connect exercise 7 to a complete covariance-generation example.
+
 ## Related pages
+
+- [Symmetric positive definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})
 
 - [Matrix factorization and decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }})
 - [LU decomposition]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }})

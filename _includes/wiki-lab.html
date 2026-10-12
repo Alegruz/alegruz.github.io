@@ -1,0 +1,38 @@
+<section class="wiki-lab" data-wiki-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
+  <p class="wiki-lab-title">{{ include.title | escape }}</p>
+  <noscript><p>The interactive controls require JavaScript. The worked examples and practice solutions below can be read without it.</p></noscript>
+  <div class="wiki-lab-controls" hidden>
+    {% if include.kind == 'composition' %}
+    <label>Horizontal scale s <input data-field="scale" type="range" min="-3" max="3" step="0.1" value="2"><output data-value="scale">2</output></label>
+    <label>Horizontal shear k <input data-field="shear" type="range" min="-2" max="2" step="0.1" value="1"><output data-value="shear">1</output></label>
+    <label>Input x₁ <input data-field="x1" type="number" step="any" value="1"></label>
+    <label>Input x₂ <input data-field="x2" type="number" step="any" value="1"></label>
+    <label>Order <select data-field="order"><option value="BC">Scale C, then shear B (BC)</option><option value="CB">Shear B, then scale C (CB)</option></select></label>
+    {% elsif include.kind == 'lu' %}
+    <label>Example <select data-field="preset"><option value="ordinary">Ordinary solve</option><option value="zero">Zero first pivot</option><option value="small">Small first pivot</option><option value="singular">Singular matrix</option></select></label>
+    <label>a₁₁ <input data-field="a" type="number" step="any" value="2"></label>
+    <label>a₁₂ <input data-field="b" type="number" step="any" value="1"></label>
+    <label>a₂₁ <input data-field="c" type="number" step="any" value="4"></label>
+    <label>a₂₂ <input data-field="d" type="number" step="any" value="3"></label>
+    <label>b₁ <input data-field="rhs1" type="number" step="any" value="3"></label>
+    <label>b₂ <input data-field="rhs2" type="number" step="any" value="7"></label>
+    <label class="wiki-lab-check"><input data-field="pivot" type="checkbox"> Use partial pivoting</label>
+    <div class="wiki-lab-actions"><button type="button" data-action="next">Next step</button><button type="button" data-action="reset">Restart steps</button></div>
+    {% elsif include.kind == 'cholesky' %}
+    <label>Example <select data-field="preset"><option value="ordinary">Positive definite</option><option value="negative">Negative off-diagonal entries</option><option value="flat">Flat direction</option><option value="indefinite">Indefinite</option><option value="near">Nearly singular</option></select></label>
+    <label>a in A = [[a, b], [b, c]] <input data-field="a" type="number" step="any" value="4"></label>
+    <label>Shared coefficient b <input data-field="b" type="range" min="-5" max="5" step="0.01" value="2"><output data-value="b">2</output></label>
+    <label>c <input data-field="c" type="number" step="any" value="3"></label>
+    <label>Direction x₁ <input data-field="x1" type="number" step="any" value="1"></label>
+    <label>Direction x₂ <input data-field="x2" type="number" step="any" value="-1"></label>
+    {% endif %}
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="Computed matrices and values"></pre>
+    {% unless include.kind == 'lu' %}
+    <svg data-plot viewBox="0 0 600 430" role="img" aria-label="{{ include.plot_description | escape }}"></svg>
+    {% endunless %}
+    <p data-explanation></p>
+  </div>
+</section>

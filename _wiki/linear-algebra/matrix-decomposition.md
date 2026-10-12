@@ -1,6 +1,7 @@
 ---
 title: Matrix factorization and decomposition
 subject: Linear Algebra
+interactive_examples: true
 description: Represent matrices as products of structured factors, and choose between LU, Cholesky, QR, and other decompositions.
 last_modified_at: 2026-10-12
 ---
@@ -67,7 +68,7 @@ The table uses real matrices. A square matrix $Q$ is **orthogonal** when $Q^TQ=I
 | Decomposition | Form | Conditions and factor structure | Typical use |
 | --- | --- | --- | --- |
 | [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) | $PA=LU$ | For general nonsingular square matrices; $P$ permutes rows, $L$ is unit lower triangular, and $U$ is upper triangular | Linear systems |
-| [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) | $A=LL^T$ | Symmetric positive-definite $A$; $L$ is lower triangular with positive diagonal | Linear systems with positive-definite coefficients |
+| [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) | $A=LL^T$ | [Symmetric positive-definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}) $A$; $L$ is lower triangular with positive diagonal | Linear systems with positive-definite coefficients |
 | QR | $A=QR$ | For $m\ge n$, the reduced form has $Q\in\mathbb{R}^{m\times n}$ with $Q^TQ=I$ and upper triangular $R\in\mathbb{R}^{n\times n}$ | Least squares with full column rank |
 | Singular value decomposition (SVD) | $A=U\Sigma V^T$ | Any $m\times n$ matrix; full $U$ and $V$ are orthogonal, and $\Sigma$ is rectangular diagonal with nonnegative entries | Singular values and rank analysis |
 | Symmetric eigendecomposition | $A=Q\Lambda Q^T$ | Real symmetric $A$; $Q$ is orthogonal, and $\Lambda$ is real diagonal | Eigenvalues and eigenvectors |
@@ -169,9 +170,192 @@ The two diagonal directions are stretched by $4$ and $2$. Normalize them to form
 
 ## Choosing a decomposition
 
-For a general nonsingular square system, use pivoted LU. If the coefficient matrix is symmetric positive definite, Cholesky exploits that structure. For an overdetermined system with full column rank, QR solves the least-squares problem. If rank is uncertain, column-pivoted QR or SVD can help identify an effective numerical rank. See LAPACK's [linear-system factorizations](https://www.netlib.org/lapack/lug/node38.html) and [rank-sensitive least-squares discussion](https://www.netlib.org/lapack/lug/node42.html).
+For a general nonsingular square system, use pivoted LU. If the coefficient matrix is [symmetric positive definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}), Cholesky exploits that structure. For an overdetermined system with full column rank, QR solves the least-squares problem. If rank is uncertain, column-pivoted QR or SVD can help identify an effective numerical rank. See LAPACK's [linear-system factorizations](https://www.netlib.org/lapack/lug/node38.html) and [rank-sensitive least-squares discussion](https://www.netlib.org/lapack/lug/node42.html).
+
+## Interactive example: change the order
+
+Before moving a slider, predict where the vector and the corners of the unit square will go. The experiment uses $C=\operatorname{diag}(s,1)$ and <span class="math-inline" markdown="0">\(B=\begin{pmatrix}1&k\\0&1\end{pmatrix}\)</span>. Start with $s=2$, $k=1$, then reverse the order. Explain the difference using the intermediate vector, rather than only comparing final numbers.
+
+{% include wiki-lab.html kind="composition" title="Compose a scale and a shear" plot_description="Input square, first-stage square, and final square, with dots tracking a chosen vector." %}
+
+## Practice problems
+
+Try each problem before opening its hint or solution. The first two build hand-calculation fluency, the next two ask you to interpret or choose an approach, the next two develop logical reasoning, and the final two connect the concept to practical work. These are original exercises; the references support the mathematical concepts they use.
+
+### 1. Hand calculation: compose two factors
+
+Let
+
+$$
+B=\begin{bmatrix}1&1\\0&1\end{bmatrix},\quad C=\begin{bmatrix}2&0\\0&3\end{bmatrix},\quad x=\begin{bmatrix}1\\2\end{bmatrix}.
+$$
+
+Compute $Cx$, $BCx$, and $CBx$. Are the last two vectors equal?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Apply the rightmost matrix first. Compare the two intermediate vectors.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+$Cx=(2,6)^T$, so $BCx=(8,6)^T$. Conversely, $Bx=(3,2)^T$, so $CBx=(6,6)^T$. Scaling and shearing do not commute in this example.
+
+</details>
+</div>
+
+### 2. Hand calculation: verify a factorization
+
+Verify
+
+$$
+\begin{bmatrix}2&1\\0&3\end{bmatrix}
+=\begin{bmatrix}1&1\\0&1\end{bmatrix}\begin{bmatrix}2&-2\\0&3\end{bmatrix}.
+$$
+
+Then apply the product to $(1,1)^T$, using the factors rather than the original matrix.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Check all four product entries, then track the intermediate vector.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+The product entries are $2$, $-2+3=1$, $0$, and $3$. The right factor sends $(1,1)^T$ to $(0,3)^T$; the left factor sends that to $(3,3)^T$. Direct multiplication by the original matrix gives the same answer.
+
+</details>
+</div>
+
+### 3. Thinking: select the structure you need
+
+Choose a useful starting decomposition for each task, and explain your choice: (a) solve a nonsingular SPD system; (b) fit three parameters to 100 observations with a full-column-rank design matrix; (c) identify a direction that a matrix nearly destroys.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Ask whether you need a triangular solve, perpendicular model directions, or stretch factors.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+(a) Cholesky exploits the SPD structure. (b) QR supplies an orthonormal model basis and a triangular least-squares solve without forming normal equations. (c) SVD identifies directions with small singular values. These choices follow the task and assumptions; several decompositions may exist for the same matrix.
+
+</details>
+</div>
+
+### 4. Thinking: a small stretch can cause a large inverse response
+
+Let $A=\operatorname{diag}(5,0.01)$. An output perturbation of size $0.001$ affects either the first or second coordinate. What change in the corresponding input coordinate is needed to account for it?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Reverse each stretch by dividing by its scale factor.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+The first coordinate changes by $0.001/5=0.0002$. The second changes by $0.001/0.01=0.1$, which is 500 times larger. A weakly transmitted direction is difficult to recover accurately from perturbed output.
+
+</details>
+</div>
+
+### 5. Logic: why the intermediate dimension bounds rank
+
+Suppose $A=BC$ with $B\in\mathbb R^{m\times r}$ and $C\in\mathbb R^{r\times n}$. Prove $\operatorname{rank}(A)\le r$. What does this imply if $A$ has rank greater than $r$?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Every column of the product is a linear combination of columns of B.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+For every vector $x$, $Ax=B(Cx)$ lies in the column space of $B$. Thus $\operatorname{Col}(A)\subseteq\operatorname{Col}(B)$ and $\operatorname{rank}(A)\le\operatorname{rank}(B)\le r$. An exact factorization through only $r$ intermediate coordinates is impossible when $\operatorname{rank}(A)>r$.
+
+</details>
+</div>
+
+### 6. Logic: why factors need normalization
+
+If $A=BC$ and $\alpha\ne0$, show that $A=(\alpha B)(\alpha^{-1}C)$. Does this prove every structured decomposition is nonunique?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Distinguish an unrestricted product from a product whose factors have extra conditions.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+Scalar cancellation gives the same product. It proves nonuniqueness for unrestricted nonzero factors. It does not preserve every normalization: multiplying a unit lower triangular factor by $\alpha\ne1$ destroys its unit diagonal, for example. Uniqueness theorems concern factors satisfying all the stated conditions.
+
+</details>
+</div>
+
+### 7. Applied: combine repeated measurements
+
+A sensor reports $2$, $3$, and $7$ for one constant quantity. With equal observation weights, use reduced QR for $B=(1,1,1)^T$ to find the least-squares estimate. What are the residuals?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Use $q=B/\sqrt3$, $r=\sqrt3$, and solve $rx=q^Tb$.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+$q^Tb=12/\sqrt3$, so $x=4$. The residuals are $(-2,-1,3)^T$. Their sum is zero, so the residual is perpendicular to the model column. Equal weighting makes this estimate the arithmetic mean; different weights would change the objective.
+
+</details>
+</div>
+
+### 8. Applied: undo a graphics transformation
+
+A graphics pipeline first scales horizontal coordinates by $2$, then applies horizontal shear $k=1/2$. A point $(1,2)^T$ is transformed. Find its output and the order of operations needed to recover the input.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+A forward sequence is undone in reverse order.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+Scaling gives $(2,2)^T$; shearing gives $(3,2)^T$. To undo the pipeline, first subtract half the vertical coordinate from the horizontal coordinate, giving $(2,2)^T$, then divide the horizontal coordinate by $2$. Algebraically, $(BC)^{-1}=C^{-1}B^{-1}$, whose rightmost factor undoes $B$ first.
+
+</details>
+</div>
+
+## Further learning
+
+- [LAPACK: orthogonal factorizations](https://www.netlib.org/lapack/lug/node39.html): connect length-preserving transformations to least squares.
+- [LAPACK: QR](https://www.netlib.org/lapack/lug/node40.html) and [SVD](https://www.netlib.org/lapack/lug/node32.html): compare the factor dimensions and the different directions they reveal.
+- [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) and [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}): continue with elimination records, positive energy, and their dedicated practice sets.
 
 ## Related pages
+
+- [Symmetric positive definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})
 
 - [LU decomposition]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }})
 - [Cholesky decomposition]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }})

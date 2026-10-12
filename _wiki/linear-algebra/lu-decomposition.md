@@ -1,6 +1,7 @@
 ---
 title: LU decomposition
 subject: Linear Algebra
+interactive_examples: true
 description: Factor a matrix into lower and upper triangular matrices to solve linear systems efficiently.
 last_modified_at: 2026-10-12
 ---
@@ -565,7 +566,7 @@ $$
 A = LL^T
 $$
 
-for a special kind of matrix, the symmetric positive-definite matrix $A$.
+for a special kind of matrix, the [symmetric positive-definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}) $A$.
 
 Here, basically $L = (E_k\cdots E_2E_1)^{-1}$.
 
@@ -746,7 +747,7 @@ $$
 
 Writing $\Delta_0=1$, the pivots satisfy $u_{kk}=\Delta_k/\Delta_{k-1}$ when the preceding elimination steps are defined. Nonzero leading principal minors therefore ensure nonzero pivots throughout elimination. For a nonsingular $A$, a zero leading principal minor prevents an unpivoted $LU$ factorization. The nonsingularity assumption matters: a singular matrix such as $\operatorname{diag}(1,0)$ already has triangular factors despite its zero determinant.
 
-Their purpose was to estimate rounding errors in large matrix computations. The algebraic factorization is the modern $LU$ decomposition with different notation, but the error analysis has a narrower scope: their rigorous analysis of inversion by elimination treats symmetric positive-definite matrices. It does not establish an unconditional stability guarantee for elimination on arbitrary nonsingular matrices.
+Their purpose was to estimate rounding errors in large matrix computations. The algebraic factorization is the modern $LU$ decomposition with different notation, but the error analysis has a narrower scope: their rigorous analysis of inversion by elimination treats [symmetric positive-definite matrices]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}). It does not establish an unconditional stability guarantee for elimination on arbitrary nonsingular matrices.
 
 ### The $L$ and $U$ notation
 
@@ -811,7 +812,215 @@ This distinguishes two questions. **Conditioning** is a property of the mathemat
 
 Consequently, the existence of $A=LU$ does not by itself guarantee numerical stability. Unpivoted elimination can suffer large element growth even when every leading principal minor is nonzero. Pivoting strategies help control growth, but their error guarantees depend on the strategy and the resulting growth. The historical development should therefore be understood as increasingly precise error analysis under stated conditions, rather than an unconditional proof that every $LU$ computation is stable.
 
+## Interactive example: follow an elimination
+
+Choose a preset or enter a two-by-two matrix and right-hand side. Predict the multiplier before advancing each step. Try the zero-pivot preset first without pivoting, then with it; next compare the multipliers for the small-pivot preset. The experiment implements the row-pivoting and triangular-solve steps described in [ALAFF](https://www.cs.utexas.edu/~flame/laff/alaff/chapter05-lu-piv-right-looking.html).
+
+{% include wiki-lab.html kind="lu" title="Step through a two-variable LU solve" %}
+
+## Practice problems
+
+Try each problem before opening its hint or solution. The first two build hand-calculation fluency, the next two ask you to interpret or choose an approach, the next two develop logical reasoning, and the final two connect the concept to practical work. These are original exercises; the references support the mathematical concepts they use.
+
+### 1. Hand calculation: factor and solve
+
+Find unit-lower-triangular LU factors and solve $Ax=b$ for
+
+$$
+A=\begin{bmatrix}3&1\\6&3\end{bmatrix},\qquad b=\begin{bmatrix}4\\9\end{bmatrix}.
+$$
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+The first multiplier is 6/3. Apply it to both the matrix row and the right-hand side.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+The multiplier is $2$:
+
+$$
+L=\begin{bmatrix}1&0\\2&1\end{bmatrix},\qquad U=\begin{bmatrix}3&1\\0&1\end{bmatrix}.
+$$
+
+$Ly=b$ gives $y=(4,1)^T$. $Ux=y$ then gives $x_2=1$ and $x_1=1$. Verify $A(1,1)^T=(4,9)^T$.
+
+</details>
+</div>
+
+### 2. Hand calculation: keep the updated multipliers
+
+Factor the matrix below, solve it for $b=(3,8,7)^T$, and compute its determinant from $U$:
+
+$$
+A=\begin{bmatrix}1&2&0\\2&5&1\\1&3&3\end{bmatrix}.
+$$
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+After clearing the first column, use the updated second-column entry in the third row.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+The first-column multipliers are $2$ and $1$. The updated lower rows are $(0,1,1)$ and $(0,1,3)$, so the next multiplier is $1$:
+
+$$
+L=\begin{bmatrix}1&0&0\\2&1&0\\1&1&1\end{bmatrix},\qquad U=\begin{bmatrix}1&2&0\\0&1&1\\0&0&2\end{bmatrix}.
+$$
+
+Forward substitution gives $y=(3,2,2)^T$; backward substitution gives $x=(1,1,1)^T$. The determinant is $1\cdot1\cdot2=2$.
+
+</details>
+</div>
+
+### 3. Thinking: a zero pivot is not the same as singularity
+
+For
+
+$$
+A=\begin{bmatrix}0&2\\1&3\end{bmatrix},\qquad b=\begin{bmatrix}4\\7\end{bmatrix},
+$$
+
+explain why unpivoted elimination stops, then find $P,L,U$ and solve the system.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Exchange equations and exchange the corresponding right-hand-side entries.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+The first pivot is zero, but $\det A=-2\ne0$. Use
+
+$$
+P=\begin{bmatrix}0&1\\1&0\end{bmatrix},\quad L=I,\quad U=\begin{bmatrix}1&3\\0&2\end{bmatrix}.
+$$
+
+$Pb=(7,4)^T$, giving $x_2=2$ and $x_1=1$. Using the original $b$ after swapping only $A$ would solve a different system.
+
+</details>
+</div>
+
+### 4. Thinking: compare two pivot choices
+
+For <span class="math-inline" markdown="0">\(A=\begin{pmatrix}\varepsilon&1\\1&1\end{pmatrix}\)</span> with $0<\varepsilon<1$, find the first multiplier with and without partial pivoting. Why is the pivoted multiplier preferable?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Compare the two possible first pivots: ε and 1.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+Without pivoting, $m=1/\varepsilon$. After exchanging rows, $m=\varepsilon$ and the second pivot is $1-\varepsilon$. The pivoted multiplier avoids scaling a row by a very large number when $\varepsilon$ is small. This reduces a source of rounding-error amplification; it does not fix inherent ill-conditioning when $\varepsilon$ approaches $1$.
+
+</details>
+</div>
+
+### 5. Logic: prove normalized LU uniqueness
+
+For nonsingular $A$, suppose $A=LU=\widetilde L\widetilde U$, with both lower factors unit lower triangular and both upper factors upper triangular. Prove the factors are equal.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+A matrix that is both lower and upper triangular must be diagonal.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+All factors are invertible. Rearranging gives
+
+$$
+\widetilde L^{-1}L=\widetilde U U^{-1}.
+$$
+
+The left side is unit lower triangular, and the right side is upper triangular. Their common value is therefore diagonal with diagonal entries $1$, hence $I$. Thus $L=\widetilde L$ and $U=\widetilde U$.
+
+</details>
+</div>
+
+### 6. Logic: test a claim about singular matrices
+
+Someone says: “If $\det A=0$, no LU factorization exists.” Give a counterexample and explain which conclusion singularity actually prevents.
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+A diagonal matrix is already triangular.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+Take $A=\operatorname{diag}(1,0)$, $L=I$, and $U=A$. Then $A=LU$, despite $\det A=0$. Singularity prevents a unique solution for every right-hand side. It does not rule out triangular factors. The existence-and-uniqueness condition near the definition explicitly concerns nonsingular matrices.
+
+</details>
+</div>
+
+### 7. Applied: reuse a factorization
+
+One simulation repeatedly solves with <span class="math-inline" markdown="0">\(A=\begin{pmatrix}2&1\\4&3\end{pmatrix}\)</span>. Solve for $b^{(1)}=(3,7)^T$ and $b^{(2)}=(1,1)^T$ using a single factorization. What work can be shared?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+Use <span class="math-inline" markdown="0">\(L=\begin{pmatrix}1&0\\2&1\end{pmatrix}\)</span> and <span class="math-inline" markdown="0">\(U=\begin{pmatrix}2&1\\0&1\end{pmatrix}\)</span>.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+For the first right-hand side, $y^{(1)}=(3,1)^T$ and $x^{(1)}=(1,1)^T$. For the second, $y^{(2)}=(1,-1)^T$ and $x^{(2)}=(1,-1)^T$. Share the computation of $L,U$; each new $b$ requires its own two triangular solves. If $A$ changes, the existing factors generally cannot be reused unchanged.
+
+</details>
+</div>
+
+### 8. Applied: interpret a solver check
+
+For <span class="math-inline" markdown="0">\(A=\begin{pmatrix}2&1\\4&3\end{pmatrix}\)</span>, $b=(3,7)^T$, and computed $\widehat x=(1.01,0.99)^T$, compute $r=b-A\widehat x$. Does a small residual always mean a small solution error?
+
+<div class="wiki-exercise" markdown="1">
+<details markdown="1">
+<summary>Reveal a hint</summary>
+
+First check the original equations. Then consider a matrix with a very small diagonal entry.
+
+</details>
+<details markdown="1">
+<summary>Reveal the worked solution</summary>
+
+$A\widehat x=(3.01,7.01)^T$, so $r=(-0.01,-0.01)^T$. A residual measures the equation mismatch, not directly the error in $x$. For $A=\operatorname{diag}(1,\varepsilon)$, $b=(1,\varepsilon)^T$, and $\widehat x=(1,0)^T$, the residual is $(0,\varepsilon)^T$, arbitrarily small as $\varepsilon\to0$, while the error relative to the exact $x=(1,1)^T$ has norm $1$. Conditioning must also be considered; see [LAPACK's error discussion](https://www.netlib.org/lapack/lug/node81.html).
+
+</details>
+</div>
+
+## Further learning
+
+- [ALAFF: LU with partial pivoting](https://www.cs.utexas.edu/~flame/laff/alaff/chapter05-lu-piv-right-looking.html): move from the two-variable experiment to the general algorithm and its storage layout.
+- [LAPACK: linear equations](https://www.netlib.org/lapack/lug/node38.html): see how software separates factorization, solving, and condition estimation.
+- [LAPACK: backward error and conditioning](https://www.netlib.org/lapack/lug/node81.html): develop the distinction in exercise 8 between satisfying equations and recovering an accurate solution.
+
 ## Related pages
+
+- [Symmetric positive definite matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }})
 
 - [Matrix factorization and decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }})
 - [Cholesky decomposition]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }})
@@ -828,3 +1037,5 @@ Consequently, the existence of $A=LU$ does not by itself guarantee numerical sta
 
 8. van de Geijn, R. A., and Myers, M. *Advanced Linear Algebra: Foundations to Frontiers*. [LU factorization with partial pivoting](https://www.cs.utexas.edu/~flame/laff/alaff/chapter05-lu-piv-right-looking.html).
 9. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [Linear Equations](https://www.netlib.org/lapack/lug/node38.html). Triangular solves and reuse of factorizations.
+
+10. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [Further Details: Error Bounds for Linear Equation Solving](https://www.netlib.org/lapack/lug/node81.html). Residuals, backward error, and conditioning.
