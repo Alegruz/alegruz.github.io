@@ -33,6 +33,74 @@ where $P$ is a permutation matrix.
 
 The applications below assume that $A$ is nonsingular and admits the unpivoted factorization $A = LU$.
 
+## Intuition: elimination with a memory
+
+Gaussian elimination produces an upper triangular system by subtracting multiples of earlier rows from later rows. LU keeps both the final rows and the multipliers. **$U$ is the simplified system; $L$ remembers how to rebuild the original rows.**
+
+For example,
+
+$$
+A=\begin{bmatrix}2&1\\4&3\end{bmatrix}.
+$$
+
+Subtract twice row 1 from row 2. The new second row is $(0,1)$, so
+
+$$
+U=\begin{bmatrix}2&1\\0&1\end{bmatrix},\qquad
+L=\begin{bmatrix}1&0\\2&1\end{bmatrix}.
+$$
+
+The $2$ in $L$ remembers the subtraction multiplier. Multiplication by $L$ reverses the subtraction: the original second row equals twice the first row of $U$ plus its second row. Thus $LU=A$. Elimination and reconstruction have opposite signs; the stored multiplier is $+2$, even though the elimination operation subtracts $2$ times a row.
+
+### A three-variable example
+
+Consider
+
+$$
+A=\begin{bmatrix}2&1&1\\4&3&3\\8&7&9\end{bmatrix}.
+$$
+
+Use the first pivot, $2$, to remove the entries below it. The multipliers are $4/2=2$ and $8/2=4$:
+
+$$
+R_2\leftarrow R_2-2R_1,\qquad R_3\leftarrow R_3-4R_1.
+$$
+
+This leaves rows $(0,1,1)$ and $(0,3,5)$. Now subtract $3$ times the new second row from the new third row. The result is $(0,0,2)$. Therefore
+
+$$
+U=\begin{bmatrix}2&1&1\\0&1&1\\0&0&2\end{bmatrix},\qquad
+L=\begin{bmatrix}1&0&0\\2&1&0\\4&3&1\end{bmatrix}.
+$$
+
+{% include image.html src="/assets/images/wiki/lu-elimination.svg" alt="Four labeled matrices show the original three by three matrix, zeros created below the first pivot, the final upper triangular matrix, and the stored multipliers in the lower triangular matrix." caption="Zeros accumulate in U. The multipliers 2, 4, and 3 are stored in L at the positions of the entries they eliminate." %}
+
+The second multiplier uses the **updated** third-row entry, $3$, rather than the original entry $7$. That is why the lower factor stores $l_{32}=3$. To check the record, reconstruct the original third row as
+
+$$
+4(2,1,1)+3(0,1,1)+(0,0,2)=(8,7,9).
+$$
+
+### What a pivot means and why row exchanges help
+
+A pivot is the coefficient used to eliminate the entries below it. If it is zero, the required division is impossible. This does not necessarily mean the whole matrix is singular:
+
+$$
+A=\begin{bmatrix}0&1\\1&1\end{bmatrix},\qquad \det A=-1.
+$$
+
+Swap the rows with <span class="math-inline" markdown="0">\(P=\begin{pmatrix}0&1\\1&0\end{pmatrix}\)</span>. Then
+
+$$
+PA=\begin{bmatrix}1&1\\0&1\end{bmatrix}=IU.
+$$
+
+Here $L=I$, and elimination can proceed. Reordering equations preserves their solution, provided we also reorder $b$ to $Pb$.
+
+A nonzero pivot can also be too small for comfortable numerical computation. In <span class="math-inline" markdown="0">\(\begin{pmatrix}\varepsilon&1\\1&1\end{pmatrix}\)</span>, the first multiplier is $1/\varepsilon$. For $\varepsilon=10^{-4}$ it is $10^4$, creating large intermediate quantities. Partial pivoting chooses the largest-magnitude entry in the remaining part of the current column, swaps its row into place, and thereby bounds the elimination multipliers by $1$ in magnitude in exact arithmetic. It does not guarantee that every intermediate entry stays small. See [ALAFF's partial-pivoting algorithm](https://www.cs.utexas.edu/~flame/laff/alaff/chapter05-lu-piv-right-looking.html).
+
+The leading-principal-minor condition in the definition says that, for nonsingular $A$, every initial block permits the next unpivoted step. Row pivoting supplies a different order when that sequence is blocked.
+
 ## Usages
 
 ### 1. Solving linear systems
@@ -61,17 +129,34 @@ $$
 Ax = LUx = L(Ux) = Ly = b
 $$
 
-And using forward substitution, it is very trivial to solve $Ly = b$, and backward substitution gives the solution to $Ux = y$.
+Forward substitution solves $Ly=b$ from the first row downward. Backward substitution solves $Ux=y$ from the last row upward. Each new equation has only one unknown left after the previously computed values are substituted.
 
-Because this is a systematic approach of solving linear systems, we are interested in computers, not humans. Naturally, the question becomes: "What is the computational cost of solving linear system using $LU$ decomposition?"
+For the three-variable example above, take $b=(4,10,24)^T$. The lower triangular solve gives
+
+$$
+y_1=4,\qquad y_2=10-2y_1=2,\qquad y_3=24-4y_1-3y_2=2.
+$$
+
+The upper triangular solve then gives
+
+$$
+x_3=y_3/2=1,\qquad x_2=y_2-x_3=1,\qquad
+x_1=(y_1-x_2-x_3)/2=1.
+$$
+
+Direct substitution verifies $A(1,1,1)^T=b$. The dependency direction is the reason for the names *forward* and *backward*, not an arbitrary convention.
+
+The factorization does most of the work. Once it exists, another right-hand side needs only the two substitution passes. This distinction matters for both hand calculation and software. See [LAPACK's factor-and-solve workflow](https://www.netlib.org/lapack/lug/node38.html).
 
 For conventional dense $LU$ factorization, the floating-point operation count is $\frac{2}{3}n^3 + O(n^2)$ flops, counting each multiplication and addition separately. Thus $\frac{2}{3}n^3$ is the leading term, rather than an exact count. Forward and backward substitution together cost $O(n^2)$ per right-hand side. Once $L$ and $U$ have been computed, they can be reused to solve systems with the same $A$ and different right-hand sides without repeating the factorization.
 
 ### 2. Computing determinants
 
 $$
-\det A = \det L \cdot \det U
+\det A = \det L\cdot\det U=\prod_{i=1}^n u_{ii},
 $$
+
+because unit lower triangular $L$ has determinant $1$, and a triangular matrix's determinant is the product of its diagonal entries. For our three-variable example, $\det A=2\cdot1\cdot2=4$. With pivoted $PA=LU$, include the permutation sign: $\det A=\det(P)\prod_i u_{ii}$. Each row swap contributes a factor $-1$.
 
 ### 3. Matrix inversion
 
@@ -81,7 +166,7 @@ $$
 AX = I
 $$
 
-This will give us $n$ linear systems, and we can apply $LU$ decomposition to find the columns of $X$, which is $A^{-1}$.
+Each column of $I$ supplies a different right-hand side, so the same factors solve all $n$ systems. Their solutions form the columns of $A^{-1}$. If the goal is only one solution $x$, the two triangular solves already produce it; computing the entire inverse adds work that the solve does not need.
 
 ## History
 
@@ -350,7 +435,7 @@ G = \begin{bmatrix}1&\tfrac12\\0&1\end{bmatrix}, \qquad
 D = \begin{bmatrix}2&0\\0&1\end{bmatrix},
 $$
 
-which gives exactly $L = \begin{bmatrix}1&0\\2&1\end{bmatrix}$ and $U = \begin{bmatrix}2&1\\0&1\end{bmatrix}$. Banachiewicz's factorization therefore becomes modern $LU$ after translating the product and choosing the diagonal normalization.
+which gives exactly <span class="math-inline" markdown="0">\(L = \begin{bmatrix}1&0\\2&1\end{bmatrix}\)</span> and <span class="math-inline" markdown="0">\(U = \begin{bmatrix}2&1\\0&1\end{bmatrix}\)</span>. Banachiewicz's factorization therefore becomes modern $LU$ after translating the product and choosing the diagonal normalization.
 
 The claim here is that by using this calculation based on his algebra, we have less mathematical quantities, not number of operations, than the traditional elimination process.
 
@@ -740,3 +825,6 @@ Consequently, the existence of $A=LU$ does not by itself guarantee numerical sta
 5. Harold Hotelling "Some New Methods in Matrix Calculation," The Annals of Mathematical Statistics, Ann. Math. Statist. 14(1), 1-34, (March, 1943)
 6. A. M. TURING, ROUNDING-OFF ERRORS IN MATRIX PROCESSES, The Quarterly Journal of Mechanics and Applied Mathematics, Volume 1, Issue 1, 1948, Pages 287–308, https://doi.org/10.1093/qjmam/1.1.287
 7. J. H. Wilkinson. 1961. Error Analysis of Direct Methods of Matrix Inversion. J. ACM 8, 3 (July 1961), 281–330. https://doi.org/10.1145/321075.321076
+
+8. van de Geijn, R. A., and Myers, M. *Advanced Linear Algebra: Foundations to Frontiers*. [LU factorization with partial pivoting](https://www.cs.utexas.edu/~flame/laff/alaff/chapter05-lu-piv-right-looking.html).
+9. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [Linear Equations](https://www.netlib.org/lapack/lug/node38.html). Triangular solves and reuse of factorizations.

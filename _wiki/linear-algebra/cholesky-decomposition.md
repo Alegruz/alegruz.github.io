@@ -23,6 +23,48 @@ See van de Geijn's [definition and existence theorem](https://www.cs.utexas.edu/
 
 This is a structured [matrix decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}). Unlike the unit lower triangular factor in [LU decomposition]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}), the Cholesky factor generally has diagonal entries other than $1$.
 
+## Intuition: positive energy becomes ordinary squared length
+
+A **quadratic form** is the scalar $q(x)=x^TAx$. Think of it as an energy or penalty assigned to a displacement $x$. For the real symmetric matrix <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
+
+$$
+q(x)=4x_1^2+4x_1x_2+3x_2^2.
+$$
+
+The cross term couples the coordinates. Completing the square gives
+
+$$
+q(x)=(2x_1+x_2)^2+(\sqrt2x_2)^2=\lVert L^Tx\rVert_2^2.
+$$
+
+Cholesky finds the triangular coordinate transformation that makes this mixed quadratic expression a sum of squares. If $L$ is invertible, a nonzero $x$ cannot become the zero vector under $L^T$, so the squared length is strictly positive. That explains the SPD condition. See [Higham's discussion of positive-definite quadratic forms](https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/).
+
+Positive definite does **not** mean that every entry of the matrix is positive. For example, <span class="math-inline" markdown="0">\(\begin{pmatrix}2&-1\\-1&2\end{pmatrix}\)</span> gives
+
+$$
+x^TAx=(x_1-x_2)^2+x_1^2+x_2^2>0\qquad(x\ne0).
+$$
+
+Conversely, <span class="math-inline" markdown="0">\(\begin{pmatrix}1&2\\2&1\end{pmatrix}\)</span> has positive entries but gives $x^TAx=-2$ for $x=(1,-1)^T$. The condition concerns every direction, not the signs of individual entries.
+
+{% include image.html src="/assets/images/wiki/cholesky-energy.svg" alt="Three contour plots compare positive definite energy with nested ellipses, semidefinite energy with a flat vertical direction, and indefinite energy with positive and negative contours." caption="Contours of xᵀAx: the SPD example rises in every direction; the semidefinite example x₁² is flat along x₂; the indefinite example x₁² − x₂² takes both signs. Equal-energy contours of the SPD matrix form closed ellipses." %}
+
+The semidefinite example has a direction that costs no energy. The indefinite example has a direction with negative energy, so it cannot equal a squared Euclidean length for all $x$. These geometric differences correspond to zero or invalid square-root pivots in the usual algorithm.
+
+### The factor is a table of dot products
+
+Write the rows of $L$ as $r_1,\ldots,r_n$. Then $a_{ij}=r_i\cdot r_j$. In the two-variable example,
+
+$$
+r_1=(2,0),\qquad r_2=(1,\sqrt2).
+$$
+
+Their squared lengths are $4$ and $3$, and their dot product is $2$. These are precisely the two diagonal entries and the off-diagonal entry of $A$. Triangularity lets us construct these vectors one coordinate at a time: give the first row its length, match the next row's dot product with it, then choose the remaining coordinate to supply the remaining squared length. This is the Gram-matrix interpretation of $LL^T$; see [the FLAME definition and algorithm](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html).
+
+### A triangular square root has a specific meaning
+
+$A=LL^T$ resembles $a=\sqrt a\sqrt a$, but generally $L^2\ne A$. The transpose matters. In our example, the upper-right entry of $L^2$ is zero, while $a_{12}=2$. A symmetric matrix square root satisfying $S^2=A$ is a different factorization. Cholesky chooses a triangular factor because it supports sequential computation and solves.
+
 ## Deriving the algorithm
 
 Equating entries in $A=LL^T$ gives
@@ -44,6 +86,35 @@ l_{ij}=\frac{a_{ij}-\sum_{k=1}^{j-1}l_{ik}l_{jk}}{l_{jj}}.
 $$
 
 Empty sums are zero. Entries above the diagonal remain zero. These recurrences are the lower triangular counterpart of the [elementwise Cholesky algorithm](https://nhigham.com/2020/08/11/what-is-a-cholesky-factorization/) presented by Higham.
+
+### Each diagonal entry supplies what is still missing
+
+For a two-by-two matrix, write
+
+$$
+A=\begin{bmatrix}a&b\\b&c\end{bmatrix},\qquad
+L=\begin{bmatrix}\ell_{11}&0\\\ell_{21}&\ell_{22}\end{bmatrix}.
+$$
+
+Matching $LL^T$ to $A$ yields three requirements:
+
+$$
+\ell_{11}^2=a,\qquad \ell_{11}\ell_{21}=b,\qquad
+\ell_{21}^2+\ell_{22}^2=c.
+$$
+
+First choose $\ell_{11}=\sqrt a$. Next choose $\ell_{21}=b/\sqrt a$ to match the shared component. Finally choose $\ell_{22}=\sqrt{c-b^2/a}$ to supply the squared length that the first coordinate has not supplied.
+
+For $a=4$, $b=2$, $c=3$, the second row needs total squared length $3$. Its first coordinate is $1$, already contributing $1$. The remaining coordinate must contribute $2$, so it is $\sqrt2$. This makes the subtraction inside the recurrence concrete: subtract the contribution already accounted for, then take the square root of what remains.
+
+The same remainder appears when completing the square:
+
+$$
+ax_1^2+2bx_1x_2+cx_2^2
+=a\left(x_1+\frac ba x_2\right)^2+\left(c-\frac{b^2}{a}\right)x_2^2.
+$$
+
+For $a>0$, a positive remainder means the second direction still has positive energy. A zero remainder leaves a flat direction. A negative remainder gives a negative-energy direction. In higher dimensions, the Schur complement is the matrix version of this remainder.
 
 ### Why the square roots are positive
 
@@ -101,6 +172,31 @@ y_1=3,\qquad y_2=\sqrt2.
 $$
 
 Then solve $L^Tx=y$ to obtain $x_2=1$ and $x_1=1$. Direct substitution confirms $A(1,1)^T=b$.
+
+## A second example: shared and independent variation
+
+Let $z_1,z_2$ be independent random variables with mean zero and variance one, and set
+
+$$
+u_1=2z_1,\qquad u_2=z_1+\sqrt2z_2.
+$$
+
+Then $\operatorname{Var}(u_1)=4$, $\operatorname{Var}(u_2)=1+2=3$, and $\operatorname{Cov}(u_1,u_2)=2$. Both outputs share $z_1$, which produces covariance. The independent $z_2$ supplies the remaining variance of the second output. In matrix notation, $u=Lz$ and $\operatorname{Cov}(u)=LL^T=A$. See [Stata's covariance-transformation explanation](https://www.stata.com/support/faqs/statistics/multivariate-normal-observations/).
+
+{% include image.html src="/assets/images/wiki/cholesky-covariance.svg" alt="A unit circle in input coordinates is mapped by L to a tilted ellipse in output coordinates; two marked input directions map to the two columns of L." caption="L maps the unit circle to an ellipse. This illustrates the geometry of covariance generation, rather than a random sample. Its boundary satisfies uᵀA⁻¹u = 1; the earlier energy contours satisfy xᵀAx = constant." %}
+
+Reading the same factor in different ways gives different intuitions: $L^T$ removes the coupling from a quadratic energy, while $L$ introduces a desired covariance into independent inputs. The algebraic identity is the same, but the direction of the transformation and the problem being solved differ.
+
+### What a nearly zero remainder tells us
+
+For
+
+$$
+A_\varepsilon=\begin{bmatrix}1&1\\1&1+\varepsilon\end{bmatrix},\qquad
+L=\begin{bmatrix}1&0\\1&\sqrt\varepsilon\end{bmatrix},
+$$
+
+positive $\varepsilon$ gives an SPD matrix. At $\varepsilon=0$, the two rows represent the same underlying direction and the matrix is singular. For small positive $\varepsilon$, the second independent contribution is tiny: the system is close to losing a direction. A triangular solve divides by $\sqrt\varepsilon$, explaining why small changes can matter greatly. This example illustrates the distinction between existence and numerical sensitivity discussed below.
 
 ## Applications and computational cost
 
@@ -260,3 +356,5 @@ The historical thread is thus a continuing problem of usable computation: first,
 11. van de Geijn, R. A., and Myers, M. *Advanced Linear Algebra: Foundations to Frontiers*. [§4.2.5, Why using the Method of Normal Equations could be bad](https://www.cs.utexas.edu/~flame/laff/alaff/LLS-Why-Normal-Equations-Bad.html).
 12. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [Linear Least Squares Problems](https://www.netlib.org/lapack/lug/node27.html) and [Further Details: Error Bounds for Linear Equation Solving](https://www.netlib.org/lapack/lug/node81.html). See also the [LAPACK project description](https://www.netlib.org/lapack/) for blocked computation.
 13. StataCorp. [*Stata 6: Simulating multivariate normal observations*](https://www.stata.com/support/faqs/statistics/multivariate-normal-observations/). Cholesky factors as covariance transformations.
+
+14. Higham, N. J. (2020, July 21). [*What Is a Symmetric Positive Definite Matrix?*](https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/). Quadratic-form interpretation and positivity conditions.
