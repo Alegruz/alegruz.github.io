@@ -208,7 +208,7 @@ An SPD matrix can be close to singular. For $A_\varepsilon=\operatorname{diag}(1
 
 ## Interactive example: change the coupling
 
-Use the existing quadratic-energy lab below for $A=\begin{bmatrix}a&b\\b&c\end{bmatrix}$. It shows energy signs, the unit-energy contour when SPD, and a Cholesky certificate. With $a=4$ and $c=3$, predict the transition at $|b|=\sqrt{12}$. Increase $b$ through that boundary, then try the displayed zero or negative energy direction.
+Use the existing quadratic-energy lab below for <span class="math-inline" markdown="0">\(A=\begin{bmatrix}a&b\\b&c\end{bmatrix}\)</span>. It shows energy signs, the unit-energy contour when SPD, and a Cholesky certificate. With $a=4$ and $c=3$, predict the transition at $\lvert b\rvert=\sqrt{12}$. Increase $b$ through that boundary, then try the displayed zero or negative energy direction.
 
 {% include wiki-lab.html kind="cholesky" title="Explore positive definiteness in every direction" plot_description="Quadratic energy signs, an elliptical unit-energy contour for SPD matrices, and the selected vector direction." %}
 
@@ -218,7 +218,7 @@ The controls accept keyboard input. A single positive-energy vector does not pro
 
 ### 1. Hand calculation: find the allowable coupling
 
-For which real $t$ is $A=\begin{bmatrix}2&t\\t&8\end{bmatrix}$ SPD?
+For which real $t$ is <span class="math-inline" markdown="0">\(A=\begin{bmatrix}2&t\\t&8\end{bmatrix}\)</span> SPD?
 
 <details markdown="1">
 <summary>Hint</summary>
@@ -235,7 +235,7 @@ The first condition holds. The determinant is $16-t^2$, so SPD holds exactly for
 
 ### 2. Interpretation: what does a positive sample establish?
 
-For $A=\begin{bmatrix}1&3\\3&1\end{bmatrix}$, you measure positive energy along both coordinate axes and $(1,1)^T$. Can you conclude SPD? Choose a decisive next test.
+For <span class="math-inline" markdown="0">\(A=\begin{bmatrix}1&3\\3&1\end{bmatrix}\)</span>, you measure positive energy along both coordinate axes and $(1,1)^T$. Can you conclude SPD? Choose a decisive next test.
 
 <details markdown="1">
 <summary>Hint</summary>
@@ -269,7 +269,7 @@ Symmetry follows from $(S^TAS)^T=S^TA^TS=S^TAS$. For nonzero $x$, invertibility 
 
 ### 4. Application: remove ambiguity in a fit
 
-A least-squares model has identical columns and Gram matrix $C=\begin{bmatrix}2&2\\2&2\end{bmatrix}$. Why are its parameters ambiguous? Does adding $\frac\alpha2\lVert x\rVert_2^2$ to the objective remove the ambiguity for $\alpha>0$?
+A least-squares model has identical columns and Gram matrix <span class="math-inline" markdown="0">\(C=\begin{bmatrix}2&2\\2&2\end{bmatrix}\)</span>. Why are its parameters ambiguous? Does adding $\frac\alpha2\lVert x\rVert_2^2$ to the objective remove the ambiguity for $\alpha>0$?
 
 <details markdown="1">
 <summary>Hint</summary>
