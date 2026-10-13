@@ -14,9 +14,42 @@ $$
 A = BC
 $$
 
-where $A \in \mathbb{R}^{m\times n}$, $B \in \mathbb{R}^{m\times r}$, and $C \in \mathbb{R}^{r\times n}$. The intermediate dimension $r$ makes the product compatible. A decomposition may have more than two factors.
+The notation $A\in\mathbb R^{m\times n}$ means that $A$ has $m$ rows, $n$ columns, and real-number entries. Its entry $a_{ij}$ is in row $i$, column $j$. In $A=BC$, $B$ has size $m\times r$ and $C$ has size $r\times n$: the matching $r$ lets us multiply them. For example, a $2\times3$ matrix times a $3\times2$ matrix produces a $2\times2$ matrix. A decomposition may have more than two factors. See [OpenStax's matrix operations](https://openstax.org/books/college-algebra-2e/pages/7-5-matrices-and-matrix-operations).
 
-The structure of the factors is what makes the representation useful. Triangular factors simplify linear solves; orthogonal factors preserve Euclidean lengths; diagonal factors expose independent scalings. Numerical linear algebra uses these structures to solve systems, least-squares problems, and eigenvalue problems. [LAPACK's guide to linear equations](https://www.netlib.org/lapack/lug/node38.html) and [orthogonal factorizations](https://www.netlib.org/lapack/lug/node39.html) describe these uses.
+### Reading the factor shapes
+
+The **main diagonal** runs from the top-left entry to the bottom-right. A **diagonal matrix** has zeros everywhere else. A **lower triangular matrix** has zeros above this diagonal; an **upper triangular matrix** has zeros below it. For example,
+
+$$
+D=\begin{bmatrix}2&0\\0&3\end{bmatrix},\qquad
+L=\begin{bmatrix}1&0\\4&1\end{bmatrix},\qquad
+U=\begin{bmatrix}2&5\\0&3\end{bmatrix}.
+$$
+
+Here $L$ is **unit lower triangular**: its diagonal entries are all $1$. The notation $\operatorname{diag}(2,3)$ is shorthand for $D$. For a rectangular diagonal matrix, only entries with equal row and column indices may be nonzero. The zero patterns explain the triangular factors in [LAPACK's linear-system factorizations](https://www.netlib.org/lapack/lug/node38.html).
+
+### Transpose, identity, and undoing a transformation
+
+The **transpose** $A^T$ exchanges rows and columns. For example,
+
+$$
+\begin{bmatrix}1&2\\3&4\end{bmatrix}^T
+=\begin{bmatrix}1&3\\2&4\end{bmatrix}.
+$$
+
+A vector is a list of coordinates, usually written as a column; $(3,4)^T$ turns a horizontal list into a column. The **identity matrix** $I$ has diagonal entries $1$ and other entries $0$, so $Ix=x$.
+
+An **inverse** $A^{-1}$ undoes a square matrix's action: $A^{-1}A=AA^{-1}=I$. A matrix with an inverse is **invertible**, or **nonsingular**. For example, $\operatorname{diag}(2,3)$ is undone by $\operatorname{diag}(1/2,1/3)$. A **singular** matrix has no inverse: $\operatorname{diag}(2,0)$ loses the second coordinate, so we cannot recover it. See [OpenStax's identity and inverse matrices](https://openstax.org/books/college-algebra-2e/pages/7-7-solving-systems-with-inverses).
+
+### Length-preserving factors
+
+The **dot product** multiplies matching coordinates and adds: $(1,2)^T\!\cdot(3,4)^T=1\cdot3+2\cdot4=11$. Two nonzero vectors are **perpendicular**, or **orthogonal**, when their dot product is zero. For example, $(1,1)^T$ and $(1,-1)^T$ have dot product $0$.
+
+The **Euclidean length**, written $\lVert x\rVert_2$, is $\sqrt{x_1^2+\cdots+x_n^2}$; $(3,4)^T$ has length $5$. A **unit vector** has length $1$. Dividing a nonzero vector by its length is called **normalizing** it; $(3/5,4/5)^T$ is the normalized version of $(3,4)^T$. See [vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }}) for more examples.
+
+A square matrix $Q$ is **orthogonal** if $Q^TQ=I$: its columns are perpendicular unit vectors, and it preserves lengths. For example, $Q=\operatorname{diag}(1,-1)$ reflects $(3,4)^T$ to $(3,-4)^T$, still of length $5$. See [LAPACK's orthogonal factors](https://www.netlib.org/lapack/lug/node39.html).
+
+A **linear system** $Ax=b$ asks which input $x$ produces the given output $b$. The structure of the factors is what makes the representation useful. Triangular factors simplify solving such systems; orthogonal factors preserve Euclidean lengths; diagonal factors expose independent scalings. These structures also help fit imperfect measurements and find directions that a matrix only stretches; both ideas are explained below. [LAPACK's guide to linear equations](https://www.netlib.org/lapack/lug/node38.html) and [orthogonal factorizations](https://www.netlib.org/lapack/lug/node39.html) describe these uses.
 
 Without additional conditions, a product representation need not be unique. For any invertible $S \in \mathbb{R}^{r\times r}$,
 
@@ -24,11 +57,11 @@ $$
 BC = (BS)(S^{-1}C).
 $$
 
-Conditions such as a unit diagonal or positive diagonal entries remove some of this freedom.
+Conditions such as a unit diagonal or positive diagonal entries remove some of this freedom. Such a convention is also called a **normalization** of the factors: for example, requiring the diagonal of $L$ to be $1$ fixes how much scaling can be moved between $L$ and $U$.
 
 ## Intuition: one operation becomes a sequence
 
-A matrix tells us how to transform a vector. Its columns are the images of the coordinate basis vectors: if $A$ has columns $a_1$ and $a_2$, then $Ax=x_1a_1+x_2a_2$. A factorization $A=BC$ describes the same transformation in stages:
+A matrix tells us how to transform a vector. The vectors $e_1=(1,0)^T$ and $e_2=(0,1)^T$ are building blocks: every two-coordinate vector is $x=x_1e_1+x_2e_2$. They form the **coordinate basis**. The columns of a matrix are where it sends these building blocks: if $A$ has columns $a_1$ and $a_2$, then $Ax=x_1a_1+x_2a_2$. A factorization $A=BC$ describes the same transformation in stages:
 
 $$
 x\ \xrightarrow{\ C\ }\ y=Cx\ \xrightarrow{\ B\ }\ BCx=Ax.
@@ -41,11 +74,11 @@ C=\begin{bmatrix}2&0\\0&1\end{bmatrix},\qquad
 B=\begin{bmatrix}1&1\\0&1\end{bmatrix}.
 $$
 
-$C$ stretches the horizontal coordinate, while $B$ shears horizontally. For $x=(0,1)^T$, stretching and then shearing gives $BCx=(1,1)^T$. Reversing the order gives $CBx=(2,1)^T$. The operations have the same ingredients but different results.
+$C$ doubles the horizontal coordinate. $B$ changes $(x_1,x_2)^T$ into $(x_1+x_2,x_2)^T$: higher points move farther sideways, while their height stays fixed. This sliding transformation is a **shear**. For $x=(0,1)^T$, stretching and then shearing gives $BCx=(1,1)^T$. Reversing the order gives $CBx=(2,1)^T$. The operations have the same ingredients but different results.
 
 {% include image.html src="/assets/images/wiki/matrix-factor-stages.svg" alt="Three coordinate plots show a unit square, its image under U, and its final image under L U, with the same coordinate scale in all three panels." caption="For A = [[4, 2], [2, 3]], first apply U = [[4, 2], [0, 2]], then L = [[1, 0], [1/2, 1]]. The two stages produce the same parallelogram as applying A directly." %}
 
-The factors can be simpler to work with even though their product is a dense matrix. A diagonal matrix scales coordinates independently. An orthogonal matrix rotates or reflects without changing lengths. A triangular matrix mixes coordinates in a one-way dependency pattern, making its equations solvable in sequence. See [LAPACK's discussion of orthogonal factors](https://www.netlib.org/lapack/lug/node39.html).
+The factors can be simpler to work with even though their product has many nonzero entries (a **dense matrix**). A diagonal matrix scales coordinates independently. An orthogonal matrix rotates or reflects without changing lengths. A triangular matrix mixes coordinates in a one-way dependency pattern, making its equations solvable in sequence. See [LAPACK's discussion of orthogonal factors](https://www.netlib.org/lapack/lug/node39.html).
 
 ### Why zeros in a factor matter
 
@@ -63,14 +96,35 @@ Factorization does not make the original problem disappear. It performs the coup
 
 ## Common decompositions
 
-The table uses real matrices. A square matrix $Q$ is **orthogonal** when $Q^TQ=I$. In complex arithmetic, the corresponding notion is **unitary**, and the conjugate transpose $Q^*$ replaces $Q^T$.
+### Terms for the conditions and uses
+
+A **linear combination** of vectors means multiplying each by a number and adding the results, as in $2a_1-3a_2$. The **column space**, written $\operatorname{Col}(A)$, is all combinations of $A$'s columns: all outputs $Ax$ that the matrix can produce. Columns are **linearly independent** if none can be built from the others. The **rank** is the largest number of independent columns; **full column rank** means every column contributes an independent direction. For example,
+
+$$
+\begin{bmatrix}1&2\\0&0\end{bmatrix}
+\quad\text{has rank }1,\qquad
+\begin{bmatrix}1&0\\0&1\end{bmatrix}
+\quad\text{has rank }2.
+$$
+
+In the first matrix, the second column is twice the first, so every output lies on the horizontal axis. **Rank deficient** means the rank is smaller than $\min(m,n)$. See [MIT's explanation of column space and rank](https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-1-the-column-space-of-a-contains-all-vectors-ax/).
+
+**Least squares** chooses $x$ to make the sum of squared discrepancies as small as possible. The **residual** $r=b-Ax$ is the vector of those discrepancies. For example, fitting one constant $x$ to measurements $1,2,6$ minimizes $(1-x)^2+(2-x)^2+(6-x)^2$; the best value is $x=3$, with residual $(-2,-1,3)^T$. This is **overdetermined**: three equations for one unknown. See [LAPACK's least-squares formulation](https://www.netlib.org/lapack/lug/node39.html).
+
+A matrix is **symmetric** when $A=A^T$. It is **positive definite** when the expression $x^TAx$ is positive for every nonzero $x$. For $A=\operatorname{diag}(2,3)$, that expression is $2x_1^2+3x_2^2$, which is positive unless both coordinates vanish. We abbreviate **symmetric positive definite** as **SPD**. The [quadratic-form page]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) explains expressions like $x^TAx$, and the [SPD page]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}) develops the positivity condition.
+
+An **eigenvector** is a nonzero vector $v$ for which $Av=\lambda v$; the number $\lambda$ is its **eigenvalue**. For $A=\operatorname{diag}(2,3)$, $e_1$ is an eigenvector with eigenvalue $2$: its direction stays on the same line and its length doubles. A negative eigenvalue reverses direction. See [LAPACK's symmetric eigenproblem](https://www.netlib.org/lapack/lug/node89.html).
+
+The table uses real matrices. For complex numbers, **conjugation** changes $a+bi$ to $a-bi$ (where $i^2=-1$). The **conjugate transpose** $Q^*$ transposes and conjugates entries. A **unitary** matrix satisfies $Q^*Q=I$, the complex counterpart of an orthogonal matrix. For example, the one-entry matrix with entry $i$ is unitary because $(-i)i=1$. See [LAPACK's real and complex definitions](https://www.netlib.org/lapack/lug/node39.html).
+
+**Elimination** removes an unknown from later equations by subtracting multiples of earlier equations. The coefficient we divide by to choose a multiple is a **pivot**. Reordering rows to choose a usable pivot is **row pivoting**: for example, if the first equation has coefficient zero for the first unknown, exchange it with an equation whose coefficient is nonzero. The [LU page]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) demonstrates this with matrices.
 
 | Decomposition | Form | Conditions and factor structure | Typical use |
 | --- | --- | --- | --- |
-| [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) | $PA=LU$ | For general nonsingular square matrices; $P$ permutes rows, $L$ is unit lower triangular, and $U$ is upper triangular | Linear systems |
+| [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) | $PA=LU$ | For general nonsingular square matrices; $P$ reorders rows, $L$ is unit lower triangular, and $U$ is upper triangular | Linear systems |
 | [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) | $A=LL^T$ | [Symmetric positive-definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}) $A$; $L$ is lower triangular with positive diagonal | Linear systems with positive-definite coefficients |
-| QR | $A=QR$ | For $m\ge n$, the reduced form has $Q\in\mathbb{R}^{m\times n}$ with $Q^TQ=I$ and upper triangular $R\in\mathbb{R}^{n\times n}$ | Least squares with full column rank |
-| Singular value decomposition (SVD) | $A=U\Sigma V^T$ | Any $m\times n$ matrix; full $U$ and $V$ are orthogonal, and $\Sigma$ is rectangular diagonal with nonnegative entries | Singular values and rank analysis |
+| QR | $A=QR$ | For $m\ge n$, the reduced form (keeping only $n$ columns of $Q$) has $Q\in\mathbb{R}^{m\times n}$ with $Q^TQ=I$ and upper triangular $R\in\mathbb{R}^{n\times n}$ | Least squares with full column rank |
+| Singular value decomposition (SVD) | $A=U\Sigma V^T$ | Any $m\times n$ matrix; full $U$ and $V$ are orthogonal, and $\Sigma$ is rectangular diagonal with nonnegative entries | Stretch factors (singular values, explained below) and rank analysis |
 | Symmetric eigendecomposition | $A=Q\Lambda Q^T$ | Real symmetric $A$; $Q$ is orthogonal, and $\Lambda$ is real diagonal | Eigenvalues and eigenvectors |
 
 For the factor structures, see LAPACK's [LU routine](https://www.netlib.org/lapack/double/dgetrf.f), [Cholesky routine](https://www.netlib.org/lapack/double/dpotrf.f), and Users' Guide sections on [QR](https://www.netlib.org/lapack/lug/node40.html), [SVD](https://www.netlib.org/lapack/lug/node32.html), and [symmetric eigendecomposition](https://www.netlib.org/lapack/lug/node89.html). LAPACK writes pivoted LU as $A=PLU$; its permutation matrix is the inverse of the one in $PA=LU$.
@@ -89,7 +143,7 @@ $$
 Ly=Pb,\qquad Ux=y.
 $$
 
-Forward substitution solves the lower triangular system, and backward substitution solves the upper triangular system. If another right-hand side arrives, the factors can be reused. LAPACK separates [factorization and solve routines](https://www.netlib.org/lapack/lug/node38.html) for this reason.
+**Forward substitution** solves the lower triangular system from the first row down, as in the earlier three-row example. **Backward substitution** solves an upper triangular system from the last row up. A **permutation matrix** $P$ is an identity matrix with its rows reordered: multiplying by $P$ performs that same reordering on $A$ or $b$. If another right-hand side arrives, the factors can be reused. LAPACK separates [factorization and solve routines](https://www.netlib.org/lapack/lug/node38.html) for this reason.
 
 ## Worked example
 
@@ -120,19 +174,23 @@ Elimination removes an unknown from later equations. $U$ stores the simplified e
 
 ### Cholesky exposes a sum of squares
 
-For SPD $A=LL^T$,
+For symmetric positive-definite (SPD) $A=LL^T$,
 
 $$
 x^TAx=\lVert L^Tx\rVert_2^2.
 $$
 
-The [quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) on the left may mix coordinates. The right side writes it as ordinary squared length after a triangular change of coordinates. For the example <span class="math-inline" markdown="0">\(A=\begin{pmatrix}4&2\\2&3\end{pmatrix}\)</span>,
+A **quadratic form** is an expression such as $x^TAx$ made of squared coordinates and products of pairs of coordinates. A product mixing different coordinates, such as $4x_1x_2$, is a **cross term**. Compare $(2x_1+x_2)^2=4x_1^2+4x_1x_2+x_2^2$: the cross term appears when we multiply the two different parts of the bracket.
+
+**Completing the square** rewrites an expression by collecting such terms into a squared bracket and accounting for what remains. For our example,
 
 $$
-4x_1^2+4x_1x_2+3x_2^2=(2x_1+x_2)^2+(\sqrt2x_2)^2.
+4x_1^2+4x_1x_2+3x_2^2
+=(2x_1+x_2)^2+2x_2^2
+=(2x_1+x_2)^2+(\sqrt2x_2)^2.
 $$
 
-This is completing the square in matrix form. The [Cholesky page]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) explains why the positivity condition makes it possible.
+Define new coordinates $y_1=2x_1+x_2$ and $y_2=\sqrt2x_2$. The expression is now $y_1^2+y_2^2$, an ordinary squared length. Here $y=L^Tx$: the matrix $L^T$ is upper triangular because $y_2$ needs only $x_2$, whereas $y_1$ can use both old coordinates. This is the concrete meaning of a **triangular change of coordinates**. The [Cholesky page]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) walks through cross terms and completing the square before connecting them to the factorization; the [quadratic-form page]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) develops the expression $x^TAx$ itself.
 
 ### QR separates direction from coordinate mixing
 
@@ -144,15 +202,15 @@ $$
 \begin{bmatrix}\sqrt2&0\\0&\sqrt2\end{bmatrix}.
 $$
 
-The columns already point in perpendicular directions; $Q$ normalizes them, and $R$ restores their lengths. For columns that are not perpendicular, the off-diagonal entries of $R$ also record components along earlier directions. See [LAPACK's QR definition](https://www.netlib.org/lapack/lug/node40.html).
+The columns already point in perpendicular directions; $Q$ normalizes them, and $R$ restores their lengths. For columns that are not perpendicular, the entries away from the diagonal (the **off-diagonal entries**) of $R$ also record components along earlier directions. See [LAPACK's QR definition](https://www.netlib.org/lapack/lug/node40.html).
 
-As a small least-squares example, fit one constant $x$ to measurements $(1,2,6)^T$. The design matrix is $B=(1,1,1)^T$. Reduced QR gives $q=B/\sqrt3$ and $r=\sqrt3$, so $rx=q^Tb$ gives $x=3$. The residual $b-Bx=(-2,-1,3)^T$ is perpendicular to $q$: its entries sum to zero. The fit captures the component in the model's direction and leaves the perpendicular component as residual.
+As a small least-squares example, fit one constant $x$ to measurements $(1,2,6)^T$. The **design matrix** stores the coefficients that turn model parameters into predicted measurements. Here it is $B=(1,1,1)^T$, because $Bx=(x,x,x)^T$. Reduced QR gives $q=B/\sqrt3$ and $r=\sqrt3$, so $rx=q^Tb$ gives $x=3$. The residual $b-Bx=(-2,-1,3)^T$ is perpendicular to $q$: its entries sum to zero. The fit captures the component in the model's direction and leaves the perpendicular component as residual.
 
 ### SVD finds input and output directions for stretching
 
-In $A=U\Sigma V^T$, $V^T$ expresses the input in perpendicular directions, $\Sigma$ scales those coordinates, and $U$ places them in output directions. For a square matrix, the orthogonal stages may rotate or reflect; the nonnegative diagonal entries of $\Sigma$ give the stretch factors. The relation $Av_i=\sigma_i u_i$ makes this interpretation precise. See [LAPACK's SVD definition](https://www.netlib.org/lapack/lug/node32.html).
+In $A=U\Sigma V^T$, $V^T$ expresses the input in perpendicular directions, $\Sigma$ scales those coordinates, and $U$ places them in output directions. For a square matrix, the orthogonal stages may rotate or reflect; the nonnegative diagonal entries of $\Sigma$ give the stretch factors. These stretch factors are the **singular values** $\sigma_i$. If $v_i$ is column $i$ of $V$ and $u_i$ is column $i$ of $U$, then $Av_i=\sigma_i u_i$: one input unit direction becomes an output unit direction multiplied by its stretch factor. See [LAPACK's SVD definition](https://www.netlib.org/lapack/lug/node32.html).
 
-For $A=\operatorname{diag}(3,1)$, a unit circle becomes an ellipse with semiaxes $3$ and $1$. If the second diagonal entry is instead zero, the circle collapses onto a line segment: an entire input direction is lost. This illustrates why zero singular values indicate rank loss. Small singular values mean that corresponding input changes produce small output changes, which become strongly amplified when a solve tries to reverse them.
+For $A=\operatorname{diag}(3,1)$, a unit circle becomes an ellipse with horizontal half-width $3$ and vertical half-height $1$. If the second diagonal entry is instead zero, the circle collapses onto a line segment: an entire input direction is lost. This illustrates why zero singular values indicate rank loss. Small singular values mean that corresponding input changes produce small output changes, which become strongly amplified when a solve tries to reverse them.
 
 {% include image.html src="/assets/images/wiki/svd-stretch.svg" alt="A unit circle, an ellipse produced by scaling its coordinates by three and one, and a line segment produced by scaling by three and zero." caption="An explicit diagonal example of singular values: (3, 1) stretches two directions; (3, 0) destroys one. Corresponding marked points retain their labels in each panel." %}
 
@@ -166,11 +224,13 @@ A\begin{bmatrix}1\\1\end{bmatrix}=4\begin{bmatrix}1\\1\end{bmatrix},\qquad
 A\begin{bmatrix}1\\-1\end{bmatrix}=2\begin{bmatrix}1\\-1\end{bmatrix}.
 $$
 
-The two diagonal directions are stretched by $4$ and $2$. Normalize them to form $Q$, and the matrix becomes $Q\operatorname{diag}(4,2)Q^T$. The same directions are used for input and output. That differs from SVD, whose input and output directions can be different, even for square matrices. Symmetric matrices have an orthogonal eigenbasis; see [LAPACK's symmetric eigendecomposition](https://www.netlib.org/lapack/lug/node89.html). Negative eigenvalues reverse a direction, while singular values remain nonnegative.
+The two diagonal directions are stretched by $4$ and $2$. Normalize them to form $Q$, and the matrix becomes $Q\operatorname{diag}(4,2)Q^T$. The same directions are used for input and output. That differs from SVD, whose input and output directions can be different, even for square matrices. Symmetric matrices have an **orthogonal eigenbasis**: perpendicular eigenvectors that can be combined to build every vector; see [LAPACK's symmetric eigendecomposition](https://www.netlib.org/lapack/lug/node89.html). Negative eigenvalues reverse a direction, while singular values remain nonnegative.
 
 ## Choosing a decomposition
 
-For a general nonsingular square system, use pivoted LU. If the coefficient matrix is [symmetric positive definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}), Cholesky exploits that structure. For an overdetermined system with full column rank, QR solves the least-squares problem. If rank is uncertain, column-pivoted QR or SVD can help identify an effective numerical rank. See LAPACK's [linear-system factorizations](https://www.netlib.org/lapack/lug/node38.html) and [rank-sensitive least-squares discussion](https://www.netlib.org/lapack/lug/node42.html).
+For a general nonsingular square system, use pivoted LU. If the coefficient matrix is [symmetric positive definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}), Cholesky exploits that structure. For an overdetermined system with full column rank, QR solves the least-squares problem. If rank is uncertain, QR with column reordering or SVD can help assess how many directions are distinguishable at the available accuracy. See LAPACK's [linear-system factorizations](https://www.netlib.org/lapack/lug/node38.html) and [rank-sensitive least-squares discussion](https://www.netlib.org/lapack/lug/node42.html).
+
+An **effective numerical rank** counts the directions whose stretch is large enough to matter at the chosen accuracy. For example, $\operatorname{diag}(3,10^{-12})$ has exact rank $2$, but treating stretches below $10^{-10}$ as negligible gives numerical rank $1$. The threshold depends on the scale and accuracy of the data, rather than being universal. **Column-pivoted QR** reorders columns during factorization to help reveal independent directions. See [LAPACK's rank-sensitive QR](https://www.netlib.org/lapack/lug/node42.html) and [matrix norms]({{ '/wiki/linear-algebra/matrix-norm/' | relative_url }}) for measuring matrix size and approximation error.
 
 ## Interactive example: change the order
 
@@ -202,7 +262,7 @@ Apply the rightmost matrix first. Compare the two intermediate vectors.
 <details markdown="1">
 <summary>Reveal the worked solution</summary>
 
-$Cx=(2,6)^T$, so $BCx=(8,6)^T$. Conversely, $Bx=(3,2)^T$, so $CBx=(6,6)^T$. Scaling and shearing do not commute in this example.
+$Cx=(2,6)^T$, so $BCx=(8,6)^T$. Conversely, $Bx=(3,2)^T$, so $CBx=(6,6)^T$. Scaling and shearing do not **commute** in this example: changing their order changes the result.
 
 </details>
 </div>
@@ -304,7 +364,7 @@ Distinguish an unrestricted product from a product whose factors have extra cond
 <details markdown="1">
 <summary>Reveal the worked solution</summary>
 
-Scalar cancellation gives the same product. It proves nonuniqueness for unrestricted nonzero factors. It does not preserve every normalization: multiplying a unit lower triangular factor by $\alpha\ne1$ destroys its unit diagonal, for example. Uniqueness theorems concern factors satisfying all the stated conditions.
+A **scalar** is a single number, here $\alpha$. Multiplying one factor by $\alpha$ and the other by $1/\alpha$ cancels the scaling and gives the same product. It proves nonuniqueness for unrestricted nonzero factors. It does not preserve every normalization: multiplying a unit lower triangular factor by $\alpha\ne1$ destroys its unit diagonal, for example. Uniqueness theorems concern factors satisfying all the stated conditions.
 
 </details>
 </div>
@@ -372,3 +432,6 @@ Scaling gives $(2,2)^T$; shearing gives $(3,2)^T$. To undo the pipeline, first s
 4. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [Singular Value Decomposition](https://www.netlib.org/lapack/lug/node32.html).
 5. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [Error Bounds for the Symmetric Eigenproblem](https://www.netlib.org/lapack/lug/node89.html), opening definition of the eigendecomposition.
 6. LAPACK (2011). [DGETRF](https://www.netlib.org/lapack/double/dgetrf.f) and [DPOTRF](https://www.netlib.org/lapack/double/dpotrf.f), version 3.3.1. Routine documentation for LU and Cholesky factors.
+
+7. OpenStax. *College Algebra 2e*. [Matrices and Matrix Operations](https://openstax.org/books/college-algebra-2e/pages/7-5-matrices-and-matrix-operations) and [Solving Systems with Inverses](https://openstax.org/books/college-algebra-2e/pages/7-7-solving-systems-with-inverses).
+8. Strang, G. (2018). MIT OpenCourseWare, *18.065*. [The Column Space of A Contains All Vectors Ax](https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-1-the-column-space-of-a-contains-all-vectors-ax/).
