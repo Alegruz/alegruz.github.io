@@ -27,8 +27,8 @@ try {
   const errors=[];
   page.on("pageerror", error => errors.push(error.message));
   const base=`http://127.0.0.1:${server.address().port}`;
-  const visit = async (name, exerciseDetails=16) => {
-    const response=await page.goto(`${base}/wiki/linear-algebra/${name}/`,{waitUntil:"domcontentloaded"});
+  const visit = async (name, exerciseDetails=16, subject="linear-algebra") => {
+    const response=await page.goto(`${base}/wiki/${subject}/${name}/`,{waitUntil:"domcontentloaded"});
     assert.equal(response.status(),200);
     await page.locator(".wiki-lab-controls").waitFor({state:"visible"});
     const exercises=page.locator(exerciseDetails===16?".wiki-exercise details":".post-content details");
@@ -138,6 +138,31 @@ try {
     await page.emulateMedia({colorScheme:"dark"});
     assert.equal(await page.locator(".wiki-lab-controls").isVisible(),true);
   }
+  lab=await visit("linear-programming",8,"optimization");
+  assert.match(await lab.status.innerText(),/Unique optimum at \(1,3\)/);
+  assert.match(await lab.output.innerText(),/Best profit = 9/);
+  await lab.field("profit1").fill("1");await lab.field("profit2").fill("1");
+  assert.match(await lab.status.innerText(),/Multiple optima/);
+  assert.match(await lab.output.innerText(),/Optimal corners: \(1,3\); \(0,4\)/);
+  await lab.field("profit1").fill("2");
+  assert.match(await lab.output.innerText(),/Optimal corners: \(2.5,0\); \(1,3\)/);
+  await lab.field("profit1").fill("0");await lab.field("profit2").fill("0");
+  assert.match(await lab.status.innerText(),/every feasible point is optimal/);
+  await lab.field("profit1").fill("-1");await lab.field("profit2").fill("-2");
+  assert.match(await lab.status.innerText(),/Unique optimum at \(0,0\)/);
+  await lab.field("profit1").fill("");
+  assert.equal(await lab.field("profit1").getAttribute("aria-invalid"),"true");
+  assert.equal(await lab.root.locator("svg circle").count(),0);
+  await lab.field("profit1").fill("10001");
+  assert.equal(await lab.field("profit1").getAttribute("aria-invalid"),"true");
+  await lab.field("profit1").fill("0.000003");await lab.field("profit2").fill("0.000002");
+  assert.match(await lab.status.innerText(),/Unique optimum at \(1,3\)/);
+  await lab.field("profit1").fill("3");await lab.field("profit2").fill("2");
+  await lab.field("profit1").focus();await lab.field("profit1").press("ArrowUp");
+  assert.equal(await lab.field("profit1").inputValue(),"4");
+  assert.match(await lab.status.innerText(),/Multiple optima/);
+  await page.setViewportSize({width:375,height:850});
+  assert.equal(await lab.root.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
   const noJS=await browser.newContext({javaScriptEnabled:false});
   const staticPage=await noJS.newPage();
   await staticPage.goto(`${base}/wiki/linear-algebra/cholesky-decomposition/`,{waitUntil:"commit"});
@@ -154,9 +179,15 @@ try {
     await answer.locator("summary").click();
     assert.notEqual(await answer.getAttribute("open"),null);
   }
+  await staticPage.goto(`${base}/wiki/optimization/linear-programming/`,{waitUntil:"domcontentloaded"});
+  assert.equal(await staticPage.locator(".wiki-lab-controls").isVisible(),false);
+  assert.equal(await staticPage.locator("noscript").isVisible(),true);
+  assert.equal(await staticPage.locator('.post-content details').count(),8);
+  await staticPage.locator('.post-content details').nth(1).locator('summary').press('Enter');
+  assert.notEqual(await staticPage.locator('.post-content details').nth(1).getAttribute('open'),null);
   await noJS.close();
   assert.deepEqual(errors,[]);
-  console.log("Wiki labs passed: composition order, keyboard controls, LU pivoting and singularity, Cholesky boundaries, vector and matrix norms, invalid inputs, 32 exercise solutions, mobile layout, dark mode, and no-JavaScript reading.");
+  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
 } finally {
   if(browser)await browser.close();
   await new Promise(done=>server.close(done));

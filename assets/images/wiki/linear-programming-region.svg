@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560" role="img" aria-labelledby="title desc">
+<title id="title">A two-product linear program</title>
+<desc id="desc">The feasible polygon has corners (0,0), (2.5,0), (1,3), and (0,4). The objective 3x1+2x2=9 supports it at the optimal point (1,3).</desc>
+<rect width="800" height="560" fill="#fff"/>
+<g font-family="system-ui,sans-serif" font-size="17" fill="#1e293b">
+<text x="65" y="35" font-size="23" font-weight="700">Maximize 3x₁ + 2x₂</text>
+<g stroke="#e2e8f0">
+<path d="M90 60V465 M180 60V465 M270 60V465 M360 60V465 M450 60V465 M540 60V465"/>
+<path d="M90 465H540 M90 390H540 M90 315H540 M90 240H540 M90 165H540 M90 90H540"/>
+</g>
+<!-- Coordinate mapping: (x1,x2) -> (90+90*x1,465-75*x2). -->
+<polygon points="90,465 315,465 180,240 90,165" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+<path d="M90 165L450 465" fill="none" stroke="#64748b" stroke-width="2"/>
+<path d="M90 90L315 465" fill="none" stroke="#334155" stroke-width="2"/>
+<path d="M90 127.5L360 465" fill="none" stroke="#c65b08" stroke-width="3" stroke-dasharray="8 5"/>
+<path d="M90 60V465H560" fill="none" stroke="#1e293b" stroke-width="2"/>
+<g text-anchor="middle">
+<text x="90" y="492">0</text><text x="180" y="492">1</text><text x="270" y="492">2</text><text x="360" y="492">3</text><text x="450" y="492">4</text><text x="540" y="492">5</text>
+</g>
+<g text-anchor="end">
+<text x="75" y="396">1</text><text x="75" y="321">2</text><text x="75" y="246">3</text><text x="75" y="171">4</text><text x="75" y="96">5</text>
+</g>
+<text x="420" y="530">Product A batches (x₁)</text><text x="95" y="60">Product B batches (x₂)</text>
+<g fill="#2563eb"><circle cx="90" cy="465" r="4"/><circle cx="315" cy="465" r="4"/><circle cx="90" cy="165" r="4"/></g>
+<circle cx="180" cy="240" r="7" fill="#c65b08"/>
+<text x="102" y="451">(0,0)</text><text x="295" y="447">(2.5,0)</text><text x="105" y="158">(0,4)</text>
+<path d="M190 237L255 205" stroke="#c65b08" fill="none"/><text x="260" y="200" fill="#9a4806" font-weight="700">(1,3): profit 9</text>
+<text x="110" y="355" fill="#1d4ed8">Feasible region</text>
+<text x="550" y="140">Resource boundaries</text><text x="550" y="172">x₁ + x₂ = 4</text><text x="550" y="204">2x₁ + x₂ = 5</text>
+<path d="M550 245H600" stroke="#c65b08" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="550" y="278" fill="#9a4806">Best objective level</text><text x="550" y="310" fill="#9a4806">3x₁ + 2x₂ = 9</text>
+</g>
+</svg>

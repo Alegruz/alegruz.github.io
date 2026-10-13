@@ -184,6 +184,64 @@
     svg.setAttribute("aria-label",status.textContent+" "+note.textContent);
   }
 
+  function linearProgramming(root, f) {
+    const vertices=[[0,0],[2.5,0],[1,3],[0,4]];
+    // Normalize before comparing so multiplying all profits by a constant
+    // does not change the detected optimal face.
+    const scale=Math.max(Math.abs(f.profit1),Math.abs(f.profit2));
+    const c=scale===0?[0,0]:[f.profit1/scale,f.profit2/scale];
+    const scores=vertices.map(([x,y])=>c[0]*x+c[1]*y);
+    const best=Math.max(...scores);
+    const winners=vertices.filter((v,i)=>Math.abs(scores[i]-best)<=1e-12);
+    const status=root.querySelector("[data-status]");
+    status.textContent=scale===0?"Constant objective: every feasible point is optimal.":
+      winners.length===1?`Unique optimum at (${winners[0].map(fmt)}).`:
+      "Multiple optima: every point on the segment between the listed corners is optimal (within comparison tolerance).";
+    root.querySelector("[data-matrices]").textContent=
+      `Maximize ${fmt(f.profit1)} x₁ + ${fmt(f.profit2)} x₂\n`+
+      vertices.map(([x,y])=>`(${fmt(x)}, ${fmt(y)}): ${fmt(f.profit1*x+f.profit2*y)}`).join("\n")+
+      `\nBest profit = ${fmt(best*scale)}\nOptimal corners: ${winners.map(v=>`(${v.map(fmt)})`).join("; ")}`;
+    const svg=root.querySelector("svg");
+    svg.replaceChildren();
+    const point=([x,y])=>[70+90*x,365-70*y];
+    for(let i=0;i<=5;i++){
+      const [x,y]=point([i,i]);
+      node("line",{x1:x,y1:15,x2:x,y2:365,class:"lab-grid"},svg);
+      node("line",{x1:70,y1:y,x2:520,y2:y,class:"lab-grid"},svg);
+      node("text",{x,y:389,"text-anchor":"middle"},svg,String(i));
+      node("text",{x:55,y:y+5,"text-anchor":"end"},svg,String(i));
+    }
+    node("line",{x1:70,y1:365,x2:520,y2:365,class:"lab-axis"},svg);
+    node("line",{x1:70,y1:15,x2:70,y2:365,class:"lab-axis"},svg);
+    node("text",{x:530,y:365},svg,"x₁");
+    node("text",{x:70,y:12},svg,"x₂");
+    node("polygon",{points:vertices.map(v=>point(v).join(",")).join(" "),fill:"#2563eb","fill-opacity":.15,stroke:"#2563eb","stroke-width":2},svg);
+    const drawLine=(ends,attrs)=>{
+      const [a,b]=ends.map(point);
+      node("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],...attrs},svg);
+    };
+    drawLine([[0,4],[4,0]],{stroke:"#64748b","stroke-dasharray":"4 4"});
+    drawLine([[0,5],[2.5,0]],{stroke:"#64748b","stroke-dasharray":"4 4"});
+    if(scale!==0){
+      // Intersect the optimal objective line with the fixed plotting box.
+      const ends=[];
+      const add=(x,y)=>{
+        if(x>=-1e-10&&x<=5+1e-10&&y>=-1e-10&&y<=5+1e-10 &&
+          !ends.some(v=>Math.hypot(v[0]-x,v[1]-y)<1e-10))ends.push([x,y]);
+      };
+      if(c[1]!==0)for(const x of [0,5])add(x,(best-c[0]*x)/c[1]);
+      if(c[0]!==0)for(const y of [0,5])add((best-c[1]*y)/c[0],y);
+      if(ends.length>=2)drawLine(ends.slice(0,2),{stroke:"#c65b08","stroke-width":2,"stroke-dasharray":"6 4"});
+      if(winners.length===2)drawLine(winners,{stroke:"#c65b08","stroke-width":5});
+    }
+    for(const v of vertices){
+      const [x,y]=point(v);
+      node("circle",{cx:x,cy:y,r:winners.includes(v)?6:3,fill:winners.includes(v)?"#c65b08":"#2563eb"},svg);
+    }
+    root.querySelector("[data-explanation]").textContent="Blue: feasible production. Gray dashed: resource boundaries. Orange dashed: best objective level; orange dots: optimal corners. A thick orange segment marks a tied edge. The constraints and axes stay fixed. Comparisons use normalized coefficients with tolerance 10⁻¹²; displayed values are rounded.";
+    svg.setAttribute("aria-label",status.textContent+" "+root.querySelector("[data-explanation]").textContent);
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
@@ -213,6 +271,7 @@
           return;
         }
         if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
+        else if(kind==="linear-programming")linearProgramming(root,f);
         else if(kind==="lu")lu(root,f,set,step);
         else if(kind==="vector-norm"||kind==="matrix-norm")norms(root,f,set,`wiki-lab-clip-${index}`,kind);
         else cholesky(root,f,`wiki-lab-clip-${index}`);

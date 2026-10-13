@@ -2,7 +2,10 @@
   <p class="wiki-lab-title">{{ include.title | escape }}</p>
   <noscript><p>The interactive controls require JavaScript. The worked examples and practice solutions below can be read without it.</p></noscript>
   <div class="wiki-lab-controls" hidden>
-    {% if include.kind == 'composition' %}
+    {% if include.kind == 'linear-programming' %}
+    <label>Profit per A batch c₁ <input data-field="profit1" type="number" step="any" value="3"></label>
+    <label>Profit per B batch c₂ <input data-field="profit2" type="number" step="any" value="2"></label>
+    {% elsif include.kind == 'composition' %}
     <label>Horizontal scale s <input data-field="scale" type="range" min="-3" max="3" step="0.1" value="2"><output data-value="scale">2</output></label>
     <label>Horizontal shear k <input data-field="shear" type="range" min="-2" max="2" step="0.1" value="1"><output data-value="shear">1</output></label>
     <label>Input x₁ <input data-field="x1" type="number" step="any" value="1"></label>
