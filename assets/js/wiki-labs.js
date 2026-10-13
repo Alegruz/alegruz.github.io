@@ -370,6 +370,28 @@
     svg.setAttribute('aria-label',`${status.textContent} Current output ${fmt(achieved)}; optimal output ${fmt(best)}. ${root.querySelector('[data-explanation]').textContent}`);
   }
 
+  function farkas(root, fields) {
+    const q=fields.demand, bound=260/3, remainder=260-3*q;
+    const boundary=Math.abs(remainder)<1e-10;
+    const status=root.querySelector('[data-status]');
+    status.textContent=boundary?'At the boundary (within display tolerance): the exact target 260/3 is feasible.':remainder<0?'Infeasible: the weighted rows give a negative remainder.':'Feasible: the displayed allocation meets the target.';
+    root.querySelector('[data-matrices]').textContent=
+      `Hypothetical target q = ${fmt(q)} complete sets/day\nFixed row weights y = (2, 1, 0, 10, 0, 0, 0, 20)\nAᵀy = (0, 0, 0) exactly\nbᵀy = 260 − 3q = ${boundary?'approximately 0':fmt(remainder)}\n`+
+      (remainder<0&&!boundary?`Contradiction: 0 ≤ ${fmt(remainder)}`:'Feasible witness at the exact boundary: (m, t, a) = (8/3, 3, 0)\nPart I = Part II = 260/3 complete sets/day');
+    const svg=root.querySelector('svg');svg.replaceChildren();
+    const width=value=>value*4, left=130;
+    node('text',{x:20,y:85},svg,'Target q');
+    node('rect',{x:left,y:60,width:width(q),height:35,fill:remainder<0&&!boundary?'#c65b08':'#2563eb'},svg);
+    node('text',{x:left,y:117},svg,`${fmt(q)} complete sets/day`);
+    node('text',{x:20,y:185},svg,'Attainable');
+    node('rect',{x:left,y:160,width:width(bound),height:35,fill:'#2563eb'},svg);
+    node('text',{x:left,y:217},svg,'260/3 ≈ 86.6667 complete sets/day');
+    node('line',{x1:left+width(bound),y1:45,x2:left+width(bound),y2:230,class:'lab-axis','stroke-dasharray':'5 4'},svg);
+    node('text',{x:left,y:280},svg,'Same scale: 0 to 100 complete sets/day');
+    root.querySelector('[data-explanation]').textContent='Published machine data stay fixed. The target is hypothetical. The weights cancel all variables exactly; only the remainder changes. The exact transition is q = 260/3. Values are rounded; remainders within 10⁻¹⁰ of zero are reported as a boundary display, not an exact certificate for a nearby decimal target.';
+    svg.setAttribute('aria-label',`Target ${fmt(q)}; attainable rate 260/3 complete sets per day. ${status.textContent}`);
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
@@ -383,7 +405,7 @@
         let invalid=false;
         root.querySelectorAll('input[type="number"], input[type="range"]').forEach(input=>{
           const value=input.valueAsNumber;
-          const good=kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
+          const good=kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
           input.setAttribute("aria-invalid",String(!good));
           invalid ||= !good;
           f[input.dataset.field]=value;
@@ -391,14 +413,15 @@
           if(display)display.textContent=good?fmt(value):"—";
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent=kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
+          root.querySelector("[data-status]").textContent=kind==="farkas"?"Enter a finite target between 0 and 100 complete sets per day. Zero is allowed.":kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
           root.querySelector("[data-matrices]").textContent="";
           root.querySelector("[data-explanation]").textContent="The result will update when the inputs are valid.";
           root.querySelector("svg")?.replaceChildren();
           const next=root.querySelector('[data-action="next"]');if(next)next.disabled=true;
           return;
         }
-        if(kind==="kantorovich")kantorovich(root,f,step);
+        if(kind==="farkas")farkas(root,f);
+        else if(kind==="kantorovich")kantorovich(root,f,step);
         else if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
         else if(kind==="linear-programming")linearProgramming(root,f);
         else if(kind==="lu")lu(root,f,set,step);
@@ -414,6 +437,8 @@
         step=kind==="kantorovich"&&!(input.dataset.field==="preset"&&input.value==="original")?2:0;render();
       }));
       root.querySelector('[data-action="next"]')?.addEventListener("click",()=>{step=Math.min(step+1,3);render();});
+      root.querySelector('[data-action="boundary"]')?.addEventListener("click",()=>{set('demand').value=260/3;render();});
+      if(kind==="farkas")root.querySelector('[data-action="reset"]').addEventListener("click",()=>{set('demand').value=90;render();});
       root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{if(normBaselines[kind]){for(const [key,value] of Object.entries(normBaselines[kind]))set(key).value=value;}if(kind==="kantorovich"){for(const [key,value] of Object.entries(presets.original))set(key).value=value;set('preset').value='original';}if(kind==="linear-programming"){set('profit1').value=3;set('profit2').value=2;}step=0;render();});
       root.querySelector(".wiki-lab-controls").hidden=false;
       root.querySelector(".wiki-lab-result").hidden=false;

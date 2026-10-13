@@ -259,6 +259,12 @@ A **slack variable** records the difference between an upper bound and the bound
 
 A **Phase I** auxiliary LP minimizes artificial variables measuring constraint violations to find a feasible start. A zero minimum supplies a feasible solution; a positive minimum proves infeasibility. See [Goemans, §2.5](https://ocw.mit.edu/courses/18-310-principles-of-discrete-applied-mathematics-fall-2013/11d00f8f0f460a5e59b5e97322a218a9_MIT18_310F13_Ch8.pdf#page=15). A zero basic variable makes a basis **degenerate**; pivots may then leave the point unchanged. Suitable pivot rules prevent cycling. See [MIT's algorithm notes](https://courses.csail.mit.edu/6.854/20/Notes/n14-LP_algorithms.html).
 
+### Certify that no feasible plan exists
+
+**Farkas’ Lemma** explains how to prove infeasibility directly. For a system $Ax\le b$ with unrestricted variables (including any variable bounds as explicit rows), exactly one exists: a feasible point, or nonnegative row weights $y$ satisfying $A^Ty=0$ and $b^Ty<0$. Adding the weighted constraints would then require $0\le b^Ty<0$, a contradiction. See [Farina, Theorem L6.1](https://www.mit.edu/~gfarina/2025/67220s25_L06_farkas/L06.pdf#page=3).
+
+For the machine data above, a hypothetical requirement of at least $90$ of each part is impossible: weighting the two output requirements and selected time bounds gives $0\le260-3(90)=-10$. The separate [Farkas’ Lemma page]({{ '/wiki/optimization/farkas-lemma/' | relative_url }}) derives those weights, explains the geometric separation behind them, and connects infeasibility certificates to dual bounds.
+
 ## Kantorovich's resolving multipliers: prove the machine plan is optimal
 
 Why should turret time go to Part I when the automatic lathe has the higher Part I rate? Kantorovich's **resolving multipliers** compare weighted output across alternative uses of each machine. His Appendix I develops this method and its optimality argument. See [§§1–3 of the appendix](https://resistir.info/livros/kantorovich_mathematical_methods.pdf#page=26).

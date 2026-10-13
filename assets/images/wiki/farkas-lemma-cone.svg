@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 410" role="img" aria-labelledby="title desc">
+<title id="title">Farkas certificate as a separating line</title>
+<desc id="desc">In an invented example, attainable vectors form the cone z1 greater than or equal to z2 greater than or equal to zero. Target b equals (0,1) lies outside. Its projection p equals (one half,one half) lies on the boundary z1 equals z2.</desc>
+<rect width="650" height="410" fill="#fff"/>
+<g font-family="system-ui,sans-serif" font-size="17" fill="#1e293b">
+<path d="M110 330 L590 330 L590 42 L398 42 Z" fill="#dbeafe"/>
+<path d="M70 330 H610 M110 360 V30" fill="none" stroke="#475569" stroke-width="2"/>
+<path d="M110 330 L398 42" stroke="#2563eb" stroke-width="2" stroke-dasharray="7 5"/>
+<path d="M110 90 L230 210" fill="none" stroke="#c65b08" stroke-width="2"/>
+<circle cx="110" cy="90" r="6" fill="#c65b08"/>
+<circle cx="230" cy="210" r="6" fill="#2563eb"/>
+<text x="122" y="82">b = (0,1)</text>
+<text x="240" y="225">p = (½,½)</text>
+<text x="365" y="275">Attainable cone K</text>
+<text x="300" y="125" transform="rotate(-45 300 125)">z₁ − z₂ = 0</text>
+<text x="80" y="353">0</text>
+<path d="M350 324 V336 M104 90 H116" stroke="#475569"/>
+<text x="346" y="355">1</text><text x="88" y="96">1</text>
+<text x="610" y="352">z₁</text><text x="86" y="30">z₂</text>
+<text x="160" y="385">Same scale on both axes; shaded region continues outward.</text>
+</g>
+</svg>

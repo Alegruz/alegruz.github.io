@@ -260,9 +260,28 @@ try {
   assert.equal(await staticPage.locator('.post-content details').count(),8);
   await staticPage.locator('.post-content details').nth(1).locator('summary').press('Enter');
   assert.notEqual(await staticPage.locator('.post-content details').nth(1).getAttribute('open'),null);
+  lab=await visit('farkas-lemma',8,'optimization');
+  assert.match(await lab.status.innerText(),/Infeasible/);
+  assert.match(await lab.output.innerText(),/0 ≤ -10/);
+  await lab.field('demand').fill('80');
+  assert.match(await lab.status.innerText(),/Feasible/);
+  await lab.root.locator('[data-action="boundary"]').press('Enter');
+  assert.match(await lab.status.innerText(),/boundary/);
+  await lab.field('demand').fill('0');
+  assert.match(await lab.status.innerText(),/Feasible/);
+  for(const target of ['', '-1', '101']) {
+    await lab.field('demand').fill(target);
+    assert.equal(await lab.field('demand').getAttribute('aria-invalid'),'true');
+    assert.equal(await lab.root.locator('svg rect').count(),0);
+  }
+  await lab.root.locator('[data-action="reset"]').press('Enter');
+  assert.match(await lab.output.innerText(),/0 ≤ -10/);
+  await staticPage.goto(`${base}/wiki/optimization/farkas-lemma/`,{waitUntil:'domcontentloaded'});
+  assert.equal(await staticPage.locator('.wiki-lab-controls').isVisible(),false);
+  assert.equal(await staticPage.locator('noscript').isVisible(),true);
   await noJS.close();
   assert.deepEqual(errors,[]);
-  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
+  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
 } finally {
   if(browser)await browser.close();
   await new Promise(done=>server.close(done));
