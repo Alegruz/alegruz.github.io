@@ -147,7 +147,7 @@ y_2=\frac{x_1-x_2}{\sqrt2},\qquad
 q(x)=3y_1^2+y_2^2.
 $$
 
-A **level curve**, also called a **contour**, joins inputs with the same value: $q(x)=1$ means value $1$ at every point of that curve. Here $3y_1^2+y_2^2=1$ is an **ellipse**, a stretched circle. Its **semiaxes** are the distances from its center to its edge along its principal directions: setting $y_2=0$ gives $|y_1|=1/\sqrt3$, and setting $y_1=0$ gives $|y_2|=1$. A larger positive eigenvalue makes the same-value contour narrower in that direction.
+A **level curve**, also called a **contour**, joins inputs with the same value: $q(x)=1$ means value $1$ at every point of that curve. Here $3y_1^2+y_2^2=1$ is an **ellipse**, a stretched circle. Its **semiaxes** are the distances from its center to its edge along its principal directions: setting $y_2=0$ gives $\lvert y_1\rvert=1/\sqrt3$, and setting $y_1=0$ gives $\lvert y_2\rvert=1$. A larger positive eigenvalue makes the same-value contour narrower in that direction.
 
 The figure also previews the sign vocabulary: **positive definite** means positive for every nonzero input, **positive semidefinite** means never negative, and **indefinite** means positive in some directions and negative in others. For example, $x_1^2+x_2^2$, $x_1^2$, and $x_1^2-x_2^2$ have these three behaviors, respectively.
 

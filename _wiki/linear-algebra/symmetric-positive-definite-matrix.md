@@ -211,13 +211,13 @@ and $(1,-1)^T$ has zero energy. Dependence creates a flat direction.
 
 Consider $f(x)=\frac12x^TAx-r^Tx$ with symmetric $A$. Here $r$ is a fixed vector. Its gradient is $Ax-r$, and its Hessian is $A$. A **stationary point** has zero gradient, so in this example it solves $Ax=r$. If $A$ is SPD, it is invertible: $Ax=0$ would imply $x^TAx=0$, hence $x=0$.
 
-Let $x_*$ solve $Ax_*=r$, and let $h$ be a change in its coordinates. Expanding around this point yields
+Let $x_{\ast}$ solve $Ax_{\ast}=r$, and let $h$ be a change in its coordinates. Expanding around this point yields
 
 $$
-f(x_*+h)-f(x_*)=\frac12h^TAh.
+f(x_{\ast}+h)-f(x_{\ast})=\frac12h^TAh.
 $$
 
-The difference is strictly positive for nonzero $h$, proving that $x_*$ is the **unique global minimum**: it has a smaller value than every other input. For the worked-example matrix and $r=(4,3)^T$, $x_*=(1,1)^T$ and $f(x_*)=-7/2$. SPD turns stationarity into a unique optimum.
+The difference is strictly positive for nonzero $h$, proving that $x_{\ast}$ is the **unique global minimum**: it has a smaller value than every other input. For the worked-example matrix and $r=(4,3)^T$, $x_{\ast}=(1,1)^T$ and $f(x_{\ast})=-7/2$. SPD turns stationarity into a unique optimum.
 
 ### Adding a positive penalty
 

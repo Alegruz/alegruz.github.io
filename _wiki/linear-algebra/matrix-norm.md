@@ -55,7 +55,7 @@ A matrix is both an array of numbers and a transformation $x\mapsto Ax$. The Fro
 
 ## Definition and convention
 
-A norm on matrices satisfies $\lVert A\rVert\ge0$ with equality exactly at $A=0$, $\lVert\alpha A\rVert=|\alpha|\lVert A\rVert$, and $\lVert A+B\rVert\le\lVert A\rVert+\lVert B\rVert$. These are the [vector norm axioms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }}) applied to arrays. Here $A,B\in\mathbb R^{m\times n}$ means real arrays with $m$ rows and $n$ columns; $a_{ij}$ means the entry in row $i$, column $j$. Arrays need the same shape when added. A product $AB$ requires the number of columns of $A$ to equal the number of rows of $B$.
+A norm on matrices satisfies $\lVert A\rVert\ge0$ with equality exactly at $A=0$, $\lVert\alpha A\rVert=\lvert \alpha\rvert\lVert A\rVert$, and $\lVert A+B\rVert\le\lVert A\rVert+\lVert B\rVert$. These are the [vector norm axioms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }}) applied to arrays. Here $A,B\in\mathbb R^{m\times n}$ means real arrays with $m$ rows and $n$ columns; $a_{ij}$ means the entry in row $i$, column $j$. Arrays need the same shape when added. A product $AB$ requires the number of columns of $A$ to equal the number of rows of $B$.
 
 Some texts additionally require a **matrix norm** to be **submultiplicative**:
 
@@ -78,8 +78,8 @@ The input has $n$ coordinates and the output has $m$. The two expressions agree 
 
 | Norm | Formula | Interpretation |
 | --- | --- | --- |
-| Induced $1$ | $\max_j\sum_i|a_{ij}|$ | Largest absolute column sum |
-| Induced $\infty$ | $\max_i\sum_j|a_{ij}|$ | Largest absolute row sum |
+| Induced $1$ | $\max_j\sum_i\lvert a_{ij}\rvert$ | Largest absolute column sum |
+| Induced $\infty$ | $\max_i\sum_j\lvert a_{ij}\rvert$ | Largest absolute row sum |
 | Induced $2$ (spectral) | $\sigma_{\max}(A)=\sqrt{\lambda_{\max}(A^TA)}$ | Largest Euclidean stretch |
 
 A **singular value** is a stretch factor in perpendicular input and output directions; for example, $\operatorname{diag}(3,1)$ has singular values $3$ and $1$. An **eigenvalue** $\lambda$ satisfies $Mv=\lambda v$ for some nonzero vector $v$, so that direction keeps its orientation up to scaling. Here $\sigma_{\max}$ is the largest singular value and $\lambda_{\max}$ the largest eigenvalue of $A^TA$. The transpose $A^T$ exchanges rows and columns. This matrix is symmetric and **positive semidefinite** (PSD), meaning $v^TA^TAv=\lVert Av\rVert_2^2\ge0$. See [matrix decompositions]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}) and [positive-definite and semidefinite matrices]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}). For complex input, replace $A^T$ by the **conjugate transpose** $A^*$, which transposes the array and changes the sign of every imaginary part. See [Higham's induced-norm formulas](https://nhigham.com/2021/10/12/what-is-a-matrix-norm/).
@@ -212,7 +212,7 @@ As a **supplementary invented example**, for $A=\operatorname{diag}(1,0.001)$, $
 
 **Matrix 1-norm is not the sum of all absolute entries.** In the supplementary two-by-two example, that sum is $5$ but the induced $1$-norm is $4$. Likewise the induced infinity norm is a row sum, not the largest entry.
 
-**Eigenvalue magnitude is not generally Euclidean stretch.** For <span class="math-inline" markdown="0">\(N=\begin{bmatrix}0&5\\0&0\end{bmatrix}\)</span>, both eigenvalues are zero, yet $N(0,1)^T=(5,0)^T$ and $\lVert N\rVert_2=5$. Singular values capture this stretch. For real symmetric matrices, orthogonal diagonalization does give $\lVert A\rVert_2=\max_i|\lambda_i|$.
+**Eigenvalue magnitude is not generally Euclidean stretch.** For <span class="math-inline" markdown="0">\(N=\begin{bmatrix}0&5\\0&0\end{bmatrix}\)</span>, both eigenvalues are zero, yet $N(0,1)^T=(5,0)^T$ and $\lVert N\rVert_2=5$. Singular values capture this stretch. For real symmetric matrices, orthogonal diagonalization does give $\lVert A\rVert_2=\max_i\lvert \lambda_i\rvert$.
 
 **A norm on entries need not be submultiplicative.** Let $J$ be the two-by-two all-ones matrix. Its largest absolute entry is $1$, but every entry of $J^2$ is $2$. Thus the entrywise maximum is a norm on the array but fails the product bound with constant $1$.
 

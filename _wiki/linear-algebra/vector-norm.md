@@ -12,7 +12,7 @@ In his 1805 appendix on least squares, Legendre asks how to determine unknown qu
 
 ### Derive the size measure from the original problem
 
-A **vector** is an ordered list of coordinates. We write it as a column; the superscript $T$ transposes a row list into that column. The notation $\mathbb R^n$ means vectors with $n$ real coordinates, and $|x_i|$ is the absolute value of coordinate $i$.
+A **vector** is an ordered list of coordinates. We write it as a column; the superscript $T$ transposes a row list into that column. The notation $\mathbb R^n$ means vectors with $n$ real coordinates, and $\lvert x_i\rvert$ is the absolute value of coordinate $i$.
 
 **Original symbolic problem, modern re-derivation.** Legendre also considers repeated measurements of one quantity and the position of a point ([pp. 578–579](https://en.wikisource.org/wiki/Page:A_Source_Book_in_Mathematics_(Smith).pdf/611)). Write the measurements as $a_1,\ldots,a_n$ and the proposed common value as $t$. The errors are $e_i(t)=a_i-t$. The observations are real values of the same quantity, expressed in a common unit and given equal weight. Legendre’s unweighted objective is
 
@@ -74,7 +74,7 @@ A vector has several coordinates, but a norm assigns one nonnegative number to i
 For vectors $x,y\in\mathbb R^n$, a norm is a function $\lVert\cdot\rVert:\mathbb R^n\to\mathbb R$ satisfying:
 
 1. **Positive definiteness:** $\lVert x\rVert\ge0$, with equality exactly when $x=0$.
-2. **Absolute homogeneity:** $\lVert\alpha x\rVert=|\alpha|\lVert x\rVert$ for every real scalar (number used as a multiplier) $\alpha$.
+2. **Absolute homogeneity:** $\lVert\alpha x\rVert=\lvert \alpha\rvert\lVert x\rVert$ for every real scalar (number used as a multiplier) $\alpha$.
 3. **Triangle inequality:** $\lVert x+y\rVert\le\lVert x\rVert+\lVert y\rVert$.
 
 The same axioms apply over $\mathbb C$, using the complex modulus. See [Higham's vector-norm definition](https://nhigham.com/2021/09/22/what-is-a-vector-norm/). Homogeneity says doubling a vector doubles its size; the triangle inequality says combining two displacements cannot cost more than taking them separately.
@@ -92,9 +92,9 @@ $$
 
 | Norm | Formula | What it emphasizes |
 | --- | --- | --- |
-| $1$ (Manhattan) | $\sum_i|x_i|$ | Total absolute magnitude |
-| $2$ (Euclidean) | $\sqrt{\sum_i|x_i|^2}$ | Ordinary geometric length |
-| $\infty$ (maximum) | $\max_i|x_i|$ | Largest individual magnitude |
+| $1$ (Manhattan) | $\sum_i\lvert x_i\rvert$ | Total absolute magnitude |
+| $2$ (Euclidean) | $\sqrt{\sum_i\lvert x_i\rvert^2}$ | Ordinary geometric length |
+| $\infty$ (maximum) | $\max_i\lvert x_i\rvert$ | Largest individual magnitude |
 
 These are the standard $p$-norms; the infinity norm is their limit as $p\to\infty$. See [Higham](https://nhigham.com/2021/09/22/what-is-a-vector-norm/) and [LAPACK's norm table](https://www.netlib.org/lapack/lug/node75.html).
 
@@ -118,9 +118,9 @@ To normalize in a chosen norm, divide a **nonzero** vector by its norm. Here $x/
 
 The **unit ball** contains vectors with $\lVert x\rVert\le1$; its boundary has $\lVert x\rVert=1$. In two real dimensions:
 
-- $|x_1|+|x_2|\le1$ is a diamond.
+- $\lvert x_1\rvert+\lvert x_2\rvert\le1$ is a diamond.
 - $x_1^2+x_2^2\le1$ is a circular disk.
-- $\max(|x_1|,|x_2|)\le1$ is an axis-aligned square.
+- $\max(\lvert x_1\rvert,\lvert x_2\rvert)\le1$ is an axis-aligned square.
 
 {% include image.html src="/assets/images/wiki/vector-norm-balls.svg" alt="On identical coordinate axes, the 1-norm unit diamond lies inside the 2-norm unit circle, which lies inside the infinity-norm unit square." caption="Each boundary measures size one in a different norm. The diamond, circle, and square all meet at the coordinate-axis unit vectors. The square corner (1, 1) lies outside the other two balls." %}
 
@@ -134,13 +134,13 @@ The defaults $(3,-4)$ are invented teaching values. The restore button returns t
 
 ## Comparing norms without recalculating everything
 
-Let $M=\max_i|x_i|$. One term contributes $M^2$ to the sum of squares, and every term is at most $M^2$, so
+Let $M=\max_i\lvert x_i\rvert$. One term contributes $M^2$ to the sum of squares, and every term is at most $M^2$, so
 
 $$
 \lVert x\rVert_\infty\le\lVert x\rVert_2\le\sqrt n\lVert x\rVert_\infty.
 $$
 
-Also, expanding $(\sum_i|x_i|)^2$ adds nonnegative cross terms to $\sum_i|x_i|^2$, while the **Cauchy–Schwarz inequality**, $|\sum_i u_iv_i|\le\sqrt{\sum_i u_i^2}\sqrt{\sum_i v_i^2}$, bounds the absolute sum of coordinate products by the product of Euclidean lengths. For example, $u=(1,1)$ and $v=(3,4)$ give $7\le\sqrt2\cdot5$. See [ALAFF, Theorem 1.2.3.3](https://www.cs.utexas.edu/~flame/laff/alaff/chapter01-vector-2-norm.html). Applying it to $(|x_i|)$ and $(1,\ldots,1)$ gives
+Also, expanding $(\sum_i\lvert x_i\rvert)^2$ adds nonnegative cross terms to $\sum_i\lvert x_i\rvert^2$, while the **Cauchy–Schwarz inequality**, $\lvert \sum_i u_iv_i\rvert\le\sqrt{\sum_i u_i^2}\sqrt{\sum_i v_i^2}$, bounds the absolute sum of coordinate products by the product of Euclidean lengths. For example, $u=(1,1)$ and $v=(3,4)$ give $7\le\sqrt2\cdot5$. See [ALAFF, Theorem 1.2.3.3](https://www.cs.utexas.edu/~flame/laff/alaff/chapter01-vector-2-norm.html). Applying it to $(\lvert x_i\rvert)$ and $(1,\ldots,1)$ gives
 
 $$
 \lVert x\rVert_2\le\lVert x\rVert_1\le\sqrt n\lVert x\rVert_2.
@@ -202,7 +202,7 @@ Both $1$-norms are $4$, but the infinity norms are $4$ and $1$. Their Euclidean 
 
 ### 3. Abstract reasoning: a weighted size
 
-For positive weights $w_i$, prove $N(x)=\sum_i w_i|x_i|$ is a norm. What fails if one weight is zero?
+For positive weights $w_i$, prove $N(x)=\sum_i w_i\lvert x_i\rvert$ is a norm. What fails if one weight is zero?
 
 <details markdown="1">
 <summary>Hint</summary>
@@ -213,7 +213,13 @@ Use the scalar triangle inequality in each coordinate and test a coordinate basi
 <details markdown="1">
 <summary>Worked solution</summary>
 
-All terms are nonnegative, and their sum can vanish only when every coordinate is zero. Scaling gives $N(\alpha x)=|\alpha|N(x)$. Finally, $\sum_iw_i|x_i+y_i|\le\sum_iw_i(|x_i|+|y_i|)=N(x)+N(y)$. If $w_k=0$, the nonzero basis vector $e_k$ has size zero, so positive definiteness fails.
+All terms are nonnegative, and their sum can vanish only when every coordinate is zero. Scaling gives $N(\alpha x)=\lvert \alpha\rvert N(x)$. Finally,
+
+$$
+\sum_iw_i\lvert x_i+y_i\rvert\le\sum_iw_i(\lvert x_i\rvert+\lvert y_i\rvert)=N(x)+N(y).
+$$
+
+If $w_k=0$, the nonzero basis vector $e_k$ has size zero, so positive definiteness fails.
 
 </details>
 
