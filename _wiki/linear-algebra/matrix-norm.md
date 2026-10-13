@@ -3,18 +3,59 @@ title: Matrix norms
 subject: Linear Algebra
 interactive_examples: true
 description: Measure matrix amplification with induced norms, distinguish spectral and Frobenius norms, and bound errors in linear systems.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-13
 ---
 
-## Two ways to ask how large a matrix is
+## Rounding errors: how much can a matrix change a result?
 
-A matrix is both an array of numbers and a transformation $x\mapsto Ax$. Its size can therefore mean the combined magnitude of its entries, or the largest amplification it can apply to an input. **Frobenius norms** answer the first question; **induced norms** answer the second. The choice matters when measuring an approximation or bounding error.
+A computed solution may satisfy its equations closely and still miss the true solution. Turing's 1948 *Rounding-off Errors in Matrix Processes* studies the accuracy of linear solves and matrix inversion under rounding; its [original abstract](https://academic.oup.com/qjmam/article-abstract/1/1/287/1883483) identifies that problem. This motivates measuring both matrix error and its possible amplification. We use modern norm notation below, not Turing's original notation or a claim of priority for every definition on this page. The abstract does not supply a numerical system; the primary numerical example here is the later published LAPACK example, with all entries preserved.
 
-Read [vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }}) first: a matrix amplification factor compares the size of an output vector with the size of its input.
+Read [vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }}) first. A matrix $A$ is an array whose product $Ax$ combines input coordinates to form an output. If $Ax=b$, the **residual** $r=b-A\hat x$ measures how far a candidate solution $\hat x$ misses the equations. The **solution error** $e=x-\hat x$ instead measures how far it misses the answer. Subtracting the equations gives $Ae=r$. When $A$ is invertible, $e=A^{-1}r$: reversing the matrix may enlarge a small residual. An inverse is a matrix that undoes a transformation; for example, $\operatorname{diag}(2,1)$ means a diagonal matrix with diagonal entries $2$ and $1$ and zeros elsewhere, and its inverse halves the first coordinate.
+
+### Published worked data: LAPACK's matrix approximation
+
+**Published illustrative data, modern recalculation.** The first matrix example following Table 4.2 and the vector-error example in the 1999 [LAPACK Users' Guide, “How to Measure Errors”](https://www.netlib.org/lapack/lug/node75.html) gives
+
+$$
+A=\begin{bmatrix}1&2&3\\4&5&6\\7&8&10\end{bmatrix},\qquad
+\hat A=\begin{bmatrix}0.44&2.36&3.04\\3.09&5.87&6.66\\7.36&7.77&9.07\end{bmatrix}.
+$$
+
+These are the guide's illustrative numbers, not physical measurements; it specifies no units. Keep the final reference entry $10$, not $9$. The discrepancy is
+
+$$
+E=\hat A-A=\begin{bmatrix}-0.56&0.36&0.04\\-0.91&0.87&0.66\\0.36&-0.23&-0.93\end{bmatrix}.
+$$
+
+Work from entries to whole-array summaries:
+
+1. Absolute row sums are $0.96$, $2.44$, and $1.52$. Their maximum is $2.44$, the induced infinity norm.
+2. Absolute column sums are $1.83$, $1.46$, and $1.63$. Their maximum is $1.83$, the induced $1$-norm.
+3. Adding all nine squared entries gives $3.5128$. Its square root is $1.8742465\ldots$, the Frobenius norm.
+
+The row rule has a transformation interpretation. Choose a vector whose signs reinforce the largest row, $z=(-1,1,1)^T$. Then
+
+$$
+Ez=(0.96,2.44,-1.52)^T.
+$$
+
+The largest input magnitude is $1$ and the largest output magnitude is $2.44$. The matrix discrepancy can therefore turn a coordinate-bounded input into an output error this large. The derivation below proves no input of maximum size $1$ can do worse.
+
+For relative matrix error, the maximum absolute reference row sum is $25$, giving $2.44/25=0.0976$. The approximate matrix's maximum row sum is $24.2$, giving $2.44/24.2\approx0.100826$. The guide prints both denominator conventions (rounded to $0.0976$ and $0.1008$). They are different ratios, not a discrepancy in the arithmetic.
+
+### Primary interactive example: restore the published matrix
+
+{% include wiki-lab.html kind="matrix-error" title="Recalculate LAPACK's published matrix errors" source_url="https://www.netlib.org/lapack/lug/node75.html" source_label="LAPACK, first matrix example after Table 4.2" plot_description="Bars show the absolute error sums of the three matrix rows, with their values labeled." %}
+
+The reference matrix stays fixed; edits change only the approximation and are hypothetical. Restore the published baseline to replay the calculation above. The bars are absolute row sums, not individual entries or singular values. The primary baseline remains readable in the worked example without JavaScript.
+
+## Generalize: entry size and amplification
+
+A matrix is both an array of numbers and a transformation $x\mapsto Ax$. The Frobenius norm combines entry magnitudes; an induced norm measures maximum vector amplification. The published example shows why these are different questions before we give the general definitions.
 
 ## Definition and convention
 
-A norm on matrices satisfies the same three axioms as a vector norm: nonnegativity with equality only for the zero matrix, absolute homogeneity, and the triangle inequality. Here $A,B\in\mathbb R^{m\times n}$ have the same shape when added.
+A norm on matrices satisfies $\lVert A\rVert\ge0$ with equality exactly at $A=0$, $\lVert\alpha A\rVert=|\alpha|\lVert A\rVert$, and $\lVert A+B\rVert\le\lVert A\rVert+\lVert B\rVert$. These are the [vector norm axioms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }}) applied to arrays. Here $A,B\in\mathbb R^{m\times n}$ means real arrays with $m$ rows and $n$ columns; $a_{ij}$ means the entry in row $i$, column $j$. Arrays need the same shape when added. A product $AB$ requires the number of columns of $A$ to equal the number of rows of $B$.
 
 Some texts additionally require a **matrix norm** to be **submultiplicative**:
 
@@ -41,11 +82,11 @@ The input has $n$ coordinates and the output has $m$. The two expressions agree 
 | Induced $\infty$ | $\max_i\sum_j|a_{ij}|$ | Largest absolute row sum |
 | Induced $2$ (spectral) | $\sigma_{\max}(A)=\sqrt{\lambda_{\max}(A^TA)}$ | Largest Euclidean stretch |
 
-Here $\sigma_{\max}$ is the largest singular value and $\lambda_{\max}$ the largest eigenvalue of the symmetric PSD matrix $A^TA$. For complex input, replace $A^T$ by the conjugate transpose $A^*$. See [Higham's induced-norm formulas](https://nhigham.com/2021/10/12/what-is-a-matrix-norm/).
+A **singular value** is a stretch factor in perpendicular input and output directions; for example, $\operatorname{diag}(3,1)$ has singular values $3$ and $1$. An **eigenvalue** $\lambda$ satisfies $Mv=\lambda v$ for some nonzero vector $v$, so that direction keeps its orientation up to scaling. Here $\sigma_{\max}$ is the largest singular value and $\lambda_{\max}$ the largest eigenvalue of $A^TA$. The transpose $A^T$ exchanges rows and columns. This matrix is symmetric and **positive semidefinite** (PSD), meaning $v^TA^TAv=\lVert Av\rVert_2^2\ge0$. See [matrix decompositions]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}) and [positive-definite and semidefinite matrices]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}). For complex input, replace $A^T$ by the **conjugate transpose** $A^*$, which transposes the array and changes the sign of every imaginary part. See [Higham's induced-norm formulas](https://nhigham.com/2021/10/12/what-is-a-matrix-norm/).
 
 ### Why columns for the 1-norm and rows for infinity?
 
-The remaining derivations, examples, and exercises are original illustrations of the cited definitions.
+The following proofs are modern derivations from the cited definitions. Two-dimensional geometry examples and practice data are supplementary invented illustrations.
 
 Write $Ax=\sum_jx_j a_j$, where $a_j$ is column $j$. Then
 
@@ -54,7 +95,7 @@ $$
 \le\left(\max_j\lVert a_j\rVert_1\right)\lVert x\rVert_1.
 $$
 
-Choose $x=e_j$ for a largest column to attain the bound. For the infinity norm, each output coordinate satisfies
+The **coordinate basis vector** $e_j$ has $1$ in position $j$ and $0$ elsewhere; for example, $e_2=(0,1)^T$ in two dimensions. Choose $x=e_j$ for a largest column to attain the bound. For the infinity norm, each output coordinate satisfies
 
 $$
 |(Ax)_i|\le\sum_j|a_{ij}||x_j|
@@ -75,9 +116,9 @@ It is submultiplicative, but for square matrices of size $n>1$ it is not induced
 
 The identity changes no vector's length, yet has $n$ nonzero entries. This explains why total entry magnitude and maximum amplification are different questions.
 
-## Worked example: compute all four norms
+## Supplementary worked example: compute all four norms
 
-Let
+This smaller matrix is an invented teaching example, separate from the published three-by-three data. Let
 
 $$
 A=\begin{bmatrix}1&2\\0&2\end{bmatrix}.
@@ -92,7 +133,13 @@ $$
 A^TA=\begin{bmatrix}1&2\\2&8\end{bmatrix}.
 $$
 
-Its characteristic polynomial is $\lambda^2-9\lambda+4$. Thus
+To find an eigenvalue, require $A^TA-\lambda I$ to map some nonzero vector to zero (a **null vector**). Its **determinant**, a scalar that is zero exactly when a square matrix is not invertible, must then vanish. The determinant of <span class="math-inline" markdown="0">\(\begin{pmatrix}u&v\\w&z\end{pmatrix}\)</span> is $uz-vw$, so here
+
+$$
+\det(A^TA-\lambda I)=(1-\lambda)(8-\lambda)-4=\lambda^2-9\lambda+4.
+$$
+
+This expression is the **characteristic polynomial**. Solving it with the quadratic formula gives the two eigenvalues. Thus
 
 $$
 \lambda_\pm=\frac{9\pm\sqrt{65}}2,\qquad
@@ -103,17 +150,17 @@ The $1$-norm is attained at $x=(0,1)^T$, whose output is $(2,2)^T$. The infinity
 
 ## Geometry: a unit circle becomes an ellipse
 
-The [SVD]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}) writes $A=U\Sigma V^T$. Orthogonal factors preserve Euclidean length, while $\Sigma$ scales perpendicular coordinates. The largest scale gives the spectral norm.
+The [SVD]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}) writes $A=U\Sigma V^T$. An **orthogonal** square matrix $Q$ satisfies $Q^TQ=I$, where $I$ is the identity matrix ($Ix=x$); it rotates or reflects without changing Euclidean length. Orthogonal factors preserve Euclidean length, while $\Sigma$ scales perpendicular coordinates. The largest scale gives the spectral norm.
 
 For $A=\operatorname{diag}(3,1)$, the unit circle becomes an ellipse with semiaxes $3$ and $1$. The spectral norm is $3$; the Frobenius norm is $\sqrt{10}$, combining both scales.
 
 {% include image.html src="/assets/images/wiki/svd-stretch.svg" alt="A unit circle becomes an ellipse with semiaxes three and one, or collapses to a segment when the second scale is zero." caption="The longest output radius gives the spectral norm. Both transformed shapes have longest radius three, despite having different Frobenius norms: square root of ten for diag(3, 1), and three for diag(3, 0)." %}
 
-### Interactive example: explore directions and matrices
+### Supplementary interactive example: explore directions and matrices
 
 {% include wiki-lab.html kind="matrix-norm" title="Explore worst-case matrix stretch" plot_description="The Euclidean unit circle, its image under a two by two matrix, and a selected unit input and its output." %}
 
-Start with the worked-example matrix. Rotate the input direction and compare its amplification with the computed spectral norm. Try a diagonal matrix, the identity, the zero matrix, and `[[0,5],[0,0]]`. A sampled direction supplies a lower bound, while the exact two-by-two formula computes the maximum. Controls support keyboard input; the static examples above remain useful without JavaScript.
+The default two-by-two matrix is invented, and edits are hypothetical. The restore button returns to that teaching baseline. Start with this supplementary worked-example matrix. Rotate the input direction and compare its amplification with the computed spectral norm. Try a diagonal matrix, the identity, the zero matrix, and `[[0,5],[0,0]]`. A sampled direction supplies a lower bound, while the exact two-by-two formula computes the maximum. Controls support keyboard input; the static examples above remain useful without JavaScript.
 
 ## Error bounds and composition
 
@@ -132,7 +179,7 @@ $$
 
 Taking the maximum over unit inputs proves submultiplicativity. This explains why norms help bound a sequence of transformations without computing every possible input.
 
-### Residual versus solution error
+### Return to the rounding-error problem: residual versus solution error
 
 For invertible square $A$, let $Ax=b$, let $\hat x$ be an approximation, and define residual $r=b-A\hat x$. Then
 
@@ -149,13 +196,21 @@ $$
 \kappa_p(A)=\lVert A\rVert_p\lVert A^{-1}\rVert_p.
 $$
 
-The condition number converts a relative residual bound into a relative solution-error bound. [LAPACK's error-measure guide](https://www.netlib.org/lapack/lug/node75.html) defines conditioning in these norms. In Euclidean geometry, $\kappa_2(A)=\sigma_{\max}/\sigma_{\min}$: reversing a very small stretch magnifies errors. For an [SPD matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}), these singular values equal its positive eigenvalues.
+The **condition number** is the product of the largest forward and inverse amplification factors. It converts a relative residual bound into a relative solution-error bound. [LAPACK's error-measure guide](https://www.netlib.org/lapack/lug/node75.html) defines conditioning in these norms. In Euclidean geometry, $\kappa_2(A)=\sigma_{\max}/\sigma_{\min}$: reversing a very small stretch magnifies errors. For an [SPD matrix]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}), these singular values equal its positive eigenvalues.
 
-For $A=\operatorname{diag}(1,0.001)$, $b=(1,0)^T$, and $\hat x=(1,1)^T$, the exact solution is $(1,0)^T$. The residual has Euclidean size $0.001$, but the solution error has size $1$. Here $\kappa_2(A)=1000$, and the bound is attained.
+For the published LAPACK reference matrix, an exact modern recalculation gives
+
+$$
+A^{-1}=\frac13\begin{bmatrix}-2&-4&3\\-2&11&-6\\3&-6&3\end{bmatrix}.
+$$
+
+Its absolute row sums are $3$, $19/3$, and $4$, so $\kappa_\infty(A)=25\cdot19/3=475/3\approx158.333$, matching the guide's rounded $158.33$. This measures worst-case sensitivity; it does not assert that every residual is amplified by the full factor. The input matrix in the primary lab remains fixed because its published approximation measures entry error, not an actual elimination run. We do not invent a historical right-hand side or solver trajectory for it.
+
+As a **supplementary invented example**, for $A=\operatorname{diag}(1,0.001)$, $b=(1,0)^T$, and $\hat x=(1,1)^T$, the exact solution is $(1,0)^T$. The residual has Euclidean size $0.001$, but the solution error has size $1$. Here $\kappa_2(A)=1000$, and the bound is attained.
 
 ## Common misconceptions and counterexamples
 
-**Matrix 1-norm is not the sum of all absolute entries.** In the worked example, that sum is $5$ but the induced $1$-norm is $4$. Likewise the induced infinity norm is a row sum, not the largest entry.
+**Matrix 1-norm is not the sum of all absolute entries.** In the supplementary two-by-two example, that sum is $5$ but the induced $1$-norm is $4$. Likewise the induced infinity norm is a row sum, not the largest entry.
 
 **Eigenvalue magnitude is not generally Euclidean stretch.** For <span class="math-inline" markdown="0">\(N=\begin{bmatrix}0&5\\0&0\end{bmatrix}\)</span>, both eigenvalues are zero, yet $N(0,1)^T=(5,0)^T$ and $\lVert N\rVert_2=5$. Singular values capture this stretch. For real symmetric matrices, orthogonal diagonalization does give $\lVert A\rVert_2=\max_i|\lambda_i|$.
 
@@ -164,6 +219,8 @@ For $A=\operatorname{diag}(1,0.001)$, $b=(1,0)^T$, and $\hat x=(1,1)^T$, the exa
 **A software default may select Frobenius size.** In [NumPy's documented conventions](https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html), `np.linalg.norm(A)` for a two-dimensional matrix uses Frobenius size; `np.linalg.norm(A, ord=2)` uses the spectral norm. State both the array shape and the requested norm.
 
 ## Practice problems
+
+These are supplementary original exercises with invented data, not computations reported in the historical sources.
 
 ### 1. Hand calculation: a rectangular matrix
 
@@ -218,7 +275,7 @@ For every nonzero $x$, $\lVert I_nx\rVert/\lVert x\rVert=1$, so the maximum is $
 
 ### 4. Application: propagate bounded input error
 
-For the worked-example matrix $A$, each input coordinate error is at most $0.01$ in magnitude. Bound the largest output coordinate error and exhibit an input error attaining the bound.
+For the supplementary two-by-two matrix $A$, each input coordinate error is at most $0.01$ in magnitude. Bound the largest output coordinate error and exhibit an input error attaining the bound.
 
 <details markdown="1">
 <summary>Hint</summary>
@@ -235,6 +292,7 @@ $\lVert\delta x\rVert_\infty\le0.01$ and $\lVert A\rVert_\infty=3$, so $\lVert A
 
 ## Further learning
 
+- [Turing’s 1948 paper, original abstract](https://academic.oup.com/qjmam/article-abstract/1/1/287/1883483): read the stated rounding-error problem. The modern residual derivation here is not a transcription of the paper’s full analysis.
 - [Higham: What Is a Matrix Norm?](https://nhigham.com/2021/10/12/what-is-a-matrix-norm/): continue to mixed input/output norms and relationships between matrix norms.
 - [LAPACK: How to Measure Errors](https://www.netlib.org/lapack/lug/node75.html): see norms and condition numbers in numerical error reporting.
 - [NumPy: `numpy.linalg.norm`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html): distinguish vector, matrix, and entrywise calculations in software.
@@ -251,3 +309,5 @@ $\lVert\delta x\rVert_\infty\le0.01$ and $\lVert A\rVert_\infty=3$, so $\lVert A
 1. Higham, N. J. (2021, October 12). [*What Is a Matrix Norm?*](https://nhigham.com/2021/10/12/what-is-a-matrix-norm/). Matrix norm axioms, induced norms, and Frobenius norms.
 2. Anderson, E., et al. (1999). *LAPACK Users' Guide*, third edition. [*How to Measure Errors*](https://www.netlib.org/lapack/lug/node75.html). Norm-based error and condition numbers.
 3. NumPy developers. [*numpy.linalg.norm*](https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html). Matrix-norm formulas and software defaults.
+
+4. Turing, A. M. (1948). [*Rounding-off Errors in Matrix Processes*](https://academic.oup.com/qjmam/article-abstract/1/1/287/1883483), *The Quarterly Journal of Mechanics and Applied Mathematics*, 1, 287–308. DOI: 10.1093/qjmam/1.1.287. Original abstract verified for the motivating problem; numerical examples and specific formulas from the full article are not asserted here.

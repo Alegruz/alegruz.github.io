@@ -3,19 +3,78 @@ title: Vector norms
 subject: Linear Algebra
 interactive_examples: true
 description: Measure vector size with the 1, 2, and infinity norms, compare their geometry, and choose a meaningful error measure.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-13
 ---
 
-## What problem does a norm solve?
+## Observation errors: why one number is needed
 
-A vector has several coordinates, but we often need one number answering “how large is it?” For a displacement, that number might be ordinary length. For a collection of errors, it might be the largest error or the total absolute error. A **norm** makes such a size measurement precise. Its choice determines what “small” means in a calculation.
+In his 1805 appendix on least squares, Legendre asks how to determine unknown quantities from observations whose equations cannot generally all be satisfied. His original symbolic model is $E=a+bx+cy+fz+\cdots$: the coefficients are known, the unknowns are shared between equations, and $E$ is an **error**, the discrepancy left in an equation. He chooses to minimize the sum of squared errors. See the translated original text in Smith's *A Source Book in Mathematics*, [p. 576](https://en.wikisource.org/wiki/Page:A_Source_Book_in_Mathematics_(Smith).pdf/608) and [p. 577](https://en.wikisource.org/wiki/Page:A_Source_Book_in_Mathematics_(Smith).pdf/609). This is a motivating problem for Euclidean error measurement, not a claim that Legendre introduced today's norm axioms.
 
-## Definition
+### Derive the size measure from the original problem
+
+A **vector** is an ordered list of coordinates. We write it as a column; the superscript $T$ transposes a row list into that column. The notation $\mathbb R^n$ means vectors with $n$ real coordinates, and $|x_i|$ is the absolute value of coordinate $i$.
+
+**Original symbolic problem, modern re-derivation.** Legendre also considers repeated measurements of one quantity and the position of a point ([pp. 578–579](https://en.wikisource.org/wiki/Page:A_Source_Book_in_Mathematics_(Smith).pdf/611)). Write the measurements as $a_1,\ldots,a_n$ and the proposed common value as $t$. The errors are $e_i(t)=a_i-t$. The observations are real values of the same quantity, expressed in a common unit and given equal weight. Legendre’s unweighted objective is
+
+$$
+S(t)=\sum_{i=1}^n(a_i-t)^2.
+$$
+
+Let $\bar a=(a_1+\cdots+a_n)/n$ be their arithmetic mean. Because $\sum_i(a_i-\bar a)=0$, expanding the squares gives
+
+$$
+\begin{aligned}
+S(t)&=\sum_i\bigl[(a_i-\bar a)+(\bar a-t)\bigr]^2\\
+&=\sum_i(a_i-\bar a)^2+n(t-\bar a)^2.
+\end{aligned}
+$$
+
+The second term is nonnegative and vanishes only at $t=\bar a$. This proves the mean minimizes the objective, without needing differential calculus. The vector $e=(e_1,\ldots,e_n)^T$ collects all discrepancies; $\sqrt{S(t)}$ is its Euclidean length. Minimizing $S$ or $\sqrt S$ selects the same $t$, since the square root preserves order for nonnegative numbers.
+
+For position measurements, Legendre sums the squared coordinate differences in ordinary spatial distance. Modern vector notation writes each such distance as $\lVert u-v\rVert_2$. The translation verifies these symbolic problems but omits the ensuing meridian application and its numerical data. We do not reconstruct missing observations. The numerical worked example below instead preserves a later published example of measuring computational error; no physical units are specified there.
+
+### Published worked data: LAPACK's error vector
+
+**Published illustrative data, modern recalculation.** The first vector example after Table 4.2 in the 1999 [LAPACK Users' Guide, “How to Measure Errors”](https://www.netlib.org/lapack/lug/node75.html) gives
+
+$$
+x=(1,100,9)^T,\qquad \hat x=(1.1,99,11)^T.
+$$
+
+Here $x$ is the reference vector and the hat marks an approximation. Subtract coordinate by coordinate:
+
+$$
+e=\hat x-x=(0.1,-1,2)^T.
+$$
+
+Three possible summaries now answer different questions:
+
+$$
+\begin{aligned}
+\text{total absolute error}&=0.1+1+2=3.1,\\
+\text{Euclidean error}&=\sqrt{0.1^2+(-1)^2+2^2}=\sqrt{5.01}\approx2.23830,\\
+\text{largest coordinate error}&=\max(0.1,1,2)=2.
+\end{aligned}
+$$
+
+The sign tells which way a coordinate misses; it does not cancel the magnitude. Relative error compares a discrepancy with the size of a reference. Dividing the maximum error by the maximum reference coordinate gives $2/100=0.02$. Dividing the total absolute error by the total absolute reference size gives $3.1/110\approx0.0281818$.
+
+**Denominator convention matters.** LAPACK also reports ratios using the approximate vector as denominator: $2/99\approx0.0202020$ and $3.1/111.1\approx0.0279028$. These are the guide's rounded $0.0202$ and $0.0279$, not the ratios with $x$ in the denominator. The lab shows both conventions. Global relative error can hide a bad small coordinate: the third coordinate misses by $2/9\approx22.2\%$ even though the maximum-norm global ratio is $2\%$.
+
+### Primary interactive example: replay the published error data
+
+{% include wiki-lab.html kind="vector-error" title="Recalculate LAPACK's published vector errors" source_url="https://www.netlib.org/lapack/lug/node75.html" source_label="LAPACK, first vector example after Table 4.2" plot_description="Bars show the absolute errors in the three coordinates, with their values labeled." %}
+
+The reference vector stays fixed. Change the three approximate coordinates, predict which error summary will change, then restore the published baseline. All edits are hypothetical experiments; the defaults are the guide's illustrative numbers, not measured observations. The worked calculation above is the no-JavaScript version of the baseline.
+
+## Generalize: the norm axioms
+
+A vector has several coordinates, but a norm assigns one nonnegative number to its size. The observation problem suggests Euclidean length; the computational example shows why total and maximum magnitude can also be useful. The following axioms specify which measuring rules behave consistently under scaling and addition.
 
 For vectors $x,y\in\mathbb R^n$, a norm is a function $\lVert\cdot\rVert:\mathbb R^n\to\mathbb R$ satisfying:
 
 1. **Positive definiteness:** $\lVert x\rVert\ge0$, with equality exactly when $x=0$.
-2. **Absolute homogeneity:** $\lVert\alpha x\rVert=|\alpha|\lVert x\rVert$ for every real scalar $\alpha$.
+2. **Absolute homogeneity:** $\lVert\alpha x\rVert=|\alpha|\lVert x\rVert$ for every real scalar (number used as a multiplier) $\alpha$.
 3. **Triangle inequality:** $\lVert x+y\rVert\le\lVert x\rVert+\lVert y\rVert$.
 
 The same axioms apply over $\mathbb C$, using the complex modulus. See [Higham's vector-norm definition](https://nhigham.com/2021/09/22/what-is-a-vector-norm/). Homogeneity says doubling a vector doubles its size; the triangle inequality says combining two displacements cannot cost more than taking them separately.
@@ -39,9 +98,9 @@ $$
 
 These are the standard $p$-norms; the infinity norm is their limit as $p\to\infty$. See [Higham](https://nhigham.com/2021/09/22/what-is-a-vector-norm/) and [LAPACK's norm table](https://www.netlib.org/lapack/lug/node75.html).
 
-### Worked example: one vector, three questions
+### Supplementary worked example: one vector, three questions
 
-The examples, derivations, diagrams, and exercises on this page are original illustrations.
+This two-dimensional example, the geometric figures, and the practice exercises are supplementary invented illustrations. They are not Legendre’s observations or LAPACK’s published data.
 
 For $x=(3,-4)^T$:
 
@@ -67,11 +126,11 @@ The **unit ball** contains vectors with $\lVert x\rVert\le1$; its boundary has $
 
 For $(1,1)^T$, the three sizes are $2$, $\sqrt2$, and $1$. Thus a bound on the infinity norm allows several coordinates to be large at once. A bound on the $1$-norm instead gives coordinates a shared total budget.
 
-### Interactive example: change the vector and the measuring rule
+### Supplementary interactive example: change the vector and the measuring rule
 
 {% include wiki-lab.html kind="vector-norm" title="Compare vector size and unit balls" plot_description="The selected norm's unit boundary and the input vector, using the same coordinate scale." %}
 
-Predict the sizes at $(1,1)$, $(3,-4)$, and $(0,0)$. Change the selected norm and watch the normalized point move to the new boundary. The line marks the input vector, while the boundary records the selected definition of size. Inputs and the selector work with a keyboard. Without JavaScript, the calculations and static figure above show the same comparison.
+The defaults $(3,-4)$ are invented teaching values. The restore button returns to those defaults, and edits are hypothetical. Predict the sizes at $(1,1)$, $(3,-4)$, and $(0,0)$. Change the selected norm and watch the normalized point move to the new boundary. The line marks the input vector, while the boundary records the selected definition of size. Inputs and the selector work with a keyboard. Without JavaScript, the calculations and static figure above show the same comparison.
 
 ## Comparing norms without recalculating everything
 
@@ -81,7 +140,7 @@ $$
 \lVert x\rVert_\infty\le\lVert x\rVert_2\le\sqrt n\lVert x\rVert_\infty.
 $$
 
-Also, expanding $(\sum_i|x_i|)^2$ adds nonnegative cross terms to $\sum_i|x_i|^2$, while Cauchy–Schwarz applied to $(|x_i|)$ and $(1,\ldots,1)$ gives
+Also, expanding $(\sum_i|x_i|)^2$ adds nonnegative cross terms to $\sum_i|x_i|^2$, while the **Cauchy–Schwarz inequality**, $|\sum_i u_iv_i|\le\sqrt{\sum_i u_i^2}\sqrt{\sum_i v_i^2}$, bounds the absolute sum of coordinate products by the product of Euclidean lengths. For example, $u=(1,1)$ and $v=(3,4)$ give $7\le\sqrt2\cdot5$. See [ALAFF, Theorem 1.2.3.3](https://www.cs.utexas.edu/~flame/laff/alaff/chapter01-vector-2-norm.html). Applying it to $(|x_i|)$ and $(1,\ldots,1)$ gives
 
 $$
 \lVert x\rVert_2\le\lVert x\rVert_1\le\sqrt n\lVert x\rVert_2.
@@ -177,6 +236,7 @@ The difference is $(0.03,-0.04)^T$, with Euclidean norm $0.05$ meters. Since $\l
 
 ## Further learning
 
+- [Legendre’s translated appendix, pp. 576–579](https://en.wikisource.org/wiki/Page:A_Source_Book_in_Mathematics_(Smith).pdf/608): follow the original observation-error problem and the mean and position derivations. The introduction is later editorial context; the translated appendix is the original argument.
 - [Higham: What Is a Vector Norm?](https://nhigham.com/2021/09/22/what-is-a-vector-norm/): continue from the norm axioms to dual norms and bounds on inner products.
 - [LAPACK: How to Measure Errors](https://www.netlib.org/lapack/lug/node75.html): connect norms to absolute error, relative error, and conditioning.
 - [NumPy: `numpy.linalg.norm`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html): see how array shape, `ord`, and `axis` select the mathematical quantity being computed.
@@ -192,3 +252,6 @@ The difference is $(0.03,-0.04)^T$, with Euclidean norm $0.05$ meters. Since $\l
 1. Higham, N. J. (2021, September 22). [*What Is a Vector Norm?*](https://nhigham.com/2021/09/22/what-is-a-vector-norm/). Norm axioms and the $p$-norm family.
 2. Anderson, E., et al. (1999). *LAPACK Users' Guide*, third edition. [*How to Measure Errors*](https://www.netlib.org/lapack/lug/node75.html). Standard norms and absolute and relative error.
 3. NumPy developers. [*numpy.linalg.norm*](https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html). Software conventions and quantities that do not satisfy the norm axioms.
+
+4. Legendre, A.-M. (1805). “Sur la méthode des moindres quarrés,” *Nouvelles méthodes pour la détermination des orbites des comètes*, pp. 72–75. English translation by H. A. Ruger and H. M. Walker in Smith, D. E. (1929), *A Source Book in Mathematics*, [pp. 576–579](https://en.wikisource.org/wiki/Page:A_Source_Book_in_Mathematics_(Smith).pdf/608). Original symbolic error model and repeated-measurement problem; the excerpt omits subsequent numerical meridian data.
+5. van de Geijn, R. A., and Myers, M. D. [*Advanced Linear Algebra: Foundations to Frontiers*, “The vector 2-norm (Euclidean length),” Theorem 1.2.3.3](https://www.cs.utexas.edu/~flame/laff/alaff/chapter01-vector-2-norm.html). Cauchy–Schwarz inequality used in the norm comparison.

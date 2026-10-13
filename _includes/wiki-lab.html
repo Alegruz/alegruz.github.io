@@ -1,13 +1,33 @@
 <section class="wiki-lab" data-wiki-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
   <p class="wiki-lab-title">{{ include.title | escape }}</p>
-  {% if include.kind == 'kantorovich' %}
+  {% if include.kind == 'vector-error' or include.kind == 'matrix-error' %}
+  <p class="wiki-lab-context">Published illustrative-data baseline from <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a> (1999). Reference values remain fixed; edits to the approximation are hypothetical experiments. The source specifies no physical units. Outputs are modern recalculations with rounded display values.</p>
+  {% elsif include.kind == 'vector-norm' or include.kind == 'matrix-norm' %}
+  <p class="wiki-lab-context">Supplementary invented teaching example. These default values are not historical observations; edits are hypothetical experiments.</p>
+  {% elsif include.kind == 'kantorovich' %}
   <p class="wiki-lab-context">Published illustrative-data baseline: 3 milling, 3 turret, and 1 automatic machine-day, with the fixed Part I/II rates from <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>. The allocations and exchanges are modern re-derivations using divisible time, full utilization, exact matching of parts, and no setup time. Fractional outputs are daily production rates. Capacity changes are hypothetical experiments.</p>
   {% elsif include.kind == 'linear-programming' %}
   <p class="wiki-lab-context">Supplementary invented-data example: the workshop data and default profits (3, 2) are teaching choices, not historical observations. Changing profits creates further hypothetical teaching scenarios. <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a> supports the modeling method, not these numerical data.</p>
   {% endif %}
   <noscript><p>The interactive controls require JavaScript. The worked examples and practice solutions below can be read without it.</p></noscript>
   <div class="wiki-lab-controls" hidden>
-    {% if include.kind == 'kantorovich' %}
+    {% if include.kind == 'vector-error' %}
+    <label>Approximate coordinate x̂₁ (reference 1) <input data-field="x1" type="number" step="any" value="1.1"></label>
+    <label>Approximate coordinate x̂₂ (reference 100) <input data-field="x2" type="number" step="any" value="99"></label>
+    <label>Approximate coordinate x̂₃ (reference 9) <input data-field="x3" type="number" step="any" value="11"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore published vector baseline</button></div>
+    {% elsif include.kind == 'matrix-error' %}
+    <label>Approximate â₁₁ (reference 1) <input data-field="a11" type="number" step="any" value="0.44"></label>
+    <label>Approximate â₁₂ (reference 2) <input data-field="a12" type="number" step="any" value="2.36"></label>
+    <label>Approximate â₁₃ (reference 3) <input data-field="a13" type="number" step="any" value="3.04"></label>
+    <label>Approximate â₂₁ (reference 4) <input data-field="a21" type="number" step="any" value="3.09"></label>
+    <label>Approximate â₂₂ (reference 5) <input data-field="a22" type="number" step="any" value="5.87"></label>
+    <label>Approximate â₂₃ (reference 6) <input data-field="a23" type="number" step="any" value="6.66"></label>
+    <label>Approximate â₃₁ (reference 7) <input data-field="a31" type="number" step="any" value="7.36"></label>
+    <label>Approximate â₃₂ (reference 8) <input data-field="a32" type="number" step="any" value="7.77"></label>
+    <label>Approximate â₃₃ (reference 10) <input data-field="a33" type="number" step="any" value="9.07"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore published matrix baseline</button></div>
+    {% elsif include.kind == 'kantorovich' %}
     <label>Capacity scenario <select data-field="preset"><option value="original">Published baseline: 3 milling, 3 turret, 1 automatic</option><option value="threshold">Hypothetical: automatic capacity 1.125 days</option><option value="extra">Hypothetical: two automatic machine-days</option><option value="zero">Hypothetical: no machine time</option><option value="custom" disabled>Hypothetical: custom capacities</option></select></label>
     <label>Milling machine-days <input data-field="milling" type="number" min="0" max="10" step="any" value="3"></label>
     <label>Turret machine-days <input data-field="turret" type="number" min="0" max="10" step="any" value="3"></label>
@@ -27,12 +47,14 @@
     <label>Input x₁ <input data-field="x1" type="number" step="any" value="3"></label>
     <label>Input x₂ <input data-field="x2" type="number" step="any" value="-4"></label>
     <label>Measuring rule <select data-field="norm"><option value="1">1-norm</option><option value="2" selected>2-norm</option><option value="inf">Infinity norm</option></select></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore invented vector example</button></div>
     {% elsif include.kind == 'matrix-norm' %}
     <label>a₁₁ <input data-field="a" type="number" step="any" value="1"></label>
     <label>a₁₂ <input data-field="b" type="number" step="any" value="2"></label>
     <label>a₂₁ <input data-field="c" type="number" step="any" value="0"></label>
     <label>a₂₂ <input data-field="d" type="number" step="any" value="2"></label>
     <label>Input angle (degrees) <input data-field="angle" type="range" min="0" max="360" step="1" value="90"><output data-value="angle">90</output></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore invented matrix example</button></div>
     {% elsif include.kind == 'lu' %}
     <label>Example <select data-field="preset"><option value="ordinary">Ordinary solve</option><option value="zero">Zero first pivot</option><option value="small">Small first pivot</option><option value="singular">Singular matrix</option></select></label>
     <label>a₁₁ <input data-field="a" type="number" step="any" value="2"></label>

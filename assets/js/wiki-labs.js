@@ -142,6 +142,49 @@
     root.querySelector("[data-explanation]").textContent="Color shows the sign and relative magnitude at sampled points; darker means larger magnitude. Axes stay fixed at −2 to 2. For SPD input, the curve is xᵀAx = 1 and may extend beyond the view. The black line marks your direction, clipped if outside the view. Predict the remainder before changing b. Try the flat and indefinite presets: find a zero or negative energy direction.";
   }
 
+  const normBaselines = {
+    "vector-error": {x1:1.1,x2:99,x3:11},
+    "matrix-error": {a11:.44,a12:2.36,a13:3.04,a21:3.09,a22:5.87,a23:6.66,a31:7.36,a32:7.77,a33:9.07},
+    "vector-norm": {x1:3,x2:-4,norm:"2"},
+    "matrix-norm": {a:1,b:2,c:0,d:2,angle:90}
+  };
+
+  function errorNorms(root, f, kind) {
+    const vector=kind==="vector-error";
+    const reference=vector?[[1,100,9]]:[[1,2,3],[4,5,6],[7,8,10]];
+    const approx=vector?[[f.x1,f.x2,f.x3]]:
+      [[f.a11,f.a12,f.a13],[f.a21,f.a22,f.a23],[f.a31,f.a32,f.a33]];
+    const error=approx.map((row,i)=>row.map((value,j)=>value-reference[i][j]));
+    const rowSums=error.map(row=>row.reduce((sum,value)=>sum+Math.abs(value),0));
+    const colSums=error[0].map((_,j)=>error.reduce((sum,row)=>sum+Math.abs(row[j]),0));
+    const measure=M=>vector?
+      [M[0].reduce((sum,v)=>sum+Math.abs(v),0),Math.hypot(...M[0]),Math.max(...M[0].map(Math.abs))]:
+      [Math.max(...M[0].map((_,j)=>M.reduce((sum,row)=>sum+Math.abs(row[j]),0))),
+       Math.max(...M.map(row=>row.reduce((sum,v)=>sum+Math.abs(v),0))),Math.hypot(...M.flat())];
+    const sizes=measure(error), refSizes=measure(reference), approxSizes=measure(approx);
+    const names=vector?["1-norm","2-norm","Infinity norm"]:["Induced 1-norm","Induced infinity norm","Frobenius norm"];
+    const baseline=Object.entries(normBaselines[kind]).every(([key,value])=>f[key]===value);
+    const status=root.querySelector("[data-status]");
+    status.textContent=(baseline?"Published LAPACK illustrative-data baseline. ":"Hypothetical approximation; reference data remain fixed. ")+"Errors and relative errors are recalculated below.";
+    const display=(name,M)=>mat(name,vector?M[0].map(value=>[value]):M);
+    root.querySelector("[data-matrices]").textContent=[display("Reference",reference),display("Approximation",approx),display("Approximation − reference",error),
+      ...names.map((name,i)=>`${name} absolute error = ${fmt(sizes[i])}\n  Relative to reference = ${fmt(sizes[i]/refSizes[i])}\n  Relative to approximation = ${approxSizes[i]===0?"undefined (zero denominator)":fmt(sizes[i]/approxSizes[i])}`),
+      ...(vector?[]:[`Absolute row sums = (${rowSums.map(fmt)})\nAbsolute column sums = (${colSums.map(fmt)})`])].join("\n\n");
+    const bars=vector?error[0].map(Math.abs):rowSums, svg=root.querySelector("svg");
+    const max=Math.max(...bars), scale=max===0?1:max;
+    svg.replaceChildren();
+    bars.forEach((value,i)=>{
+      const y=65+i*100;
+      node("text",{x:25,y:y+22},svg,vector?`|e${i+1}|`:`Row ${i+1}`);
+      node("rect",{x:100,y,width:360*value/scale,height:34,fill:"#2563eb"},svg);
+      node("text",{x:470,y:y+22},svg,fmt(value));
+    });
+    node("text",{x:25,y:385},svg,`Bars rescale; largest displayed value = ${fmt(max)}.`);
+    const note=vector?"Bars show each coordinate's absolute error, not its relative error.":"Bars show absolute row sums; the largest is the induced infinity norm of the error matrix.";
+    root.querySelector("[data-explanation]").textContent=note+" Read the numeric labels because bars rescale after edits. Both relative-error conventions are displayed as ratios, not percentages. A zero approximation has no relative-to-approximation ratio. Restore returns all approximation values to the published example. No physical units are specified in the source.";
+    svg.setAttribute("aria-label",`${note} Values: ${bars.map(fmt).join(", ")}. ${status.textContent}`);
+  }
+
   function norms(root, f, set, id, kind) {
     const svg=root.querySelector("svg"), status=root.querySelector("[data-status]");
     const output=root.querySelector("[data-matrices]"), note=root.querySelector("[data-explanation]");
@@ -359,6 +402,7 @@
         else if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
         else if(kind==="linear-programming")linearProgramming(root,f);
         else if(kind==="lu")lu(root,f,set,step);
+        else if(kind==="vector-error"||kind==="matrix-error")errorNorms(root,f,kind);
         else if(kind==="vector-norm"||kind==="matrix-norm")norms(root,f,set,`wiki-lab-clip-${index}`,kind);
         else cholesky(root,f,`wiki-lab-clip-${index}`);
       }
@@ -370,7 +414,7 @@
         step=kind==="kantorovich"&&!(input.dataset.field==="preset"&&input.value==="original")?2:0;render();
       }));
       root.querySelector('[data-action="next"]')?.addEventListener("click",()=>{step=Math.min(step+1,3);render();});
-      root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{if(kind==="kantorovich"){for(const [key,value] of Object.entries(presets.original))set(key).value=value;set('preset').value='original';}if(kind==="linear-programming"){set('profit1').value=3;set('profit2').value=2;}step=0;render();});
+      root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{if(normBaselines[kind]){for(const [key,value] of Object.entries(normBaselines[kind]))set(key).value=value;}if(kind==="kantorovich"){for(const [key,value] of Object.entries(presets.original))set(key).value=value;set('preset').value='original';}if(kind==="linear-programming"){set('profit1').value=3;set('profit2').value=2;}step=0;render();});
       root.querySelector(".wiki-lab-controls").hidden=false;
       root.querySelector(".wiki-lab-result").hidden=false;
       render();

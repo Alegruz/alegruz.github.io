@@ -37,7 +37,7 @@ try {
     assert.equal(await hint.getAttribute("open"),null);
     await hint.locator("summary").press("Enter");
     assert.notEqual(await hint.getAttribute("open"),null);
-    const root=page.locator(name==="linear-programming"?'[data-wiki-lab="linear-programming"]':".wiki-lab");
+    const root=page.locator(name==="linear-programming"?'[data-wiki-lab="linear-programming"]':name.endsWith("-norm")?`[data-wiki-lab="${name}"]`:".wiki-lab");
     return {root,field:key=>root.locator(`[data-field="${key}"]`),output:root.locator("[data-matrices]"),status:root.locator("[data-status]")};
   };
 
@@ -107,6 +107,18 @@ try {
   assert.match(await lab.output.innerText(),/xᵀAx for x = \(1, -1\): 2.98/);
 
   lab=await visit("vector-norm",8);
+  let published=page.locator('[data-wiki-lab="vector-error"]');
+  assert.match(await published.locator('[data-status]').innerText(),/Published LAPACK/);
+  assert.match(await published.locator('[data-matrices]').innerText(),/1-norm absolute error = 3.1/);
+  assert.match(await published.locator('[data-matrices]').innerText(),/Relative to reference = 0.0281818/);
+  for(const key of ['x1','x2','x3'])await published.locator(`[data-field="${key}"]`).fill('0');
+  assert.match(await published.locator('[data-status]').innerText(),/Hypothetical approximation/);
+  assert.match(await published.locator('[data-matrices]').innerText(),/undefined \(zero denominator\)/);
+  await published.locator('[data-field="x1"]').fill('');
+  assert.equal(await published.locator('[data-field="x1"]').getAttribute('aria-invalid'),'true');
+  await published.locator('[data-action="reset"]').press('Enter');
+  assert.equal(await published.locator('[data-field="x2"]').inputValue(),'99');
+  assert.match(await published.locator('[data-status]').innerText(),/Published LAPACK/);
   assert.match(await lab.output.innerText(),/1-norm = 7\n2-norm = 5\nInfinity norm = 4/);
   await lab.field("norm").selectOption("inf");
   assert.match(await lab.output.innerText(),/Normalized vector = \(0.75,-1\)/);
@@ -117,8 +129,19 @@ try {
   await lab.field("x1").fill("1");await lab.field("x2").fill("1");
   await lab.field("norm").selectOption("1");
   assert.match(await lab.output.innerText(),/Normalized vector = \(0.5,0.5\)/);
+  await lab.root.locator('[data-action="reset"]').press('Enter');
+  assert.match(await lab.output.innerText(),/2-norm = 5/);
+  assert.equal(await lab.field('norm').inputValue(),'2');
 
   lab=await visit("matrix-norm",8);
+  published=page.locator('[data-wiki-lab="matrix-error"]');
+  assert.match(await published.locator('[data-matrices]').innerText(),/Induced infinity norm absolute error = 2.44/);
+  assert.match(await published.locator('[data-matrices]').innerText(),/Frobenius norm absolute error = 1.87425/);
+  await published.locator('[data-field="a33"]').fill('10');
+  assert.match(await published.locator('[data-status]').innerText(),/Hypothetical approximation/);
+  await published.locator('[data-action="reset"]').press('Enter');
+  assert.equal(await published.locator('[data-field="a33"]').inputValue(),'9.07');
+  assert.match(await published.locator('[data-status]').innerText(),/Published LAPACK/);
   assert.match(await lab.output.innerText(),/Induced 1-norm = 4/);
   assert.match(await lab.output.innerText(),/Spectral norm = 2.92081/);
   await lab.field("angle").focus();await lab.field("angle").press("ArrowRight");
@@ -134,9 +157,9 @@ try {
   for(const name of ["matrix-decomposition","lu-decomposition","cholesky-decomposition","vector-norm","matrix-norm"]){
     await visit(name,name.endsWith("-norm")?8:16);
     await page.setViewportSize({width:375,height:850});
-    assert.equal(await page.locator(".wiki-lab").evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+    for(const example of await page.locator(".wiki-lab").all())assert.equal(await example.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
     await page.emulateMedia({colorScheme:"dark"});
-    assert.equal(await page.locator(".wiki-lab-controls").isVisible(),true);
+    for(const controls of await page.locator(".wiki-lab-controls").all())assert.equal(await controls.isVisible(),true);
   }
   lab=await visit("linear-programming",8,"optimization");
   assert.match(await lab.status.innerText(),/Unique optimum at \(1,3\)/);
@@ -223,8 +246,8 @@ try {
   assert.notEqual(await solution.getAttribute("open"),null);
   for(const name of ["vector-norm","matrix-norm"]){
     await staticPage.goto(`${base}/wiki/linear-algebra/${name}/`,{waitUntil:"domcontentloaded"});
-    assert.equal(await staticPage.locator(".wiki-lab-controls").isVisible(),false);
-    assert.equal(await staticPage.locator("noscript").isVisible(),true);
+    for(const controls of await staticPage.locator(".wiki-lab-controls").all())assert.equal(await controls.isVisible(),false);
+    for(const fallback of await staticPage.locator("noscript").all())assert.equal(await fallback.isVisible(),true);
     const answer=staticPage.locator(".post-content details").nth(1);
     await answer.locator("summary").click();
     assert.notEqual(await answer.getAttribute("open"),null);
