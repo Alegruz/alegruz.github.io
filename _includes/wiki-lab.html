@@ -1,10 +1,22 @@
 <section class="wiki-lab" data-wiki-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
   <p class="wiki-lab-title">{{ include.title | escape }}</p>
+  {% if include.kind == 'kantorovich' %}
+  <p class="wiki-lab-context">Published illustrative-data baseline: 3 milling, 3 turret, and 1 automatic machine-day, with the fixed Part I/II rates from <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>. The allocations and exchanges are modern re-derivations using divisible time, full utilization, exact matching of parts, and no setup time. Fractional outputs are daily production rates. Capacity changes are hypothetical experiments.</p>
+  {% elsif include.kind == 'linear-programming' %}
+  <p class="wiki-lab-context">Supplementary invented-data example: the workshop data and default profits (3, 2) are teaching choices, not historical observations. Changing profits creates further hypothetical teaching scenarios. <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a> supports the modeling method, not these numerical data.</p>
+  {% endif %}
   <noscript><p>The interactive controls require JavaScript. The worked examples and practice solutions below can be read without it.</p></noscript>
   <div class="wiki-lab-controls" hidden>
-    {% if include.kind == 'linear-programming' %}
+    {% if include.kind == 'kantorovich' %}
+    <label>Capacity scenario <select data-field="preset"><option value="original">Published baseline: 3 milling, 3 turret, 1 automatic</option><option value="threshold">Hypothetical: automatic capacity 1.125 days</option><option value="extra">Hypothetical: two automatic machine-days</option><option value="zero">Hypothetical: no machine time</option><option value="custom" disabled>Hypothetical: custom capacities</option></select></label>
+    <label>Milling machine-days <input data-field="milling" type="number" min="0" max="10" step="any" value="3"></label>
+    <label>Turret machine-days <input data-field="turret" type="number" min="0" max="10" step="any" value="3"></label>
+    <label>Automatic machine-days <input data-field="automatic" type="number" min="0" max="10" step="any" value="1"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="next">Next worked exchange</button><button type="button" data-action="reset">Restore published baseline and replay</button></div>
+    {% elsif include.kind == 'linear-programming' %}
     <label>Profit per A batch c₁ <input data-field="profit1" type="number" step="any" value="3"></label>
     <label>Profit per B batch c₂ <input data-field="profit2" type="number" step="any" value="2"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore teaching example (3, 2)</button></div>
     {% elsif include.kind == 'composition' %}
     <label>Horizontal scale s <input data-field="scale" type="range" min="-3" max="3" step="0.1" value="2"><output data-value="scale">2</output></label>
     <label>Horizontal shear k <input data-field="shear" type="range" min="-2" max="2" step="0.1" value="1"><output data-value="shear">1</output></label>

@@ -197,6 +197,7 @@
     status.textContent=scale===0?"Constant objective: every feasible point is optimal.":
       winners.length===1?`Unique optimum at (${winners[0].map(fmt)}).`:
       "Multiple optima: every point on the segment between the listed corners is optimal (within comparison tolerance).";
+    status.textContent=(f.profit1===3&&f.profit2===2?"Invented teaching baseline. ":"Hypothetical teaching profits. ")+status.textContent;
     root.querySelector("[data-matrices]").textContent=
       `Maximize ${fmt(f.profit1)} x₁ + ${fmt(f.profit2)} x₂\n`+
       vertices.map(([x,y])=>`(${fmt(x)}, ${fmt(y)}): ${fmt(f.profit1*x+f.profit2*y)}`).join("\n")+
@@ -242,11 +243,95 @@
     svg.setAttribute("aria-label",status.textContent+" "+root.querySelector("[data-explanation]").textContent);
   }
 
+  function kantorovich(root, f, step) {
+    const caps=[f.milling,f.turret,f.automatic], balance=20*caps[0]+30*caps[1]+80*caps[2];
+    const coefficients=[30,50,110], eps=Math.max(...caps)*1e-10;
+    const vertices=[];
+    // A plane cuts a three-dimensional box. Every vertex fixes at least
+    // two box coordinates, including collapsed boxes when capacity is zero.
+    for(let free=0;free<3;free++){
+      const fixed=[0,1,2].filter(i=>i!==free);
+      for(const b of [0,1])for(const c of [0,1]){
+        const q=[0,0,0];q[fixed[0]]=b*caps[fixed[0]];q[fixed[1]]=c*caps[fixed[1]];
+        q[free]=(balance-coefficients[fixed[0]]*q[fixed[0]]-coefficients[fixed[1]]*q[fixed[1]])/coefficients[free];
+        if(q.every((v,i)=>v>=-eps&&v<=caps[i]+eps)){
+          const clipped=q.map((v,i)=>Math.max(0,Math.min(caps[i],v)));
+          if(!vertices.some(v=>v.every((x,i)=>Math.abs(x-clipped[i])<=eps)))vertices.push(clipped);
+        }
+      }
+    }
+    const output=q=>10*q[0]+20*q[1]+30*q[2];
+    const optimum=vertices.reduce((a,b)=>output(b)>output(a)?b:a);
+    const best=output(optimum), original=caps[0]===3&&caps[1]===3&&caps[2]===1;
+    const stages=[[0,12/5,1],[0,3,8/11],[8/3,3,0]];
+    const current=original?stages[Math.min(step,2)]:optimum, achieved=output(current);
+    const second=20*(caps[0]-current[0])+30*(caps[1]-current[1])+80*(caps[2]-current[2]);
+    const certificates=[0,1,2/3,3/5,8/11].map(lambda=>{
+      const prices=[Math.max(10*lambda,20*(1-lambda)),Math.max(20*lambda,30*(1-lambda)),Math.max(30*lambda,80*(1-lambda))];
+      return {lambda,prices,bound:prices.reduce((sum,p,i)=>sum+p*caps[i],0)};
+    });
+    const certificate=certificates.reduce((a,b)=>b.bound<a.bound?b:a);
+    const status=root.querySelector('[data-status]');
+    status.textContent=original?`Published-capacity baseline. Worked exchange ${Math.min(step,2)} of 2 (modern replay). `+[
+      'Start: m = 0, a = 1; solve the part balance for t.',
+      'First exchange: automatic time shifts to Part II; turret time for Part I reaches its limit.',
+      'Second exchange: milling supplies the balance; automatic Part I time reaches zero. Optimal plan.'
+    ][Math.min(step,2)]:'Hypothetical capacity experiment: showing the optimal plan for your capacities. Restore the published baseline to replay the worked exchanges.';
+    if(caps.every(v=>v===0))status.textContent='Hypothetical zero-capacity experiment: the only feasible plan produces zero of both parts.';
+    root.querySelector('[data-action="next"]').disabled=!original||step>=2;
+    const rows=(q)=>['Milling','Turret','Automatic'].map((name,i)=>`${name}: Part I ${fmt(q[i])}; Part II ${fmt(caps[i]-q[i])}`).join('\n');
+    root.querySelector('[data-matrices]').textContent=
+      `Published-capacity baseline (M, T, A): (3, 3, 1) machine-days\nCurrent capacities: (${caps.map(fmt).join(', ')}) machine-days — ${original?'published baseline':'hypothetical experiment'}\n`+
+      `Fixed rates per machine-day (I, II): milling (10, 20), turret (20, 30), automatic (30, 80)\n`+
+      `Current allocation (machine-days)\n${rows(current)}\nPart I output = ${fmt(achieved)}\nPart II output = ${fmt(second)}\n`+
+      `\nOptimal allocation (machine-days)\n${rows(optimum)}\nOptimal matching output = ${fmt(best)}\n`+
+      `Gain available from current plan = ${fmt(Math.max(0,best-achieved))}\n`+
+      `\nOne optimal bound certificate\nPart weights = (${fmt(certificate.lambda)}, ${fmt(1-certificate.lambda)})\n`+
+      `Capacity values (M, T, A) = (${certificate.prices.map(fmt).join(', ')})\nUpper bound = ${fmt(certificate.bound)}\n`+
+      `Bound minus optimal output (rounded) = ${fmt(Math.abs(certificate.bound-best)<=1e-10*Math.max(best,1e-6)?0:Math.abs(certificate.bound-best))}`;
+    const svg=root.querySelector('svg');svg.replaceChildren();svg.setAttribute('viewBox','0 0 600 650');
+    const tLimit=Math.max(caps[1],1), aLimit=Math.max(caps[2],1);
+    const point=q=>[75+q[1]*440/tLimit,295-q[2]*240/aLimit];
+    for(let i=0;i<=2;i++){
+      const x=75+i*220,y=295-i*120;
+      node('line',{x1:x,y1:55,x2:x,y2:295,class:'lab-grid'},svg);
+      node('line',{x1:75,y1:y,x2:515,y2:y,class:'lab-grid'},svg);
+      node('text',{x,y:320,'text-anchor':'middle'},svg,fmt(tLimit*i/2));
+      node('text',{x:62,y:y+5,'text-anchor':'end'},svg,fmt(aLimit*i/2));
+    }
+    node('text',{x:75,y:24},svg,'a: automatic time for Part I');
+    node('text',{x:200,y:348},svg,'t: turret time for Part I');
+    node('line',{x1:75,y1:55,x2:75,y2:295,class:'lab-axis'},svg);
+    node('line',{x1:75,y1:295,x2:515,y2:295,class:'lab-axis'},svg);
+    const center=vertices.reduce((p,q)=>[p[0]+q[1]/vertices.length,p[1]+q[2]/vertices.length],[0,0]);
+    const ordered=[...vertices].sort((a,b)=>Math.atan2(a[2]-center[1],a[1]-center[0])-Math.atan2(b[2]-center[1],b[1]-center[0]));
+    if(ordered.length>1)node(ordered.length===2?'polyline':'polygon',{points:ordered.map(q=>point(q).join(',')).join(' '),fill:ordered.length===2?'none':'#2563eb','fill-opacity':.12,stroke:'#2563eb','stroke-width':2},svg);
+    if(original)node('polyline',{points:stages.map(q=>point(q).join(',')).join(' '),fill:'none',stroke:'#64748b','stroke-dasharray':'5 4','stroke-width':2},svg);
+    const [ox,oy]=point(optimum),[cx,cy]=point(current);
+    node('circle',{cx:ox,cy:oy,r:8,fill:'none',stroke:'#c65b08','stroke-width':3},svg);
+    node('circle',{cx,cy,r:4,fill:'currentColor'},svg);
+    node('text',{x:75,y:377},svg,'Blue: feasible · Dot: current · Orange ring: optimum');
+    node('text',{x:75,y:405},svg,'Current time shares: blue Part I, orange Part II');
+    caps.forEach((cap,i)=>{
+      const y=445+i*65, width=cap===0?0:300*current[i]/cap;
+      node('text',{x:25,y:y+5},svg,['Milling','Turret','Automatic'][i]);
+      node('rect',{x:145,y:y-16,width,height:24,fill:'#2563eb'},svg);
+      node('rect',{x:145+width,y:y-16,width:cap===0?0:300-width,height:24,fill:'#c65b08'},svg);
+      node('text',{x:455,y:y+5},svg,cap===0?'No time':`${fmt(cap)} days`);
+      node('text',{x:145,y:y+29},svg,`I: ${fmt(current[i])} days; II: ${fmt(cap-current[i])} days`);
+    });
+    root.querySelector('[data-explanation]').textContent=
+      'Rates stay fixed at Kantorovich’s published illustrative values. Only (3, 3, 1) is the published-capacity baseline; all other capacities are hypothetical experiments in divisible machine-days. The plot rescales: read its ticks. A collapsed region can be a segment or a point. Bars show fractions of each group’s current time; equal bar widths do not mean equal capacities. '+
+      (original?'Next worked exchange follows the two worked exchanges. ':'Capacity changes immediately recompute the optimal allocation. ')+
+      'The displayed certificate bounds all plans for these capacities. At a specialization threshold the weights may be nonunique; its capacity values are not a promise for finite capacity changes. Values are rounded and comparisons use floating-point tolerances.';
+    svg.setAttribute('aria-label',`${status.textContent} Current output ${fmt(achieved)}; optimal output ${fmt(best)}. ${root.querySelector('[data-explanation]').textContent}`);
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
       let step=0;
-      const presets=kind==="lu"?{
+      const presets=kind==="kantorovich"?{original:{milling:3,turret:3,automatic:1},threshold:{milling:3,turret:3,automatic:1.125},extra:{milling:3,turret:3,automatic:2},zero:{milling:0,turret:0,automatic:0}}:kind==="lu"?{
         ordinary:{a:2,b:1,c:4,d:3,rhs1:3,rhs2:7},zero:{a:0,b:1,c:1,d:1,rhs1:1,rhs2:2},
         small:{a:.0001,b:1,c:1,d:1,rhs1:1.0001,rhs2:2},singular:{a:1,b:2,c:2,d:4,rhs1:3,rhs2:6}
       }:{ordinary:{a:4,b:2,c:3},negative:{a:2,b:-1,c:2},flat:{a:4,b:2,c:1},indefinite:{a:4,b:4,c:3},near:{a:1,b:1,c:1.000001}};
@@ -255,7 +340,7 @@
         let invalid=false;
         root.querySelectorAll('input[type="number"], input[type="range"]').forEach(input=>{
           const value=input.valueAsNumber;
-          const good=Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
+          const good=kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
           input.setAttribute("aria-invalid",String(!good));
           invalid ||= !good;
           f[input.dataset.field]=value;
@@ -263,14 +348,15 @@
           if(display)display.textContent=good?fmt(value):"—";
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent="Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
+          root.querySelector("[data-status]").textContent=kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
           root.querySelector("[data-matrices]").textContent="";
           root.querySelector("[data-explanation]").textContent="The result will update when the inputs are valid.";
           root.querySelector("svg")?.replaceChildren();
           const next=root.querySelector('[data-action="next"]');if(next)next.disabled=true;
           return;
         }
-        if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
+        if(kind==="kantorovich")kantorovich(root,f,step);
+        else if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
         else if(kind==="linear-programming")linearProgramming(root,f);
         else if(kind==="lu")lu(root,f,set,step);
         else if(kind==="vector-norm"||kind==="matrix-norm")norms(root,f,set,`wiki-lab-clip-${index}`,kind);
@@ -280,10 +366,11 @@
         if(input.dataset.field==="preset"){
           for(const [key,value] of Object.entries(presets[input.value]))set(key).value=value;
         }
-        step=0;render();
+        if(kind==="kantorovich"&&input.dataset.field!=="preset")set("preset").value=Number(set('milling').value)===3&&Number(set('turret').value)===3&&Number(set('automatic').value)===1?'original':'custom';
+        step=kind==="kantorovich"&&!(input.dataset.field==="preset"&&input.value==="original")?2:0;render();
       }));
       root.querySelector('[data-action="next"]')?.addEventListener("click",()=>{step=Math.min(step+1,3);render();});
-      root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{step=0;render();});
+      root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{if(kind==="kantorovich"){for(const [key,value] of Object.entries(presets.original))set(key).value=value;set('preset').value='original';}if(kind==="linear-programming"){set('profit1').value=3;set('profit2').value=2;}step=0;render();});
       root.querySelector(".wiki-lab-controls").hidden=false;
       root.querySelector(".wiki-lab-result").hidden=false;
       render();

@@ -9,7 +9,7 @@
 .wiki-lab-title { font-weight: 700; }
 .wiki-lab-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.2rem; }
 .wiki-lab-controls[hidden], .wiki-lab-result[hidden] { display: none; }
-.wiki-lab-controls label { display: flex; flex-direction: column; gap: .3rem; font-size: .92rem; }
+.wiki-lab-controls label { display: flex; flex-direction: column; gap: .3rem; font-size: .92rem; min-width: 0; }
 .wiki-lab-controls input, .wiki-lab-controls select, .wiki-lab-actions button {
   font: inherit; color: inherit; background: var(--surface, #fff);
   border: 1px solid var(--line, #cbd5e1); border-radius: 4px; padding: .35rem .5rem; min-width: 0;
@@ -17,7 +17,7 @@
 .wiki-lab-controls input[type="range"] { width: 100%; padding: 0; accent-color: var(--accent, #2563eb); }
 .wiki-lab-controls .wiki-lab-check { flex-direction: row; align-items: center; }
 .wiki-lab-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
-.wiki-lab-actions button { cursor: pointer; }
+.wiki-lab-actions button { cursor: pointer; max-width: 100%; white-space: normal; }
 .wiki-lab-actions button:disabled { cursor: default; opacity: .6; }
 .wiki-lab :focus-visible, .wiki-exercise summary:focus-visible { outline: 2px solid var(--accent, #2563eb); outline-offset: 3px; }
 .wiki-lab-result { margin-top: 1rem; }
@@ -35,5 +35,5 @@
 .wiki-exercise summary { cursor: pointer; font-weight: 600; }
 @media (max-width: 560px) {
   .wiki-lab { padding: .8rem; }
-  .wiki-lab-controls { grid-template-columns: 1fr; }
+  .wiki-lab-controls { grid-template-columns: minmax(0, 1fr); }
 }
