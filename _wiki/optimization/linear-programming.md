@@ -28,9 +28,47 @@ Here $x\in\mathbb R^n$ contains the **decision variables**, the quantities we ch
 
 A **feasible** point satisfies every constraint. The **feasible region** is the set of those points. An **optimal solution** is a feasible point with the best objective value; the point and its value are different objects. For matrix notation prerequisites, see the [matrix-decomposition overview]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }}).
 
-George B. Dantzig's *Linear Programming and Extensions* (1963), RAND report R-366-PR, is a classic treatment of LP formulations, simplex, and duality. See [RAND's publication record](https://www.rand.org/pubs/reports/R366.html).
-
 The worked examples, diagrams, derivations, and exercises below are original illustrations.
+
+## History
+
+The subject grew from a practical difficulty: many individually reasonable decisions compete for the same limited resources. Its development connects three questions we will keep returning to: how to express a plan, how to find a better one, and how to know that no better one exists.
+
+### Production planning made the tradeoffs explicit
+
+In 1939, Leonid Kantorovich published *Mathematical Methods of Organizing and Planning Production*. A problem from the Plywood Trust led him to study how work should be distributed among machines. He recognized a common mathematical structure in problems involving machinery, raw materials, waste, and transport. The English translation appeared in *Management Science* in 1960. See [Kantorovich's introduction and first production example](https://resistir.info/livros/kantorovich_mathematical_methods.pdf#page=2) and the [publication record](https://pubsonline.informs.org/doi/abs/10.1287/mnsc.6.4.366).
+
+The motivation is easy to miss if we start with a matrix. A machine that produces more parts per hour might be especially valuable for one particular part. Assigning every machine to whichever task it does fastest can leave a shortage of another part needed for a finished product. The mathematical problem is to coordinate the whole production plan. Our two-product workshop below uses a smaller version of this shared-resource idea.
+
+### Military planning turned it into a general computational problem
+
+During World War II, George B. Dantzig worked on statistical control and planning for the U.S. Army Air Forces. Plans covered procurement, supply, deployment, and training, and much of the calculation was done by hand. After the war, he was asked to help mechanize that process. In his oral history, he dates the LP model to June 1947 and the simplex method to August 1947. See [Dantzig's account, “During the Second World War” and “Just After the War”](https://www.informs.org/Explore/History-of-O.R.-Excellence/Oral-Histories/George-Dantzig).
+
+A military **program** meant a plan or schedule. Dantzig later recalled that Tjalling Koopmans suggested shortening “programming in a linear structure” to “linear programming” in 1948. His account also describes replacing planning ground rules with an explicit objective. See [Dantzig (2002), pp. 43 and 46](https://pubsonline.informs.org/doi/pdf/10.1287/opre.50.1.42.17798#page=2).
+
+This explains why the definition has two separate parts. Constraints describe what a plan can do; the objective states what makes one admissible plan preferable to another. Knowing the resource balances alone does not choose the plan.
+
+### Simplex supplied a way to improve the plan
+
+A model still needs a workable solution method. In *Origins of the Simplex Method*, Dantzig recalled initially rejecting the idea of walking along the edges of the feasible polyhedron, the shape cut out by the linear constraints: he expected it to be inefficient. Working instead with the geometry of the matrix columns led him to an algorithm he expected to be useful. He then recognized its equivalence to the vertex-to-vertex procedure he had first rejected. See [Dantzig's account, opening and concluding discussion](https://archive.computerhistory.org/resources/access/text/2024/06/102739347-05-0002-acc.pdf#page=169).
+
+The two viewpoints are still useful. A row of the workshop matrix describes a resource restriction; a column describes what one product consumes. The polygon picture below shows feasible corners. The basis calculation later explains how exchanging a column changes the production mix while keeping the resource equations satisfied. This gives the geometric picture an executable sequence of calculations.
+
+### Duality connected an optimal plan to resource values
+
+Dantzig recalled meeting John von Neumann on October 3, 1947. Von Neumann recognized a connection between the LP model and his work on **game theory**, which studies decisions whose outcomes depend on other participants' choices, and outlined ideas including duality. Dantzig also described the subsequent work of Albert Tucker, Harold Kuhn, David Gale, and others at Princeton on these connections. See [Dantzig (2002), p. 44](https://pubsonline.informs.org/doi/pdf/10.1287/opre.50.1.42.17798#page=3).
+
+For the workshop, the connection becomes concrete: a production plan earns profit, while a set of resource prices places an upper bound on the profit any plan could earn. If the earned profit reaches that bound, the plan is proved optimal. The duality section derives those prices and shows why a resource's value depends on what it makes possible.
+
+### The framework was consolidated, then its algorithmic limits were tested
+
+Dantzig's *Linear Programming and Extensions* appeared in 1963 as RAND report R-366-PR. It brought together formulations, simplex, duality, and applications including transportation and games. See [RAND's publication record and downloadable chapters](https://www.rand.org/pubs/reports/R366.html).
+
+As LP grew, practical success raised another question: could an algorithm guarantee a manageable running time for every input? A **polynomial-time** guarantee bounds the work by a fixed polynomial in the input size, including the bits used to encode the coefficients. Khachiyan established such a guarantee in 1979 with the ellipsoid method. In 1984, Narendra Karmarkar presented another polynomial-time algorithm based on transformations and movement through the interior. His paper explains the distinction between simplex's practical performance and its worst-case behavior, and compares the new method with the ellipsoid approach. See [Karmarkar (1984), introduction and §1](https://www.stat.uchicago.edu/~lekheng/courses/302/classics/karmarkar.pdf).
+
+This development explains why the algorithms section distinguishes a useful method from a worst-case guarantee. It also explains why finding an optimal vertex does not require visiting vertices at every intermediate step: interior methods can approach the optimum through the feasible region.
+
+With that background, we can follow the same progression on a small example: formulate the plan, improve it, and certify its value.
 
 ## Worked example: two products, two shared resources
 
@@ -340,6 +378,12 @@ $$
 </details>
 
 ## References and further learning
+
+- [L. V. Kantorovich, *Mathematical Methods of Organizing and Planning Production* (1939; English translation, 1960)](https://pubsonline.informs.org/doi/abs/10.1287/mnsc.6.4.366), [full text](https://resistir.info/livros/kantorovich_mathematical_methods.pdf): the production-planning motivation and original numerical examples.
+- [George B. Dantzig, INFORMS oral history, interviewed by Irv Lustig](https://www.informs.org/Explore/History-of-O.R.-Excellence/Oral-Histories/George-Dantzig): firsthand recollections of military planning and early computation.
+- [George B. Dantzig, *Linear Programming* (2002), *Operations Research* 50(1), 42–47](https://pubsonline.informs.org/doi/pdf/10.1287/opre.50.1.42.17798): the origins of the terminology and the connection to von Neumann and duality. This is a retrospective account.
+- [George B. Dantzig, *Origins of the Simplex Method*](https://archive.computerhistory.org/resources/access/text/2024/06/102739347-05-0002-acc.pdf#page=169): his account of the different geometric viewpoints behind simplex, in an archival collection.
+- [N. Karmarkar, *A New Polynomial-Time Algorithm for Linear Programming* (1984), *Combinatorica* 4, 373–395](https://www.stat.uchicago.edu/~lekheng/courses/302/classics/karmarkar.pdf): the original paper on the interior approach and its complexity guarantee.
 
 - [Boyd and Vandenberghe, *Convex Optimization*, §4.3](https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf#page=160): general LP notation, standard-form conversions, and connections to convex optimization.
 - [Michel Goemans, MIT 18.310 linear programming notes](https://ocw.mit.edu/courses/18-310-principles-of-discrete-applied-mathematics-fall-2013/11d00f8f0f460a5e59b5e97322a218a9_MIT18_310F13_Ch8.pdf): modeling examples, basic feasible solutions, and the primal–dual rules in §§4.2–4.3.
