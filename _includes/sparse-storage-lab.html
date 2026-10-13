@@ -1,0 +1,18 @@
+<section class="wiki-lab" data-sparse-storage-lab aria-label="Follow coefficients into COO, CSR, and CSC">
+  <p class="wiki-lab-title">Follow coefficients into COO, CSR, and CSC</p>
+  <p class="wiki-lab-context">Published illustrative-data baseline: <a href="https://math.nist.gov/MatrixMarket/formats.html">NIST's real general 5×5 example</a>, with all coefficients preserved and indices changed from one-based to zero-based. Removal scenarios are hypothetical; no physical units are specified.</p>
+  <noscript><p>The interactive controls require JavaScript. The published matrix, storage arrays, and worked examples remain readable on this page.</p></noscript>
+  <div class="wiki-lab-controls" hidden>
+    <label>Storage format <select data-field="format"><option value="coo">COO: published entry order</option><option value="csr" selected>CSR: group by row</option><option value="csc">CSC: group by column</option></select></label>
+    <label>Trace row (COO/CSR) or column (CSC) <select data-field="group"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></label>
+    <label>Matrix scenario <select data-field="scenario"><option value="baseline">Published baseline</option><option value="row">Hypothetical: empty row 3</option><option value="column">Hypothetical: empty column 1</option><option value="zero">Hypothetical: all-zero matrix</option></select></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore published baseline</button></div>
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="Storage arrays and selected coefficients"></pre>
+    <svg data-plot viewBox="0 0 600 440" role="img" aria-label="Matrix coefficients and their array slots"></svg>
+    <p data-explanation></p>
+  </div>
+</section>
+<script src="{{ '/assets/js/sparse-storage-lab.js' | relative_url }}" defer></script>
