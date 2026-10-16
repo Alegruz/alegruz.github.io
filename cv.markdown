@@ -7,7 +7,8 @@ permalink: /cv/
 <section class="cv-shell" data-lang="en">
   <div class="page-hero-panel cv-hero">
     <h1>Minha Armada Ju</h1>
-    <p class="cv-subtitle">Game Engine / Rendering Engineer</p>
+    <p class="cv-subtitle">MMath Student in Computer Science, University of Waterloo</p>
+    <p>Researching rendering, with a particular focus on Monte Carlo methods.</p>
     <div class="cv-link-row">
       <a class="text-link" href="mailto:onion@pearlabyss.com">Work Email</a>
       <a class="text-link" href="mailto:alegruz@khu.ac.kr">Personal Email</a>
@@ -49,6 +50,7 @@ permalink: /cv/
     <article class="cv-card">
       <h2>Education</h2>
       <ul>
+        <li>MMath in Computer Science, University of Waterloo, in progress</li>
         <li>BSc in Software Convergence, Kyung Hee University, 2023</li>
         <li>GPA: 3.798 / 4.3</li>
         <li>Location: Uiwang-si, Gyeonggi-do, Republic of Korea</li>
@@ -60,7 +62,8 @@ permalink: /cv/
 <section class="cv-shell" data-lang="ko">
   <div class="page-hero-panel cv-hero">
     <h1>Minha Armada Ju</h1>
-    <p class="cv-subtitle">게임 엔진 / 렌더링 엔지니어</p>
+    <p class="cv-subtitle">워털루 대학교 컴퓨터 과학 석사(MMath) 과정</p>
+    <p>몬테카를로 방법을 중심으로 렌더링을 연구합니다.</p>
     <div class="cv-link-row">
       <a class="text-link" href="mailto:onion@pearlabyss.com">업무 이메일</a>
       <a class="text-link" href="mailto:alegruz@khu.ac.kr">개인 이메일</a>
@@ -102,6 +105,7 @@ permalink: /cv/
     <article class="cv-card">
       <h2>학력</h2>
       <ul>
+        <li>워털루 대학교 컴퓨터 과학 석사(MMath) 과정 재학 중</li>
         <li>경희대학교 소프트웨어융합학과 학사, 2023</li>
         <li>학점: 3.798 / 4.3</li>
         <li>거주지: 대한민국 경기도 의왕시</li>

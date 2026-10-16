@@ -41,7 +41,8 @@ tracks:
       <p class="music-kicker">Music sketches</p>
       <h1 id="music-title">Small soundtrack ideas for games, prototypes, and personal projects.</h1>
       <p>
-        I am mostly a game graphics engineer, but I also love making music on the side.
+        I am an MMath student in Computer Science at the University of Waterloo,
+        researching rendering, and I also love making music on the side.
         This is not a full-time composer pitch; it is a place to share the themes, loops,
         and mood sketches I can bring into the right small project.
       </p>

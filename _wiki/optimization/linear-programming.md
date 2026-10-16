@@ -145,7 +145,7 @@ $$
 0\le t\le3,\quad0\le a\le1.
 $$
 
-A linear inequality selects one side of a line, a **half-plane**. The intersection here is a polygon; in higher dimensions such an intersection is a **polyhedron**. A **vertex**, or corner, cannot be written as an average of two distinct feasible points. The region is **convex**: any line segment between feasible plans stays feasible because each linear constraint is preserved under weighted averages.
+A linear inequality selects one side of a line, a **half-plane**. The intersection here is a polygon; in higher dimensions such an intersection is a **polyhedron**. A **vertex**, or corner, cannot be written as an average of two distinct feasible points. The region is **convex**: any line segment between feasible plans stays feasible because each linear constraint is preserved under weighted averages. [Convexity]({{ '/wiki/optimization/convexity/' | relative_url }}#calculate-a-mixture-before-generalizing) works through mixtures of this same machine model and distinguishes convex feasible sets from convex objective functions.
 
 {% include image.html src="/assets/images/wiki/linear-programming-machine-pivots.svg" alt="The machine feasible polygon in turret time t and automatic time a has five corners. Two improving exchanges move from (12/5,1) to (3,8/11) to the optimum (3,0). Milling time is recovered from the part-balance equation." caption="Both axes measure machine-days making Part I. Shading enforces the time limits and part balance. The orange path shows the two exchanges derived below; its last point maximizes z = 230/3 + 10t/3 − 20a/3. Each plotted point determines milling time m through the balance equation." %}
 

@@ -3,7 +3,7 @@ title: Quadratic form
 subject: Linear Algebra
 interactive_examples: true
 description: Read xᵀAx as a scalar quadratic expression, understand its geometry, and connect its curvature to matrix factorizations and optimization.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-16
 ---
 
 ## Definition
@@ -249,7 +249,7 @@ f(x)-f(x_\star)=\frac12(x-x_\star)^TA(x-x_\star)>0
 \quad(x\ne x_\star),
 $$
 
-which proves it is the unique global minimum. A stationary point of an indefinite quadratic need not minimize it.
+which proves it is the unique global minimum. A stationary point of an indefinite quadratic need not minimize it. [Convexity: slopes and curvature]({{ '/wiki/optimization/convexity/' | relative_url }}#slopes-and-curvature-links-to-quadratic-forms) explains why a symmetric PSD Hessian gives a convex quadratic, how SPD strengthens this result, and why convexity alone does not guarantee an attained minimum.
 
 **Least squares** chooses parameters $x$ to minimize the sum of squared differences between predictions $Bx$ and measurements $b$. Those differences form the **residual** $b-Bx$. Its squared length is the total squared error. For example, fitting one number $t$ to measurements $1,2,6$ minimizes $(1-t)^2+(2-t)^2+(6-t)^2$, with best fit $t=3$. In general,
 

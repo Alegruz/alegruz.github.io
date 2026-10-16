@@ -24,6 +24,7 @@
 .wiki-lab-result pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .95rem; padding: .7rem; }
 .wiki-lab svg { display: block; width: 100%; max-width: 650px; height: auto; margin: 1rem auto; }
 .wiki-lab svg text { fill: currentColor; font: 14px system-ui, sans-serif; }
+.wiki-lab[data-wiki-lab^="convexity-"] svg text { font-size: 20px; }
 .wiki-lab .lab-grid { stroke: currentColor; opacity: .13; }
 .wiki-lab .lab-axis { stroke: currentColor; opacity: .6; }
 .wiki-lab .lab-input { stroke: #64748b; fill: none; stroke-dasharray: 6 4; }

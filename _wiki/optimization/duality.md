@@ -306,7 +306,7 @@ Maximizing $-b^Ty$ gives the same multipliers as minimizing $b^Ty$. The constrai
 
 ## When do nonlinear bounds meet?
 
-A function is **convex** if its value along a segment is no greater than the corresponding average of endpoint values. For a convex optimization problem, $X$ is convex, $f_0$ and the $f_i$ are convex, and the $h_j$ are affine. Convexity alone does not supply every existence and multiplier guarantee.
+A function is **convex** if its value along a segment is no greater than the corresponding average of endpoint values. For a convex optimization problem, $X$ is convex, $f_0$ and the $f_i$ are convex, and the $h_j$ are affine. [Convexity]({{ '/wiki/optimization/convexity/' | relative_url }}) develops these set and function definitions, the local-to-global minimum proof, and derivative tests. Convexity alone does not supply every existence and multiplier guarantee.
 
 A useful sufficient condition is **Slater's condition**: when $X=\mathbb R^n$ and these functions are finite everywhere, there exists a point $\bar x$ with $f_i(\bar x)<0$ for every inequality and $h_j(\bar x)=0$ for every equality. If the primal value is finite, this condition guarantees $d^{\star}=p^{\star}$ and attainment of the dual optimum. It does not by itself guarantee primal attainment. More general domain versions use relative interiors. See [Boyd and Vandenberghe, slide 5.13](https://web.stanford.edu/class/ee364a/lectures/duality.pdf#page=15).
 

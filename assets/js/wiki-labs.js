@@ -423,6 +423,67 @@
     svg.setAttribute('aria-label',`Upper bound ${fmt(upper)}; feasible output 260/3; certificate gap ${fmt(gap)} complete sets per day. Part I weight ${fmt(theta)}.`);
   }
 
+  function convexityMixture(root, f) {
+    const theta=f.mix, S=[2,9/5,8/11], O=[8/3,3,0];
+    const x=S.map((value,i)=>(1-theta)*value+theta*O[i]);
+    const P=10*x[0]+20*x[1]+30*x[2], Q=230-20*x[0]-30*x[1]-80*x[2];
+    const mean=(1-theta)*856/11+theta*260/3;
+    root.querySelector('[data-status]').textContent=`Hypothetical mixture θ = ${fmt(theta)}. Feasible for every weight in [0, 1] under the published-data continuous model.`;
+    root.querySelector('[data-matrices]').textContent=`Part I machine-days (m, t, a) = (${x.map(fmt).join(', ')})\nPart II machine-days = (${[3-x[0],3-x[1],1-x[2]].map(fmt).join(', ')})\nPart I output P = ${fmt(P)} parts/day\nPart II output Q = ${fmt(Q)} parts/day\nAveraged endpoint output = ${fmt(mean)} complete sets/day\nBalance 30m + 50t + 110a = ${fmt(30*x[0]+50*x[1]+110*x[2])}`;
+    const svg=root.querySelector('svg');svg.replaceChildren();
+    const px=t=>90+t*140, py=a=>350-a*270;
+    const vertices=[[3/5,1],[12/5,1],[3,8/11],[3,0],[14/5,0]];
+    node('polygon',{points:vertices.map(([t,a])=>`${px(t)},${py(a)}`).join(' '),class:'lab-first','stroke-width':2},svg);
+    node('line',{x1:px(0),y1:py(0),x2:px(3.2),y2:py(0),class:'lab-axis'},svg);
+    node('line',{x1:px(0),y1:py(0),x2:px(0),y2:py(1.1),class:'lab-axis'},svg);
+    [0,1,2,3].forEach(t=>node('text',{x:px(t),y:375,'text-anchor':'middle'},svg,String(t)));
+    [0,.5,1].forEach(a=>node('text',{x:76,y:py(a)+5,'text-anchor':'end'},svg,String(a)));
+    node('text',{x:90,y:35},svg,'Fixed machine data; feasible allocations shaded');
+    node('text',{x:180,y:410},svg,'Turret t (machine-days)');
+    node('text',{x:30,y:235,transform:'rotate(-90 30 235)','text-anchor':'middle'},svg,'Automatic a (machine-days)');
+    node('line',{x1:px(S[1]),y1:py(S[2]),x2:px(O[1]),y2:py(O[2]),stroke:'#c65b08','stroke-width':3},svg);
+    [[S,'S'],[O,'O']].forEach(([plan,label])=>{
+      node('circle',{cx:px(plan[1]),cy:py(plan[2]),r:4,fill:'#c65b08'},svg);
+      node('text',{x:px(plan[1])-18,y:py(plan[2])-12},svg,label);
+    });
+    node('circle',{cx:px(x[1]),cy:py(x[2]),r:6,fill:'currentColor'},svg);
+    svg.setAttribute('aria-label',`Feasible allocation at optimal-plan weight ${fmt(theta)}: milling ${fmt(x[0])}, turret ${fmt(x[1])}, automatic ${fmt(x[2])} machine-days for Part I. Both outputs ${fmt(mean)} parts per day.`);
+    root.querySelector('[data-explanation]').textContent='Orange segment: mixtures of S and O. The dot marks your allocation inside the feasible polygon. Axes measure Part I machine-days; milling time follows from the balance equation. At θ = 0 use S; at θ = 1 use O. Both outputs equal the averaged endpoint output by affine linearity. Displayed decimals are rounded; the page proves feasibility and equality with exact fractions.';
+  }
+
+  function convexityChord(root, f, set) {
+    const shape=set('shape').value, theta=f.mix, x=f.left, y=f.right;
+    const value=u=>shape==='absolute'?Math.abs(u):shape==='concave'?-u*u:u*u;
+    const mixed=(1-theta)*x+theta*y, height=value(mixed), chord=(1-theta)*value(x)+theta*value(y);
+    // The square identity avoids cancellation in the sign of the displayed gap.
+    const squareGap=theta*(1-theta)*(x-y)**2;
+    const gap=shape==='square'?squareGap:shape==='concave'?-squareGap:Math.max(0,chord-height);
+    const equal=x===y||theta===0||theta===1||(shape==='absolute'&&x*y>=0);
+    root.querySelector('[data-status]').textContent=equal?'Equality for this chord and weight.':shape==='concave'?'Convex inequality fails for this chord: the graph is above the chord.':'Convex inequality holds for this chord: the graph is below the chord.';
+    root.querySelector('[data-matrices]').textContent=`Mixed input u = (1 − θ)x + θy = ${fmt(mixed)}\nf(mixed input) = ${fmt(height)}\nAverage endpoint value = ${fmt(chord)}\nChord minus graph = ${fmt(equal?0:gap)}`;
+    const svg=root.querySelector('svg');svg.replaceChildren();
+    const lower=shape==='concave'?-10:-1, upper=shape==='concave'?1:10;
+    const px=u=>85+(u+3)*70, py=v=>350-(v-lower)*270/(upper-lower);
+    node('line',{x1:px(-3),y1:py(0),x2:px(3),y2:py(0),class:'lab-axis'},svg);
+    node('line',{x1:px(0),y1:80,x2:px(0),y2:350,class:'lab-axis'},svg);
+    [-3,-2,-1,0,1,2,3].forEach(u=>node('text',{x:px(u),y:375,'text-anchor':'middle'},svg,String(u)));
+    (shape==='concave'?[-9,-6,-3,0]:[0,3,6,9]).forEach(v=>{
+      node('line',{x1:85,y1:py(v),x2:505,y2:py(v),class:'lab-grid'},svg);
+      node('text',{x:70,y:py(v)+5,'text-anchor':'end'},svg,String(v));
+    });
+    node('text',{x:85,y:35},svg,`Function: ${shape==='absolute'?'|u|':shape==='concave'?'−u²':'u²'}; fixed axes within each function`);
+    node('text',{x:180,y:410},svg,'Input u; vertical value f(u)');
+    const points=Array.from({length:121},(_,i)=>{const u=-3+i/20;return `${px(u)},${py(value(u))}`;});
+    node('polyline',{points:points.join(' '),fill:'none',stroke:'#2563eb','stroke-width':3},svg);
+    node('line',{x1:px(x),y1:py(value(x)),x2:px(y),y2:py(value(y)),stroke:'#c65b08','stroke-width':3,'stroke-dasharray':'6 4'},svg);
+    [x,y].forEach(u=>node('circle',{cx:px(u),cy:py(value(u)),r:4,fill:'#c65b08'},svg));
+    node('line',{x1:px(mixed),y1:py(height),x2:px(mixed),y2:py(chord),stroke:'currentColor','stroke-width':2},svg);
+    node('circle',{cx:px(mixed),cy:py(chord),r:6,fill:'none',stroke:'#c65b08','stroke-width':2},svg);
+    node('circle',{cx:px(mixed),cy:py(height),r:4,fill:'#2563eb'},svg);
+    svg.setAttribute('aria-label',`At mixed input ${fmt(mixed)}, function value ${fmt(height)} and chord height ${fmt(chord)}. Chord minus graph ${fmt(equal?0:gap)}. Blue graph and dashed orange chord.`);
+    root.querySelector('[data-explanation]').textContent=equal?'The two heights coincide. Equal endpoints collapse the chord to a point, endpoint weights select an endpoint, and absolute value is affine between endpoints on the same side of zero. Equality in one test does not prove that a function is affine everywhere.':shape==='concave'?'The negative square is concave: its graph lies above this chord. A negative chord-minus-graph value disproves convexity. This compares heights at the same mixed input.':'Blue dot: cost at the mixed input. Orange ring: average of endpoint costs. Their vertical separation is the nonnegative chord-minus-graph value. A single passing chord illustrates convexity; it does not prove the condition for every pair and weight.';
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
@@ -436,7 +497,7 @@
         let invalid=false;
         root.querySelectorAll('input[type="number"], input[type="range"]').forEach(input=>{
           const value=input.valueAsNumber;
-          const good=kind==="duality"?Number.isFinite(value)&&value>=0&&value<=1:kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
+          const good=kind.startsWith('convexity-')?Number.isFinite(value)&&(input.dataset.field==='mix'?value>=0&&value<=1:Math.abs(value)<=3):kind==="duality"?Number.isFinite(value)&&value>=0&&value<=1:kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
           input.setAttribute("aria-invalid",String(!good));
           invalid ||= !good;
           f[input.dataset.field]=value;
@@ -444,14 +505,16 @@
           if(display)display.textContent=good?fmt(value):"—";
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent=kind==="duality"?"Enter a finite Part I weight between 0 and 1. Both endpoints are allowed.":kind==="farkas"?"Enter a finite target between 0 and 100 complete sets per day. Zero is allowed.":kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
+          root.querySelector("[data-status]").textContent=kind.startsWith('convexity-')?"Enter a finite weight between 0 and 1 and, when present, finite endpoints between −3 and 3. Endpoint weights and equal endpoints are allowed.":kind==="duality"?"Enter a finite Part I weight between 0 and 1. Both endpoints are allowed.":kind==="farkas"?"Enter a finite target between 0 and 100 complete sets per day. Zero is allowed.":kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
           root.querySelector("[data-matrices]").textContent="";
           root.querySelector("[data-explanation]").textContent="The result will update when the inputs are valid.";
           root.querySelector("svg")?.replaceChildren();
           const next=root.querySelector('[data-action="next"]');if(next)next.disabled=true;
           return;
         }
-        if(kind==="duality")duality(root,f);
+        if(kind==='convexity-mixture')convexityMixture(root,f);
+        else if(kind==='convexity-chord')convexityChord(root,f,set);
+        else if(kind==="duality")duality(root,f);
         else if(kind==="farkas")farkas(root,f);
         else if(kind==="kantorovich")kantorovich(root,f,step);
         else if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
@@ -475,6 +538,11 @@
         root.querySelector('[data-action="reset"]').addEventListener("click",()=>{set('weight').value=2/3;render();});
       }
       if(kind==="farkas")root.querySelector('[data-action="reset"]').addEventListener("click",()=>{set('demand').value=90;render();});
+      if(kind.startsWith('convexity-'))root.querySelector('[data-action="reset"]').addEventListener('click',()=>{
+        set('mix').value=0.5;
+        if(kind==='convexity-chord'){set('left').value=0;set('right').value=2;set('shape').value='square';}
+        render();
+      });
       root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{if(normBaselines[kind]){for(const [key,value] of Object.entries(normBaselines[kind]))set(key).value=value;}if(kind==="kantorovich"){for(const [key,value] of Object.entries(presets.original))set(key).value=value;set('preset').value='original';}if(kind==="linear-programming"){set('profit1').value=3;set('profit2').value=2;}step=0;render();});
       root.querySelector(".wiki-lab-controls").hidden=false;
       root.querySelector(".wiki-lab-result").hidden=false;

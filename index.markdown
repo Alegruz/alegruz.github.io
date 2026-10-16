@@ -3,11 +3,12 @@ layout: home
 ---
 
 <section class="landing-hero" data-lang="en" aria-labelledby="home-title-en">
-  <p class="landing-kicker">Game engine / rendering / graphics programming</p>
+  <p class="landing-kicker">MMath in Computer Science / University of Waterloo</p>
   <h1 id="home-title-en">Alegruz's blog</h1>
   <p>
-    Notes on real-time rendering, graphics APIs, game engine architecture,
-    performance, and the math behind computer graphics.
+    I am an MMath student in Computer Science at the University of Waterloo,
+    researching rendering, with a particular focus on Monte Carlo methods.
+    I share notes on rendering, graphics APIs, game engines, performance, and math.
   </p>
   <div class="landing-links" aria-label="Profile links">
     <a class="landing-btn primary" href="/cv/">CV</a>
@@ -18,11 +19,12 @@ layout: home
 </section>
 
 <section class="landing-hero" data-lang="ko" aria-labelledby="home-title-ko">
-  <p class="landing-kicker">게임 엔진 / 렌더링 / 그래픽스 프로그래밍</p>
+  <p class="landing-kicker">컴퓨터 과학 석사(MMath) 과정 / 워털루 대학교</p>
   <h1 id="home-title-ko">Alegruz's blog</h1>
   <p>
-    실시간 렌더링, 그래픽스 API, 게임 엔진 아키텍처, 성능,
-    컴퓨터 그래픽스 수학에 대한 노트를 정리합니다.
+    워털루 대학교 컴퓨터 과학 석사(MMath) 과정에 재학 중이며,
+    몬테카를로 방법을 중심으로 렌더링을 연구합니다.
+    렌더링, 그래픽스 API, 게임 엔진, 성능, 수학에 대한 노트를 공유합니다.
   </p>
   <div class="landing-links" aria-label="프로필 링크">
     <a class="landing-btn primary" href="/cv/">CV</a>

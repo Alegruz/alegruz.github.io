@@ -147,7 +147,7 @@ $$
 b=x_1a_1+\cdots+x_na_n,\qquad x_j\ge0.
 $$
 
-All such sums make a **cone** $K$: scaling a sum by a nonnegative number keeps it in the set. It is **convex** because a weighted average of two such sums is another such sum. If $b$ lies outside $K$, the certificate selects a linear measurement $z\mapsto y^Tz$ that is nonnegative on the cone but negative at $b$.
+All such sums make a **cone** $K$: scaling a sum by a nonnegative number keeps it in the set. It is **convex** because a weighted average of two such sums is another such sum. See [Convexity: cones and separation]({{ '/wiki/optimization/convexity/' | relative_url }}#cones-and-separation) for the distinction between convex combinations and nonnegative combinations. If $b$ lies outside $K$, the certificate selects a linear measurement $z\mapsto y^Tz$ that is nonnegative on the cone but negative at $b$.
 
 The boundary $y^Tz=0$ is a line in two dimensions and a **hyperplane** in higher dimensions. It separates the target from all attainable sums. The projection proof below follows [Goemans’ Lecture 3, §1](https://ocw.mit.edu/courses/6-854j-advanced-algorithms-fall-2008/b23096080e3d2142c3c8337bdcd9d3c7_lect9_19.pdf#page=2).
 

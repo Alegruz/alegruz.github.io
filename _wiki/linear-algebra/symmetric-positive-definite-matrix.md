@@ -3,7 +3,7 @@ title: Symmetric positive definite matrix
 subject: Linear Algebra
 interactive_examples: true
 description: Recognize positive energy in every direction through quadratic forms, eigenvalues, Cholesky factors, and worked examples.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-16
 ---
 
 ## Definition
@@ -217,7 +217,7 @@ $$
 f(x_{\ast}+h)-f(x_{\ast})=\frac12h^TAh.
 $$
 
-The difference is strictly positive for nonzero $h$, proving that $x_{\ast}$ is the **unique global minimum**: it has a smaller value than every other input. For the worked-example matrix and $r=(4,3)^T$, $x_{\ast}=(1,1)^T$ and $f(x_{\ast})=-7/2$. SPD turns stationarity into a unique optimum.
+The difference is strictly positive for nonzero $h$, proving that $x_{\ast}$ is the **unique global minimum**: it has a smaller value than every other input. For the worked-example matrix and $r=(4,3)^T$, $x_{\ast}=(1,1)^T$ and $f(x_{\ast})=-7/2$. SPD turns stationarity into a unique optimum. [Convexity: the Hessian tests every direction]({{ '/wiki/optimization/convexity/' | relative_url }}#the-hessian-tests-every-direction) places this quadratic result in the broader distinction between convexity, strict convexity, and existence of a minimizer.
 
 ### Adding a positive penalty
 

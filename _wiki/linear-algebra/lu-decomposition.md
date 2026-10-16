@@ -553,7 +553,7 @@ $$
 
 which is called the normal equation.
 
-A sum of squared linear discrepancies is a **convex quadratic**: along any straight line in the unknowns, its graph is an upward-opening parabola or a constant. Thus a stationary point is a global minimum, rather than a hilltop. For example, $(x_1+x_2-1)^2$ is minimized by every pair with $x_1+x_2=1$; the bottom can be flat in some directions.
+A sum of squared linear discrepancies is a **convex quadratic**: along any straight line in the unknowns, its graph is an upward-opening parabola or a constant. Thus a stationary point is a global minimum, rather than a hilltop. For example, $(x_1+x_2-1)^2$ is minimized by every pair with $x_1+x_2=1$; the bottom can be flat in some directions. See [Convexity]({{ '/wiki/optimization/convexity/' | relative_url }}#why-local-minima-become-global) for the general local-to-global proof and its distinction from uniqueness.
 
 A symmetric matrix $H$ is **positive definite** if $z^THz>0$ for every nonzero $z$; **positive semidefinite** requires $z^THz\ge0$ and allows equality for nonzero $z$. The abbreviation **SPD** means symmetric positive definite. Here $H=A^TA$ and $z^THz=\lVert Az\rVert_2^2$. Full column rank makes this strictly positive for nonzero $z$, so the minimizing $x$ is unique. If columns are dependent, some nonzero $z$ satisfies $Az=0$; adding it to a minimizer changes $x$ without changing the predictions $Ax$. Then $A^TA$ is singular and positive semidefinite, and $x$ is not unique, although $Ax$ is. See [positive-definite and semidefinite matrices]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}) and [LAPACK's least-squares conditions](https://www.netlib.org/lapack/lug/node39.html).
 

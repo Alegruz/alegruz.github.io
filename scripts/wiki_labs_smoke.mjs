@@ -37,7 +37,7 @@ try {
     assert.equal(await hint.getAttribute("open"),null);
     await hint.locator("summary").press("Enter");
     assert.notEqual(await hint.getAttribute("open"),null);
-    const root=page.locator(name==="linear-programming"?'[data-wiki-lab="linear-programming"]':name.endsWith("-norm")?`[data-wiki-lab="${name}"]`:".wiki-lab");
+    const root=page.locator(name==="convexity"?'[data-wiki-lab="convexity-mixture"]':name==="linear-programming"?'[data-wiki-lab="linear-programming"]':name.endsWith("-norm")?`[data-wiki-lab="${name}"]`:".wiki-lab");
     return {root,field:key=>root.locator(`[data-field="${key}"]`),output:root.locator("[data-matrices]"),status:root.locator("[data-status]")};
   };
 
@@ -317,9 +317,67 @@ try {
     await page.goto(`${base}${href}`,{waitUntil:'domcontentloaded'});
     if(href.includes('#'))assert.equal(await page.locator(`[id="${href.split('#')[1]}"]`).count(),1);
   }
+  lab=await visit('convexity',8,'optimization');
+  assert.match(await lab.output.innerText(),/Part I output P = 82\.2424 parts\/day/);
+  assert.match(await lab.output.innerText(),/Part II output Q = 82\.2424 parts\/day/);
+  for(const [weight,expected] of [['0','77.8182'],['0.25','80.0303'],['1','86.6667']]) {
+    await lab.field('mix').fill(weight);
+    for(const part of ['Part I output P','Part II output Q','Averaged endpoint output'])
+      assert.ok((await lab.output.innerText()).includes(`${part} = ${expected}`));
+    assert.match(await lab.output.innerText(),/Balance 30m \+ 50t \+ 110a = 230/);
+  }
+  for(const weight of ['','-0.1','1.1']) {
+    await lab.field('mix').fill(weight);
+    assert.equal(await lab.field('mix').getAttribute('aria-invalid'),'true');
+    assert.equal(await lab.root.locator('svg circle').count(),0);
+  }
+  await lab.root.locator('[data-action="reset"]').press('Enter');
+  assert.equal(await lab.field('mix').inputValue(),'0.5');
+  const chord=page.locator('[data-wiki-lab="convexity-chord"]');
+  const chordField=key=>chord.locator(`[data-field="${key}"]`);
+  const chordOutput=chord.locator('[data-matrices]');
+  assert.match(await chordOutput.innerText(),/Chord minus graph = 1/);
+  await chordField('shape').selectOption('concave');
+  assert.match(await chord.locator('[data-status]').innerText(),/inequality fails/);
+  assert.match(await chordOutput.innerText(),/Chord minus graph = -1/);
+  await chordField('shape').selectOption('absolute');
+  assert.match(await chord.locator('[data-status]').innerText(),/Equality/);
+  await chordField('left').fill('-2');
+  assert.match(await chordOutput.innerText(),/Chord minus graph = 2/);
+  for(const weight of ['0','1']) {
+    await chordField('mix').fill(weight);
+    assert.match(await chord.locator('[data-status]').innerText(),/Equality/);
+  }
+  await chordField('mix').fill('0.5');
+  await chordField('left').fill('2');
+  assert.match(await chord.locator('[data-status]').innerText(),/Equality/);
+  await chordField('right').fill('-2');
+  assert.match(await chordOutput.innerText(),/Chord minus graph = 2/);
+  for(const [field,value] of [['left',''],['left','-4'],['right','4'],['mix','1.1']]) {
+    await chord.locator('[data-action="reset"]').press('Enter');
+    await chordField(field).fill(value);
+    assert.equal(await chordField(field).getAttribute('aria-invalid'),'true');
+    assert.equal(await chord.locator('svg circle').count(),0);
+  }
+  await chord.locator('[data-action="reset"]').press('Enter');
+  assert.match(await chordOutput.innerText(),/Chord minus graph = 1/);
+  for(const width of [390,1200]) {
+    await page.setViewportSize({width,height:900});
+    for(const root of [lab.root,chord])assert.equal(await root.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+  }
+  await staticPage.goto(`${base}/wiki/optimization/convexity/`,{waitUntil:'domcontentloaded'});
+  assert.equal(await staticPage.locator('.wiki-lab-controls').first().isVisible(),false);
+  assert.equal(await staticPage.locator('noscript').count(),2);
+  assert.equal(await staticPage.locator('.post-content details').count(),8);
+  for(const [subject,source] of [['optimization','linear-programming'],['optimization','farkas-lemma'],['optimization','duality'],['linear-algebra','quadratic-form'],['linear-algebra','symmetric-positive-definite-matrix'],['linear-algebra','lu-decomposition']]) {
+    await page.goto(`${base}/wiki/${subject}/${source}/`,{waitUntil:'domcontentloaded'});
+    const href=await page.locator('.post-content a[href^="/wiki/optimization/convexity/"]').first().getAttribute('href');
+    await page.goto(`${base}${href}`,{waitUntil:'domcontentloaded'});
+    if(href.includes('#'))assert.equal(await page.locator(`[id="${href.split('#')[1]}"]`).count(),1);
+  }
   await noJS.close();
   assert.deepEqual(errors,[]);
-  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, duality bound weights and cross-links, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
+  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, duality bounds, convexity mixtures and chords, cross-links, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
 } finally {
   if(browser)await browser.close();
   await new Promise(done=>server.close(done));
