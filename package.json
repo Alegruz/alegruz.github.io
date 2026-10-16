@@ -4,7 +4,8 @@
     "content:audit": "python scripts/content_audit.py",
     "visual:smoke": "node scripts/visual_smoke.mjs",
     "wiki:smoke": "node scripts/wiki_labs_smoke.mjs",
-    "wiki:orthogonal": "node scripts/orthogonal_labs_smoke.mjs"
+    "wiki:orthogonal": "node scripts/orthogonal_labs_smoke.mjs",
+    "wiki:householder": "node scripts/householder_smoke.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.0"

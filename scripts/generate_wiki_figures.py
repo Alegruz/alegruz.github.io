@@ -167,10 +167,40 @@ def svd(preview):
     save(fig, "svd-stretch", "A unit circle mapped to an ellipse by diagonal scaling, then to a segment when one singular value is zero.", preview)
 
 
+def householder(preview):
+    x = np.array([3., 4.])
+    v = np.array([2., 1.])
+    H = np.eye(2) - 2 * np.outer(v, v) / (v @ v)
+    y = H @ x
+    midpoint = (x + y) / 2
+    assert np.allclose(y, [-5, 0])
+    assert np.allclose(H @ H, np.eye(2))
+    assert np.allclose(v @ midpoint, 0)
+    fig, ax = plt.subplots(figsize=(7, 6.6), layout="constrained")
+    axes(ax, (-6.3, 6.3))
+    ax.plot([-3, 3], [6, -6], color=GRAY, lw=1.8, ls="--",
+            label="Mirror: 2z₁ + z₂ = 0")
+    ax.plot([x[0], y[0]], [x[1], y[1]], color=GRAY, lw=1.6, ls=":")
+    vector(ax, x, BLUE, "x = (3, 4)")
+    ax.annotate("", xy=y, xytext=(0, 0),
+                arrowprops={"arrowstyle": "->", "color": ORANGE, "lw": 2})
+    ax.annotate("Hx = (−5, 0)", xy=y, xytext=(-6, -22),
+                textcoords="offset points", color=ORANGE, fontsize=11)
+    ax.scatter(*midpoint, color=GRAY, s=35, zorder=4)
+    ax.annotate("Midpoint (−1, 2)", xy=midpoint, xytext=(-113, 10),
+                textcoords="offset points", color=GRAY, fontsize=11)
+    vector(ax, v, GRAY, "Normal (2, 1)")
+    ax.set_title("One reflection removes the tail; both lengths are 5", pad=16)
+    ax.legend(loc="lower right", fontsize=10)
+    save(fig, "householder-reflection", "Invented reflection example on equal coordinate scales. The mirror 2z1 + z2 = 0 bisects the segment joining (3,4) and (-5,0) at (-1,2). Both vectors have length 5.", preview)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preview-dir", type=Path)
+    parser.add_argument("--only", choices=["householder"], help="Generate only the requested figure.")
     args = parser.parse_args()
-    for generate in [stages, elimination, energy, covariance, svd]:
+    generators = [householder] if args.only == "householder" else [stages, elimination, energy, covariance, svd, householder]
+    for generate in generators:
         generate(args.preview_dir)
-    print("Generated five verified linear-algebra diagrams.")
+    print(f"Generated {len(generators)} verified linear-algebra diagram(s).")

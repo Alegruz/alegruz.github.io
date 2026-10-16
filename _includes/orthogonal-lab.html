@@ -1,9 +1,19 @@
 <section class="wiki-lab" data-orthogonal-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
   <p class="wiki-lab-title">{{ include.title | escape }}</p>
+  {% if include.kind == 'householder' %}
+  <p class="wiki-lab-context">Supplementary invented geometry example illustrating <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>. The dimensionless baseline is not historical observation data. All edits are hypothetical experiments.</p>
+  {% else %}
   <p class="wiki-lab-context">Modern teaching reconstruction of <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>. The original problem is symbolic; the dimensionless numerical baseline here is invented, not historical observation data. All edits are hypothetical experiments.</p>
-  <p>The worked calculation in this article gives the baseline without JavaScript. With JavaScript enabled, edit the values to explore the calculation. Numeric fields accept values from −10000 to 10000; nonzero magnitudes must be at least 10⁻¹².</p>
+  {% endif %}
+  <p>The worked calculation in this article gives the baseline without JavaScript. With JavaScript enabled, edit the values to explore the calculation. Numeric fields accept values from −10000 to 10000; nonzero {% if include.kind == 'householder' %}input-vector {% endif %}magnitudes must be at least 10⁻¹².{% if include.kind == 'householder' %} Normal coordinates also accept smaller nonzero magnitudes, so aiming nearly axial inputs remains possible.{% endif %}</p>
   <div class="wiki-lab-controls" hidden>
-    {% if include.kind == 'gram-schmidt' %}
+    {% if include.kind == 'householder' %}
+    <label>Input vector, first coordinate <input data-field="x1" type="number" step="any" value="3"></label>
+    <label>Input vector, second coordinate <input data-field="x2" type="number" step="any" value="4"></label>
+    <label>Mirror normal, first coordinate <input data-field="n1" type="number" step="any" value="2"></label>
+    <label>Mirror normal, second coordinate <input data-field="n2" type="number" step="any" value="1"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="aim">Aim input at the first axis</button><button type="button" data-action="reset">Restore invented geometry baseline</button></div>
+    {% elsif include.kind == 'gram-schmidt' %}
     <label>Second column, entry 1 <input data-field="a1" type="number" step="any" value="0"></label>
     <label>Second column, entry 2 <input data-field="a2" type="number" step="any" value="1"></label>
     <label>Second column, entry 3 <input data-field="a3" type="number" step="any" value="2"></label>

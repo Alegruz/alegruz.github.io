@@ -1,10 +1,10 @@
-/* Fixed, dimensionless teaching models for orthogonalization and QR. */
+/* Dimensionless teaching models for orthogonalization, QR, and reflections. */
 (() => {
   "use strict";
   const NS="http://www.w3.org/2000/svg";
   const fmt=n=>n===0?"0":Number(n.toPrecision(6)).toString();
   const vector=v=>`(${v.map(fmt).join(", ")})`;
-  const baselines={"gram-schmidt":{a1:0,a2:1,a3:2},qr:{b1:1,b2:2,b3:2}};
+  const baselines={"gram-schmidt":{a1:0,a2:1,a3:2},qr:{b1:1,b2:2,b3:2},householder:{x1:3,x2:4,n1:2,n2:1}};
   function node(tag,attrs,parent,text){
     const el=document.createElementNS(NS,tag);
     for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);
@@ -40,12 +40,60 @@
     });
     svg.setAttribute("aria-label",series.map(s=>`${s.label}: ${vector(s.values)}`).join(". ")+". Horizontal coordinates are sample positions; vertical coordinates are component values. The vertical scale adapts to the values.");
   }
+  function reflectionPlot(root,x,y,u,midpoint){
+    const svg=root.querySelector("svg");svg.replaceChildren();
+    svg.setAttribute("viewBox","0 0 600 600");
+    const limit=Math.max(1,...x.map(Math.abs),...y.map(Math.abs))*1.3;
+    const px=value=>300+220*value/limit,py=value=>300-220*value/limit;
+    const line=(a,b,attrs)=>node("line",{x1:px(a[0]),y1:py(a[1]),x2:px(b[0]),y2:py(b[1]),...attrs},svg);
+    const legend=[["Input x","#2563eb"],["Reflection Hx","#c65b08"],["Mirror","currentColor"]];
+    legend.forEach(([label,color],i)=>{
+      node("line",{x1:35+185*i,y1:24,x2:65+185*i,y2:24,stroke:color,"stroke-width":3,...(i===2?{"stroke-dasharray":"7 4"}:{})},svg);
+      node("text",{x:35+185*i,y:52},svg,label);
+    });
+    line([-limit,0],[limit,0],{class:"lab-axis"});
+    line([0,-limit],[0,limit],{class:"lab-axis"});
+    for(const t of [-1,-.5,.5,1]){
+      const value=t*limit;
+      line([value,-limit],[value,limit],{class:"lab-grid"});
+      line([-limit,value],[limit,value],{class:"lab-grid"});
+      node("text",{x:px(value),y:550,"text-anchor":"middle"},svg,fmt(value));
+      node("text",{x:65,y:py(value)+6,"text-anchor":"end"},svg,fmt(value));
+    }
+    const tangent=[-u[1],u[0]],extent=limit/Math.max(...tangent.map(Math.abs));
+    line(tangent.map(t=>-extent*t),tangent.map(t=>extent*t),{stroke:"currentColor","stroke-width":2,"stroke-dasharray":"7 4"});
+    line(x,y,{stroke:"currentColor","stroke-width":2,"stroke-dasharray":"2 5"});
+    for(const [value,color] of [[x,"#2563eb"],[y,"#c65b08"]]){
+      line([0,0],value,{stroke:color,"stroke-width":3});
+      node("circle",{cx:px(value[0]),cy:py(value[1]),r:6,fill:color},svg);
+    }
+    node("circle",{cx:px(midpoint[0]),cy:py(midpoint[1]),r:5,fill:"currentColor"},svg);
+    node("text",{x:300,y:585,"text-anchor":"middle"},svg,"First coordinate; equal scales on both axes");
+    svg.setAttribute("aria-label",`Input x ${vector(x)}; reflection Hx ${vector(y)}; midpoint ${vector(midpoint)} on the dashed mirror. The dotted joining segment is perpendicular to the mirror. Unit normal ${vector(u)}. Both axes use the same scale and adapt to the vectors.`);
+  }
   function calculate(root,f,kind){
     const status=root.querySelector("[data-status]"),output=root.querySelector("[data-matrices]");
     const note=root.querySelector("[data-explanation]");
     const baseline=Object.entries(baselines[kind]).every(([key,value])=>f[key]===value);
     const prefix=baseline?"Invented teaching baseline. ":"Hypothetical experiment. ";
-    if(kind==="gram-schmidt"){
+    if(kind==="householder"){
+      const x=[f.x1,f.x2],normalScale=Math.max(Math.abs(f.n1),Math.abs(f.n2));
+      const aim=root.querySelector('[data-action="aim"]');aim.disabled=Math.hypot(...x)===0;
+      if(normalScale===0){
+        status.textContent=prefix+"A zero normal cannot define a mirror. Enter a nonzero normal or aim a nonzero input at the first axis.";
+        output.textContent="";root.querySelector("svg").replaceChildren();
+        note.textContent="There is no reflector to compute from a zero normal.";return;
+      }
+      const scaled=[f.n1/normalScale,f.n2/normalScale],normalLength=Math.hypot(...scaled);
+      const u=scaled.map(value=>value/normalLength),dot=u[0]*x[0]+u[1]*x[1];
+      const normal=u.map(value=>value*dot),midpoint=x.map((value,i)=>value-normal[i]);
+      const y=x.map((value,i)=>value-2*normal[i]);
+      const h=[[1-2*u[0]*u[0],-2*u[0]*u[1]],[-2*u[0]*u[1],1-2*u[1]*u[1]]];
+      output.textContent=`x = ${vector(x)}\nUnit normal u = ${vector(u)}\nH = [${h.map(row=>vector(row)).join(", ")}]\nNormal component = ${vector(normal)}\nMidpoint on mirror = ${vector(midpoint)}\nHx = ${vector(y)}\n‖x‖₂ = ${fmt(Math.hypot(...x))}\n‖Hx‖₂ = ${fmt(Math.hypot(...y))}\nMirror check uᵀ midpoint = ${fmt(u[0]*midpoint[0]+u[1]*midpoint[1])}`;
+      status.textContent=prefix+(aim.disabled?"The zero input stays zero. Enter a nonzero input to aim it at an axis.":"The mirror keeps the in-plane component and reverses the normal component.");
+      reflectionPlot(root,x,y,u,midpoint);
+      note.textContent="Blue is the input; orange is its reflection. The dashed line is the mirror. The dot at the midpoint of the dotted joining segment is the projection onto the mirror. Endpoint dots can overlap when the input lies on the mirror. Both axes have equal scale, which adapts to the input. Results use rounded floating-point arithmetic; tiny nonzero checks are rounding effects.";
+    }else if(kind==="gram-schmidt"){
       const a=[f.a1,f.a2,f.a3],mean=a.reduce((sum,value)=>sum+value,0)/3;
       const u=a.map(value=>value-mean),length=Math.hypot(...u),scale=Math.hypot(...a);
       // An illustrative resolution policy, not a general rank test.
@@ -85,12 +133,14 @@
         const fields={};let invalid=false;
         root.querySelectorAll("[data-field]").forEach(input=>{
           const value=input.valueAsNumber;
-          const valid=Number.isFinite(value)&&Math.abs(value)<=10000&&(value===0||Math.abs(value)>=1e-12);
+          const normal=kind==="householder"&&input.dataset.field.startsWith("n");
+          const valid=Number.isFinite(value)&&Math.abs(value)<=10000&&(normal||value===0||Math.abs(value)>=1e-12);
           input.setAttribute("aria-invalid",String(!valid));invalid ||= !valid;
           fields[input.dataset.field]=value;
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent="Enter finite numbers between −10000 and 10000 in every field; nonzero magnitudes must be at least 10⁻¹².";
+          const aim=root.querySelector('[data-action="aim"]');if(aim)aim.disabled=true;
+          root.querySelector("[data-status]").textContent="Enter finite numbers between −10000 and 10000 in every field; nonzero "+(kind==="householder"?"input-vector ":"")+"magnitudes must be at least 10⁻¹².";
           root.querySelector("[data-matrices]").textContent="";
           root.querySelector("[data-explanation]").textContent="The calculation resumes when every input is valid.";
           root.querySelector("svg").replaceChildren();return;
@@ -98,6 +148,19 @@
         calculate(root,fields,kind);
       }
       root.querySelectorAll("[data-field]").forEach(input=>input.addEventListener("input",render));
+      root.querySelector('[data-action="aim"]')?.addEventListener("click",()=>{
+        const get=key=>root.querySelector(`[data-field="${key}"]`).valueAsNumber;
+        const x=[get("x1"),get("x2")],length=Math.hypot(...x);
+        if(!Number.isFinite(length)||length===0)return;
+        // Construct in normalized coordinates so the normal remains in range.
+        const direction=x.map(value=>value/length);
+        const v=[direction[0]+(x[0]<0?-1:1),direction[1]],vlength=Math.hypot(...v);
+        for(const [i,key] of ["n1","n2"].entries()){
+          const value=v[i]/vlength;
+          root.querySelector(`[data-field="${key}"]`).value=value;
+        }
+        render();
+      });
       root.querySelector('[data-action="reset"]').addEventListener("click",()=>{
         for(const [key,value] of Object.entries(baselines[kind]))root.querySelector(`[data-field="${key}"]`).value=value;
         render();

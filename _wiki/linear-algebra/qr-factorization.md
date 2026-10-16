@@ -170,7 +170,7 @@ Gram–Schmidt explains the factors by constructing columns. Other methods trans
 
 ### Householder reflections: remove a column tail together
 
-A **hyperplane** is a flat subspace with one fewer dimension than the surrounding space: a line through the origin in two dimensions, or a plane through the origin in three. A **reflection** reverses the component perpendicular to that hyperplane and leaves components within it unchanged. For nonzero $v$,
+A **hyperplane** is a flat subspace with one fewer dimension than the surrounding space: a line through the origin in two dimensions, or a plane through the origin in three. A [Householder reflection]({{ '/wiki/linear-algebra/householder-reflection/' | relative_url }}) reverses the component perpendicular to that hyperplane and leaves components within it unchanged. Its dedicated page derives the geometry, distinguishes reflection from projection, and explains the numerical construction. For nonzero $v$,
 
 $$
 H=I-2\frac{vv^T}{v^Tv}
@@ -365,6 +365,8 @@ Let $S=\operatorname{diag}(\sqrt{w_1},\sqrt{w_2},\sqrt{w_3})$. Factor $SA=Q_wR_w
 - [ALAFF: why normal equations can lose accuracy](https://www.cs.utexas.edu/~flame/laff/alaff/LLS-Why-Normal-Equations-Bad.html): derive the squared-condition-number identity.
 
 ## Related pages
+
+- [Householder reflection]({{ '/wiki/linear-algebra/householder-reflection/' | relative_url }})
 
 - [Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }})
 - [Matrix factorization and decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }})

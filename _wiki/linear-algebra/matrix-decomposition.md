@@ -196,6 +196,8 @@ Define new coordinates $y_1=2x_1+x_2$ and $y_2=\sqrt2x_2$. The expression is now
 
 [Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }}) constructs perpendicular unit directions by subtracting earlier projections. Recording the reconstruction coefficients produces [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }}), whose dedicated page develops least squares and alternative algorithms.
 
+[Householder reflections]({{ '/wiki/linear-algebra/householder-reflection/' | relative_url }}) provide another construction: successive length-preserving mirrors zero entries below the diagonal, leaving $R$, while the reverse product of reflectors gives $Q$. This separates the factorization $A=QR$ from the algorithm used to compute it. See [LAPACK's Householder QR algorithm](https://www.netlib.org/lapack/lug/node69.html).
+
 Columns of $Q$ form perpendicular unit directions. Columns of $R$ say how to combine those directions to recover the columns of $A$. For instance,
 
 $$
@@ -417,6 +419,8 @@ Scaling gives $(2,2)^T$; shearing gives $(3,2)^T$. To undo the pipeline, first s
 
 ## Related pages
 
+- [Householder reflection]({{ '/wiki/linear-algebra/householder-reflection/' | relative_url }})
+
 - [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }})
 - [Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }})
 
@@ -440,3 +444,4 @@ Scaling gives $(2,2)^T$; shearing gives $(3,2)^T$. To undo the pipeline, first s
 
 7. OpenStax. *College Algebra 2e*. [Matrices and Matrix Operations](https://openstax.org/books/college-algebra-2e/pages/7-5-matrices-and-matrix-operations) and [Solving Systems with Inverses](https://openstax.org/books/college-algebra-2e/pages/7-7-solving-systems-with-inverses).
 8. Strang, G. (2018). MIT OpenCourseWare, *18.065*. [The Column Space of A Contains All Vectors Ax](https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-1-the-column-space-of-a-contains-all-vectors-ax/).
+9. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [QR Factorization: Householder and blocked constructions](https://www.netlib.org/lapack/lug/node69.html).

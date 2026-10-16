@@ -216,7 +216,9 @@ $$
 
 with positive small $\varepsilon$, and simplify using $1+\varepsilon^2\approx1$. Under that stated rounding model, both methods obtain $q_2\approx(0,-1,1,0)^T/\sqrt2$. CGS then gives $q_3\approx(0,-1,0,1)^T/\sqrt2$, whose dot product with $q_2$ is $1/2$. MGS instead uses the updated remainder to get $q_3\approx(0,-1,-1,2)^T/\sqrt6$, whose dot product with $q_2$ is zero. These are consequences of the source's simplified rounding model, not exact-arithmetic results or a prediction for every machine and every $\varepsilon$. See [the original slides 6–7](https://ocw.mit.edu/courses/18-335j-introduction-to-numerical-methods-spring-2019/be0cdadd9de56ff8d20d9a0c6d6d9206_MIT18_335JS19_lec9_reading.pdf#page=1).
 
-MGS is generally more reliable than a single CGS pass, but it can still lose orthogonality for nearly dependent inputs. **Reorthogonalization** repeats projection removal against the existing basis. For dense QR, Householder transformations are another approach. MIT's [numerical-methods discussion](https://ocw.mit.edu/courses/18-335j-introduction-to-numerical-methods-spring-2019/pages/week-4/) introduces these remedies. A numerical implementation needs a scale-aware policy for tiny remainders; testing against a fixed absolute constant is not a universal rank test.
+MGS is generally more reliable than a single CGS pass, but it can still lose orthogonality for nearly dependent inputs. **Reorthogonalization** repeats projection removal against the existing basis. For dense QR, [Householder reflections]({{ '/wiki/linear-algebra/householder-reflection/' | relative_url }}) are another approach. MIT's [numerical-methods discussion](https://ocw.mit.edu/courses/18-335j-introduction-to-numerical-methods-spring-2019/pages/week-4/) introduces these remedies. A numerical implementation needs a scale-aware policy for tiny remainders; testing against a fixed absolute constant is not a universal rank test.
+
+Gram–Schmidt builds each basis vector by subtracting projections onto earlier directions. Householder QR instead changes coordinates with length-preserving reflections, zeroing a whole column tail at each step. Both produce a QR factorization, but the intermediate operations differ. The [reflector derivation]({{ '/wiki/linear-algebra/householder-reflection/#construct-a-reflection-that-zeros-a-column-tail' | relative_url }}) shows how to choose the mirror; the [QR comparison]({{ '/wiki/linear-algebra/qr-factorization/#choosing-the-construction' | relative_url }}) places the methods side by side. See also [LAPACK's Householder construction](https://www.netlib.org/lapack/lug/node69.html).
 
 ## Interactive example: watch a direction disappear
 
@@ -323,6 +325,8 @@ The mean is $5$, so the projection is $(5,5,5)^T$ and the remainder is $(-3,0,3)
 
 ## Related pages
 
+- [Householder reflection]({{ '/wiki/linear-algebra/householder-reflection/' | relative_url }})
+
 - [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }})
 - [Vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }})
 - [Matrix factorization and decomposition]({{ '/wiki/linear-algebra/matrix-decomposition/' | relative_url }})
@@ -334,3 +338,4 @@ The mean is $5$, so the projection is $(5,5,5)^T$ and the remainder is $(-3,0,3)
 2. van de Geijn, R. A., and Myers, M. *Advanced Linear Algebra: Foundations to Frontiers*, [§3.2.1, Classical Gram–Schmidt](https://www.cs.utexas.edu/~flame/laff/alaff/chapter03-classical-gram-schmidt.html).
 3. Persson, P.-O. (2006). *Gram–Schmidt Orthogonalization*, MIT 18.335J/6.337J, lecture slides dated September 21, 2006, [distributed with the Spring 2019 course](https://ocw.mit.edu/courses/18-335j-introduction-to-numerical-methods-spring-2019/resources/mit18_335js19_lec9_reading/). Slides 3–7 compare CGS and MGS.
 4. Johnson, S. G. (2019). MIT OpenCourseWare, *Introduction to Numerical Methods*, [Week 4](https://ocw.mit.edu/courses/18-335j-introduction-to-numerical-methods-spring-2019/pages/week-4/). Numerical orthogonality and alternative constructions.
+5. Anderson, E., et al. (1999). *LAPACK Users' Guide*. [QR Factorization: Householder and blocked constructions](https://www.netlib.org/lapack/lug/node69.html).
