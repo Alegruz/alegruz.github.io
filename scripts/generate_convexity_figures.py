@@ -21,6 +21,8 @@ def save(fig, name, description, preview):
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / f"{name}.svg", bbox_inches="tight",
                 metadata={"Title": name.replace("-", " "), "Description": description})
+    svg = OUT / f"{name}.svg"
+    svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
     if preview:
         preview.mkdir(parents=True, exist_ok=True)
         fig.savefig(preview / f"{name}.png", dpi=140, bbox_inches="tight")
