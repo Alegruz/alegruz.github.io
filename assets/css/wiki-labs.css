@@ -36,4 +36,5 @@
 @media (max-width: 560px) {
   .wiki-lab { padding: .8rem; }
   .wiki-lab-controls { grid-template-columns: minmax(0, 1fr); }
+  .wiki-lab[data-orthogonal-lab] svg text { font-size: 24px; }
 }

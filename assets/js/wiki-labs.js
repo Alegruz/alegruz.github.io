@@ -392,6 +392,37 @@
     svg.setAttribute('aria-label',`Target ${fmt(q)}; attainable rate 260/3 complete sets per day. ${status.textContent}`);
   }
 
+  function duality(root, fields) {
+    const theta=fields.weight, attained=260/3;
+    const values=w=>[Math.max(10*w,20*(1-w)),Math.max(20*w,30*(1-w)),Math.max(30*w,80*(1-w))];
+    const bound=w=>{const v=values(w);return 3*v[0]+3*v[1]+v[2];};
+    const prices=values(theta), upper=bound(theta), gap=Math.max(0,upper-attained);
+    const baseline=theta===2/3;
+    root.querySelector('[data-status]').textContent=baseline?
+      'Published-data baseline with derived weight 2/3: the bound matches the feasible plan (within floating-point rounding).':
+      'Hypothetical certificate weights; published machine data remain fixed. The bound is valid for every matching plan.';
+    root.querySelector('[data-matrices]').textContent=
+      `Part weights = (${fmt(theta)}, ${fmt(1-theta)})\nMachine values (M, T, A) = (${prices.map(fmt)})\nUpper bound U(θ) = ${fmt(upper)} complete sets/day\nVerified feasible output = 260/3 ≈ ${fmt(attained)} complete sets/day\nCertificate gap U(θ) − 260/3 = ${fmt(gap)} complete sets/day`;
+    const svg=root.querySelector('svg');svg.replaceChildren();
+    const px=w=>70+460*w, py=value=>350-280*(value-80)/160;
+    node('line',{x1:70,y1:70,x2:70,y2:350,class:'lab-axis'},svg);
+    node('line',{x1:70,y1:350,x2:530,y2:350,class:'lab-axis'},svg);
+    [80,120,160,200,240].forEach(value=>{
+      node('line',{x1:66,y1:py(value),x2:530,y2:py(value),class:'lab-grid'},svg);
+      node('text',{x:30,y:py(value)+5},svg,String(value));
+    });
+    [0,.5,1].forEach(w=>node('text',{x:px(w)-8,y:375},svg,String(w)));
+    node('text',{x:70,y:35},svg,'Complete sets/day (vertical scale starts at 80)');
+    node('text',{x:150,y:410},svg,'Part I weight θ; Part II weight 1 − θ');
+    node('line',{x1:70,y1:py(attained),x2:530,y2:py(attained),stroke:'#2563eb','stroke-width':2,'stroke-dasharray':'6 4'},svg);
+    const weights=[0,3/5,2/3,8/11,1];
+    node('polyline',{points:weights.map(w=>`${px(w)},${py(bound(w))}`).join(' '),fill:'none',stroke:'#c65b08','stroke-width':3},svg);
+    node('line',{x1:px(theta),y1:py(attained),x2:px(theta),y2:py(upper),stroke:'currentColor','stroke-width':2},svg);
+    node('circle',{cx:px(theta),cy:py(upper),r:5,fill:'currentColor'},svg);
+    root.querySelector('[data-explanation]').textContent='Orange: upper bound U(θ). Dashed blue: verified feasible output 260/3. The dot marks your certificate and the vertical line its gap. Axes stay fixed; the vertical scale starts at 80. A machine may split between parts without losing weighted output when its two weighted rates tie. Equal weights give U = 115; restoring 2/3 gives the exact mathematical bound 260/3. Displayed decimals are rounded, not exact equality proofs.';
+    svg.setAttribute('aria-label',`Upper bound ${fmt(upper)}; feasible output 260/3; certificate gap ${fmt(gap)} complete sets per day. Part I weight ${fmt(theta)}.`);
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
@@ -405,7 +436,7 @@
         let invalid=false;
         root.querySelectorAll('input[type="number"], input[type="range"]').forEach(input=>{
           const value=input.valueAsNumber;
-          const good=kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
+          const good=kind==="duality"?Number.isFinite(value)&&value>=0&&value<=1:kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
           input.setAttribute("aria-invalid",String(!good));
           invalid ||= !good;
           f[input.dataset.field]=value;
@@ -413,14 +444,15 @@
           if(display)display.textContent=good?fmt(value):"—";
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent=kind==="farkas"?"Enter a finite target between 0 and 100 complete sets per day. Zero is allowed.":kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
+          root.querySelector("[data-status]").textContent=kind==="duality"?"Enter a finite Part I weight between 0 and 1. Both endpoints are allowed.":kind==="farkas"?"Enter a finite target between 0 and 100 complete sets per day. Zero is allowed.":kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
           root.querySelector("[data-matrices]").textContent="";
           root.querySelector("[data-explanation]").textContent="The result will update when the inputs are valid.";
           root.querySelector("svg")?.replaceChildren();
           const next=root.querySelector('[data-action="next"]');if(next)next.disabled=true;
           return;
         }
-        if(kind==="farkas")farkas(root,f);
+        if(kind==="duality")duality(root,f);
+        else if(kind==="farkas")farkas(root,f);
         else if(kind==="kantorovich")kantorovich(root,f,step);
         else if(kind==="composition")composition(root,f,set,`wiki-lab-clip-${index}`);
         else if(kind==="linear-programming")linearProgramming(root,f);
@@ -438,6 +470,10 @@
       }));
       root.querySelector('[data-action="next"]')?.addEventListener("click",()=>{step=Math.min(step+1,3);render();});
       root.querySelector('[data-action="boundary"]')?.addEventListener("click",()=>{set('demand').value=260/3;render();});
+      if(kind==="duality"){
+        root.querySelector('[data-action="equal-weights"]').addEventListener("click",()=>{set('weight').value=1/2;render();});
+        root.querySelector('[data-action="reset"]').addEventListener("click",()=>{set('weight').value=2/3;render();});
+      }
       if(kind==="farkas")root.querySelector('[data-action="reset"]').addEventListener("click",()=>{set('demand').value=90;render();});
       root.querySelector('[data-action="reset"]')?.addEventListener("click",()=>{if(normBaselines[kind]){for(const [key,value] of Object.entries(normBaselines[kind]))set(key).value=value;}if(kind==="kantorovich"){for(const [key,value] of Object.entries(presets.original))set(key).value=value;set('preset').value='original';}if(kind==="linear-programming"){set('profit1').value=3;set('profit2').value=2;}step=0;render();});
       root.querySelector(".wiki-lab-controls").hidden=false;

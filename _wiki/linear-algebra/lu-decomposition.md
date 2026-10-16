@@ -3,7 +3,7 @@ title: LU decomposition
 subject: Linear Algebra
 interactive_examples: true
 description: Factor a matrix into lower and upper triangular matrices to solve linear systems efficiently.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-16
 ---
 
 ## Definition
@@ -466,6 +466,8 @@ which translates into
 At that time, the speed of calculations wasn't the main issue, but the intermediate quantities that arises from the calculations.
 
 ### Solving normal equations
+
+This section derives the equations characterizing a least-squares fit. [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/#derive-the-least-squares-solve' | relative_url }}) obtains the same fit through orthonormal coordinates and a triangular solve, avoiding explicit formation of $A^TA$. [Gram–Schmidt]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }}) explains how those coordinates are constructed.
 
 **Least squares** chooses unknowns to minimize the sum of squared discrepancies between predictions and measurements. The **normal equations** are the linear equations that characterize this best fit; they apply whether the original system has an exact solution or only an approximate fit. See [LAPACK's least-squares formulation](https://www.netlib.org/lapack/lug/node39.html).
 
@@ -1064,6 +1066,9 @@ $A\widehat x=(3.01,7.01)^T$, so $r=(-0.01,-0.01)^T$. A residual measures the equ
 - [LAPACK: backward error and conditioning](https://www.netlib.org/lapack/lug/node81.html): develop the distinction in exercise 8 between satisfying equations and recovering an accurate solution.
 
 ## Related pages
+
+- [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }})
+- [Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }})
 
 - [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 

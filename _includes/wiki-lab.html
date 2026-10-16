@@ -4,6 +4,8 @@
   <p class="wiki-lab-context">Published illustrative-data baseline from <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a> (1999). Reference values remain fixed; edits to the approximation are hypothetical experiments. The source specifies no physical units. Outputs are modern recalculations with rounded display values.</p>
   {% elsif include.kind == 'vector-norm' or include.kind == 'matrix-norm' %}
   <p class="wiki-lab-context">Supplementary invented teaching example. These default values are not historical observations; edits are hypothetical experiments.</p>
+  {% elsif include.kind == 'duality' %}
+  <p class="wiki-lab-context">Published illustrative-data baseline from <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>: capacities (3, 3, 1) machine-days and Part I/II rates (10/20, 20/30, 30/80). Data remain fixed. The modern model uses divisible time, full utilization, exactly matching parts, and no setup costs. The initial weight 2/3 is our derived certificate; changing it is a hypothetical certificate experiment.</p>
   {% elsif include.kind == 'farkas' %}
   <p class="wiki-lab-context">Fixed published illustrative data from <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>: capacities (3, 3, 1) machine-days and Part I/II rates (10/20, 20/30, 30/80). The target is hypothetical; default 90 is not a published historical target. This modern model uses divisible time, full utilization, surplus parts allowed, and no setup cost.</p>
   {% elsif include.kind == 'kantorovich' %}
@@ -13,7 +15,10 @@
   {% endif %}
   <noscript><p>The interactive controls require JavaScript. The worked examples and practice solutions below can be read without it.</p></noscript>
   <div class="wiki-lab-controls" hidden>
-    {% if include.kind == 'farkas' %}
+    {% if include.kind == 'duality' %}
+    <label>Part I weight θ (Part II weight is 1 − θ) <input data-field="weight" type="number" min="0" max="1" step="any" value="0.6666666666666666"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="equal-weights">Try equal part weights (1/2, 1/2)</button><button type="button" data-action="reset">Restore published-data baseline and derived weight 2/3</button></div>
+    {% elsif include.kind == 'farkas' %}
     <label>Hypothetical target q (complete sets per day) <input data-field="demand" type="number" min="0" max="100" step="any" value="90"></label>
     <div class="wiki-lab-actions"><button type="button" data-action="boundary">Explore exact boundary 260/3</button><button type="button" data-action="reset">Restore published data and hypothetical target 90</button></div>
     {% elsif include.kind == 'vector-error' %}

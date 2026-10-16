@@ -279,9 +279,47 @@ try {
   await staticPage.goto(`${base}/wiki/optimization/farkas-lemma/`,{waitUntil:'domcontentloaded'});
   assert.equal(await staticPage.locator('.wiki-lab-controls').isVisible(),false);
   assert.equal(await staticPage.locator('noscript').isVisible(),true);
+  lab=await visit('duality',8,'optimization');
+  assert.match(await lab.status.innerText(),/derived weight 2\/3/);
+  assert.match(await lab.output.innerText(),/Upper bound U\(θ\) = 86\.6667/);
+  assert.match(await lab.output.innerText(),/Certificate gap U\(θ\) − 260\/3 = 0/);
+  await lab.root.locator('[data-action="equal-weights"]').press('Enter');
+  assert.match(await lab.output.innerText(),/Upper bound U\(θ\) = 115/);
+  assert.match(await lab.output.innerText(),/Certificate gap U\(θ\) − 260\/3 = 28\.3333/);
+  for(const [weight,expected] of [['0','230'],['0.6','92'],['1','120']]) {
+    await lab.field('weight').fill(weight);
+    assert.match(await lab.output.innerText(),new RegExp(`Upper bound U\\(θ\\) = ${expected} complete`));
+    assert.equal(await lab.field('weight').getAttribute('aria-invalid'),'false');
+  }
+  for(const weight of ['', '-0.1', '1.1']) {
+    await lab.field('weight').fill(weight);
+    assert.equal(await lab.field('weight').getAttribute('aria-invalid'),'true');
+    assert.match(await lab.status.innerText(),/between 0 and 1/);
+    assert.equal(await lab.root.locator('svg circle').count(),0);
+  }
+  await lab.root.locator('[data-action="reset"]').press('Enter');
+  assert.match(await lab.status.innerText(),/derived weight 2\/3/);
+  for(const width of [390,1200]) {
+    await page.setViewportSize({width,height:900});
+    assert.equal(await lab.root.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+    assert.equal(await lab.root.locator('.wiki-lab-controls').isVisible(),true);
+  }
+  await staticPage.goto(`${base}/wiki/optimization/duality/`,{waitUntil:'domcontentloaded'});
+  assert.equal(await staticPage.locator('.wiki-lab-controls').isVisible(),false);
+  assert.equal(await staticPage.locator('noscript').isVisible(),true);
+  assert.equal(await staticPage.locator('img[src$="optimization-duality-bound.svg"]').count(),1);
+  assert.equal(await staticPage.locator('.post-content details').count(),8);
+  for(const source of ['linear-programming','farkas-lemma']) {
+    await page.goto(`${base}/wiki/optimization/${source}/`,{waitUntil:'domcontentloaded'});
+    const link=page.locator('.post-content a[href^="/wiki/optimization/duality/"]').first();
+    assert.equal(await link.count(),1);
+    const href=await link.getAttribute('href');
+    await page.goto(`${base}${href}`,{waitUntil:'domcontentloaded'});
+    if(href.includes('#'))assert.equal(await page.locator(`[id="${href.split('#')[1]}"]`).count(),1);
+  }
   await noJS.close();
   assert.deepEqual(errors,[]);
-  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
+  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, duality bound weights and cross-links, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
 } finally {
   if(browser)await browser.close();
   await new Promise(done=>server.close(done));

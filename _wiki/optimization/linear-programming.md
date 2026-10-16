@@ -3,7 +3,7 @@ title: Linear programming
 subject: Optimization
 interactive_examples: true
 description: Derive linear models, improving exchanges, and optimality certificates from Kantorovich's machine allocation and Dantzig's assignment problem.
-last_modified_at: 2026-10-13
+last_modified_at: 2026-10-16
 ---
 
 ## Kantorovich's problem: maximize complete sets of parts
@@ -303,6 +303,8 @@ $$
 Our allocation attains this bound. Thus the multipliers give a certificate that no other allocation can produce more. Assigning time to a strictly smaller weighted rate would create a gap in the certificate; mixing is possible where the weighted rates tie. This is the mechanism behind the complementary-slackness conditions below.
 
 ## Duality: from the historical certificate to a general bound
+
+This section develops duality as an optimality certificate for our production models. For systematic sign rules, a strong-duality proof through Farkas’ lemma, and the extension to Lagrangians and KKT conditions, continue to [Optimization duality]({{ '/wiki/optimization/duality/' | relative_url }}).
 
 Dantzig recalled meeting von Neumann on October 3, 1947, when von Neumann connected LP to game theory, the study of choices whose outcomes depend on other participants, and outlined duality. See [Dantzig (2002), p. 44](https://pubsonline.informs.org/doi/pdf/10.1287/opre.50.1.42.17798#page=3). The machine certificate gives us a concrete way to read that idea: one optimization chooses activities; another chooses weights that bound what any activities can achieve.
 

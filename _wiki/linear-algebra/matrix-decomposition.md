@@ -3,7 +3,7 @@ title: Matrix factorization and decomposition
 subject: Linear Algebra
 interactive_examples: true
 description: Represent matrices as products of structured factors, and choose between LU, Cholesky, QR, and other decompositions.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-16
 ---
 
 ## Definition
@@ -123,7 +123,7 @@ The table uses real matrices. For complex numbers, **conjugation** changes $a+bi
 | --- | --- | --- | --- |
 | [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) | $PA=LU$ | For general nonsingular square matrices; $P$ reorders rows, $L$ is unit lower triangular, and $U$ is upper triangular | Linear systems |
 | [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) | $A=LL^T$ | [Symmetric positive-definite]({{ '/wiki/linear-algebra/symmetric-positive-definite-matrix/' | relative_url }}) $A$; $L$ is lower triangular with positive diagonal | Linear systems with positive-definite coefficients |
-| QR | $A=QR$ | For $m\ge n$, the reduced form (keeping only $n$ columns of $Q$) has $Q\in\mathbb{R}^{m\times n}$ with $Q^TQ=I$ and upper triangular $R\in\mathbb{R}^{n\times n}$ | Least squares with full column rank |
+| [QR]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }}) | $A=QR$ | For $m\ge n$, the reduced form (keeping only $n$ columns of $Q$) has $Q\in\mathbb{R}^{m\times n}$ with $Q^TQ=I$ and upper triangular $R\in\mathbb{R}^{n\times n}$ | Least squares with full column rank |
 | Singular value decomposition (SVD) | $A=U\Sigma V^T$ | Any $m\times n$ matrix; full $U$ and $V$ are orthogonal, and $\Sigma$ is rectangular diagonal with nonnegative entries | Stretch factors (singular values, explained below) and rank analysis |
 | Symmetric eigendecomposition | $A=Q\Lambda Q^T$ | Real symmetric $A$; $Q$ is orthogonal, and $\Lambda$ is real diagonal | Eigenvalues and eigenvectors |
 
@@ -193,6 +193,8 @@ $$
 Define new coordinates $y_1=2x_1+x_2$ and $y_2=\sqrt2x_2$. The expression is now $y_1^2+y_2^2$, an ordinary squared length. Here $y=L^Tx$: the matrix $L^T$ is upper triangular because $y_2$ needs only $x_2$, whereas $y_1$ can use both old coordinates. This is the concrete meaning of a **triangular change of coordinates**. The [Cholesky page]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}) walks through cross terms and completing the square before connecting them to the factorization; the [quadratic-form page]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }}) develops the expression $x^TAx$ itself.
 
 ### QR separates direction from coordinate mixing
+
+[Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }}) constructs perpendicular unit directions by subtracting earlier projections. Recording the reconstruction coefficients produces [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }}), whose dedicated page develops least squares and alternative algorithms.
 
 Columns of $Q$ form perpendicular unit directions. Columns of $R$ say how to combine those directions to recover the columns of $A$. For instance,
 
@@ -414,6 +416,9 @@ Scaling gives $(2,2)^T$; shearing gives $(3,2)^T$. To undo the pipeline, first s
 - [LU]({{ '/wiki/linear-algebra/lu-decomposition/' | relative_url }}) and [Cholesky]({{ '/wiki/linear-algebra/cholesky-decomposition/' | relative_url }}): continue with elimination records, positive energy, and their dedicated practice sets.
 
 ## Related pages
+
+- [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }})
+- [Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }})
 
 - [Vector norms]({{ '/wiki/linear-algebra/vector-norm/' | relative_url }})
 - [Matrix norms]({{ '/wiki/linear-algebra/matrix-norm/' | relative_url }})

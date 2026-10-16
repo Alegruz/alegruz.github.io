@@ -3,7 +3,7 @@ title: Cholesky decomposition
 subject: Linear Algebra
 interactive_examples: true
 description: Understand how geodetic network adjustment led to Cholesky factorization, how its purpose developed, and how to compute it.
-last_modified_at: 2026-10-12
+last_modified_at: 2026-10-16
 ---
 
 ## Definition
@@ -185,6 +185,16 @@ r_1=(2,0),\qquad r_2=(1,\sqrt2).
 $$
 
 Their squared lengths are $4$ and $3$, and their dot product is $2$. These are precisely the two diagonal entries and the off-diagonal entry of $A$. Triangularity lets us construct these vectors one coordinate at a time: give the first row its length, match the next row's dot product with it, then choose the remaining coordinate to supply the remaining squared length. This is the Gram-matrix interpretation of $LL^T$; see [the FLAME definition and algorithm](https://www.cs.utexas.edu/~flame/Notes/NotesOnChol.html).
+
+### The connection to orthogonalization
+
+If $B=QR$ is a reduced [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }}) with independent columns and positive diagonal $R$, then
+
+$$
+B^TB=R^TQ^TQR=R^TR.
+$$
+
+Thus $R^T$ is the lower Cholesky factor of the Gram matrix $B^TB$. [Gram–Schmidt]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }}) constructs $Q$ by removing overlapping components and records their coefficients in $R$. This identity links the factorizations in exact arithmetic; the [QR accuracy discussion]({{ '/wiki/linear-algebra/qr-factorization/#the-connection-to-cholesky-and-the-accuracy-trap' | relative_url }}) explains why forming the Gram matrix first can lose information through rounding.
 
 ### A triangular square root has a specific meaning
 
@@ -665,6 +675,9 @@ $Ly=b$ gives $y_1=1/\sqrt2$, $y_2=1/\sqrt6$. Then $L^Tx=y$ gives $x_2=1/3$ and $
 - [Stata: multivariate-normal simulation](https://www.stata.com/support/faqs/statistics/multivariate-normal-observations/): connect exercise 7 to a complete covariance-generation example.
 
 ## Related pages
+
+- [QR factorization]({{ '/wiki/linear-algebra/qr-factorization/' | relative_url }})
+- [Gram–Schmidt orthogonalization]({{ '/wiki/linear-algebra/gram-schmidt-orthogonalization/' | relative_url }})
 
 - [Quadratic form]({{ '/wiki/linear-algebra/quadratic-form/' | relative_url }})
 

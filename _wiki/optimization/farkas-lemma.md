@@ -3,7 +3,7 @@ title: Farkas’ Lemma
 subject: Optimization
 interactive_examples: true
 description: Prove that linear constraints are impossible by combining them into a contradiction, and connect the certificate to cones and LP duality.
-last_modified_at: 2026-10-13
+last_modified_at: 2026-10-16
 ---
 
 ## The problem: prove that inequalities cannot be satisfied
@@ -211,7 +211,7 @@ $$
 
 If $\alpha>0$, $x=-u/\alpha$ would satisfy $Ax\le b$ but $c^Tx>d$. If $\alpha=0$, take any feasible $x_0$; $x_0-tu$ stays feasible for $t\ge0$ and its objective grows without bound because $c^Tu<0$. Both contradict the assumed bound. Therefore the weights exist. **Feasibility matters** here: an empty system implies every inequality vacuously.
 
-For a primal with $x\ge0$, the usual upper-bound dual condition becomes $A^Ty\ge c$, rather than equality. The [Linear Programming page]({{ '/wiki/optimization/linear-programming/' | relative_url }}) develops that primal–dual pair and optimality certificates. Farkas’ Lemma establishes the underlying alternative; a full strong-duality argument must also address optimal values and attainment.
+For a primal with $x\ge0$, the usual upper-bound dual condition becomes $A^Ty\ge c$, rather than equality. The [Linear Programming page]({{ '/wiki/optimization/linear-programming/' | relative_url }}) develops that primal–dual pair and optimality certificates. Farkas’ Lemma establishes the underlying alternative; a full strong-duality argument must also address optimal values and attainment. [Optimization duality]({{ '/wiki/optimization/duality/' | relative_url }}#why-lp-bounds-can-meet-a-proof-through-farkas-lemma) completes that proof using the bound-certificate argument above and finite-cone closedness, then extends the construction to nonlinear problems.
 
 ## Conditions and common mistakes
 

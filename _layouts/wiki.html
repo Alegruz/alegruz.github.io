@@ -31,6 +31,8 @@ layout: default
   </footer>
 </article>
 <script src="{{ '/assets/js/post-enhancements.js' | relative_url }}" defer></script>
-{% if page.interactive_examples %}
+{% if page.orthogonal_examples %}
+<script src="{{ '/assets/js/orthogonal-labs.js' | relative_url }}" defer></script>
+{% elsif page.interactive_examples %}
 <script src="{{ '/assets/js/wiki-labs.js' | relative_url }}" defer></script>
 {% endif %}

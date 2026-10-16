@@ -1,0 +1,24 @@
+<section class="wiki-lab" data-orthogonal-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
+  <p class="wiki-lab-title">{{ include.title | escape }}</p>
+  <p class="wiki-lab-context">Modern teaching reconstruction of <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>. The original problem is symbolic; the dimensionless numerical baseline here is invented, not historical observation data. All edits are hypothetical experiments.</p>
+  <p>The worked calculation in this article gives the baseline without JavaScript. With JavaScript enabled, edit the values to explore the calculation. Numeric fields accept values from −10000 to 10000; nonzero magnitudes must be at least 10⁻¹².</p>
+  <div class="wiki-lab-controls" hidden>
+    {% if include.kind == 'gram-schmidt' %}
+    <label>Second column, entry 1 <input data-field="a1" type="number" step="any" value="0"></label>
+    <label>Second column, entry 2 <input data-field="a2" type="number" step="any" value="1"></label>
+    <label>Second column, entry 3 <input data-field="a3" type="number" step="any" value="2"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore invented vector baseline</button></div>
+    {% elsif include.kind == 'qr' %}
+    <label>Observation b₁ at t = 0 <input data-field="b1" type="number" step="any" value="1"></label>
+    <label>Observation b₂ at t = 1 <input data-field="b2" type="number" step="any" value="2"></label>
+    <label>Observation b₃ at t = 2 <input data-field="b3" type="number" step="any" value="2"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">Restore invented observation baseline</button></div>
+    {% endif %}
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="Computed vectors, matrices, and values"></pre>
+    <svg data-plot viewBox="0 0 600 430" role="img" aria-label="{{ include.plot_description | escape }}"></svg>
+    <p data-explanation></p>
+  </div>
+</section>
