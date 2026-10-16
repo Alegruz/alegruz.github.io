@@ -64,9 +64,14 @@
     grid-column: 1;
     grid-row: auto;
     position: static;
+    max-height: none;
     padding: 0 0 1rem;
     border-left: 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  .post-toc ol {
+    overflow-y: visible;
   }
 }
 

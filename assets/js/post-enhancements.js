@@ -171,7 +171,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const active = link.dataset.headingId === activeHeading.id;
         link.classList.toggle("active", active);
         link.parentElement?.classList.toggle("active", active);
+        if (active) {
+          link.setAttribute("aria-current", "location");
+        } else {
+          link.removeAttribute("aria-current");
+        }
       });
+
+      // Scroll only the desktop TOC, so following the highlight never moves the article.
+      if (window.getComputedStyle(toc).position === "sticky") {
+        const activeItem = list.querySelector("li.active");
+        const listBounds = list.getBoundingClientRect();
+        const itemBounds = activeItem.getBoundingClientRect();
+        if (itemBounds.top < listBounds.top) {
+          list.scrollTop -= listBounds.top - itemBounds.top;
+        } else if (itemBounds.bottom > listBounds.bottom) {
+          list.scrollTop += itemBounds.bottom - listBounds.bottom;
+        }
+      }
     }
 
     function scheduleActiveHeadingUpdate() {

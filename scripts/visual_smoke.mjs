@@ -83,6 +83,32 @@ async function checkPage(browser, baseUrl, target) {
   const page = await context.newPage();
   await page.goto(`${baseUrl}${target.path}`, { waitUntil: "networkidle" });
 
+  if (target.name === "wiki-toc") {
+    const headings = page.locator("#post-content h2, #post-content h3");
+    const count = await headings.count();
+    if (count < 20) {
+      throw new Error("wiki-toc: expected a long table of contents");
+    }
+    for (const index of [count - 3, Math.floor(count / 2), 1]) {
+      const { id, y } = await headings.nth(index).evaluate((heading) => {
+        const y = heading.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top: y, behavior: "instant" });
+        return { id: heading.id, y };
+      });
+      await page.waitForFunction(({ id, y }) => {
+        const list = document.getElementById("post-toc-list");
+        const active = list.querySelector('a[aria-current="location"]');
+        if (active?.dataset.headingId !== id) return false;
+        const item = active.parentElement.getBoundingClientRect();
+        const bounds = list.getBoundingClientRect();
+        return item.top >= bounds.top - 1
+          && item.bottom <= bounds.bottom + 1
+          && bounds.bottom <= window.innerHeight
+          && Math.abs(window.scrollY - y) < 2;
+      }, { id, y });
+    }
+  }
+
   if (target.path === "/wiki/linear-algebra/lu-decomposition/") {
     await page.waitForSelector("#post-content mjx-container", { timeout: 30000 });
     await page.evaluate(async () => { await window.MathJax.startup.promise; });
@@ -135,6 +161,7 @@ const targets = [
   { name: "series", path: "/series/", viewport: { width: 1280, height: 900 } },
   { name: "wiki-index", path: "/wiki/", viewport: { width: 1280, height: 900 } },
   { name: "wiki-entry", path: "/wiki/linear-algebra/lu-decomposition/", viewport: { width: 1440, height: 1000 } },
+  { name: "wiki-toc", path: "/wiki/optimization/linear-programming/", viewport: { width: 1440, height: 600 } },
   { name: "wiki-mobile", path: "/wiki/linear-algebra/lu-decomposition/", viewport: { width: 390, height: 844 } },
   { name: "not-found", path: "/visual-smoke-missing-page/", viewport: { width: 1280, height: 900 } }
 ];

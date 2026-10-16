@@ -376,14 +376,21 @@
 }
 
 .post-toc {
+  display: flex;
+  flex-direction: column;
   grid-column: 2;
   grid-row: 1;
   position: sticky;
   top: 88px;
+  max-height: calc(100vh - 104px);
   padding-left: 1rem;
   border-left: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.86rem;
+}
+
+.post-toc[hidden] {
+  display: none;
 }
 
 .post-toc p {
@@ -397,6 +404,9 @@
   gap: 0.3rem;
   margin: 0;
   list-style: none;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 .post-toc li {
