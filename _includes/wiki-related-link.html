@@ -1,0 +1,13 @@
+{%- assign english_url = '/wiki/' | append: include.path | append: '/' -%}
+{%- assign target_url = english_url -%}
+{%- assign english_fallback = false -%}
+{%- if page.lang == 'ko' -%}
+  {%- assign korean_url = '/wiki/' | append: include.path | append: '-ko/' -%}
+  {%- assign korean_entry = site.wiki | where: 'url', korean_url | first -%}
+  {%- if korean_entry -%}
+    {%- assign target_url = korean_url -%}
+  {%- else -%}
+    {%- assign english_fallback = true -%}
+  {%- endif -%}
+{%- endif -%}
+<a href="{{ target_url | relative_url }}"{% if english_fallback %} lang="en"{% endif %}>{{ include.label | escape }}{% if english_fallback %} (영문){% endif %}</a>

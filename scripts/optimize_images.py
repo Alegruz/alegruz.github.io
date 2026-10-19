@@ -9,6 +9,7 @@ dimensions and byte sizes in _data/image_manifest.yml.
 from __future__ import annotations
 
 import argparse
+import unicodedata
 from pathlib import Path
 
 from PIL import Image, ImageSequence
@@ -130,6 +131,17 @@ def main() -> int:
     parser.add_argument("--quality", type=int, default=82)
     parser.add_argument("--min-bytes", type=int, default=1_000_000)
     args = parser.parse_args()
+
+    invalid_paths = [
+        relative(path)
+        for path in sorted(IMAGE_ROOT.rglob("*"))
+        if any(unicodedata.category(char) in {"Cc", "Cf"} for char in path.name)
+    ]
+    if invalid_paths:
+        parser.error(
+            "rename image paths containing invisible control or formatting characters:\n"
+            + "\n".join(f"  {path!r}" for path in invalid_paths)
+        )
 
     variants: list[Path] = []
     if args.write_variants:

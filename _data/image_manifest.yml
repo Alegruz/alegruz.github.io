@@ -212,60 +212,60 @@ images:
     height: 480
     bytes: 79606
     animated: false
+  - path: assets/images/DeferredShading/DeferredTiled2_5dAabbDurations.png
+    width: 640
+    height: 480
+    bytes: 46764
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiled2_5dAabbGeometryPhaseDurationsByResolution.png
+    width: 640
+    height: 480
+    bytes: 66300
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiled2_5dAabbLightingPhaseDurations.png
+    width: 640
+    height: 480
+    bytes: 59572
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiled2_5dAabbLightingPhaseDurationsByResolution.png
+    width: 640
+    height: 480
+    bytes: 55595
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiled2_5dAabbOpaqueDurationsByResolution.png
+    width: 640
+    height: 480
+    bytes: 55908
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiled2_5dDurations.png
+    width: 640
+    height: 480
+    bytes: 52111
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiledDice2_5dAabbDurations.png
+    width: 640
+    height: 480
+    bytes: 46560
+    animated: false
+  - path: assets/images/DeferredShading/DeferredTiledDice2_5dDurations.png
+    width: 640
+    height: 480
+    bytes: 56027
+    animated: false
   - path: assets/images/DeferredShading/DeferredTiledDiceDurations.png
     width: 640
     height: 480
     bytes: 53880
     animated: false
+  - path: assets/images/DeferredShading/DeferredTiledDurations.png
+    width: 640
+    height: 480
+    bytes: 53924
+    animated: false
   - path: assets/images/DeferredShading/DeferredTiledIntelDurations.png
     width: 640
     height: 480
     bytes: 57259
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iled2_5dAabbDurations.png
-    width: 640
-    height: 480
-    bytes: 46764
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iled2_5dAabbGeometryPhaseDurationsByResolution.png
-    width: 640
-    height: 480
-    bytes: 66300
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iled2_5dAabbLightingPhaseDurations.png
-    width: 640
-    height: 480
-    bytes: 59572
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iled2_5dAabbLightingPhaseDurationsByResolution.png
-    width: 640
-    height: 480
-    bytes: 55595
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iled2_5dAabbOpaqueDurationsByResolution.png
-    width: 640
-    height: 480
-    bytes: 55908
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iled2_5dDurations.png
-    width: 640
-    height: 480
-    bytes: 52111
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iledDice2_5dAabbDurations.png
-    width: 640
-    height: 480
-    bytes: 46560
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iledDice2_5dDurations.png
-    width: 640
-    height: 480
-    bytes: 56027
-    animated: false
-  - path: assets/images/DeferredShading/DeferredT‎iledDurations.png
-    width: 640
-    height: 480
-    bytes: 53924
     animated: false
   - path: assets/images/DeferredShading/Forward Durations.png
     width: 640
@@ -457,21 +457,6 @@ images:
     height: 480
     bytes: 56300
     animated: false
-  - path: assets/images/DeferredShading/LightingPhaseDurations.png
-    width: 878
-    height: 563
-    bytes: 134470
-    animated: false
-  - path: assets/images/DeferredShading/LightingPhaseOptimizedDurations.png
-    width: 941
-    height: 508
-    bytes: 114394
-    animated: false
-  - path: assets/images/DeferredShading/LightingPhaseTiledDurations.png
-    width: 811
-    height: 484
-    bytes: 97136
-    animated: false
   - path: assets/images/DeferredShading/LightPhaseDurationBarAll.png
     width: 853
     height: 480
@@ -566,6 +551,21 @@ images:
     width: 640
     height: 480
     bytes: 35659
+    animated: false
+  - path: assets/images/DeferredShading/LightingPhaseDurations.png
+    width: 878
+    height: 563
+    bytes: 134470
+    animated: false
+  - path: assets/images/DeferredShading/LightingPhaseOptimizedDurations.png
+    width: 941
+    height: 508
+    bytes: 114394
+    animated: false
+  - path: assets/images/DeferredShading/LightingPhaseTiledDurations.png
+    width: 811
+    height: 484
+    bytes: 97136
     animated: false
   - path: assets/images/DeferredShading/NormalCompressionFrameDurationAll.png
     width: 834
@@ -737,16 +737,6 @@ images:
     height: 480
     bytes: 48352
     animated: false
-  - path: assets/images/DeferredShading/ThinGBufferLightingPhaseDurations.png
-    width: 1920
-    height: 1101
-    bytes: 428290
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferLightingPhaseOptimizedDurations.png
-    width: 640
-    height: 480
-    bytes: 65963
-    animated: false
   - path: assets/images/DeferredShading/ThinGBufferLightPhaseDurationAll.png
     width: 640
     height: 480
@@ -761,6 +751,16 @@ images:
     width: 640
     height: 480
     bytes: 37441
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferLightingPhaseDurations.png
+    width: 1920
+    height: 1101
+    bytes: 428290
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferLightingPhaseOptimizedDurations.png
+    width: 640
+    height: 480
+    bytes: 65963
     animated: false
   - path: assets/images/DeferredShading/ThinGBufferOpaqueDurations.png
     width: 1551
@@ -792,60 +792,60 @@ images:
     height: 537
     bytes: 78061
     animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiled2_5dAabbDurations.png
+    width: 640
+    height: 480
+    bytes: 51402
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiled2_5dAabbGeometryPhaseDurationsByResolution.png
+    width: 640
+    height: 480
+    bytes: 67842
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiled2_5dAabbLightingPhaseDurationsByResolution.png
+    width: 640
+    height: 480
+    bytes: 63631
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiled2_5dAabbOpaqueDurationsByResolution.png
+    width: 640
+    height: 480
+    bytes: 64418
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiled2_5dDurations.png
+    width: 640
+    height: 480
+    bytes: 51639
+    animated: false
   - path: assets/images/DeferredShading/ThinGBufferTiledClusteredSmallLights.png
     width: 640
     height: 480
     bytes: 31046
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiledDice2_5dAabbDurations.png
+    width: 640
+    height: 480
+    bytes: 56250
+    animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiledDice2_5dDurations.png
+    width: 640
+    height: 480
+    bytes: 48340
     animated: false
   - path: assets/images/DeferredShading/ThinGBufferTiledDiceDurations.png
     width: 640
     height: 480
     bytes: 55711
     animated: false
+  - path: assets/images/DeferredShading/ThinGBufferTiledDurations.png
+    width: 640
+    height: 480
+    bytes: 42789
+    animated: false
   - path: assets/images/DeferredShading/ThinGBufferTiledIntelDurations.png
     width: 640
     height: 480
     bytes: 54704
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iled2_5dAabbDurations.png
-    width: 640
-    height: 480
-    bytes: 51402
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iled2_5dAabbGeometryPhaseDurationsByResolution.png
-    width: 640
-    height: 480
-    bytes: 67842
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iled2_5dAabbLightingPhaseDurationsByResolution.png
-    width: 640
-    height: 480
-    bytes: 63631
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iled2_5dAabbOpaqueDurationsByResolution.png
-    width: 640
-    height: 480
-    bytes: 64418
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iled2_5dDurations.png
-    width: 640
-    height: 480
-    bytes: 51639
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iledDice2_5dAabbDurations.png
-    width: 640
-    height: 480
-    bytes: 56250
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iledDice2_5dDurations.png
-    width: 640
-    height: 480
-    bytes: 48340
-    animated: false
-  - path: assets/images/DeferredShading/ThinGBufferT‎iledDurations.png
-    width: 640
-    height: 480
-    bytes: 42789
     animated: false
   - path: assets/images/DeferredShading/TileClusterAssignmentDurationAll.png
     width: 1087
@@ -941,6 +941,21 @@ images:
     width: 307
     height: 48
     bytes: 13368
+    animated: false
+  - path: assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiD3D12.png
+    width: 451
+    height: 499
+    bytes: 25161
+    animated: false
+  - path: assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiVK.png
+    width: 1139
+    height: 704
+    bytes: 65340
+    animated: false
+  - path: assets/images/GameEngineRhiSystemAnalysis/InstanceBgfx.png
+    width: 440
+    height: 499
+    bytes: 25320
     animated: false
   - path: assets/images/GameEngineering/AngularLinearVelocities.png
     width: 880
@@ -1117,15 +1132,15 @@ images:
     height: 15
     bytes: 523
     animated: false
-  - path: assets/images/GameEngineering/LinearVelocityFigure.png
-    width: 645
-    height: 466
-    bytes: 28427
-    animated: false
   - path: assets/images/GameEngineering/LUDecomposedPseudoInverse.png
     width: 105
     height: 47
     bytes: 1806
+    animated: false
+  - path: assets/images/GameEngineering/LinearVelocityFigure.png
+    width: 645
+    height: 466
+    bytes: 28427
     animated: false
   - path: assets/images/GameEngineering/NewtonRaphsonMultivariateUpdate.png
     width: 253
@@ -1211,21 +1226,6 @@ images:
     width: 214
     height: 22
     bytes: 1365
-    animated: false
-  - path: assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiD3D12.png
-    width: 451
-    height: 499
-    bytes: 25161
-    animated: false
-  - path: assets/images/GameEngineRhiSystemAnalysis/InstanceAnkiVK.png
-    width: 1139
-    height: 704
-    bytes: 65340
-    animated: false
-  - path: assets/images/GameEngineRhiSystemAnalysis/InstanceBgfx.png
-    width: 440
-    height: 499
-    bytes: 25320
     animated: false
   - path: assets/images/GlobalIllumination/AOIrradiance.png
     width: 242
@@ -1317,15 +1317,15 @@ images:
     height: 20
     bytes: 517
     animated: false
-  - path: assets/images/Gris/PathX.png
-    width: 11
-    height: 12
-    bytes: 245
-    animated: false
   - path: assets/images/Gris/PHatFromI.png
     width: 49
     height: 20
     bytes: 648
+    animated: false
+  - path: assets/images/Gris/PathX.png
+    width: 11
+    height: 12
+    bytes: 245
     animated: false
   - path: assets/images/Gris/ReciprocalOfTheMarginalPdf.png
     width: 164
@@ -1342,15 +1342,15 @@ images:
     height: 57
     bytes: 1574
     animated: false
-  - path: assets/images/Gris/ResamplingWeights.png
-    width: 422
-    height: 60
-    bytes: 6108
-    animated: false
   - path: assets/images/Gris/ResamplingWeightWi.png
     width: 290
     height: 49
     bytes: 4021
+    animated: false
+  - path: assets/images/Gris/ResamplingWeights.png
+    width: 422
+    height: 60
+    bytes: 6108
     animated: false
   - path: assets/images/Gris/SelectionPmf.png
     width: 139
@@ -1732,6 +1732,11 @@ images:
     height: 686
     bytes: 178896
     animated: false
+  - path: assets/images/RayTracingEssentials/BVH.jpeg
+    width: 599
+    height: 601
+    bytes: 56504
+    animated: false
   - path: assets/images/RayTracingEssentials/BattlefieldV.jpeg
     width: 813
     height: 484
@@ -1746,11 +1751,6 @@ images:
     width: 779
     height: 313
     bytes: 38258
-    animated: false
-  - path: assets/images/RayTracingEssentials/BVH.jpeg
-    width: 599
-    height: 601
-    bytes: 56504
     animated: false
   - path: assets/images/RayTracingEssentials/Caustics.jpeg
     width: 1224
@@ -1918,6 +1918,11 @@ images:
     height: 682
     bytes: 172045
     animated: false
+  - path: assets/images/RayTracingEssentials/MISComparison.jpeg
+    width: 1134
+    height: 415
+    bytes: 68515
+    animated: false
   - path: assets/images/RayTracingEssentials/MetroExodusOneFrame.jpeg
     width: 1155
     height: 345
@@ -1928,11 +1933,6 @@ images:
     height: 303
     bytes: 32506
     animated: false
-  - path: assets/images/RayTracingEssentials/MISComparison.jpeg
-    width: 1134
-    height: 415
-    bytes: 68515
-    animated: false
   - path: assets/images/RayTracingEssentials/MotionBlur.jpeg
     width: 1222
     height: 684
@@ -1942,6 +1942,11 @@ images:
     width: 1034
     height: 407
     bytes: 51183
+    animated: false
+  - path: assets/images/RayTracingEssentials/NVIDIARealTimeRayTracing.jpeg
+    width: 1231
+    height: 603
+    bytes: 141285
     animated: false
   - path: assets/images/RayTracingEssentials/NoiseInRayTracing.jpeg
     width: 1225
@@ -1963,11 +1968,6 @@ images:
     height: 689
     bytes: 272300
     animated: false
-  - path: assets/images/RayTracingEssentials/NVIDIARealTimeRayTracing.jpeg
-    width: 1231
-    height: 603
-    bytes: 141285
-    animated: false
   - path: assets/images/RayTracingEssentials/PascalAndTuring.jpeg
     width: 808
     height: 383
@@ -1982,6 +1982,11 @@ images:
     width: 1115
     height: 552
     bytes: 73985
+    animated: false
+  - path: assets/images/RayTracingEssentials/RTXRayTracingPipeline.jpeg
+    width: 1224
+    height: 281
+    bytes: 43805
     animated: false
   - path: assets/images/RayTracingEssentials/Rasterization0.jpeg
     width: 467
@@ -2047,11 +2052,6 @@ images:
     width: 1150
     height: 493
     bytes: 229780
-    animated: false
-  - path: assets/images/RayTracingEssentials/RTXRayTracingPipeline.jpeg
-    width: 1224
-    height: 281
-    bytes: 43805
     animated: false
   - path: assets/images/RayTracingEssentials/ShadersComplicated.jpeg
     width: 1224
@@ -2143,36 +2143,6 @@ images:
     height: 13
     bytes: 157
     animated: false
-  - path: assets/images/ResampledImportanceSampling/Figure1.png
-    width: 881
-    height: 727
-    bytes: 78283
-    animated: false
-  - path: assets/images/ResampledImportanceSampling/IntegralIOfFunctionF.png
-    width: 146
-    height: 45
-    bytes: 1920
-    animated: false
-  - path: assets/images/ResampledImportanceSampling/RisEstimator.png
-    width: 258
-    height: 130
-    bytes: 8719
-    animated: false
-  - path: assets/images/ResampledImportanceSampling/RisInWeightedImportanceSamplingForm.png
-    width: 235
-    height: 57
-    bytes: 3631
-    animated: false
-  - path: assets/images/ResampledImportanceSampling/Weight.png
-    width: 98
-    height: 48
-    bytes: 1786
-    animated: false
-  - path: assets/images/ResampledImportanceSampling/WeightingFunctionW.png
-    width: 189
-    height: 60
-    bytes: 2617
-    animated: false
   - path: assets/images/ReStir/ApproximationToRealPdfOfSamplesAtQi.png
     width: 47
     height: 21
@@ -2218,6 +2188,11 @@ images:
     height: 57
     bytes: 4759
     animated: false
+  - path: assets/images/ReStir/NSampleRisEstimator.png
+    width: 375
+    height: 61
+    bytes: 6568
+    animated: false
   - path: assets/images/ReStir/NeighboringPixelTargetPdf.png
     width: 20
     height: 19
@@ -2227,11 +2202,6 @@ images:
     width: 62
     height: 48
     bytes: 1715
-    animated: false
-  - path: assets/images/ReStir/NSampleRisEstimator.png
-    width: 375
-    height: 61
-    bytes: 6568
     animated: false
   - path: assets/images/ReStir/ReflectedRadianceL.png
     width: 508
@@ -2243,15 +2213,15 @@ images:
     height: 53
     bytes: 2051
     animated: false
-  - path: assets/images/ReStir/ResultingTerm.png
-    width: 130
-    height: 48
-    bytes: 2342
-    animated: false
   - path: assets/images/ReStir/ResultTermSuccinct.png
     width: 154
     height: 21
     bytes: 1684
+    animated: false
+  - path: assets/images/ReStir/ResultingTerm.png
+    width: 130
+    height: 48
+    bytes: 2342
     animated: false
   - path: assets/images/ReStir/RisCandidateSpecificProbability.png
     width: 192
@@ -2348,6 +2318,216 @@ images:
     height: 60
     bytes: 6600
     animated: false
+  - path: assets/images/ReStirGi/Equation2.png
+    width: 248
+    height: 16
+    bytes: 2122
+    animated: false
+  - path: assets/images/ReStirGi/Figure10.jpeg
+    width: 1516
+    height: 484
+    bytes: 98592
+    animated: false
+  - path: assets/images/ReStirGi/Figure2.jpeg
+    width: 1220
+    height: 308
+    bytes: 77687
+    animated: false
+  - path: assets/images/ReStirGi/Figure4.jpeg
+    width: 890
+    height: 426
+    bytes: 73540
+    animated: false
+  - path: assets/images/ReStirGi/Figure5.jpeg
+    width: 528
+    height: 237
+    bytes: 23543
+    animated: false
+  - path: assets/images/ReStirGi/Figure6.jpeg
+    width: 922
+    height: 706
+    bytes: 42952
+    animated: false
+  - path: assets/images/ReStirGi/Figure7.jpeg
+    width: 600
+    height: 711
+    bytes: 82302
+    animated: false
+  - path: assets/images/ReStirGi/Figure9.jpeg
+    width: 1676
+    height: 316
+    bytes: 167625
+    animated: false
+  - path: assets/images/ReStirGi/GBufferBase.png
+    width: 617
+    height: 674
+    bytes: 46212
+    animated: false
+  - path: assets/images/ReStirGi/GBufferRT.png
+    width: 604
+    height: 544
+    bytes: 36853
+    animated: false
+  - path: assets/images/ReStirGi/Integrand.png
+    width: 67
+    height: 35
+    bytes: 945
+    animated: false
+  - path: assets/images/ReStirGi/JacobianTransformation.png
+    width: 200
+    height: 43
+    bytes: 2845
+    animated: false
+  - path: assets/images/ReStirGi/MinimalPathTracer.png
+    width: 734
+    height: 543
+    bytes: 53004
+    animated: false
+  - path: assets/images/ReStirGi/RTXDI.png
+    width: 1389
+    height: 1439
+    bytes: 222298
+    animated: false
+  - path: assets/images/ReStirGi/RTXDIPass.png
+    width: 605
+    height: 494
+    bytes: 32380
+    animated: false
+  - path: assets/images/ReStirGi/RayTracedGBufferPass.png
+    width: 488
+    height: 364
+    bytes: 20563
+    animated: false
+  - path: assets/images/ReStirGi/RenderingEquation.png
+    width: 380
+    height: 36
+    bytes: 3615
+    animated: false
+  - path: assets/images/ReStirGi/RenderingEquationFigure.png
+    width: 429
+    height: 465
+    bytes: 23471
+    animated: false
+  - path: assets/images/ReStirGi/RenderingEquationFigure0.png
+    width: 600
+    height: 400
+    bytes: 8098
+    animated: false
+  - path: assets/images/ReStirGi/RenderingEquationFigure1.png
+    width: 410
+    height: 448
+    bytes: 33927
+    animated: false
+  - path: assets/images/ReStirGi/ResampleProbability.png
+    width: 142
+    height: 43
+    bytes: 1971
+    animated: false
+  - path: assets/images/ReStirGi/RisEstimate.png
+    width: 104
+    height: 19
+    bytes: 1023
+    animated: false
+  - path: assets/images/ReStirGi/SamplePoint.png
+    width: 14
+    height: 10
+    bytes: 245
+    animated: false
+  - path: assets/images/ReStirGi/SamplePointOutgoingRadiance.png
+    width: 16
+    height: 18
+    bytes: 274
+    animated: false
+  - path: assets/images/ReStirGi/SamplePointSurfaceNormal.png
+    width: 14
+    height: 14
+    bytes: 279
+    animated: false
+  - path: assets/images/ReStirGi/SampleRelativeWeight.png
+    width: 88
+    height: 38
+    bytes: 1418
+    animated: false
+  - path: assets/images/ReStirGi/SimpleTargetFunction.png
+    width: 107
+    height: 16
+    bytes: 913
+    animated: false
+  - path: assets/images/ReStirGi/TargetFunction.png
+    width: 30
+    height: 16
+    bytes: 493
+    animated: false
+  - path: assets/images/ReStirGi/TargetFunctionEquation.png
+    width: 423
+    height: 16
+    bytes: 3675
+    animated: false
+  - path: assets/images/ReStirGi/TargetPdf.png
+    width: 8
+    height: 14
+    bytes: 239
+    animated: false
+  - path: assets/images/ReStirGi/TraditionalMonteCarloEstimator.png
+    width: 327
+    height: 48
+    bytes: 3876
+    animated: false
+  - path: assets/images/ReStirGi/UnbiasedRisEstimate.png
+    width: 153
+    height: 48
+    bytes: 2793
+    animated: false
+  - path: assets/images/ReStirGi/VisiblePoint.png
+    width: 14
+    height: 10
+    bytes: 243
+    animated: false
+  - path: assets/images/ReStirGi/VisiblePointSurfaceNormal.png
+    width: 15
+    height: 14
+    bytes: 299
+    animated: false
+  - path: assets/images/ReStirGi/Weight.png
+    width: 180
+    height: 48
+    bytes: 2839
+    animated: false
+  - path: assets/images/ReStirGi/WhatNowDie.jpg
+    width: 300
+    height: 300
+    bytes: 22693
+    animated: false
+  - path: assets/images/ResampledImportanceSampling/Figure1.png
+    width: 881
+    height: 727
+    bytes: 78283
+    animated: false
+  - path: assets/images/ResampledImportanceSampling/IntegralIOfFunctionF.png
+    width: 146
+    height: 45
+    bytes: 1920
+    animated: false
+  - path: assets/images/ResampledImportanceSampling/RisEstimator.png
+    width: 258
+    height: 130
+    bytes: 8719
+    animated: false
+  - path: assets/images/ResampledImportanceSampling/RisInWeightedImportanceSamplingForm.png
+    width: 235
+    height: 57
+    bytes: 3631
+    animated: false
+  - path: assets/images/ResampledImportanceSampling/Weight.png
+    width: 98
+    height: 48
+    bytes: 1786
+    animated: false
+  - path: assets/images/ResampledImportanceSampling/WeightingFunctionW.png
+    width: 189
+    height: 60
+    bytes: 2617
+    animated: false
   - path: assets/images/RestirForGameGi/ImportanceSamplingFx.png
     width: 229
     height: 20
@@ -2437,186 +2617,6 @@ images:
     width: 211
     height: 60
     bytes: 3684
-    animated: false
-  - path: assets/images/ReStirGi/Equation2.png
-    width: 248
-    height: 16
-    bytes: 2122
-    animated: false
-  - path: assets/images/ReStirGi/Figure10.jpeg
-    width: 1516
-    height: 484
-    bytes: 98592
-    animated: false
-  - path: assets/images/ReStirGi/Figure2.jpeg
-    width: 1220
-    height: 308
-    bytes: 77687
-    animated: false
-  - path: assets/images/ReStirGi/Figure4.jpeg
-    width: 890
-    height: 426
-    bytes: 73540
-    animated: false
-  - path: assets/images/ReStirGi/Figure5.jpeg
-    width: 528
-    height: 237
-    bytes: 23543
-    animated: false
-  - path: assets/images/ReStirGi/Figure6.jpeg
-    width: 922
-    height: 706
-    bytes: 42952
-    animated: false
-  - path: assets/images/ReStirGi/Figure7.jpeg
-    width: 600
-    height: 711
-    bytes: 82302
-    animated: false
-  - path: assets/images/ReStirGi/Figure9.jpeg
-    width: 1676
-    height: 316
-    bytes: 167625
-    animated: false
-  - path: assets/images/ReStirGi/GBufferBase.png
-    width: 617
-    height: 674
-    bytes: 46212
-    animated: false
-  - path: assets/images/ReStirGi/GBufferRT.png
-    width: 604
-    height: 544
-    bytes: 36853
-    animated: false
-  - path: assets/images/ReStirGi/Integrand.png
-    width: 67
-    height: 35
-    bytes: 945
-    animated: false
-  - path: assets/images/ReStirGi/JacobianTransformation.png
-    width: 200
-    height: 43
-    bytes: 2845
-    animated: false
-  - path: assets/images/ReStirGi/MinimalPathTracer.png
-    width: 734
-    height: 543
-    bytes: 53004
-    animated: false
-  - path: assets/images/ReStirGi/RayTracedGBufferPass.png
-    width: 488
-    height: 364
-    bytes: 20563
-    animated: false
-  - path: assets/images/ReStirGi/RenderingEquation.png
-    width: 380
-    height: 36
-    bytes: 3615
-    animated: false
-  - path: assets/images/ReStirGi/RenderingEquationFigure.png
-    width: 429
-    height: 465
-    bytes: 23471
-    animated: false
-  - path: assets/images/ReStirGi/RenderingEquationFigure0.png
-    width: 600
-    height: 400
-    bytes: 8098
-    animated: false
-  - path: assets/images/ReStirGi/RenderingEquationFigure1.png
-    width: 410
-    height: 448
-    bytes: 33927
-    animated: false
-  - path: assets/images/ReStirGi/ResampleProbability.png
-    width: 142
-    height: 43
-    bytes: 1971
-    animated: false
-  - path: assets/images/ReStirGi/RisEstimate.png
-    width: 104
-    height: 19
-    bytes: 1023
-    animated: false
-  - path: assets/images/ReStirGi/RTXDI.png
-    width: 1389
-    height: 1439
-    bytes: 222298
-    animated: false
-  - path: assets/images/ReStirGi/RTXDIPass.png
-    width: 605
-    height: 494
-    bytes: 32380
-    animated: false
-  - path: assets/images/ReStirGi/SamplePoint.png
-    width: 14
-    height: 10
-    bytes: 245
-    animated: false
-  - path: assets/images/ReStirGi/SamplePointOutgoingRadiance.png
-    width: 16
-    height: 18
-    bytes: 274
-    animated: false
-  - path: assets/images/ReStirGi/SamplePointSurfaceNormal.png
-    width: 14
-    height: 14
-    bytes: 279
-    animated: false
-  - path: assets/images/ReStirGi/SampleRelativeWeight.png
-    width: 88
-    height: 38
-    bytes: 1418
-    animated: false
-  - path: assets/images/ReStirGi/SimpleTargetFunction.png
-    width: 107
-    height: 16
-    bytes: 913
-    animated: false
-  - path: assets/images/ReStirGi/TargetFunction.png
-    width: 30
-    height: 16
-    bytes: 493
-    animated: false
-  - path: assets/images/ReStirGi/TargetFunctionEquation.png
-    width: 423
-    height: 16
-    bytes: 3675
-    animated: false
-  - path: assets/images/ReStirGi/TargetPdf.png
-    width: 8
-    height: 14
-    bytes: 239
-    animated: false
-  - path: assets/images/ReStirGi/TraditionalMonteCarloEstimator.png
-    width: 327
-    height: 48
-    bytes: 3876
-    animated: false
-  - path: assets/images/ReStirGi/UnbiasedRisEstimate.png
-    width: 153
-    height: 48
-    bytes: 2793
-    animated: false
-  - path: assets/images/ReStirGi/VisiblePoint.png
-    width: 14
-    height: 10
-    bytes: 243
-    animated: false
-  - path: assets/images/ReStirGi/VisiblePointSurfaceNormal.png
-    width: 15
-    height: 14
-    bytes: 299
-    animated: false
-  - path: assets/images/ReStirGi/Weight.png
-    width: 180
-    height: 48
-    bytes: 2839
-    animated: false
-  - path: assets/images/ReStirGi/WhatNowDie.jpg
-    width: 300
-    height: 300
-    bytes: 22693
     animated: false
   - path: assets/images/RhiSystem/BGFX/DXGIFactory.png
     width: 222

@@ -12,6 +12,10 @@ layout: default
         <time datetime="{{ page.last_modified_at | date_to_xmlschema }}">Updated {{ page.last_modified_at | date: '%Y-%m-%d' }}</time>
       </p>
     {% endif %}
+    {% assign counterparts = site.wiki | where: 'translation_key', page.translation_key %}
+    <nav aria-label="{% if page.lang == 'ko' %}문서 언어{% else %}Page language{% endif %}">
+      {% for counterpart in counterparts %}{% unless counterpart.lang == page.lang %}<a href="{{ counterpart.url | relative_url }}" lang="{{ counterpart.lang }}" hreflang="{{ counterpart.lang }}">{% if counterpart.lang == 'ko' %}한국어{% else %}English{% endif %}</a>{% endunless %}{% endfor %}
+    </nav>
     <div class="reader-controls" aria-label="Reading width">
       <span>Width</span>
       <button type="button" data-reader-width="normal" aria-pressed="true">Normal</button>
@@ -31,7 +35,9 @@ layout: default
   </footer>
 </article>
 <script src="{{ '/assets/js/post-enhancements.js' | relative_url }}" defer></script>
-{% if page.orthogonal_examples %}
+{% if page.cg_examples %}
+<script src="{{ '/assets/js/cg-lab.js' | relative_url }}" defer></script>
+{% elsif page.orthogonal_examples %}
 <script src="{{ '/assets/js/orthogonal-labs.js' | relative_url }}" defer></script>
 {% elsif page.interactive_examples %}
 <script src="{{ '/assets/js/wiki-labs.js' | relative_url }}" defer></script>

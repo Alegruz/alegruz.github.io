@@ -1,0 +1,31 @@
+<section class="wiki-lab cg-lab" data-cg-lab aria-label="Explore the published conjugate gradient example">
+  <p class="wiki-lab-title">Explore the published four-equation system</p>
+  <p>Original-data baseline: <a href="https://math.nist.gov/mcsd/Reports/2002/hestenes-steifel-52.pdf#page=25">Hestenes and Stiefel, section 19, Example 1 and Table 1, p. 433</a>. A and b stay fixed, with no physical units specified. CG and x₀ = (1, 0, 0, 0) reproduce the baseline in modern floating-point arithmetic. Other methods and starting values are hypothetical experiments. The known solution is used only to measure error, not to compute the iterates.</p>
+  <noscript><p>JavaScript is disabled. The exact four-step table above supplies the baseline calculation, including residual and energy-error values.</p></noscript>
+  <div class="wiki-lab-controls" hidden>
+    <label>Method
+      <select data-field="method">
+        <option value="cg">Conjugate gradients — published baseline</option>
+        <option value="sd">Steepest descent — modern comparison</option>
+        <option value="pcg">Jacobi PCG — modern comparison</option>
+      </select>
+    </label>
+    <label>First coordinate of x₀ (other coordinates stay zero)
+      <input data-field="start" type="number" min="-100" max="100" step="any" value="1">
+    </label>
+    <label>Inspect iteration <output data-step-label>0</output>
+      <input data-field="step" type="range" min="0" max="20" step="1" value="0">
+    </label>
+    <div class="wiki-lab-actions">
+      <button type="button" data-action="next">Next iteration</button>
+      <button type="button" data-action="reset">Restore original-data baseline</button>
+    </div>
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="Selected iterate and error measures"></pre>
+    <svg data-plot viewBox="0 0 640 390" role="img" aria-label="Residual and energy error against iteration"></svg>
+    <p>Solid blue: ‖b − Axₖ‖₂ / ‖b − Ax₀‖₂. Dashed orange: ‖xₖ − x*‖A / ‖x₀ − x*‖A. Both start at 1. The vertical axis is logarithmic; zero and values below 10⁻¹⁴ are plotted at that floor. Circles mark the selected iteration. The plot includes all computed iterations, up to 20.</p>
+    <p data-explanation></p>
+  </div>
+</section>

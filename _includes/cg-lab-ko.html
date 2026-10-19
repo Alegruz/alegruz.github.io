@@ -1,0 +1,31 @@
+<section class="wiki-lab cg-lab" data-cg-lab aria-label="원문 켤레기울기 예제 탐색">
+  <p class="wiki-lab-title">원문의 네 방정식 탐색하기</p>
+  <p>원문 자료 기준값: <a href="https://math.nist.gov/mcsd/Reports/2002/hestenes-steifel-52.pdf#page=25">Hestenes와 Stiefel, 19절 예제 1과 표 1, 433쪽</a>. A와 b는 고정되며 물리적 단위는 없습니다. CG와 x₀ = (1, 0, 0, 0)은 현대 부동소수점 산술로 기준값을 재현합니다. 다른 방법과 초기값은 가상 실험입니다. 알려진 해는 오차 측정에만 사용하며 반복값 계산에는 사용하지 않습니다.</p>
+  <noscript><p>JavaScript가 꺼져 있습니다. 위의 정확한 네 단계 표에서 잔차와 에너지 오차를 포함한 기준 계산을 확인할 수 있습니다.</p></noscript>
+  <div class="wiki-lab-controls" hidden>
+    <label>방법
+      <select data-field="method">
+        <option value="cg">켤레기울기법 — 원문 기준값</option>
+        <option value="sd">최급강하법 — 현대적 비교</option>
+        <option value="pcg">야코비 PCG — 현대적 비교</option>
+      </select>
+    </label>
+    <label>x₀의 첫 좌표 (다른 좌표는 0으로 고정)
+      <input data-field="start" type="number" min="-100" max="100" step="any" value="1">
+    </label>
+    <label>확인할 반복 단계 <output data-step-label>0</output>
+      <input data-field="step" type="range" min="0" max="20" step="1" value="0">
+    </label>
+    <div class="wiki-lab-actions">
+      <button type="button" data-action="next">다음 반복</button>
+      <button type="button" data-action="reset">원문 자료 기준값 복원</button>
+    </div>
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="선택한 추정값과 오차 측정값"></pre>
+    <svg data-plot viewBox="0 0 640 390" role="img" aria-label="반복 단계에 따른 잔차와 에너지 오차"></svg>
+    <p>파란 실선: ‖b − Axₖ‖₂ / ‖b − Ax₀‖₂. 주황 점선: ‖xₖ − x*‖A / ‖x₀ − x*‖A. 둘 다 1에서 시작합니다. 세로축은 로그 척도이며, 0과 10⁻¹⁴보다 작은 값은 그 하한에 표시합니다. 원은 선택한 반복 단계를 나타냅니다. 그래프에는 최대 20단계까지 계산한 모든 반복이 표시됩니다.</p>
+    <p data-explanation></p>
+  </div>
+</section>
