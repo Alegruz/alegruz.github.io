@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const defaultLang = "en";
   const supported = new Set(["en", "ko"]);
   const pageLang = toggleButton?.dataset.pageLang;
+  const pageLanguageMode = toggleButton?.dataset.languageMode === "page";
 
   function readStoredLang() {
     try {
@@ -39,8 +40,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     if (toggleButton) {
-      toggleButton.textContent =
-        lang === "en" ? "Switch to Korean" : "Switch to English";
+      const translationUrl = lang === "en"
+        ? toggleButton.dataset.translationKo
+        : toggleButton.dataset.translationEn;
+      const unavailable = pageLanguageMode && !translationUrl;
+      toggleButton.disabled = unavailable;
+      toggleButton.textContent = unavailable
+        ? (lang === "en" ? "Korean translation unavailable" : "English translation unavailable")
+        : (lang === "en" ? "Switch to Korean" : "Switch to English");
       toggleButton.setAttribute("aria-label", toggleButton.textContent);
     }
   }
@@ -51,6 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const translationUrl = nextLang === "en"
         ? toggleButton.dataset.translationEn
         : toggleButton.dataset.translationKo;
+
+      if (pageLanguageMode && !translationUrl) {
+        return;
+      }
 
       storeLang(nextLang);
       if (translationUrl) {

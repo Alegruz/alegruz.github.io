@@ -33,6 +33,7 @@ jobs:
       - run: python scripts/optimize_images.py
       - run: bundle exec jekyll build
       - run: python scripts/validate_site.py
+      - run: npm run wiki:language
       - run: npm run visual:smoke
         env:
           VISUAL_SMOKE_DIR: .visual-smoke

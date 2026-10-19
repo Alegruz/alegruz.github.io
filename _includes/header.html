@@ -4,7 +4,8 @@
   {%- assign translation_en_url = "" -%}
   {%- assign translation_ko_url = "" -%}
   {%- if page.translation_key -%}
-    {%- assign translations = site.posts | where: "translation_key", page.translation_key -%}
+    {%- assign translatable_pages = site.posts | concat: site.wiki | concat: site.pages -%}
+    {%- assign translations = translatable_pages | where: "translation_key", page.translation_key -%}
     {%- for translation in translations -%}
       {%- if translation.lang == "en" -%}
         {%- assign translation_en_url = translation.url | relative_url -%}
@@ -34,6 +35,10 @@
         <div class="trigger">
           {%- for path in page_paths -%}
             {%- assign my_page = site.pages | where: "path", path | first -%}
+            {%- if page.lang == 'ko' and my_page.translation_key -%}
+              {%- assign translated_nav_page = site.pages | where: 'translation_key', my_page.translation_key | where: 'lang', 'ko' | first -%}
+              {%- if translated_nav_page -%}{%- assign my_page = translated_nav_page -%}{%- endif -%}
+            {%- endif -%}
             {%- if my_page.title -%}
               {%- assign is_current_page = false -%}
               {%- if my_page.url == page.url -%}
@@ -51,6 +56,7 @@
             id="toggle-language"
             type="button"
             data-page-lang="{{ page.lang | default: "" }}"
+            data-language-mode="{% if page.layout == 'wiki' or page.translation_key == 'math-wiki-index' %}page{% else %}inline{% endif %}"
             data-translation-en="{{ translation_en_url }}"
             data-translation-ko="{{ translation_ko_url }}"
           >
