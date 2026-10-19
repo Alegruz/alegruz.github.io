@@ -5,6 +5,8 @@ interactive_examples: true
 orthogonal_examples: true
 description: Build perpendicular unit directions by removing projections, preserve successive spans, and understand the difference between classical and modified Gram–Schmidt.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-gram-schmidt-orthogonalization
 ---
 
 ## The original problem: expand a function in useful directions

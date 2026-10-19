@@ -5,6 +5,8 @@ interactive_examples: true
 orthogonal_examples: true
 description: Store orthogonalization as A = QR, solve least squares through a triangular system, and compare Gram–Schmidt, Householder reflections, and Givens rotations.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-qr-factorization
 ---
 
 ## The original problem: imperfect observations share unknowns

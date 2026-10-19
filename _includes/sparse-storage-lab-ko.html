@@ -1,0 +1,18 @@
+<section class="wiki-lab" data-sparse-storage-lab aria-label="계수를 COO, CSR, CSC로 따라가기">
+  <p class="wiki-lab-title">계수를 COO, CSR, CSC로 따라가기</p>
+  <p class="wiki-lab-context">발표된 예시 자료의 기준값: <a href="https://math.nist.gov/MatrixMarket/formats.html">NIST의 일반 실수 5×5 예제</a>. 모든 계수를 보존하고 1부터 시작하던 첨자만 0부터 시작하도록 바꾸었다. 제거 시나리오는 가상이며 물리적 단위는 지정되어 있지 않다.</p>
+  <noscript><p>대화형 조작에는 JavaScript가 필요하다. 발표된 행렬, 저장 배열, 계산 예제는 이 페이지에서 계속 읽을 수 있다.</p></noscript>
+  <div class="wiki-lab-controls" hidden>
+    <label>저장 형식 <select data-field="format"><option value="coo">COO: 발표된 성분 순서</option><option value="csr" selected>CSR: 행별로 묶기</option><option value="csc">CSC: 열별로 묶기</option></select></label>
+    <label>추적할 행 (COO/CSR) 또는 열 (CSC) <select data-field="group"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></label>
+    <label>행렬 시나리오 <select data-field="scenario"><option value="baseline">발표된 기준값</option><option value="row">가상: 빈 행 3</option><option value="column">가상: 빈 열 1</option><option value="zero">가상: 영행렬</option></select></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">발표된 기준값 복원</button></div>
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="저장 배열과 선택한 계수"></pre>
+    <svg data-plot viewBox="0 0 600 440" role="img" aria-label="행렬 계수와 그 배열 위치"></svg>
+    <p data-explanation></p>
+  </div>
+</section>
+<script src="{{ '/assets/js/sparse-storage-lab.js' | relative_url }}" defer></script>

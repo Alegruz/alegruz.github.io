@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Measure matrix amplification with induced norms, distinguish spectral and Frobenius norms, and bound errors in linear systems.
 last_modified_at: 2026-10-13
+lang: en
+translation_key: wiki-linear-algebra-matrix-norm
 ---
 
 ## Rounding errors: how much can a matrix change a result?

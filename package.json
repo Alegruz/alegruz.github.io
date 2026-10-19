@@ -2,12 +2,14 @@
   "private": true,
   "scripts": {
     "content:audit": "python scripts/content_audit.py",
+    "wiki:translations": "python scripts/validate_wiki_translations.py",
     "visual:smoke": "node scripts/visual_smoke.mjs",
     "wiki:smoke": "node scripts/wiki_labs_smoke.mjs",
     "wiki:orthogonal": "node scripts/orthogonal_labs_smoke.mjs",
     "wiki:householder": "node scripts/householder_smoke.mjs",
     "wiki:cg": "node scripts/conjugate_gradient_smoke.mjs",
-    "wiki:language": "node scripts/language_toggle_smoke.mjs"
+    "wiki:language": "node scripts/language_toggle_smoke.mjs",
+    "wiki:translation-smoke": "node scripts/wiki_translation_smoke.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.0"

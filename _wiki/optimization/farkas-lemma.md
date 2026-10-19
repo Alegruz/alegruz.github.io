@@ -4,6 +4,8 @@ subject: Optimization
 interactive_examples: true
 description: Prove that linear constraints are impossible by combining them into a contradiction, and connect the certificate to cones and LP duality.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-optimization-farkas-lemma
 ---
 
 ## The problem: prove that inequalities cannot be satisfied

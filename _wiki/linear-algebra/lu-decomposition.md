@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Factor a matrix into lower and upper triangular matrices to solve linear systems efficiently.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-lu-decomposition
 ---
 
 ## Definition

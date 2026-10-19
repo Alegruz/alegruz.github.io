@@ -4,6 +4,8 @@ subject: Optimization
 interactive_examples: true
 description: Turn production constraints into optimality certificates, prove LP strong duality with Farkas’ lemma, and derive Lagrange duals and KKT conditions.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-optimization-duality
 ---
 
 ## Kantorovich's production problem: how can we know a plan is best?

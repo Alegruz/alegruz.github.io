@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Recognize positive energy in every direction through quadratic forms, eigenvalues, Cholesky factors, and worked examples.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-symmetric-positive-definite-matrix
 ---
 
 ## Definition

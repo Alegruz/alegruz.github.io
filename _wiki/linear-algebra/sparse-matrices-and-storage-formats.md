@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Represent sparse matrices with COO, CSR, and CSC, read their pointer arrays, and choose a format for assembly or computation.
 last_modified_at: 2026-10-13
+lang: en
+translation_key: wiki-linear-algebra-sparse-matrices-and-storage-formats
 ---
 
 ## The problem: storing coefficients that are mostly zero

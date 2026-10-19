@@ -1,0 +1,108 @@
+<section class="wiki-lab" data-wiki-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
+  <p class="wiki-lab-title">{{ include.title | escape }}</p>
+  {% if include.kind == 'vector-error' or include.kind == 'matrix-error' %}
+  <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>(1999)에 발표된 예시 자료의 기준값이다. 기준값은 고정되며 근사값 수정은 가상 실험이다. 원문은 물리적 단위를 지정하지 않는다. 출력은 현대적으로 다시 계산하며 표시값은 반올림한다.</p>
+  {% elsif include.kind == 'vector-norm' or include.kind == 'matrix-norm' %}
+  <p class="wiki-lab-context">보충 학습을 위해 직접 만든 예제이다. 기본값은 역사적 관측 자료가 아니며 수정은 가상 실험이다.</p>
+  {% elsif include.kind == 'convexity-mixture' %}
+  <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>에 발표된 고정 예시 자료이다. 용량은 (3, 3, 1) 기계·일, 부품 I/II의 생산율은 (10/20, 20/30, 30/80)이다. 배분 S = (2, 9/5, 8/11)과 O = (8/3, 3, 0)은 여기서 정확히 다시 유도했다. 모형은 시간 분할, 완전 가동, 짝이 맞는 부품, 준비 비용 없음을 가정한다. 초기 중점과 가중치 변경은 모두 역사적 관측이 아닌 가상의 혼합이다.</p>
+  {% elsif include.kind == 'convexity-chord' %}
+  <p class="wiki-lab-context">물리적 단위 없이 직접 만든 보충 학습 예제이다. 파랑은 함수 그래프, 주황 점선은 끝점을 잇는 현이다. 혼합 입력에서 두 높이의 차이로 해당 현을 검사한다.</p>
+  {% elsif include.kind == 'duality' %}
+  <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>에 발표된 예시 자료의 기준값이다. 용량은 (3, 3, 1) 기계·일, 부품 I/II의 생산율은 (10/20, 20/30, 30/80)이며 자료는 고정된다. 현대적 모형은 시간 분할, 완전 가동, 부품 수의 정확한 일치, 준비 비용 없음을 가정한다. 초기 가중치 2/3은 여기서 유도한 증명서이며 변경은 가상의 증명서 실험이다.</p>
+  {% elsif include.kind == 'farkas' %}
+  <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>에 발표된 고정 예시 자료이다. 용량은 (3, 3, 1) 기계·일, 부품 I/II의 생산율은 (10/20, 20/30, 30/80)이다. 목표는 가상이며 기본값 90은 발표된 역사적 목표가 아니다. 현대적 모형은 시간 분할, 완전 가동, 잉여 부품 허용, 준비 비용 없음을 가정한다.</p>
+  {% elsif include.kind == 'kantorovich' %}
+  <p class="wiki-lab-context">발표된 예시 자료의 기준값이다. 밀링 3, 터릿선반 3, 자동선반 1 기계·일과 <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>의 고정 부품 I/II 생산율을 사용한다. 배분과 교환은 시간 분할, 완전 가동, 부품 수의 정확한 일치, 준비 시간 없음을 가정하여 현대적으로 다시 유도했다. 분수 출력은 일일 생산율이다. 용량 변경은 가상 실험이다.</p>
+  {% elsif include.kind == 'linear-programming' %}
+  <p class="wiki-lab-context">직접 만든 자료를 사용하는 보충 예제이다. 작업장 자료와 기본 이익 (3, 2)는 역사적 관측이 아닌 학습용 선택이다. 이익 변경도 가상의 학습 시나리오이다. <a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>는 이 수치 자료가 아니라 모형화 방법을 뒷받침한다.</p>
+  {% endif %}
+  <noscript><p>대화형 조작에는 JavaScript가 필요하다. 아래 계산 예제와 연습문제 풀이는 JavaScript 없이도 읽을 수 있다.</p></noscript>
+  <div class="wiki-lab-controls" hidden>
+    {% if include.kind == 'convexity-mixture' %}
+    <label>최적 계획 가중치 θ (S의 가중치는 1 − θ) <input data-field="mix" type="number" min="0" max="1" step="any" value="0.5"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">발표 자료 기준값과 중점 혼합 복원</button></div>
+    {% elsif include.kind == 'convexity-chord' %}
+    <label>함수 <select data-field="shape"><option value="square">u² — 엄격 볼록</option><option value="absolute">|u| — 모서리가 있는 볼록함수</option><option value="concave">−u² — 오목함수</option></select></label>
+    <label>첫 끝점 x <input data-field="left" type="number" min="-3" max="3" step="any" value="0"></label>
+    <label>둘째 끝점 y <input data-field="right" type="number" min="-3" max="3" step="any" value="2"></label>
+    <label>둘째 끝점 가중치 θ <input data-field="mix" type="number" min="0" max="1" step="any" value="0.5"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">제곱 예제와 중점 복원</button></div>
+    {% elsif include.kind == 'duality' %}
+    <label>부품 I 가중치 θ (부품 II는 1 − θ) <input data-field="weight" type="number" min="0" max="1" step="any" value="0.6666666666666666"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="equal-weights">같은 부품 가중치 (1/2, 1/2) 시도</button><button type="button" data-action="reset">발표 자료와 유도한 가중치 2/3 복원</button></div>
+    {% elsif include.kind == 'farkas' %}
+    <label>가상 목표 q (하루 완제품 세트 수) <input data-field="demand" type="number" min="0" max="100" step="any" value="90"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="boundary">정확한 경계 260/3 탐색</button><button type="button" data-action="reset">발표 자료와 가상 목표 90 복원</button></div>
+    {% elsif include.kind == 'vector-error' %}
+    <label>근사 좌표 x̂₁ (기준값 1) <input data-field="x1" type="number" step="any" value="1.1"></label>
+    <label>근사 좌표 x̂₂ (기준값 100) <input data-field="x2" type="number" step="any" value="99"></label>
+    <label>근사 좌표 x̂₃ (기준값 9) <input data-field="x3" type="number" step="any" value="11"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">발표된 벡터 기준값 복원</button></div>
+    {% elsif include.kind == 'matrix-error' %}
+    <label>근사 â₁₁ (기준값 1) <input data-field="a11" type="number" step="any" value="0.44"></label>
+    <label>근사 â₁₂ (기준값 2) <input data-field="a12" type="number" step="any" value="2.36"></label>
+    <label>근사 â₁₃ (기준값 3) <input data-field="a13" type="number" step="any" value="3.04"></label>
+    <label>근사 â₂₁ (기준값 4) <input data-field="a21" type="number" step="any" value="3.09"></label>
+    <label>근사 â₂₂ (기준값 5) <input data-field="a22" type="number" step="any" value="5.87"></label>
+    <label>근사 â₂₃ (기준값 6) <input data-field="a23" type="number" step="any" value="6.66"></label>
+    <label>근사 â₃₁ (기준값 7) <input data-field="a31" type="number" step="any" value="7.36"></label>
+    <label>근사 â₃₂ (기준값 8) <input data-field="a32" type="number" step="any" value="7.77"></label>
+    <label>근사 â₃₃ (기준값 10) <input data-field="a33" type="number" step="any" value="9.07"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">발표된 행렬 기준값 복원</button></div>
+    {% elsif include.kind == 'kantorovich' %}
+    <label>용량 시나리오 <select data-field="preset"><option value="original">발표된 기준값: 밀링 3, 터릿선반 3, 자동선반 1</option><option value="threshold">가상: 자동선반 용량 1.125일</option><option value="extra">가상: 자동선반 2 기계·일</option><option value="zero">가상: 기계 시간 없음</option><option value="custom" disabled>가상: 사용자 지정 용량</option></select></label>
+    <label>밀링 기계·일 <input data-field="milling" type="number" min="0" max="10" step="any" value="3"></label>
+    <label>터릿선반 기계·일 <input data-field="turret" type="number" min="0" max="10" step="any" value="3"></label>
+    <label>자동선반 기계·일 <input data-field="automatic" type="number" min="0" max="10" step="any" value="1"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="next">다음 교환</button><button type="button" data-action="reset">발표된 기준값 복원 및 재현</button></div>
+    {% elsif include.kind == 'linear-programming' %}
+    <label>A 배치당 이익 c₁ <input data-field="profit1" type="number" step="any" value="3"></label>
+    <label>B 배치당 이익 c₂ <input data-field="profit2" type="number" step="any" value="2"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">학습 예제 (3, 2) 복원</button></div>
+    {% elsif include.kind == 'composition' %}
+    <label>가로 배율 s <input data-field="scale" type="range" min="-3" max="3" step="0.1" value="2"><output data-value="scale">2</output></label>
+    <label>가로 전단 k <input data-field="shear" type="range" min="-2" max="2" step="0.1" value="1"><output data-value="shear">1</output></label>
+    <label>입력 x₁ <input data-field="x1" type="number" step="any" value="1"></label>
+    <label>입력 x₂ <input data-field="x2" type="number" step="any" value="1"></label>
+    <label>순서 <select data-field="order"><option value="BC">C로 확대 후 B로 전단 (BC)</option><option value="CB">B로 전단 후 C로 확대 (CB)</option></select></label>
+    {% elsif include.kind == 'vector-norm' %}
+    <label>입력 x₁ <input data-field="x1" type="number" step="any" value="3"></label>
+    <label>입력 x₂ <input data-field="x2" type="number" step="any" value="-4"></label>
+    <label>측정 규칙 <select data-field="norm"><option value="1">1-노름</option><option value="2" selected>2-노름</option><option value="inf">무한대 노름</option></select></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">직접 만든 벡터 예제 복원</button></div>
+    {% elsif include.kind == 'matrix-norm' %}
+    <label>a₁₁ <input data-field="a" type="number" step="any" value="1"></label>
+    <label>a₁₂ <input data-field="b" type="number" step="any" value="2"></label>
+    <label>a₂₁ <input data-field="c" type="number" step="any" value="0"></label>
+    <label>a₂₂ <input data-field="d" type="number" step="any" value="2"></label>
+    <label>입력 각도 (도) <input data-field="angle" type="range" min="0" max="360" step="1" value="90"><output data-value="angle">90</output></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">직접 만든 행렬 예제 복원</button></div>
+    {% elsif include.kind == 'lu' %}
+    <label>예제 <select data-field="preset"><option value="ordinary">일반적인 풀이</option><option value="zero">첫 피벗이 0</option><option value="small">작은 첫 피벗</option><option value="singular">특이행렬</option></select></label>
+    <label>a₁₁ <input data-field="a" type="number" step="any" value="2"></label>
+    <label>a₁₂ <input data-field="b" type="number" step="any" value="1"></label>
+    <label>a₂₁ <input data-field="c" type="number" step="any" value="4"></label>
+    <label>a₂₂ <input data-field="d" type="number" step="any" value="3"></label>
+    <label>b₁ <input data-field="rhs1" type="number" step="any" value="3"></label>
+    <label>b₂ <input data-field="rhs2" type="number" step="any" value="7"></label>
+    <label class="wiki-lab-check"><input data-field="pivot" type="checkbox"> 부분 피벗팅 사용</label>
+    <div class="wiki-lab-actions"><button type="button" data-action="next">다음 단계</button><button type="button" data-action="reset">단계 다시 시작</button></div>
+    {% elsif include.kind == 'cholesky' %}
+    <label>예제 <select data-field="preset"><option value="ordinary">양의 정부호</option><option value="negative">음의 비대각 성분</option><option value="flat">평평한 방향</option><option value="indefinite">부정부호</option><option value="near">거의 특이</option></select></label>
+    <label>A = [[a, b], [b, c]]의 a <input data-field="a" type="number" step="any" value="4"></label>
+    <label>공통 계수 b <input data-field="b" type="range" min="-5" max="5" step="0.01" value="2"><output data-value="b">2</output></label>
+    <label>c <input data-field="c" type="number" step="any" value="3"></label>
+    <label>방향 x₁ <input data-field="x1" type="number" step="any" value="1"></label>
+    <label>방향 x₂ <input data-field="x2" type="number" step="any" value="-1"></label>
+    {% endif %}
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="계산한 행렬과 값"></pre>
+    {% unless include.kind == 'lu' %}
+    <svg data-plot viewBox="0 0 600 430" role="img" aria-label="{{ include.plot_description | escape }}"></svg>
+    {% endunless %}
+    <p data-explanation></p>
+  </div>
+</section>

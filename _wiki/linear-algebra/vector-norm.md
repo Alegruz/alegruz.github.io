@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Measure vector size with the 1, 2, and infinity norms, compare their geometry, and choose a meaningful error measure.
 last_modified_at: 2026-10-13
+lang: en
+translation_key: wiki-linear-algebra-vector-norm
 ---
 
 ## Observation errors: why one number is needed

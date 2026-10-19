@@ -4,6 +4,8 @@ subject: Optimization
 interactive_examples: true
 description: Derive convex sets from mixing production plans, distinguish convex functions from feasible regions, and connect global minima to quadratic curvature.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-optimization-convexity
 ---
 
 ## Mixing production plans: what remains possible?

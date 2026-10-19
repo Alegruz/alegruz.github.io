@@ -1,6 +1,7 @@
 /* Small, local learning experiments. No network requests or stored user data. */
 (() => {
   "use strict";
+  const t = window.wikiLabText;
   const NS = "http://www.w3.org/2000/svg";
   const fmt = (n) => n === 0 ? "0" : Number(n.toPrecision(6)).toString();
   const mat = (name, rows) => `${name} =\n${rows.map(r => `[ ${r.map(fmt).join("   ")} ]`).join("\n")}`;
@@ -43,8 +44,8 @@
     const B=[[1,k],[0,1]], C=[[s,0],[0,1]], order=set("order").value;
     const first=order==="BC"?C:B, second=order==="BC"?B:C;
     const M=product(second,first), middle=mul(first,v), final=mul(M,v);
-    root.querySelector("[data-status]").textContent=order==="BC"?"C acts first; B acts second.":"B acts first; C acts second.";
-    root.querySelector("[data-matrices]").textContent=[mat("B",B),mat("C",C),mat(order,M),`Input x = (${v.map(fmt)})\nAfter first factor = (${middle.map(fmt)})\nFinal output = (${final.map(fmt)})`].join("\n\n");
+    root.querySelector("[data-status]").textContent=order==="BC"?t("C acts first; B acts second."):t("B acts first; C acts second.");
+    root.querySelector("[data-matrices]").textContent=[mat("B",B),mat("C",C),mat(order,M),t`Input x = (${v.map(fmt)})\nAfter first factor = (${middle.map(fmt)})\nFinal output = (${final.map(fmt)})`].join("\n\n");
     const square=[[0,0],[1,0],[1,1],[0,1],[0,0]];
     const shapes=[square,square.map(p=>mul(first,p)),square.map(p=>mul(M,p))];
     const limit=Math.max(2, ...shapes.flat().flat().map(Math.abs), ...v.map(Math.abs), ...middle.map(Math.abs), ...final.map(Math.abs))*1.15;
@@ -54,9 +55,9 @@
       const [x,y]=point([v,middle,final][i]);
       node("circle",{cx:x,cy:y,r:4,fill:["#64748b","#2563eb","#c65b08"][i]},area);
     });
-    node("text",{x:60,y:403},svg,"Dashed: input · Blue: first stage · Orange: final");
-    svg.setAttribute("aria-label",`Unit square transformed in two stages. Final vector (${final.map(fmt)}). The plot rescales to fit.`);
-    root.querySelector("[data-explanation]").textContent="Dots track your vector; polygons track the unit square. The plot rescales to fit. Predict the output, then reverse the order. Try s = 1, k = 0, and s = 0: which settings make the order irrelevant, and which destroy invertibility?";
+    node("text",{x:60,y:403},svg,t("Dashed: input · Blue: first stage · Orange: final"));
+    svg.setAttribute("aria-label",t`Unit square transformed in two stages. Final vector (${final.map(fmt)}). The plot rescales to fit.`);
+    root.querySelector("[data-explanation]").textContent=t("Dots track your vector; polygons track the unit square. The plot rescales to fit. Predict the output, then reverse the order. Try s = 1, k = 0, and s = 0: which settings make the order irrelevant, and which destroy invertibility?");
   }
 
   function lu(root, f, set, step) {
@@ -67,31 +68,31 @@
     const status=root.querySelector("[data-status]"), output=root.querySelector("[data-matrices]"), note=root.querySelector("[data-explanation]");
     const next=root.querySelector('[data-action="next"]');
     next.disabled=step>=3;
-    output.textContent=mat("A",A)+`\nb = (${rhs.map(fmt)})`;
-    status.textContent=`Step ${step} of 3. `;
-    note.textContent="Predict the first pivot and multiplier before selecting Next step. Changing an input restarts the steps.";
-    if (step===0) { status.textContent+="Start with the original equations."; return; }
-    output.textContent += "\n\n"+mat("P",P)+"\n\n"+mat("PA",PA)+`\nPb = (${pb.map(fmt)})`;
+    output.textContent=mat("A",A)+t`\nb = (${rhs.map(fmt)})`;
+    status.textContent=t`Step ${step} of 3. `;
+    note.textContent=t("Predict the first pivot and multiplier before selecting Next step. Changing an input restarts the steps.");
+    if (step===0) { status.textContent+=t("Start with the original equations."); return; }
+    output.textContent += "\n\n"+mat("P",P)+"\n\n"+mat("PA",PA)+t`\nPb = (${pb.map(fmt)})`;
     if (PA[0][0]===0) {
-      status.textContent+="The first pivot is zero; this elimination order cannot continue.";
-      note.textContent=PA[1][0]!==0?"Enable partial pivoting and restart: swapping the equations provides a nonzero pivot.":"The first column is zero. This square matrix is singular and cannot have a unique solution for every right-hand side.";
+      status.textContent+=t("The first pivot is zero; this elimination order cannot continue.");
+      note.textContent=PA[1][0]!==0?t("Enable partial pivoting and restart: swapping the equations provides a nonzero pivot."):t("The first column is zero. This square matrix is singular and cannot have a unique solution for every right-hand side.");
       next.disabled=true; return;
     }
-    if (step===1) {status.textContent+=swap?"Swap the two rows and the right-hand side entries.":"Keep the row order."; return;}
+    if (step===1) {status.textContent+=swap?t("Swap the two rows and the right-hand side entries."):t("Keep the row order."); return;}
     const m=PA[1][0]/PA[0][0], u22=PA[1][1]-m*PA[0][1];
     const L=[[1,0],[m,1]], U=[[PA[0][0],PA[0][1]],[0,u22]];
-    output.textContent+="\n\n"+`Multiplier m = ${fmt(m)}\nR₂ ← R₂ − m R₁\n\n`+mat("L",L)+"\n\n"+mat("U",U);
+    output.textContent+="\n\n"+t`Multiplier m = ${fmt(m)}\nR₂ ← R₂ − m R₁\n\n`+mat("L",L)+"\n\n"+mat("U",U);
     if (u22===0) {
-      status.textContent+="The second pivot is zero. The factors exist here, but U is singular.";
-      note.textContent="The last equation cannot determine a unique second unknown. A singular matrix may still have LU factors; a unique solve is a separate requirement.";
+      status.textContent+=t("The second pivot is zero. The factors exist here, but U is singular.");
+      note.textContent=t("The last equation cannot determine a unique second unknown. A singular matrix may still have LU factors; a unique solve is a separate requirement.");
       next.disabled=true; return;
     }
-    if (step===2) {status.textContent+="Eliminate the lower-left entry and store its multiplier in L.";return;}
+    if (step===2) {status.textContent+=t("Eliminate the lower-left entry and store its multiplier in L.");return;}
     const y=[pb[0],pb[1]-m*pb[0]], x2=y[1]/u22, x1=(y[0]-U[0][1]*x2)/U[0][0];
     const Ax=mul(A,[x1,x2]), residual=[rhs[0]-Ax[0],rhs[1]-Ax[1]];
-    output.textContent+=`\n\ny from Ly = Pb: (${y.map(fmt)})\nx from Ux = y: (${[x1,x2].map(fmt)})\nb − Ax: (${residual.map(fmt)})`;
-    status.textContent+="Solve forward for y, then backward for x.";
-    note.textContent=Math.abs(m)>100?"The large multiplier illustrates why small pivots can magnify rounding effects. Compare this result with partial pivoting enabled. Values use JavaScript floating-point arithmetic; displayed values are rounded.":"The residual checks the original equations. A small residual alone does not establish small forward error for an ill-conditioned matrix. Values use floating-point arithmetic and are rounded for display.";
+    output.textContent+=t`\n\ny from Ly = Pb: (${y.map(fmt)})\nx from Ux = y: (${[x1,x2].map(fmt)})\nb − Ax: (${residual.map(fmt)})`;
+    status.textContent+=t("Solve forward for y, then backward for x.");
+    note.textContent=Math.abs(m)>100?t("The large multiplier illustrates why small pivots can magnify rounding effects. Compare this result with partial pivoting enabled. Values use JavaScript floating-point arithmetic; displayed values are rounded."):t("The residual checks the original equations. A small residual alone does not establish small forward error for an ill-conditioned matrix. Values use floating-point arithmetic and are rounded for display.");
   }
 
   function cholesky(root, f, id) {
@@ -99,20 +100,20 @@
     const remainder=a>0?c-b*b/a:null;
     const valid=a>0 && remainder>0;
     const status=root.querySelector("[data-status]"), output=root.querySelector("[data-matrices]");
-    output.textContent=mat("A",[[a,b],[b,c]])+`\nxᵀAx for x = (${fmt(x1)}, ${fmt(x2)}): ${fmt(q)}`;
+    output.textContent=mat("A",[[a,b],[b,c]])+t`\nxᵀAx for x = (${fmt(x1)}, ${fmt(x2)}): ${fmt(q)}`;
     let L;
     if(valid){
       const l11=Math.sqrt(a),l21=b/l11,l22=Math.sqrt(remainder);
       L=[[l11,0],[l21,l22]];
-      output.textContent+=`\nRemaining squared length c − b²/a = ${fmt(remainder)}\n\n`+mat("L",L)+`\n(det A from L) = ${fmt(a*remainder)}`;
-      status.textContent="Positive definite: both square-root pivots are positive.";
-      if(remainder<1e-5*Math.max(1,Math.abs(c),b*b/a)) status.textContent+=" The second remainder is small: explore sensitivity near a flat direction.";
+      output.textContent+=t`\nRemaining squared length c − b²/a = ${fmt(remainder)}\n\n`+mat("L",L)+t`\n(det A from L) = ${fmt(a*remainder)}`;
+      status.textContent=t("Positive definite: both square-root pivots are positive.");
+      if(remainder<1e-5*Math.max(1,Math.abs(c),b*b/a)) status.textContent+=t(" The second remainder is small: explore sensitivity near a flat direction.");
     }else if(a<=0){
-      status.textContent="No positive-diagonal Cholesky factor: the first square-root pivot is not positive.";
-      output.textContent+=`\nDirection (1, 0) has energy ${fmt(a)}.`;
+      status.textContent=t("No positive-diagonal Cholesky factor: the first square-root pivot is not positive.");
+      output.textContent+=t`\nDirection (1, 0) has energy ${fmt(a)}.`;
     }else{
-      status.textContent=remainder===0?"The second remainder is zero: a flat direction makes this matrix singular.":"The second remainder is negative: this matrix is indefinite.";
-      output.textContent+=`\nRemaining squared length c − b²/a = ${fmt(remainder)}\nDirection (${fmt(-b/a)}, 1) has energy ${fmt(remainder)}.`;
+      status.textContent=remainder===0?t("The second remainder is zero: a flat direction makes this matrix singular."):t("The second remainder is negative: this matrix is indefinite.");
+      output.textContent+=t`\nRemaining squared length c − b²/a = ${fmt(remainder)}\nDirection (${fmt(-b/a)}, 1) has energy ${fmt(remainder)}.`;
     }
     const svg=root.querySelector("svg"), {area,point}=scene(svg,2,id);
     const cells=25, delta=4/cells;
@@ -137,9 +138,9 @@
     const [dx,dy]=point([x1,x2]);
     node("line",{x1:300,y1:190,x2:dx,y2:dy,class:"lab-contour"},area);
     node("circle",{cx:dx,cy:dy,r:4,fill:"currentColor"},area);
-    node("text",{x:60,y:403},svg,"Blue: positive energy · Orange: negative energy");
-    svg.setAttribute("aria-label",`Quadratic energy on a fixed range from minus two to two. Your direction has energy ${fmt(q)}. ${status.textContent}`);
-    root.querySelector("[data-explanation]").textContent="Color shows the sign and relative magnitude at sampled points; darker means larger magnitude. Axes stay fixed at −2 to 2. For SPD input, the curve is xᵀAx = 1 and may extend beyond the view. The black line marks your direction, clipped if outside the view. Predict the remainder before changing b. Try the flat and indefinite presets: find a zero or negative energy direction.";
+    node("text",{x:60,y:403},svg,t("Blue: positive energy · Orange: negative energy"));
+    svg.setAttribute("aria-label",t`Quadratic energy on a fixed range from minus two to two. Your direction has energy ${fmt(q)}. ${status.textContent}`);
+    root.querySelector("[data-explanation]").textContent=t("Color shows the sign and relative magnitude at sampled points; darker means larger magnitude. Axes stay fixed at −2 to 2. For SPD input, the curve is xᵀAx = 1 and may extend beyond the view. The black line marks your direction, clipped if outside the view. Predict the remainder before changing b. Try the flat and indefinite presets: find a zero or negative energy direction.");
   }
 
   const normBaselines = {
@@ -162,27 +163,27 @@
       [Math.max(...M[0].map((_,j)=>M.reduce((sum,row)=>sum+Math.abs(row[j]),0))),
        Math.max(...M.map(row=>row.reduce((sum,v)=>sum+Math.abs(v),0))),Math.hypot(...M.flat())];
     const sizes=measure(error), refSizes=measure(reference), approxSizes=measure(approx);
-    const names=vector?["1-norm","2-norm","Infinity norm"]:["Induced 1-norm","Induced infinity norm","Frobenius norm"];
+    const names=vector?[t("1-norm"),t("2-norm"),t("Infinity norm")]:[t("Induced 1-norm"),t("Induced infinity norm"),t("Frobenius norm")];
     const baseline=Object.entries(normBaselines[kind]).every(([key,value])=>f[key]===value);
     const status=root.querySelector("[data-status]");
-    status.textContent=(baseline?"Published LAPACK illustrative-data baseline. ":"Hypothetical approximation; reference data remain fixed. ")+"Errors and relative errors are recalculated below.";
+    status.textContent=(baseline?t("Published LAPACK illustrative-data baseline. "):t("Hypothetical approximation; reference data remain fixed. "))+t("Errors and relative errors are recalculated below.");
     const display=(name,M)=>mat(name,vector?M[0].map(value=>[value]):M);
-    root.querySelector("[data-matrices]").textContent=[display("Reference",reference),display("Approximation",approx),display("Approximation − reference",error),
-      ...names.map((name,i)=>`${name} absolute error = ${fmt(sizes[i])}\n  Relative to reference = ${fmt(sizes[i]/refSizes[i])}\n  Relative to approximation = ${approxSizes[i]===0?"undefined (zero denominator)":fmt(sizes[i]/approxSizes[i])}`),
-      ...(vector?[]:[`Absolute row sums = (${rowSums.map(fmt)})\nAbsolute column sums = (${colSums.map(fmt)})`])].join("\n\n");
+    root.querySelector("[data-matrices]").textContent=[display(t("Reference"),reference),display(t("Approximation"),approx),display(t("Approximation − reference"),error),
+      ...names.map((name,i)=>t`${name} absolute error = ${fmt(sizes[i])}\n  Relative to reference = ${fmt(sizes[i]/refSizes[i])}\n  Relative to approximation = ${approxSizes[i]===0?t("undefined (zero denominator)"):fmt(sizes[i]/approxSizes[i])}`),
+      ...(vector?[]:[t`Absolute row sums = (${rowSums.map(fmt)})\nAbsolute column sums = (${colSums.map(fmt)})`])].join("\n\n");
     const bars=vector?error[0].map(Math.abs):rowSums, svg=root.querySelector("svg");
     const max=Math.max(...bars), scale=max===0?1:max;
     svg.replaceChildren();
     bars.forEach((value,i)=>{
       const y=65+i*100;
-      node("text",{x:25,y:y+22},svg,vector?`|e${i+1}|`:`Row ${i+1}`);
+      node("text",{x:25,y:y+22},svg,vector?`|e${i+1}|`:t`Row ${i+1}`);
       node("rect",{x:100,y,width:360*value/scale,height:34,fill:"#2563eb"},svg);
       node("text",{x:470,y:y+22},svg,fmt(value));
     });
-    node("text",{x:25,y:385},svg,`Bars rescale; largest displayed value = ${fmt(max)}.`);
-    const note=vector?"Bars show each coordinate's absolute error, not its relative error.":"Bars show absolute row sums; the largest is the induced infinity norm of the error matrix.";
-    root.querySelector("[data-explanation]").textContent=note+" Read the numeric labels because bars rescale after edits. Both relative-error conventions are displayed as ratios, not percentages. A zero approximation has no relative-to-approximation ratio. Restore returns all approximation values to the published example. No physical units are specified in the source.";
-    svg.setAttribute("aria-label",`${note} Values: ${bars.map(fmt).join(", ")}. ${status.textContent}`);
+    node("text",{x:25,y:385},svg,t`Bars rescale; largest displayed value = ${fmt(max)}.`);
+    const note=vector?t("Bars show each coordinate's absolute error, not its relative error."):t("Bars show absolute row sums; the largest is the induced infinity norm of the error matrix.");
+    root.querySelector("[data-explanation]").textContent=note+t(" Read the numeric labels because bars rescale after edits. Both relative-error conventions are displayed as ratios, not percentages. A zero approximation has no relative-to-approximation ratio. Restore returns all approximation values to the published example. No physical units are specified in the source.");
+    svg.setAttribute("aria-label",t`${note} Values: ${bars.map(fmt).join(", ")}. ${status.textContent}`);
   }
 
   function norms(root, f, set, id, kind) {
@@ -196,12 +197,12 @@
       const boundary=rule==="1"?[[1,0],[0,1],[-1,0],[0,-1],[1,0]]:
         rule==="2"?circle:[[1,1],[-1,1],[-1,-1],[1,-1],[1,1]];
       const normalized=size===0?null:v.map(value=>value/size);
-      status.textContent=size===0?"Zero vector: all norms are zero; normalization is undefined.":`Selected ${rule==="inf"?"infinity":rule}-norm size: ${fmt(size)}.`;
-      output.textContent=`x = (${v.map(fmt)})\n1-norm = ${fmt(one)}\n2-norm = ${fmt(two)}\nInfinity norm = ${fmt(inf)}\n`+
-        (normalized?`Normalized vector = (${normalized.map(fmt)})`:"Cannot divide the zero vector by its norm.");
+      status.textContent=size===0?t("Zero vector: all norms are zero; normalization is undefined."):t`Selected ${rule==="inf"?t("infinity"):rule}-norm size: ${fmt(size)}.`;
+      output.textContent=t`x = (${v.map(fmt)})\n1-norm = ${fmt(one)}\n2-norm = ${fmt(two)}\nInfinity norm = ${fmt(inf)}\n`+
+        (normalized?t`Normalized vector = (${normalized.map(fmt)})`:t("Cannot divide the zero vector by its norm."));
       shapes=[boundary];dots=[v,...(normalized?[normalized]:[])];
       limit=Math.max(1.5,...v.map(Math.abs))*1.15;
-      note.textContent="Blue boundary: size one in the selected norm. Orange line: input vector. Black dot: normalized vector on the boundary, when nonzero. Axes rescale to include the input, so read the tick labels when comparing plots.";
+      note.textContent=t("Blue boundary: size one in the selected norm. Orange line: input vector. Black dot: normalized vector on the boundary, when nonzero. Axes rescale to include the input, so read the tick labels when comparing plots.");
     }else{
       const A=[[f.a,f.b],[f.c,f.d]], theta=f.angle*Math.PI/180;
       const v=[Math.cos(theta),Math.sin(theta)], y=mul(A,v);
@@ -211,11 +212,11 @@
       const h=f.a*f.a+f.c*f.c, k=f.b*f.b+f.d*f.d, cross=f.a*f.b+f.c*f.d;
       const spectral=Math.sqrt((h+k+Math.hypot(h-k,2*cross))/2);
       const stretch=Math.hypot(...y);
-      status.textContent=`Direction stretch: ${fmt(stretch)}; maximum Euclidean stretch: ${fmt(spectral)}.`;
-      output.textContent=mat("A",A)+`\nInduced 1-norm = ${fmt(one)}\nInduced infinity norm = ${fmt(inf)}\nFrobenius norm = ${fmt(fro)}\nSpectral norm = ${fmt(spectral)}\nUnit input = (${v.map(fmt)})\nOutput = (${y.map(fmt)})`;
+      status.textContent=t`Direction stretch: ${fmt(stretch)}; maximum Euclidean stretch: ${fmt(spectral)}.`;
+      output.textContent=mat("A",A)+t`\nInduced 1-norm = ${fmt(one)}\nInduced infinity norm = ${fmt(inf)}\nFrobenius norm = ${fmt(fro)}\nSpectral norm = ${fmt(spectral)}\nUnit input = (${v.map(fmt)})\nOutput = (${y.map(fmt)})`;
       shapes=[circle,circle.map(p=>mul(A,p))];dots=[v,y];
       limit=Math.max(1.5,spectral)*1.15;
-      note.textContent="Dashed circle: Euclidean unit inputs. Blue curve: their outputs (possibly a segment or a point). Black dot: selected unit input. Orange line and dot: its output. Axes rescale to fit. The spectral norm uses the largest eigenvalue of AᵀA, not sampled angles. Values are rounded for display.";
+      note.textContent=t("Dashed circle: Euclidean unit inputs. Blue curve: their outputs (possibly a segment or a point). Black dot: selected unit input. Orange line and dot: its output. Axes rescale to fit. The spectral norm uses the largest eigenvalue of AᵀA, not sampled angles. Values are rounded for display.");
     }
     const {area,point}=scene(svg,limit,id);
     shapes.forEach((shape,i)=>node("polyline",{points:shape.map(p=>point(p).join(",")).join(" "),class:kind==="matrix-norm"&&i===0?"lab-input":"lab-first","stroke-width":2},area));
@@ -237,14 +238,14 @@
     const best=Math.max(...scores);
     const winners=vertices.filter((v,i)=>Math.abs(scores[i]-best)<=1e-12);
     const status=root.querySelector("[data-status]");
-    status.textContent=scale===0?"Constant objective: every feasible point is optimal.":
-      winners.length===1?`Unique optimum at (${winners[0].map(fmt)}).`:
-      "Multiple optima: every point on the segment between the listed corners is optimal (within comparison tolerance).";
-    status.textContent=(f.profit1===3&&f.profit2===2?"Invented teaching baseline. ":"Hypothetical teaching profits. ")+status.textContent;
+    status.textContent=scale===0?t("Constant objective: every feasible point is optimal."):
+      winners.length===1?t`Unique optimum at (${winners[0].map(fmt)}).`:
+      t("Multiple optima: every point on the segment between the listed corners is optimal (within comparison tolerance).");
+    status.textContent=(f.profit1===3&&f.profit2===2?t("Invented teaching baseline. "):t("Hypothetical teaching profits. "))+status.textContent;
     root.querySelector("[data-matrices]").textContent=
-      `Maximize ${fmt(f.profit1)} x₁ + ${fmt(f.profit2)} x₂\n`+
+      t`Maximize ${fmt(f.profit1)} x₁ + ${fmt(f.profit2)} x₂\n`+
       vertices.map(([x,y])=>`(${fmt(x)}, ${fmt(y)}): ${fmt(f.profit1*x+f.profit2*y)}`).join("\n")+
-      `\nBest profit = ${fmt(best*scale)}\nOptimal corners: ${winners.map(v=>`(${v.map(fmt)})`).join("; ")}`;
+      t`\nBest profit = ${fmt(best*scale)}\nOptimal corners: ${winners.map(v=>`(${v.map(fmt)})`).join("; ")}`;
     const svg=root.querySelector("svg");
     svg.replaceChildren();
     const point=([x,y])=>[70+90*x,365-70*y];
@@ -282,7 +283,7 @@
       const [x,y]=point(v);
       node("circle",{cx:x,cy:y,r:winners.includes(v)?6:3,fill:winners.includes(v)?"#c65b08":"#2563eb"},svg);
     }
-    root.querySelector("[data-explanation]").textContent="Blue: feasible production. Gray dashed: resource boundaries. Orange dashed: best objective level; orange dots: optimal corners. A thick orange segment marks a tied edge. The constraints and axes stay fixed. Comparisons use normalized coefficients with tolerance 10⁻¹²; displayed values are rounded.";
+    root.querySelector("[data-explanation]").textContent=t("Blue: feasible production. Gray dashed: resource boundaries. Orange dashed: best objective level; orange dots: optimal corners. A thick orange segment marks a tied edge. The constraints and axes stay fixed. Comparisons use normalized coefficients with tolerance 10⁻¹²; displayed values are rounded.");
     svg.setAttribute("aria-label",status.textContent+" "+root.querySelector("[data-explanation]").textContent);
   }
 
@@ -315,23 +316,23 @@
     });
     const certificate=certificates.reduce((a,b)=>b.bound<a.bound?b:a);
     const status=root.querySelector('[data-status]');
-    status.textContent=original?`Published-capacity baseline. Worked exchange ${Math.min(step,2)} of 2 (modern replay). `+[
-      'Start: m = 0, a = 1; solve the part balance for t.',
-      'First exchange: automatic time shifts to Part II; turret time for Part I reaches its limit.',
-      'Second exchange: milling supplies the balance; automatic Part I time reaches zero. Optimal plan.'
-    ][Math.min(step,2)]:'Hypothetical capacity experiment: showing the optimal plan for your capacities. Restore the published baseline to replay the worked exchanges.';
-    if(caps.every(v=>v===0))status.textContent='Hypothetical zero-capacity experiment: the only feasible plan produces zero of both parts.';
+    status.textContent=original?t`Published-capacity baseline. Worked exchange ${Math.min(step,2)} of 2 (modern replay). `+[
+      t('Start: m = 0, a = 1; solve the part balance for t.'),
+      t('First exchange: automatic time shifts to Part II; turret time for Part I reaches its limit.'),
+      t('Second exchange: milling supplies the balance; automatic Part I time reaches zero. Optimal plan.')
+    ][Math.min(step,2)]:t('Hypothetical capacity experiment: showing the optimal plan for your capacities. Restore the published baseline to replay the worked exchanges.');
+    if(caps.every(v=>v===0))status.textContent=t('Hypothetical zero-capacity experiment: the only feasible plan produces zero of both parts.');
     root.querySelector('[data-action="next"]').disabled=!original||step>=2;
-    const rows=(q)=>['Milling','Turret','Automatic'].map((name,i)=>`${name}: Part I ${fmt(q[i])}; Part II ${fmt(caps[i]-q[i])}`).join('\n');
+    const rows=(q)=>[t('Milling'),t('Turret'),t('Automatic')].map((name,i)=>t`${name}: Part I ${fmt(q[i])}; Part II ${fmt(caps[i]-q[i])}`).join('\n');
     root.querySelector('[data-matrices]').textContent=
-      `Published-capacity baseline (M, T, A): (3, 3, 1) machine-days\nCurrent capacities: (${caps.map(fmt).join(', ')}) machine-days — ${original?'published baseline':'hypothetical experiment'}\n`+
-      `Fixed rates per machine-day (I, II): milling (10, 20), turret (20, 30), automatic (30, 80)\n`+
-      `Current allocation (machine-days)\n${rows(current)}\nPart I output = ${fmt(achieved)}\nPart II output = ${fmt(second)}\n`+
-      `\nOptimal allocation (machine-days)\n${rows(optimum)}\nOptimal matching output = ${fmt(best)}\n`+
-      `Gain available from current plan = ${fmt(Math.max(0,best-achieved))}\n`+
-      `\nOne optimal bound certificate\nPart weights = (${fmt(certificate.lambda)}, ${fmt(1-certificate.lambda)})\n`+
-      `Capacity values (M, T, A) = (${certificate.prices.map(fmt).join(', ')})\nUpper bound = ${fmt(certificate.bound)}\n`+
-      `Bound minus optimal output (rounded) = ${fmt(Math.abs(certificate.bound-best)<=1e-10*Math.max(best,1e-6)?0:Math.abs(certificate.bound-best))}`;
+      t`Published-capacity baseline (M, T, A): (3, 3, 1) machine-days\nCurrent capacities: (${caps.map(fmt).join(', ')}) machine-days — ${original?t('published baseline'):t('hypothetical experiment')}\n`+
+      t`Fixed rates per machine-day (I, II): milling (10, 20), turret (20, 30), automatic (30, 80)\n`+
+      t`Current allocation (machine-days)\n${rows(current)}\nPart I output = ${fmt(achieved)}\nPart II output = ${fmt(second)}\n`+
+      t`\nOptimal allocation (machine-days)\n${rows(optimum)}\nOptimal matching output = ${fmt(best)}\n`+
+      t`Gain available from current plan = ${fmt(Math.max(0,best-achieved))}\n`+
+      t`\nOne optimal bound certificate\nPart weights = (${fmt(certificate.lambda)}, ${fmt(1-certificate.lambda)})\n`+
+      t`Capacity values (M, T, A) = (${certificate.prices.map(fmt).join(', ')})\nUpper bound = ${fmt(certificate.bound)}\n`+
+      t`Bound minus optimal output (rounded) = ${fmt(Math.abs(certificate.bound-best)<=1e-10*Math.max(best,1e-6)?0:Math.abs(certificate.bound-best))}`;
     const svg=root.querySelector('svg');svg.replaceChildren();svg.setAttribute('viewBox','0 0 600 650');
     const tLimit=Math.max(caps[1],1), aLimit=Math.max(caps[2],1);
     const point=q=>[75+q[1]*440/tLimit,295-q[2]*240/aLimit];
@@ -342,8 +343,8 @@
       node('text',{x,y:320,'text-anchor':'middle'},svg,fmt(tLimit*i/2));
       node('text',{x:62,y:y+5,'text-anchor':'end'},svg,fmt(aLimit*i/2));
     }
-    node('text',{x:75,y:24},svg,'a: automatic time for Part I');
-    node('text',{x:200,y:348},svg,'t: turret time for Part I');
+    node('text',{x:75,y:24},svg,t('a: automatic time for Part I'));
+    node('text',{x:200,y:348},svg,t('t: turret time for Part I'));
     node('line',{x1:75,y1:55,x2:75,y2:295,class:'lab-axis'},svg);
     node('line',{x1:75,y1:295,x2:515,y2:295,class:'lab-axis'},svg);
     const center=vertices.reduce((p,q)=>[p[0]+q[1]/vertices.length,p[1]+q[2]/vertices.length],[0,0]);
@@ -353,43 +354,43 @@
     const [ox,oy]=point(optimum),[cx,cy]=point(current);
     node('circle',{cx:ox,cy:oy,r:8,fill:'none',stroke:'#c65b08','stroke-width':3},svg);
     node('circle',{cx,cy,r:4,fill:'currentColor'},svg);
-    node('text',{x:75,y:377},svg,'Blue: feasible · Dot: current · Orange ring: optimum');
-    node('text',{x:75,y:405},svg,'Current time shares: blue Part I, orange Part II');
+    node('text',{x:75,y:377},svg,t('Blue: feasible · Dot: current · Orange ring: optimum'));
+    node('text',{x:75,y:405},svg,t('Current time shares: blue Part I, orange Part II'));
     caps.forEach((cap,i)=>{
       const y=445+i*65, width=cap===0?0:300*current[i]/cap;
-      node('text',{x:25,y:y+5},svg,['Milling','Turret','Automatic'][i]);
+      node('text',{x:25,y:y+5},svg,[t('Milling'),t('Turret'),t('Automatic')][i]);
       node('rect',{x:145,y:y-16,width,height:24,fill:'#2563eb'},svg);
       node('rect',{x:145+width,y:y-16,width:cap===0?0:300-width,height:24,fill:'#c65b08'},svg);
-      node('text',{x:455,y:y+5},svg,cap===0?'No time':`${fmt(cap)} days`);
-      node('text',{x:145,y:y+29},svg,`I: ${fmt(current[i])} days; II: ${fmt(cap-current[i])} days`);
+      node('text',{x:455,y:y+5},svg,cap===0?t('No time'):t`${fmt(cap)} days`);
+      node('text',{x:145,y:y+29},svg,t`I: ${fmt(current[i])} days; II: ${fmt(cap-current[i])} days`);
     });
     root.querySelector('[data-explanation]').textContent=
-      'Rates stay fixed at Kantorovich’s published illustrative values. Only (3, 3, 1) is the published-capacity baseline; all other capacities are hypothetical experiments in divisible machine-days. The plot rescales: read its ticks. A collapsed region can be a segment or a point. Bars show fractions of each group’s current time; equal bar widths do not mean equal capacities. '+
-      (original?'Next worked exchange follows the two worked exchanges. ':'Capacity changes immediately recompute the optimal allocation. ')+
-      'The displayed certificate bounds all plans for these capacities. At a specialization threshold the weights may be nonunique; its capacity values are not a promise for finite capacity changes. Values are rounded and comparisons use floating-point tolerances.';
-    svg.setAttribute('aria-label',`${status.textContent} Current output ${fmt(achieved)}; optimal output ${fmt(best)}. ${root.querySelector('[data-explanation]').textContent}`);
+      t('Rates stay fixed at Kantorovich’s published illustrative values. Only (3, 3, 1) is the published-capacity baseline; all other capacities are hypothetical experiments in divisible machine-days. The plot rescales: read its ticks. A collapsed region can be a segment or a point. Bars show fractions of each group’s current time; equal bar widths do not mean equal capacities. ')+
+      (original?t('Next worked exchange follows the two worked exchanges. '):t('Capacity changes immediately recompute the optimal allocation. '))+
+      t('The displayed certificate bounds all plans for these capacities. At a specialization threshold the weights may be nonunique; its capacity values are not a promise for finite capacity changes. Values are rounded and comparisons use floating-point tolerances.');
+    svg.setAttribute('aria-label',t`${status.textContent} Current output ${fmt(achieved)}; optimal output ${fmt(best)}. ${root.querySelector('[data-explanation]').textContent}`);
   }
 
   function farkas(root, fields) {
     const q=fields.demand, bound=260/3, remainder=260-3*q;
     const boundary=Math.abs(remainder)<1e-10;
     const status=root.querySelector('[data-status]');
-    status.textContent=boundary?'At the boundary (within display tolerance): the exact target 260/3 is feasible.':remainder<0?'Infeasible: the weighted rows give a negative remainder.':'Feasible: the displayed allocation meets the target.';
+    status.textContent=boundary?t('At the boundary (within display tolerance): the exact target 260/3 is feasible.'):remainder<0?t('Infeasible: the weighted rows give a negative remainder.'):t('Feasible: the displayed allocation meets the target.');
     root.querySelector('[data-matrices]').textContent=
-      `Hypothetical target q = ${fmt(q)} complete sets/day\nFixed row weights y = (2, 1, 0, 10, 0, 0, 0, 20)\nAᵀy = (0, 0, 0) exactly\nbᵀy = 260 − 3q = ${boundary?'approximately 0':fmt(remainder)}\n`+
-      (remainder<0&&!boundary?`Contradiction: 0 ≤ ${fmt(remainder)}`:'Feasible witness at the exact boundary: (m, t, a) = (8/3, 3, 0)\nPart I = Part II = 260/3 complete sets/day');
+      t`Hypothetical target q = ${fmt(q)} complete sets/day\nFixed row weights y = (2, 1, 0, 10, 0, 0, 0, 20)\nAᵀy = (0, 0, 0) exactly\nbᵀy = 260 − 3q = ${boundary?t('approximately 0'):fmt(remainder)}\n`+
+      (remainder<0&&!boundary?t`Contradiction: 0 ≤ ${fmt(remainder)}`:t('Feasible witness at the exact boundary: (m, t, a) = (8/3, 3, 0)\nPart I = Part II = 260/3 complete sets/day'));
     const svg=root.querySelector('svg');svg.replaceChildren();
     const width=value=>value*4, left=130;
-    node('text',{x:20,y:85},svg,'Target q');
+    node('text',{x:20,y:85},svg,t('Target q'));
     node('rect',{x:left,y:60,width:width(q),height:35,fill:remainder<0&&!boundary?'#c65b08':'#2563eb'},svg);
-    node('text',{x:left,y:117},svg,`${fmt(q)} complete sets/day`);
-    node('text',{x:20,y:185},svg,'Attainable');
+    node('text',{x:left,y:117},svg,t`${fmt(q)} complete sets/day`);
+    node('text',{x:20,y:185},svg,t('Attainable'));
     node('rect',{x:left,y:160,width:width(bound),height:35,fill:'#2563eb'},svg);
-    node('text',{x:left,y:217},svg,'260/3 ≈ 86.6667 complete sets/day');
+    node('text',{x:left,y:217},svg,t('260/3 ≈ 86.6667 complete sets/day'));
     node('line',{x1:left+width(bound),y1:45,x2:left+width(bound),y2:230,class:'lab-axis','stroke-dasharray':'5 4'},svg);
-    node('text',{x:left,y:280},svg,'Same scale: 0 to 100 complete sets/day');
-    root.querySelector('[data-explanation]').textContent='Published machine data stay fixed. The target is hypothetical. The weights cancel all variables exactly; only the remainder changes. The exact transition is q = 260/3. Values are rounded; remainders within 10⁻¹⁰ of zero are reported as a boundary display, not an exact certificate for a nearby decimal target.';
-    svg.setAttribute('aria-label',`Target ${fmt(q)}; attainable rate 260/3 complete sets per day. ${status.textContent}`);
+    node('text',{x:left,y:280},svg,t('Same scale: 0 to 100 complete sets/day'));
+    root.querySelector('[data-explanation]').textContent=t('Published machine data stay fixed. The target is hypothetical. The weights cancel all variables exactly; only the remainder changes. The exact transition is q = 260/3. Values are rounded; remainders within 10⁻¹⁰ of zero are reported as a boundary display, not an exact certificate for a nearby decimal target.');
+    svg.setAttribute('aria-label',t`Target ${fmt(q)}; attainable rate 260/3 complete sets per day. ${status.textContent}`);
   }
 
   function duality(root, fields) {
@@ -399,10 +400,10 @@
     const prices=values(theta), upper=bound(theta), gap=Math.max(0,upper-attained);
     const baseline=theta===2/3;
     root.querySelector('[data-status]').textContent=baseline?
-      'Published-data baseline with derived weight 2/3: the bound matches the feasible plan (within floating-point rounding).':
-      'Hypothetical certificate weights; published machine data remain fixed. The bound is valid for every matching plan.';
+      t('Published-data baseline with derived weight 2/3: the bound matches the feasible plan (within floating-point rounding).'):
+      t('Hypothetical certificate weights; published machine data remain fixed. The bound is valid for every matching plan.');
     root.querySelector('[data-matrices]').textContent=
-      `Part weights = (${fmt(theta)}, ${fmt(1-theta)})\nMachine values (M, T, A) = (${prices.map(fmt)})\nUpper bound U(θ) = ${fmt(upper)} complete sets/day\nVerified feasible output = 260/3 ≈ ${fmt(attained)} complete sets/day\nCertificate gap U(θ) − 260/3 = ${fmt(gap)} complete sets/day`;
+      t`Part weights = (${fmt(theta)}, ${fmt(1-theta)})\nMachine values (M, T, A) = (${prices.map(fmt)})\nUpper bound U(θ) = ${fmt(upper)} complete sets/day\nVerified feasible output = 260/3 ≈ ${fmt(attained)} complete sets/day\nCertificate gap U(θ) − 260/3 = ${fmt(gap)} complete sets/day`;
     const svg=root.querySelector('svg');svg.replaceChildren();
     const px=w=>70+460*w, py=value=>350-280*(value-80)/160;
     node('line',{x1:70,y1:70,x2:70,y2:350,class:'lab-axis'},svg);
@@ -412,15 +413,15 @@
       node('text',{x:30,y:py(value)+5},svg,String(value));
     });
     [0,.5,1].forEach(w=>node('text',{x:px(w)-8,y:375},svg,String(w)));
-    node('text',{x:70,y:35},svg,'Complete sets/day (vertical scale starts at 80)');
-    node('text',{x:150,y:410},svg,'Part I weight θ; Part II weight 1 − θ');
+    node('text',{x:70,y:35},svg,t('Complete sets/day (vertical scale starts at 80)'));
+    node('text',{x:150,y:410},svg,t('Part I weight θ; Part II weight 1 − θ'));
     node('line',{x1:70,y1:py(attained),x2:530,y2:py(attained),stroke:'#2563eb','stroke-width':2,'stroke-dasharray':'6 4'},svg);
     const weights=[0,3/5,2/3,8/11,1];
     node('polyline',{points:weights.map(w=>`${px(w)},${py(bound(w))}`).join(' '),fill:'none',stroke:'#c65b08','stroke-width':3},svg);
     node('line',{x1:px(theta),y1:py(attained),x2:px(theta),y2:py(upper),stroke:'currentColor','stroke-width':2},svg);
     node('circle',{cx:px(theta),cy:py(upper),r:5,fill:'currentColor'},svg);
-    root.querySelector('[data-explanation]').textContent='Orange: upper bound U(θ). Dashed blue: verified feasible output 260/3. The dot marks your certificate and the vertical line its gap. Axes stay fixed; the vertical scale starts at 80. A machine may split between parts without losing weighted output when its two weighted rates tie. Equal weights give U = 115; restoring 2/3 gives the exact mathematical bound 260/3. Displayed decimals are rounded, not exact equality proofs.';
-    svg.setAttribute('aria-label',`Upper bound ${fmt(upper)}; feasible output 260/3; certificate gap ${fmt(gap)} complete sets per day. Part I weight ${fmt(theta)}.`);
+    root.querySelector('[data-explanation]').textContent=t('Orange: upper bound U(θ). Dashed blue: verified feasible output 260/3. The dot marks your certificate and the vertical line its gap. Axes stay fixed; the vertical scale starts at 80. A machine may split between parts without losing weighted output when its two weighted rates tie. Equal weights give U = 115; restoring 2/3 gives the exact mathematical bound 260/3. Displayed decimals are rounded, not exact equality proofs.');
+    svg.setAttribute('aria-label',t`Upper bound ${fmt(upper)}; feasible output 260/3; certificate gap ${fmt(gap)} complete sets per day. Part I weight ${fmt(theta)}.`);
   }
 
   function convexityMixture(root, f) {
@@ -428,8 +429,8 @@
     const x=S.map((value,i)=>(1-theta)*value+theta*O[i]);
     const P=10*x[0]+20*x[1]+30*x[2], Q=230-20*x[0]-30*x[1]-80*x[2];
     const mean=(1-theta)*856/11+theta*260/3;
-    root.querySelector('[data-status]').textContent=`Hypothetical mixture θ = ${fmt(theta)}. Feasible for every weight in [0, 1] under the published-data continuous model.`;
-    root.querySelector('[data-matrices]').textContent=`Part I machine-days (m, t, a) = (${x.map(fmt).join(', ')})\nPart II machine-days = (${[3-x[0],3-x[1],1-x[2]].map(fmt).join(', ')})\nPart I output P = ${fmt(P)} parts/day\nPart II output Q = ${fmt(Q)} parts/day\nAveraged endpoint output = ${fmt(mean)} complete sets/day\nBalance 30m + 50t + 110a = ${fmt(30*x[0]+50*x[1]+110*x[2])}`;
+    root.querySelector('[data-status]').textContent=t`Hypothetical mixture θ = ${fmt(theta)}. Feasible for every weight in [0, 1] under the published-data continuous model.`;
+    root.querySelector('[data-matrices]').textContent=t`Part I machine-days (m, t, a) = (${x.map(fmt).join(', ')})\nPart II machine-days = (${[3-x[0],3-x[1],1-x[2]].map(fmt).join(', ')})\nPart I output P = ${fmt(P)} parts/day\nPart II output Q = ${fmt(Q)} parts/day\nAveraged endpoint output = ${fmt(mean)} complete sets/day\nBalance 30m + 50t + 110a = ${fmt(30*x[0]+50*x[1]+110*x[2])}`;
     const svg=root.querySelector('svg');svg.replaceChildren();
     const px=t=>90+t*140, py=a=>350-a*270;
     const vertices=[[3/5,1],[12/5,1],[3,8/11],[3,0],[14/5,0]];
@@ -438,17 +439,17 @@
     node('line',{x1:px(0),y1:py(0),x2:px(0),y2:py(1.1),class:'lab-axis'},svg);
     [0,1,2,3].forEach(t=>node('text',{x:px(t),y:375,'text-anchor':'middle'},svg,String(t)));
     [0,.5,1].forEach(a=>node('text',{x:76,y:py(a)+5,'text-anchor':'end'},svg,String(a)));
-    node('text',{x:90,y:35},svg,'Fixed machine data; feasible allocations shaded');
-    node('text',{x:180,y:410},svg,'Turret t (machine-days)');
-    node('text',{x:30,y:235,transform:'rotate(-90 30 235)','text-anchor':'middle'},svg,'Automatic a (machine-days)');
+    node('text',{x:90,y:35},svg,t('Fixed machine data; feasible allocations shaded'));
+    node('text',{x:180,y:410},svg,t('Turret t (machine-days)'));
+    node('text',{x:30,y:235,transform:'rotate(-90 30 235)','text-anchor':'middle'},svg,t('Automatic a (machine-days)'));
     node('line',{x1:px(S[1]),y1:py(S[2]),x2:px(O[1]),y2:py(O[2]),stroke:'#c65b08','stroke-width':3},svg);
     [[S,'S'],[O,'O']].forEach(([plan,label])=>{
       node('circle',{cx:px(plan[1]),cy:py(plan[2]),r:4,fill:'#c65b08'},svg);
       node('text',{x:px(plan[1])-18,y:py(plan[2])-12},svg,label);
     });
     node('circle',{cx:px(x[1]),cy:py(x[2]),r:6,fill:'currentColor'},svg);
-    svg.setAttribute('aria-label',`Feasible allocation at optimal-plan weight ${fmt(theta)}: milling ${fmt(x[0])}, turret ${fmt(x[1])}, automatic ${fmt(x[2])} machine-days for Part I. Both outputs ${fmt(mean)} parts per day.`);
-    root.querySelector('[data-explanation]').textContent='Orange segment: mixtures of S and O. The dot marks your allocation inside the feasible polygon. Axes measure Part I machine-days; milling time follows from the balance equation. At θ = 0 use S; at θ = 1 use O. Both outputs equal the averaged endpoint output by affine linearity. Displayed decimals are rounded; the page proves feasibility and equality with exact fractions.';
+    svg.setAttribute('aria-label',t`Feasible allocation at optimal-plan weight ${fmt(theta)}: milling ${fmt(x[0])}, turret ${fmt(x[1])}, automatic ${fmt(x[2])} machine-days for Part I. Both outputs ${fmt(mean)} parts per day.`);
+    root.querySelector('[data-explanation]').textContent=t('Orange segment: mixtures of S and O. The dot marks your allocation inside the feasible polygon. Axes measure Part I machine-days; milling time follows from the balance equation. At θ = 0 use S; at θ = 1 use O. Both outputs equal the averaged endpoint output by affine linearity. Displayed decimals are rounded; the page proves feasibility and equality with exact fractions.');
   }
 
   function convexityChord(root, f, set) {
@@ -459,8 +460,8 @@
     const squareGap=theta*(1-theta)*(x-y)**2;
     const gap=shape==='square'?squareGap:shape==='concave'?-squareGap:Math.max(0,chord-height);
     const equal=x===y||theta===0||theta===1||(shape==='absolute'&&x*y>=0);
-    root.querySelector('[data-status]').textContent=equal?'Equality for this chord and weight.':shape==='concave'?'Convex inequality fails for this chord: the graph is above the chord.':'Convex inequality holds for this chord: the graph is below the chord.';
-    root.querySelector('[data-matrices]').textContent=`Mixed input u = (1 − θ)x + θy = ${fmt(mixed)}\nf(mixed input) = ${fmt(height)}\nAverage endpoint value = ${fmt(chord)}\nChord minus graph = ${fmt(equal?0:gap)}`;
+    root.querySelector('[data-status]').textContent=equal?t('Equality for this chord and weight.'):shape==='concave'?t('Convex inequality fails for this chord: the graph is above the chord.'):t('Convex inequality holds for this chord: the graph is below the chord.');
+    root.querySelector('[data-matrices]').textContent=t`Mixed input u = (1 − θ)x + θy = ${fmt(mixed)}\nf(mixed input) = ${fmt(height)}\nAverage endpoint value = ${fmt(chord)}\nChord minus graph = ${fmt(equal?0:gap)}`;
     const svg=root.querySelector('svg');svg.replaceChildren();
     const lower=shape==='concave'?-10:-1, upper=shape==='concave'?1:10;
     const px=u=>85+(u+3)*70, py=v=>350-(v-lower)*270/(upper-lower);
@@ -471,8 +472,8 @@
       node('line',{x1:85,y1:py(v),x2:505,y2:py(v),class:'lab-grid'},svg);
       node('text',{x:70,y:py(v)+5,'text-anchor':'end'},svg,String(v));
     });
-    node('text',{x:85,y:35},svg,`Function: ${shape==='absolute'?'|u|':shape==='concave'?'−u²':'u²'}; fixed axes within each function`);
-    node('text',{x:180,y:410},svg,'Input u; vertical value f(u)');
+    node('text',{x:85,y:35},svg,t`Function: ${shape==='absolute'?'|u|':shape==='concave'?'−u²':'u²'}; fixed axes within each function`);
+    node('text',{x:180,y:410},svg,t('Input u; vertical value f(u)'));
     const points=Array.from({length:121},(_,i)=>{const u=-3+i/20;return `${px(u)},${py(value(u))}`;});
     node('polyline',{points:points.join(' '),fill:'none',stroke:'#2563eb','stroke-width':3},svg);
     node('line',{x1:px(x),y1:py(value(x)),x2:px(y),y2:py(value(y)),stroke:'#c65b08','stroke-width':3,'stroke-dasharray':'6 4'},svg);
@@ -480,8 +481,8 @@
     node('line',{x1:px(mixed),y1:py(height),x2:px(mixed),y2:py(chord),stroke:'currentColor','stroke-width':2},svg);
     node('circle',{cx:px(mixed),cy:py(chord),r:6,fill:'none',stroke:'#c65b08','stroke-width':2},svg);
     node('circle',{cx:px(mixed),cy:py(height),r:4,fill:'#2563eb'},svg);
-    svg.setAttribute('aria-label',`At mixed input ${fmt(mixed)}, function value ${fmt(height)} and chord height ${fmt(chord)}. Chord minus graph ${fmt(equal?0:gap)}. Blue graph and dashed orange chord.`);
-    root.querySelector('[data-explanation]').textContent=equal?'The two heights coincide. Equal endpoints collapse the chord to a point, endpoint weights select an endpoint, and absolute value is affine between endpoints on the same side of zero. Equality in one test does not prove that a function is affine everywhere.':shape==='concave'?'The negative square is concave: its graph lies above this chord. A negative chord-minus-graph value disproves convexity. This compares heights at the same mixed input.':'Blue dot: cost at the mixed input. Orange ring: average of endpoint costs. Their vertical separation is the nonnegative chord-minus-graph value. A single passing chord illustrates convexity; it does not prove the condition for every pair and weight.';
+    svg.setAttribute('aria-label',t`At mixed input ${fmt(mixed)}, function value ${fmt(height)} and chord height ${fmt(chord)}. Chord minus graph ${fmt(equal?0:gap)}. Blue graph and dashed orange chord.`);
+    root.querySelector('[data-explanation]').textContent=equal?t('The two heights coincide. Equal endpoints collapse the chord to a point, endpoint weights select an endpoint, and absolute value is affine between endpoints on the same side of zero. Equality in one test does not prove that a function is affine everywhere.'):shape==='concave'?t('The negative square is concave: its graph lies above this chord. A negative chord-minus-graph value disproves convexity. This compares heights at the same mixed input.'):t('Blue dot: cost at the mixed input. Orange ring: average of endpoint costs. Their vertical separation is the nonnegative chord-minus-graph value. A single passing chord illustrates convexity; it does not prove the condition for every pair and weight.');
   }
 
   function initialize() {
@@ -505,9 +506,9 @@
           if(display)display.textContent=good?fmt(value):"—";
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent=kind.startsWith('convexity-')?"Enter a finite weight between 0 and 1 and, when present, finite endpoints between −3 and 3. Endpoint weights and equal endpoints are allowed.":kind==="duality"?"Enter a finite Part I weight between 0 and 1. Both endpoints are allowed.":kind==="farkas"?"Enter a finite target between 0 and 100 complete sets per day. Zero is allowed.":kind==="kantorovich"?"Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed.":"Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².";
+          root.querySelector("[data-status]").textContent=kind.startsWith('convexity-')?t("Enter a finite weight between 0 and 1 and, when present, finite endpoints between −3 and 3. Endpoint weights and equal endpoints are allowed."):kind==="duality"?t("Enter a finite Part I weight between 0 and 1. Both endpoints are allowed."):kind==="farkas"?t("Enter a finite target between 0 and 100 complete sets per day. Zero is allowed."):kind==="kantorovich"?t("Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed."):t("Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².");
           root.querySelector("[data-matrices]").textContent="";
-          root.querySelector("[data-explanation]").textContent="The result will update when the inputs are valid.";
+          root.querySelector("[data-explanation]").textContent=t("The result will update when the inputs are valid.");
           root.querySelector("svg")?.replaceChildren();
           const next=root.querySelector('[data-action="next"]');if(next)next.disabled=true;
           return;

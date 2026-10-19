@@ -3,6 +3,8 @@ title: Schur complement
 subject: Linear Algebra
 description: Eliminate a block of variables and understand the remaining matrix through linear systems, quadratic energy, and Cholesky factorization.
 last_modified_at: 2026-10-12
+lang: en
+translation_key: wiki-linear-algebra-schur-complement
 ---
 
 ## Definition

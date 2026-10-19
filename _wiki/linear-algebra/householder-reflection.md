@@ -5,6 +5,8 @@ interactive_examples: true
 orthogonal_examples: true
 description: Derive a reflection that zeros a column tail, understand its geometry and stable sign choice, and connect compact reflectors to QR and eigenvalue algorithms.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-householder-reflection
 ---
 
 ## The original problem: make a matrix triangular without distorting lengths

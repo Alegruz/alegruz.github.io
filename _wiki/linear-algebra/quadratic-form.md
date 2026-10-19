@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Read xᵀAx as a scalar quadratic expression, understand its geometry, and connect its curvature to matrix factorizations and optimization.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-quadratic-form
 ---
 
 ## Definition

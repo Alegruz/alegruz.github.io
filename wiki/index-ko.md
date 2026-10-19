@@ -12,7 +12,7 @@ translation_key: math-wiki-index
     <h1>{{ page.title }}</h1>
     <p>개념이 필요한 이유부터 정의, 계산 예제, 다른 개념과의 연결까지 차근차근 살펴봅니다. 공부하고 다시 검토하면서 각 문서를 보완합니다.</p>
     {% assign translation_drafts = site.wiki | where: 'lang', 'ko' | where: 'translation_status', 'in_progress' %}
-    {% if translation_drafts.size > 0 %}<p>기존 문서의 한국어 번역을 시작했습니다. 번역 중인 문서는 핵심 내용을 담은 초안이며, 각 문서 상단에서 남은 작업과 전체 영문판 링크를 확인할 수 있습니다.</p>{% endif %}
+    {% if translation_drafts.size > 0 %}<p>번역 중인 문서는 각 문서 상단에서 남은 작업과 영문판 링크를 확인할 수 있습니다.</p>{% endif %}
     <p><a href="{{ '/wiki/' | relative_url }}" lang="en" hreflang="en">English Math Wiki</a></p>
   </header>
   {% assign language_entries = site.wiki | where: 'lang', 'ko' %}

@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Understand how geodetic network adjustment led to Cholesky factorization, how its purpose developed, and how to compute it.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-cholesky-decomposition
 ---
 
 ## Definition
@@ -579,8 +581,8 @@ If $L$ is an invertible real lower triangular matrix, prove $LL^T$ is SPD. Why d
 <details markdown="1">
 <summary>Reveal a hint</summary>
 
-Use $x^TLL^Tx=\lVert L^Tx
-Vert^2$, then try replacing $L$ with $-L$.
+Use $x^TLL^Tx=\lVert L^Tx\rVert_2^2$,
+then try replacing $L$ with $-L$.
 
 </details>
 <details markdown="1">

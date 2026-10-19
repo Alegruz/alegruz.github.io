@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="410" viewBox="0 0 860 410" xml:lang="ko" role="img" aria-labelledby="title desc">
+<title id="title">칸토로비치 기계 예제의 최적 시간 배분</title>
+<desc id="desc">밀링 시간의 8/9는 부품 I, 1/9는 부품 II에 쓴다. 터릿선반은 부품 I, 자동선반은 부품 II를 만든다. 공장은 각 부품을 하루 260/3개 생산한다.</desc>
+<rect width="860" height="410" fill="white"/>
+<g font-family="system-ui,sans-serif" fill="#1e293b" font-size="18">
+<text x="30" y="35" font-size="24" font-weight="700">기계 전문화로 부품 수 맞추기</text>
+<rect x="30" y="55" width="20" height="20" fill="#2563eb"/><text x="60" y="72">부품 I</text><rect x="165" y="55" width="20" height="20" fill="#c65b08"/><text x="195" y="72">부품 II</text>
+<text x="30" y="115">밀링: 3 기계·일</text>
+<rect x="290" y="91" width="426.66666666666663" height="32" fill="#2563eb"/>
+<rect x="716.6666666666666" y="91" width="53.33333333333337" height="32" fill="#c65b08"/>
+<text x="290" y="149" font-size="16">I에 8/3일; II에 1/3일</text>
+<text x="30" y="200">터릿선반: 3 기계·일</text>
+<rect x="290" y="176" width="480.0" height="32" fill="#2563eb"/>
+<rect x="770.0" y="176" width="0.0" height="32" fill="#c65b08"/>
+<text x="290" y="234" font-size="16">I에 3일; II에 0일</text>
+<text x="30" y="285">자동선반: 1 기계·일</text>
+<rect x="290" y="261" width="0.0" height="32" fill="#2563eb"/>
+<rect x="290.0" y="261" width="480.0" height="32" fill="#c65b08"/>
+<text x="290" y="319" font-size="16">I에 0일; II에 1일</text>
+<text x="30" y="368" font-weight="700">부품 I 합계 = 260/3; 부품 II 합계 = 260/3</text>
+<text x="30" y="395" font-size="16">같은 너비는 각 기계 집단 시간의 100%를 뜻하며 기계 수나 생산량이 같다는 뜻은 아니다.</text>
+</g></svg>

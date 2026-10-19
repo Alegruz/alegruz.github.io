@@ -4,6 +4,8 @@ subject: Linear Algebra
 interactive_examples: true
 description: Represent matrices as products of structured factors, and choose between LU, Cholesky, QR, and other decompositions.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-linear-algebra-matrix-decomposition
 ---
 
 ## Definition

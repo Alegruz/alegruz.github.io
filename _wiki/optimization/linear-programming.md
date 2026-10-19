@@ -4,6 +4,8 @@ subject: Optimization
 interactive_examples: true
 description: Derive linear models, improving exchanges, and optimality certificates from Kantorovich's machine allocation and Dantzig's assignment problem.
 last_modified_at: 2026-10-16
+lang: en
+translation_key: wiki-optimization-linear-programming
 ---
 
 ## Kantorovich's problem: maximize complete sets of parts

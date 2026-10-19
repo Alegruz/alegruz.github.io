@@ -1,0 +1,34 @@
+<section class="wiki-lab" data-orthogonal-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
+  <p class="wiki-lab-title">{{ include.title | escape }}</p>
+  {% if include.kind == 'householder' %}
+  <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>를 설명하기 위해 직접 만든 보충 기하 예제이다. 무차원 기준값은 역사적 관측 자료가 아니며 모든 수정은 가상 실험이다.</p>
+  {% else %}
+  <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>의 현대적인 학습용 재구성이다. 원래 문제는 기호로 주어졌으며 여기의 무차원 수치 기준값은 역사적 관측 자료가 아닌 직접 만든 값이다. 모든 수정은 가상 실험이다.</p>
+  {% endif %}
+  <p>본문의 계산은 JavaScript 없이도 기준값을 설명한다. JavaScript를 켜면 값을 바꾸어 계산을 탐색할 수 있다. 수치 칸은 −10000부터 10000까지 허용하며, 0이 아닌 {% if include.kind == 'householder' %}입력 벡터의 {% endif %}성분의 절댓값은 10⁻¹² 이상이어야 한다.{% if include.kind == 'householder' %} 법선 좌표에는 더 작은 0 아닌 값도 허용하므로 거의 축 방향인 입력도 목표 축으로 향하게 할 수 있다.{% endif %}</p>
+  <div class="wiki-lab-controls" hidden>
+    {% if include.kind == 'householder' %}
+    <label>입력 벡터의 첫 좌표 <input data-field="x1" type="number" step="any" value="3"></label>
+    <label>입력 벡터의 둘째 좌표 <input data-field="x2" type="number" step="any" value="4"></label>
+    <label>거울 법선의 첫 좌표 <input data-field="n1" type="number" step="any" value="2"></label>
+    <label>거울 법선의 둘째 좌표 <input data-field="n2" type="number" step="any" value="1"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="aim">입력을 첫 축으로 향하게 하기</button><button type="button" data-action="reset">직접 만든 기하 기준값 복원</button></div>
+    {% elsif include.kind == 'gram-schmidt' %}
+    <label>둘째 열의 첫 성분 <input data-field="a1" type="number" step="any" value="0"></label>
+    <label>둘째 열의 둘째 성분 <input data-field="a2" type="number" step="any" value="1"></label>
+    <label>둘째 열의 셋째 성분 <input data-field="a3" type="number" step="any" value="2"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">직접 만든 벡터 기준값 복원</button></div>
+    {% elsif include.kind == 'qr' %}
+    <label>t = 0의 관측값 b₁ <input data-field="b1" type="number" step="any" value="1"></label>
+    <label>t = 1의 관측값 b₂ <input data-field="b2" type="number" step="any" value="2"></label>
+    <label>t = 2의 관측값 b₃ <input data-field="b3" type="number" step="any" value="2"></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reset">직접 만든 관측 기준값 복원</button></div>
+    {% endif %}
+  </div>
+  <div class="wiki-lab-result" hidden>
+    <p data-status role="status" aria-live="polite"></p>
+    <pre data-matrices aria-label="계산한 벡터, 행렬과 값"></pre>
+    <svg data-plot viewBox="0 0 600 430" role="img" aria-label="{{ include.plot_description | escape }}"></svg>
+    <p data-explanation></p>
+  </div>
+</section>

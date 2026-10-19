@@ -41,7 +41,8 @@
 {%- endif -%}
 
 {%- if page.translation_key -%}
-  {%- assign translations = site.posts | where: "translation_key", page.translation_key -%}
+  {%- assign translatable_pages = site.posts | concat: site.wiki | concat: site.pages -%}
+  {%- assign translations = translatable_pages | where: "translation_key", page.translation_key -%}
   {%- for translation in translations -%}
     <link rel="alternate" hreflang="{{ translation.lang | default: 'en' }}" href="{{ translation.url | absolute_url }}">
   {%- endfor -%}
