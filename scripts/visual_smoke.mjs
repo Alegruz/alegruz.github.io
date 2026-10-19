@@ -121,8 +121,19 @@ async function checkPage(browser, baseUrl, target) {
     if (await page.locator("#post-content blockquote table").count()) {
       throw new Error(`${target.name}: quoted math was parsed as a Markdown table`);
     }
-    if (await page.locator(".math-inline mjx-container").count() !== 4) {
-      throw new Error(`${target.name}: protected inline formulas did not render`);
+    const protectedFormulas = page.locator("#post-content .math-inline");
+    if (await protectedFormulas.count() === 0) {
+      throw new Error(`${target.name}: protected inline formula wrappers are missing`);
+    }
+    const unrenderedFormulas = await protectedFormulas.evaluateAll((nodes) => nodes.flatMap((node, index) => {
+      const remainder = node.cloneNode(true);
+      remainder.querySelectorAll("mjx-container").forEach((math) => math.remove());
+      return node.querySelectorAll("mjx-container").length !== 1 || remainder.textContent.trim()
+        ? [index + 1]
+        : [];
+    }));
+    if (unrenderedFormulas.length) {
+      throw new Error(`${target.name}: protected inline formulas did not render: ${unrenderedFormulas.join(", ")}`);
     }
   }
 
