@@ -485,6 +485,43 @@
     root.querySelector('[data-explanation]').textContent=equal?t('The two heights coincide. Equal endpoints collapse the chord to a point, endpoint weights select an endpoint, and absolute value is affine between endpoints on the same side of zero. Equality in one test does not prove that a function is affine everywhere.'):shape==='concave'?t('The negative square is concave: its graph lies above this chord. A negative chord-minus-graph value disproves convexity. This compares heights at the same mixed input.'):t('Blue dot: cost at the mixed input. Orange ring: average of endpoint costs. Their vertical separation is the nonnegative chord-minus-graph value. A single passing chord illustrates convexity; it does not prove the condition for every pair and weight.');
   }
 
+  function caratheodory(root, f) {
+    const masses=[f.massA,f.massB,f.massC,f.massD], total=masses.reduce((a,b)=>a+b,0);
+    if(total===0){
+      root.querySelector('[data-status]').textContent=t('At least one mass must be positive; an all-zero input has no weighted average.');
+      root.querySelector('[data-matrices]').textContent='';
+      root.querySelector('[data-explanation]').textContent=t('The result will update when the inputs are valid.');
+      root.querySelector('svg').replaceChildren();
+      return;
+    }
+    const initial=masses.map(x=>x/total), count=initial.filter(x=>x>0).length;
+    // Preserve both coordinates and normalization using a fixed affine relation.
+    // An already small support must not activate an unused point on the way.
+    const limit=count>3?Math.min(initial[0],initial[2]):0, tau=f.progress*limit;
+    const weights=initial.map((w,i)=>w-tau*[1,-1,1,-1][i]);
+    const before=[initial[0]-initial[2],initial[1]-initial[3]], after=[weights[0]-weights[2],weights[1]-weights[3]];
+    const active=weights.filter(x=>x>0).length, residual=Math.hypot(after[0]-before[0],after[1]-before[1]);
+    root.querySelector('[data-status]').textContent=count<=3?t('Input already uses at most 3 points. No transfer is needed.'):f.progress===1?t('Reduction complete: at most 3 positive weights remain.'):t('Move to the first zero weight; the average stays fixed.');
+    root.querySelector('[data-matrices]').textContent=t`Initial weights (A, B, C, D) = (${initial.map(fmt).join(', ')})\nCurrent weights (A, B, C, D) = (${weights.map(fmt).join(', ')})\nWeight sum = ${fmt(weights.reduce((a,b)=>a+b,0))}\nOriginal average q = (${before.map(fmt).join(', ')})\nCurrent average q = (${after.map(fmt).join(', ')})\nTransfer t = ${fmt(tau)}; first-zero limit = ${fmt(limit)}\nPositive weights = ${active}\nAverage residual = ${fmt(residual)}`;
+    const svg=root.querySelector('svg');svg.replaceChildren();
+    const px=x=>300+135*x, py=y=>215-135*y, points=[[1,0],[0,1],[-1,0],[0,-1]];
+    node('circle',{cx:300,cy:215,r:135,fill:'none',stroke:'currentColor','stroke-dasharray':'5 5',opacity:.4},svg);
+    const support=points.filter((_,i)=>weights[i]>0);
+    if(support.length>1)node(support.length===2?'polyline':'polygon',{points:support.map(([x,y])=>`${px(x)},${py(y)}`).join(' '),fill:support.length>2?'#2563eb':'none','fill-opacity':.12,stroke:'#2563eb','stroke-width':2},svg);
+    node('line',{x1:115,y1:215,x2:485,y2:215,class:'lab-axis'},svg);
+    node('line',{x1:300,y1:45,x2:300,y2:390,class:'lab-axis'},svg);
+    node('text',{x:490,y:220},svg,'x');node('text',{x:310,y:50},svg,'y');
+    points.forEach(([x,y],i)=>{
+      node('circle',{cx:px(x),cy:py(y),r:weights[i]>0?7:5,fill:weights[i]>0?'#2563eb':'none',stroke:'#2563eb','stroke-width':2},svg);
+      node('text',{x:px(x)+[16,0,-16,0][i],y:py(y)+[5,-18,5,25][i],'text-anchor':i===2?'end':i===0?'start':'middle'},svg,'ABCD'[i]);
+    });
+    node('circle',{cx:px(before[0]),cy:py(before[1]),r:6,fill:'#c65b08',stroke:'currentColor','stroke-width':1},svg);
+    node('text',{x:px(before[0])+12,y:py(before[1])-10},svg,'q');
+    node('text',{x:300,y:420,'text-anchor':'middle'},svg,t('Filled points have positive weights; outlined points have zero weight.'));
+    svg.setAttribute('aria-label',t`Fixed average q = (${before.map(fmt).join(', ')}); ${active} positive weights. The dashed circle shows the coefficient curve.`);
+    root.querySelector('[data-explanation]').textContent=t('The blue hull uses the currently positive weights. Orange q is unchanged by the transfer. Outputs use floating-point arithmetic and are rounded; the residual checks the average before display rounding. Only the four labeled points are available.');
+  }
+
   function initialize() {
     document.querySelectorAll("[data-wiki-lab]").forEach((root,index)=>{
       const kind=root.dataset.wikiLab, set=key=>root.querySelector(`[data-field="${key}"]`);
@@ -498,7 +535,7 @@
         let invalid=false;
         root.querySelectorAll('input[type="number"], input[type="range"]').forEach(input=>{
           const value=input.valueAsNumber;
-          const good=kind.startsWith('convexity-')?Number.isFinite(value)&&(input.dataset.field==='mix'?value>=0&&value<=1:Math.abs(value)<=3):kind==="duality"?Number.isFinite(value)&&value>=0&&value<=1:kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
+          const good=kind==='caratheodory'?Number.isFinite(value)&&value>=0&&value<=(input.dataset.field==='progress'?1:10):kind.startsWith('convexity-')?Number.isFinite(value)&&(input.dataset.field==='mix'?value>=0&&value<=1:Math.abs(value)<=3):kind==="duality"?Number.isFinite(value)&&value>=0&&value<=1:kind==="farkas"?Number.isFinite(value)&&value>=0&&value<=100:kind==="kantorovich"?Number.isFinite(value)&&value>=0&&value<=10&&(value===0||value>=1e-6):Number.isFinite(value)&&Math.abs(value)<=10000 && (value===0 || Math.abs(value)>=1e-12);
           input.setAttribute("aria-invalid",String(!good));
           invalid ||= !good;
           f[input.dataset.field]=value;
@@ -506,14 +543,15 @@
           if(display)display.textContent=good?fmt(value):"—";
         });
         if(invalid){
-          root.querySelector("[data-status]").textContent=kind.startsWith('convexity-')?t("Enter a finite weight between 0 and 1 and, when present, finite endpoints between −3 and 3. Endpoint weights and equal endpoints are allowed."):kind==="duality"?t("Enter a finite Part I weight between 0 and 1. Both endpoints are allowed."):kind==="farkas"?t("Enter a finite target between 0 and 100 complete sets per day. Zero is allowed."):kind==="kantorovich"?t("Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed."):t("Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².");
+          root.querySelector("[data-status]").textContent=kind==='caratheodory'?t("Enter finite masses between 0 and 10 and progress between 0 and 1."):kind.startsWith('convexity-')?t("Enter a finite weight between 0 and 1 and, when present, finite endpoints between −3 and 3. Endpoint weights and equal endpoints are allowed."):kind==="duality"?t("Enter a finite Part I weight between 0 and 1. Both endpoints are allowed."):kind==="farkas"?t("Enter a finite target between 0 and 100 complete sets per day. Zero is allowed."):kind==="kantorovich"?t("Enter machine-day capacities between 0 and 10; nonzero values must be at least 0.000001. Zero capacity is allowed."):t("Enter finite numbers between −10000 and 10000 in every numeric field; nonzero values must have magnitude at least 10⁻¹².");
           root.querySelector("[data-matrices]").textContent="";
           root.querySelector("[data-explanation]").textContent=t("The result will update when the inputs are valid.");
           root.querySelector("svg")?.replaceChildren();
           const next=root.querySelector('[data-action="next"]');if(next)next.disabled=true;
           return;
         }
-        if(kind==='convexity-mixture')convexityMixture(root,f);
+        if(kind==='caratheodory')caratheodory(root,f);
+        else if(kind==='convexity-mixture')convexityMixture(root,f);
         else if(kind==='convexity-chord')convexityChord(root,f,set);
         else if(kind==="duality")duality(root,f);
         else if(kind==="farkas")farkas(root,f);
@@ -526,6 +564,7 @@
         else cholesky(root,f,`wiki-lab-clip-${index}`);
       }
       root.querySelectorAll("[data-field]").forEach(input=>input.addEventListener("input",()=>{
+        if(kind==="caratheodory"&&input.dataset.field!=="progress")set("progress").value=0;
         if(input.dataset.field==="preset"){
           for(const [key,value] of Object.entries(presets[input.value]))set(key).value=value;
         }
@@ -533,6 +572,10 @@
         step=kind==="kantorovich"&&!(input.dataset.field==="preset"&&input.value==="original")?2:0;render();
       }));
       root.querySelector('[data-action="next"]')?.addEventListener("click",()=>{step=Math.min(step+1,3);render();});
+      if(kind==="caratheodory"){
+        root.querySelector('[data-action="reduce"]').addEventListener('click',()=>{set('progress').value=1;render();});
+        root.querySelector('[data-action="reset"]').addEventListener('click',()=>{for(const [i,key] of ['massA','massB','massC','massD'].entries())set(key).value=[3,3,1,1][i];set('progress').value=0;render();});
+      }
       root.querySelector('[data-action="boundary"]')?.addEventListener("click",()=>{set('demand').value=260/3;render();});
       if(kind==="duality"){
         root.querySelector('[data-action="equal-weights"]').addEventListener("click",()=>{set('weight').value=1/2;render();});

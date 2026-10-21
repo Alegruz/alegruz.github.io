@@ -3,6 +3,15 @@
   "use strict";
   const korean = document.documentElement.lang === "ko";
   const messages = {
+  "At least one mass must be positive; an all-zero input has no weighted average.": "적어도 하나의 질량이 양수여야 한다. 모두 0이면 가중평균이 없다.",
+  "Input already uses at most 3 points. No transfer is needed.": "입력이 이미 최대 3개의 점을 사용하므로 이동할 필요가 없다.",
+  "Reduction complete: at most 3 positive weights remain.": "축소 완료: 양의 가중치가 최대 3개 남았다.",
+  "Move to the first zero weight; the average stays fixed.": "첫 가중치가 0이 될 때까지 움직이자. 평균은 고정된다.",
+  "Initial weights (A, B, C, D) = ({0})\nCurrent weights (A, B, C, D) = ({1})\nWeight sum = {2}\nOriginal average q = ({3})\nCurrent average q = ({4})\nTransfer t = {5}; first-zero limit = {6}\nPositive weights = {7}\nAverage residual = {8}": "초기 가중치 (A, B, C, D) = ({0})\n현재 가중치 (A, B, C, D) = ({1})\n가중치 합 = {2}\n원래 평균 q = ({3})\n현재 평균 q = ({4})\n이동량 t = {5}; 첫 영점 한계 = {6}\n양의 가중치 수 = {7}\n평균 잔차 = {8}",
+  "Filled points have positive weights; outlined points have zero weight.": "채운 점은 양의 가중치, 빈 점은 가중치 0이다.",
+  "Fixed average q = ({0}); {1} positive weights. The dashed circle shows the coefficient curve.": "고정 평균 q = ({0}); 양의 가중치 {1}개. 점선 원은 계수 곡선이다.",
+  "The blue hull uses the currently positive weights. Orange q is unchanged by the transfer. Outputs use floating-point arithmetic and are rounded; the residual checks the average before display rounding. Only the four labeled points are available.": "파란 껍질은 현재 가중치가 양수인 점들로 만든다. 이동해도 주황 q는 바뀌지 않는다. 출력은 부동소수점 산술을 사용하고 반올림하며, 잔차는 표시용 반올림 전의 평균을 검사한다. 표시된 네 점만 사용할 수 있다.",
+  "Enter finite masses between 0 and 10 and progress between 0 and 1.": "0 이상 10 이하의 유한 질량과 0 이상 1 이하의 진행률을 입력하자.",
   "C acts first; B acts second.": "C가 먼저 작용하고 B가 나중에 작용한다.",
   "B acts first; C acts second.": "B가 먼저 작용하고 C가 나중에 작용한다.",
   "Input x = ({0})\nAfter first factor = ({1})\nFinal output = ({2})": "입력 x = ({0})\n첫 인수 적용 후 = ({1})\n최종 출력 = ({2})",

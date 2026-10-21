@@ -1,6 +1,8 @@
 <section class="wiki-lab" data-wiki-lab="{{ include.kind }}" aria-label="{{ include.title | escape }}">
   <p class="wiki-lab-title">{{ include.title | escape }}</p>
-  {% if include.kind == 'vector-error' or include.kind == 'matrix-error' %}
+  {% if include.kind == 'caratheodory' %}
+  <p class="wiki-lab-context">역사적 문제의 n = 1 계수 곡선 위에 수치 가중치를 선택한 보충 예제이다. A = (1, 0), B = (0, 1), C = (−1, 0), D = (0, −1)는 고정된다. 질량은 출판된 관측 자료가 아닌 학습용 선택이다. 모든 수정은 가상이며 물리적 단위는 없다.</p>
+  {% elsif include.kind == 'vector-error' or include.kind == 'matrix-error' %}
   <p class="wiki-lab-context"><a href="{{ include.source_url | escape }}">{{ include.source_label | escape }}</a>(1999)에 발표된 예시 자료의 기준값이다. 기준값은 고정되며 근사값 수정은 가상 실험이다. 원문은 물리적 단위를 지정하지 않는다. 출력은 현대적으로 다시 계산하며 표시값은 반올림한다.</p>
   {% elsif include.kind == 'vector-norm' or include.kind == 'matrix-norm' %}
   <p class="wiki-lab-context">보충 학습을 위해 직접 만든 예제이다. 기본값은 역사적 관측 자료가 아니며 수정은 가상 실험이다.</p>
@@ -19,7 +21,14 @@
   {% endif %}
   <noscript><p>대화형 조작에는 JavaScript가 필요하다. 아래 계산 예제와 연습문제 풀이는 JavaScript 없이도 읽을 수 있다.</p></noscript>
   <div class="wiki-lab-controls" hidden>
-    {% if include.kind == 'convexity-mixture' %}
+    {% if include.kind == 'caratheodory' %}
+    <label>A의 질량 <input data-field="massA" type="number" min="0" max="10" step="any" value="3"></label>
+    <label>B의 질량 <input data-field="massB" type="number" min="0" max="10" step="any" value="3"></label>
+    <label>C의 질량 <input data-field="massC" type="number" min="0" max="10" step="any" value="1"></label>
+    <label>D의 질량 <input data-field="massD" type="number" min="0" max="10" step="any" value="1"></label>
+    <label>축소 진행률 <input data-field="progress" type="range" min="0" max="1" step="0.01" value="0"><output data-value="progress">0</output></label>
+    <div class="wiki-lab-actions"><button type="button" data-action="reduce">축소 완료</button><button type="button" data-action="reset">보충 예제 가중치 복원</button></div>
+    {% elsif include.kind == 'convexity-mixture' %}
     <label>최적 계획 가중치 θ (S의 가중치는 1 − θ) <input data-field="mix" type="number" min="0" max="1" step="any" value="0.5"></label>
     <div class="wiki-lab-actions"><button type="button" data-action="reset">발표 자료 기준값과 중점 혼합 복원</button></div>
     {% elsif include.kind == 'convexity-chord' %}

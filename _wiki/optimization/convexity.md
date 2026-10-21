@@ -3,7 +3,7 @@ title: Convexity
 subject: Optimization
 interactive_examples: true
 description: Derive convex sets from mixing production plans, distinguish convex functions from feasible regions, and connect global minima to quadratic curvature.
-last_modified_at: 2026-10-16
+last_modified_at: 2026-10-20
 lang: en
 translation_key: wiki-optimization-convexity
 ---
@@ -98,6 +98,8 @@ $$
 The symbol $\in$ means “belongs to”; $\mathbb R^n$ is the space of lists of $n$ real coordinates. The points $(1-\theta)x+\theta y$ form the **line segment** from $x$ to $y$. The condition must hold for every pair and every allowed weight. One successful segment is an illustration; one failed segment disproves convexity. See [Boyd and Vandenberghe, slide 2.3](https://web.stanford.edu/class/ee364a/lectures/sets.pdf#page=5).
 
 A **convex combination** of several points is $\sum_i\theta_i x_i$, with $\theta_i\ge0$ and $\sum_i\theta_i=1$. Repeated mixing shows that a convex set contains every finite convex combination of its points. The **convex hull** of a set is the collection of all these combinations. See [slide 2.4](https://web.stanford.edu/class/ee364a/lectures/sets.pdf#page=6).
+
+How many points does a convex combination need? [Carathéodory’s theorem]({{ '/wiki/optimization/caratheodory-theorem/' | relative_url }}) shows how to preserve the same average using at most $d+1$ points in $\mathbb R^d$.
 
 ### Why linear constraints and intersections work
 

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="430" viewBox="0 0 960 430" role="img" aria-labelledby="title desc" xml:lang="ko">
+<title id="title">평균을 보존하는 가중치 축소</title><desc id="desc">q는 (1/4,1/4)에 고정되고 C의 가중치가 0이 되어 마름모가 삼각형 ABD로 줄어든다.</desc>
+<style>text{font-family:system-ui,sans-serif;fill:#172f47;font-size:17px}.axis{stroke:#8c9aa8;stroke-width:1}.curve{stroke:#8c9aa8;stroke-dasharray:5 5;fill:none}.hull{fill:#2563eb;fill-opacity:.10;stroke:#2563eb;stroke-width:2}.point{fill:#2563eb}.target{fill:#c65b08;stroke:white;stroke-width:2}@media(prefers-color-scheme:dark){text{fill:#e1eaf3}.axis,.curve{stroke:#91a3b7}}</style>
+<text x="240" y="30" text-anchor="middle" font-weight="600">축소 전: 양의 가중치 4개</text>
+<circle class="curve" cx="240" cy="218" r="118"/>
+<polygon class="hull" points="358,218 240,100 122,218 240,336"/>
+<path class="axis" d="M 92 218 H 388 M 240 68 V 366"/>
+<text x="393" y="223">x</text>
+<text x="249" y="70">y</text>
+<circle cx="358" cy="218" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="372" y="203" text-anchor="start">A: 3/8</text>
+<circle cx="240" cy="100" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="253" y="86" text-anchor="start">B: 3/8</text>
+<circle cx="122" cy="218" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="108" y="203" text-anchor="end">C: 1/8</text>
+<circle cx="240" cy="336" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="252" y="360" text-anchor="start">D: 1/8</text>
+<circle class="target" cx="269.5" cy="188.5" r="6"/><text x="281.5" y="179.5">q</text>
+<text x="240" y="405" text-anchor="middle">q = (1/4, 1/4) · 같은 축척</text>
+<text x="720" y="30" text-anchor="middle" font-weight="600">축소 후: 양의 가중치 3개</text>
+<circle class="curve" cx="720" cy="218" r="118"/>
+<polygon class="hull" points="838,218 720,100 720,336"/>
+<path class="axis" d="M 572 218 H 868 M 720 68 V 366"/>
+<text x="873" y="223">x</text>
+<text x="729" y="70">y</text>
+<circle cx="838" cy="218" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="852" y="203" text-anchor="start">A: 1/4</text>
+<circle cx="720" cy="100" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="733" y="86" text-anchor="start">B: 1/2</text>
+<circle cx="602" cy="218" r="6" fill="none" stroke="#2563eb" stroke-width="2"/>
+<text x="588" y="203" text-anchor="end">C: 0</text>
+<circle cx="720" cy="336" r="6" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+<text x="732" y="360" text-anchor="start">D: 1/4</text>
+<circle class="target" cx="749.5" cy="188.5" r="6"/><text x="761.5" y="179.5">q</text>
+<text x="720" y="405" text-anchor="middle">q = (1/4, 1/4) · 같은 축척</text>
+</svg>

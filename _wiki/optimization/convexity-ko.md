@@ -4,9 +4,9 @@ subject: Optimization
 lang: ko
 translation_key: wiki-optimization-convexity
 description: 생산계획의 혼합으로 볼록집합을 이해하고 볼록함수의 현 부등식과 구별합니다.
-last_modified_at: 2026-10-19
+last_modified_at: 2026-10-20
 translation_status: complete
-translation_source_sha256: dab3772a6239245aeaed105c78d209a02e0002a895f18a25018001bff53e38a3
+translation_source_sha256: 0b441f240eb685d439cb267b763cb69798fa7b488c75d16167f3ef63fd7f08dc
 interactive_examples: true
 ---
 
@@ -104,6 +104,8 @@ $$
 $\in$는 속함, $\mathbb R^n$은 실수 좌표 $n$개 목록의 공간이다. $(1-\theta)x+\theta y$는 $x,y$ 사이 **선분**을 이룬다. 모든 쌍과 허용 가중치에 성립해야 한다. 성공 선분 하나는 예시지만 실패 하나는 볼록성을 반증한다. [슬라이드 2.3](https://web.stanford.edu/class/ee364a/lectures/sets.pdf#page=5).
 
 **볼록결합** $\sum_i\theta_ix_i$는 $\theta_i\ge0$, $\sum_i\theta_i=1$이다. 반복 혼합으로 볼록집합은 그 점들의 모든 유한 볼록결합을 포함한다. **볼록껍질**은 그런 결합의 집합이다. [슬라이드 2.4](https://web.stanford.edu/class/ee364a/lectures/sets.pdf#page=6).
+
+볼록결합에 몇 개의 점이 필요한지는 [카라테오도리 정리]({{ '/wiki/optimization/caratheodory-theorem-ko/' | relative_url }})에서 다룬다. $\mathbb R^d$의 같은 평균을 최대 $d+1$개의 점으로 만드는 방법을 증명한다.
 
 ### 선형 제약과 교집합이 작동하는 이유
 {: id="why-linear-constraints-and-intersections-work"}

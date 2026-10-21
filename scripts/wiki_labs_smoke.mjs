@@ -375,9 +375,57 @@ try {
     await page.goto(`${base}${href}`,{waitUntil:'domcontentloaded'});
     if(href.includes('#'))assert.equal(await page.locator(`[id="${href.split('#')[1]}"]`).count(),1);
   }
+  lab=await visit('caratheodory-theorem',8,'optimization');
+  assert.match(await lab.output.innerText(),/Original average q = \(0.25, 0.25\)/);
+  await lab.field('progress').press('ArrowRight');
+  assert.equal(await lab.field('progress').inputValue(),'0.01');
+  await lab.root.locator('[data-action="reduce"]').press('Enter');
+  assert.match(await lab.output.innerText(),/Current weights \(A, B, C, D\) = \(0.25, 0.5, 0, 0.25\)/);
+  assert.match(await lab.output.innerText(),/Positive weights = 3/);
+  const readReduction = async () => {
+    const text=await lab.output.innerText();
+    const vector=label=>text.match(new RegExp(label+' = \\(([^)]+)\\)'))[1].split(',').map(Number);
+    return {weights:vector('Current weights \\(A, B, C, D\\)'),before:vector('Original average q'),after:vector('Current average q'),residual:Number(text.match(/Average residual = (.+)/)[1])};
+  };
+  for(const masses of [[1,1,1,1],[1,3,4,2],[9,2,1,5],[0,2,3,1],[0,0,1,0],[1,1e-8,1,2],[10,10,10,10]]) {
+    for(const [i,key] of ['massA','massB','massC','massD'].entries())await lab.field(key).fill(String(masses[i]));
+    assert.equal(await lab.field('progress').inputValue(),'0','changing masses restarts the transfer');
+    await lab.root.locator('[data-action="reduce"]').click();
+    const {weights,before,after,residual}=await readReduction();
+    assert.ok(weights.every(x=>x>=0));
+    assert.ok(weights.filter(x=>x>0).length<=3);
+    assert.ok(Math.abs(weights.reduce((a,b)=>a+b,0)-1)<2e-6);
+    const sum=masses.reduce((a,b)=>a+b,0);
+    for(const [i,expected] of [(masses[0]-masses[2])/sum,(masses[1]-masses[3])/sum].entries()) {
+      assert.ok(Math.abs(before[i]-expected)<1e-6);
+      assert.ok(Math.abs(after[i]-expected)<1e-6);
+    }
+    assert.ok(residual<1e-14);
+    if(masses.every(x=>x===masses[0]))assert.equal(weights.filter(x=>x>0).length,2);
+  }
+  for(const key of ['massA','massB','massC','massD'])await lab.field(key).fill('0');
+  assert.match(await lab.status.innerText(),/all-zero/);
+  assert.equal(await lab.root.locator('svg circle').count(),0);
+  assert.equal(await lab.output.innerText(),'');
+  for(const value of ['','-1','11']) {
+    await lab.root.locator('[data-action="reset"]').click();
+    await lab.field('massA').fill(value);
+    assert.equal(await lab.field('massA').getAttribute('aria-invalid'),'true');
+    assert.equal(await lab.root.locator('svg circle').count(),0);
+  }
+  await lab.root.locator('[data-action="reset"]').press('Enter');
+  assert.match(await lab.output.innerText(),/Positive weights = 4/);
+  for(const width of [375,1200]) {
+    await page.setViewportSize({width,height:900});
+    assert.equal(await lab.root.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+  }
+  await staticPage.goto(`${base}/wiki/optimization/caratheodory-theorem/`,{waitUntil:'domcontentloaded'});
+  assert.equal(await staticPage.locator('.wiki-lab-controls').isVisible(),false);
+  assert.equal(await staticPage.locator('.post-content details').count(),8);
+  assert.equal(await staticPage.locator('img[src$="caratheodory-reduction.svg"]').count(),1);
   await noJS.close();
   assert.deepEqual(errors,[]);
-  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, duality bounds, convexity mixtures and chords, cross-links, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
+  console.log("Wiki labs passed: composition, LU, Cholesky, norms, LP optimal vertices and faces, historical machine exchanges and capacity thresholds, Farkas infeasibility certificates, duality bounds, convexity mixtures and chords, Carathéodory weight reduction and degenerate supports, cross-links, invalid inputs, keyboard controls, mobile layout, dark mode, and no-JavaScript reading.");
 } finally {
   if(browser)await browser.close();
   await new Promise(done=>server.close(done));
